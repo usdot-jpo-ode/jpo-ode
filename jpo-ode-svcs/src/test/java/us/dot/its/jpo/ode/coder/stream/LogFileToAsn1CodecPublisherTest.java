@@ -182,7 +182,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
@@ -215,7 +215,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
@@ -247,7 +247,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
@@ -266,7 +266,7 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, // 2.3 elevation
             (byte) 0x04, (byte) 0x00, // 2.3 speed
             (byte) 0x09, (byte) 0x27, // 2.4 heading
-            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, // 3. utcTimeInSec
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, // 2. utcTimeInSec
             (byte) 0x8f, (byte) 0x01, // 4. mSec
             (byte) 0x00, // 5. securityResultCode
             (byte) 0x06, (byte) 0x00, // 6.0 payloadLength
@@ -281,7 +281,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
@@ -315,7 +315,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
@@ -370,7 +370,7 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
-         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
