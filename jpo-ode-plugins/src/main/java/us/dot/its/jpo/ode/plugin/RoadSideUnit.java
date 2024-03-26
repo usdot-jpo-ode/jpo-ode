@@ -33,22 +33,8 @@ public class RoadSideUnit {
         public RSU() {
             super();
 
-            String defaultSnmpProtocol = System.getenv("DEFAULT_SNMP_PROTOCOL");
-            if (defaultSnmpProtocol != null) {
-                switch (defaultSnmpProtocol) {
-                case "FOURDOT1":
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
-                case "NTCIP1218":
-                    this.snmpProtocol = SnmpProtocol.NTCIP1218;
-                    break;
-                default:
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
-                }
-            } else {
-                this.snmpProtocol = SnmpProtocol.FOURDOT1;
-            }
+        setDefaultSnmpProtocol();
+
         }
 
         public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout) {
@@ -59,22 +45,8 @@ public class RoadSideUnit {
             this.rsuRetries = rsuRetries;
             this.rsuTimeout = rsuTimeout;
 
-            String defaultSnmpProtocol = System.getenv("DEFAULT_SNMP_PROTOCOL");
-            if (defaultSnmpProtocol != null) {
-                switch (defaultSnmpProtocol) {
-                case "FOURDOT1":
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
-                case "NTCIP1218":
-                    this.snmpProtocol = SnmpProtocol.NTCIP1218;
-                    break;
-                default:
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
-                }
-            } else {
-                this.snmpProtocol = SnmpProtocol.FOURDOT1;
-            }
+            setDefaultSnmpProtocol();
+            
         }
 
         public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout, SnmpProtocol snmpProtocol) {
@@ -136,6 +108,25 @@ public class RoadSideUnit {
 
         public void setSnmpProtocol(SnmpProtocol snmpProtocol) {
             this.snmpProtocol = snmpProtocol;
+        }
+
+        public void setDefaultSnmpProtocol() {
+            String defaultSnmpProtocol = System.getenv("DEFAULT_SNMP_PROTOCOL");
+            if (defaultSnmpProtocol != null) {
+                switch (defaultSnmpProtocol) {
+                case "FOURDOT1":
+                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
+                    break;
+                case "NTCIP1218":
+                    this.snmpProtocol = SnmpProtocol.NTCIP1218;
+                    break;
+                default:
+                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
+                    break;
+                }
+            } else {
+                this.snmpProtocol = SnmpProtocol.FOURDOT1;
+            }
         }
 
         @Override
