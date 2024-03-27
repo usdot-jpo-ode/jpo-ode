@@ -126,7 +126,7 @@ public class RoadSideUnit {
                         this.snmpProtocol = SnmpProtocol.NTCIP1218;
                         break;
                     default:
-                        logger.info("Unrecognized SNMP Protocol: {}, defaulting to FOURDOT1", defaultSnmpProtocol);
+                        logger.error("Unrecognized SNMP Protocol: {}, defaulting to FOURDOT1", defaultSnmpProtocol);
                         this.snmpProtocol = SnmpProtocol.FOURDOT1;
                         break;
                 }
