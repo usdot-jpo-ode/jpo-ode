@@ -649,6 +649,8 @@ The ODE is capable of communicating with RSUs to:
 - Deposit TIMs
 - Delete TIMs
 
+By default, the ODE will not sign TIMs that are delivered to RSUs. This can be changed by setting the value of the DATA_SIGNING_ENABLED_RSU environment variable found in the provided sample.env file. Additionally, signing of SDX-delivery TIMs can be configured by setting the value of the environment variable DATA_SIGNING_ENABLED_SDW found in sample.env. 
+
 The following SNMP protocols are supported for communication with RSUs:
 - DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
 - NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
