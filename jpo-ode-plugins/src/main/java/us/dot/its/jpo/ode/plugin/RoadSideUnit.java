@@ -15,10 +15,15 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class RoadSideUnit {
     public static class RSU extends OdeObject {
+
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         private static final long serialVersionUID = 3149576493038209597L;
 
@@ -114,17 +119,19 @@ public class RoadSideUnit {
             String defaultSnmpProtocol = System.getenv("DEFAULT_SNMP_PROTOCOL");
             if (defaultSnmpProtocol != null) {
                 switch (defaultSnmpProtocol) {
-                case "FOURDOT1":
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
-                case "NTCIP1218":
-                    this.snmpProtocol = SnmpProtocol.NTCIP1218;
-                    break;
-                default:
-                    this.snmpProtocol = SnmpProtocol.FOURDOT1;
-                    break;
+                    case "FOURDOT1":
+                        this.snmpProtocol = SnmpProtocol.FOURDOT1;
+                        break;
+                    case "NTCIP1218":
+                        this.snmpProtocol = SnmpProtocol.NTCIP1218;
+                        break;
+                    default:
+                        logger.info("Unrecognized SNMP Protocol: {}, defaulting to FOURDOT1", defaultSnmpProtocol);
+                        this.snmpProtocol = SnmpProtocol.FOURDOT1;
+                        break;
                 }
             } else {
+                logger.info("No SNMP Protocol specified, using FOURDOT1");
                 this.snmpProtocol = SnmpProtocol.FOURDOT1;
             }
         }
