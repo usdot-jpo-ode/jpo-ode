@@ -3,7 +3,6 @@
 /*
 This script is responsible for initializing the replica set, creating collections, adding indexes and TTLs
 */
-
 console.log("Running create_indexes.js");
 
 const ode_db = process.env.MONGO_DB_NAME;
@@ -13,6 +12,8 @@ const ode_pass = process.env.MONGO_ODE_DB_PASS;
 const ttlInDays = process.env.MONGO_COLLECTION_TTL; // TTL in days
 const expire_seconds = ttlInDays * 24 * 60 * 60;
 const retry_milliseconds = 5000;
+
+console.log("ODE DB Name: " + ode_db);
 
 try {
     console.log("Initializing replica set...");
@@ -85,19 +86,23 @@ try{
     // creates another user
     console.log("Creating ODE user...");
     admin = db.getSiblingDB("admin");
-    admin.createUser(
-          {
-        user: ode_user,
-        pwd:  ode_pass, 
-        roles: [ { role: "readWrite", db: ode_db },
-             { role: "readWrite", db: "admin" } ,
-        
-        ]
-          }
-    );
+    // Check if user already exists
+    var user = admin.getUser(ode_user);
+    if (user == null) {
+        admin.createUser(
+            {
+                user: ode_user,
+                pwd: ode_pass,
+                roles: [
+                    { role: "readWrite", db: ode_db },
+                    { role: "readWrite", db: "admin" }
+                ]
+            }
+        );
+    } else {
+        console.log("User \"" + ode_user + "\" already exists.");
+    }
 
-    db.getSiblingDB(ode_db);
-    print("Connected to the MongoDB instance.");
 } catch (error) {
     print("Error connecting to the MongoDB instance: " + error);
 }
@@ -105,8 +110,8 @@ try{
 
 // Wait for the collections to exist in mongo before trying to create indexes on them
 let missing_collection_count;
+const db = db.getSiblingDB(ode_db);
 do {
-    print("");
     try {
         missing_collection_count = 0;
         const collection_names = db.getCollectionNames();

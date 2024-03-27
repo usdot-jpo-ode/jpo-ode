@@ -1,7 +1,7 @@
 version: '3'
 
-# include:
-#   - docker-compose.yml
+include:
+  - docker-compose.yml
 
 services:
   mongo:
@@ -50,7 +50,7 @@ services:
       - ./scripts/mongo/create_indexes.js:/create_indexes.js
 
 
-  kafka-connect:
+  connect:
     image: kafka-connect:latest
     build:
       context: ./jpo-s3-deposit/mongo-connector
@@ -87,6 +87,26 @@ services:
       CONNECT_ZOOKEEPER_CONNECT: "zookeeper:2181"
     volumes:
       - ./jpo-s3-deposit/mongo-connector/connect_start.sh:/scripts/connect_start.sh
+  
+  console:
+    image: docker.redpanda.com/redpandadata/console:v2.3.8
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["${DOCKER_HOST_IP}:9092"]
+        connect:
+          enabled: true
+          clusters:
+            - name: mongo
+              url: http://connect:8083
+    ports:
+      - "8000:8080"
+    depends_on:
+      - connect
 
 volumes:
   mongo1_data:
