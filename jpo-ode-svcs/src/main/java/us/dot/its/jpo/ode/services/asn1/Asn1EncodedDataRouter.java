@@ -303,13 +303,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       logger.debug("Sending message for signature! ");
       String base64EncodedTim = CodecUtils.toBase64(
             CodecUtils.fromHex(encodedTIM));
-      JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+      JSONObject metadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
       // get max duration time and convert from minutes to milliseconds (unsigned
       // integer valid 0 to 2^32-1 in units of
       // milliseconds.) from metadata
-      int maxDurationTime = Integer.valueOf(matadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
-      String timpacketID = matadataObjs.getString("odePacketID");
-      String timStartDateTime = matadataObjs.getString("odeTimStartDateTime");
+      int maxDurationTime = Integer.valueOf(metadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
+      String timpacketID = metadataObjs.getString("odePacketID");
+      String timStartDateTime = metadataObjs.getString("odeTimStartDateTime");
       String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
       try {
          String hexEncodedTim = CodecUtils.toHex(
