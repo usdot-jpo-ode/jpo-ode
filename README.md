@@ -654,4 +654,7 @@ The following SNMP protocols are supported for communication with RSUs:
 - DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
 - NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
 
+If no protocol is specified in a request containing RSUs, the ODE will communicate with RSUs via the DSRC 4.1 protocol by default. 
+This can be changed by setting the value of the DEFAULT_SNMP_PROTOCOL environment variable. 
+
 Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.
