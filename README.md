@@ -154,6 +154,7 @@ The following guide contains information about the data flow diagrams for the OD
 - Additionally `git` commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
 - Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
 - Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
+- A compatibility guide containing recommendations for suitable versions of submodules for each main module version can be found [here](docs/compatibility.md).
 
 **Configuration:**
 
@@ -654,5 +655,8 @@ By default, the ODE will not sign TIMs that are delivered to RSUs. This can be c
 The following SNMP protocols are supported for communication with RSUs:
 - DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
 - NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
+
+If no protocol is specified in a request containing RSUs, the ODE will communicate with RSUs via the DSRC 4.1 protocol by default. 
+This can be changed by setting the value of the DEFAULT_SNMP_PROTOCOL environment variable. 
 
 Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.
