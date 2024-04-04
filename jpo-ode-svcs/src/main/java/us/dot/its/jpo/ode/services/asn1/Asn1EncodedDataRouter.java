@@ -341,33 +341,33 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                CodecUtils.fromBase64(
                      JsonUtils.toJSONObject(JsonUtils.toJSONObject(signedResponse).getString("result")).getString("message-signed")));
 
-         JSONObject TimWithExpiration = new JSONObject();
-         TimWithExpiration.put("packetID", timpacketID);
-         TimWithExpiration.put("startDateTime", timStartDateTime);
+         JSONObject timWithExpiration = new JSONObject();
+         timWithExpiration.put("packetID", timpacketID);
+         timWithExpiration.put("startDateTime", timStartDateTime);
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
          try {
             JSONObject jsonResult = JsonUtils
                   .toJSONObject((JsonUtils.toJSONObject(signedResponse).getString("result")));
             // messageExpiry uses unit of seconds
             long messageExpiry = Long.valueOf(jsonResult.getString("message-expiry"));
-            TimWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
+            timWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
          } catch (Exception e) {
             logger.error("Unable to get expiration date from signed messages response {}", e);
-            TimWithExpiration.put("expirationDate", "null");
+            timWithExpiration.put("expirationDate", "null");
          }
 
          try {
             Date parsedtimTimeStamp = dateFormat.parse(timStartDateTime);
             Date requiredExpirationDate = new Date();
             requiredExpirationDate.setTime(parsedtimTimeStamp.getTime() + maxDurationTime);
-            TimWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
+            timWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
          } catch (Exception e) {
             logger.error("Unable to parse requiredExpirationDate {}", e);
-            TimWithExpiration.put("requiredExpirationDate", "null");
+            timWithExpiration.put("requiredExpirationDate", "null");
          }
          //publish to Tim expiration kafka
          stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null,
-               TimWithExpiration.toString());
+               timWithExpiration.toString());
 
          return hexEncodedTim;
 
