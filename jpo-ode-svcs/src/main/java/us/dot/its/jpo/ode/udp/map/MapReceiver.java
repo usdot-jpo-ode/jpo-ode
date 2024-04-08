@@ -77,7 +77,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
 
                     // Add header data for the decoding process
                     ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                     mapMetadata.setOdeReceivedAt(timestamp);
 
                     mapMetadata.setOriginIp(senderIp);
