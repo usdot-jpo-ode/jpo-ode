@@ -4,8 +4,6 @@ import java.net.DatagramPacket;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -13,111 +11,88 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.OdeSpatMetadata;
+import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
+    private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
 
-   private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
+    private StringPublisher spatPublisher;
 
-   private static final String SPAT_START_FLAG = "0013"; // these bytes indicate
-                                                        // start of SPAT payload
-   private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
-                                                      // least 20 bytes long
+    @Autowired
+    public SpatReceiver(OdeProperties odeProps) {
+        this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
 
-   private StringPublisher spatPublisher;
+        this.spatPublisher = new StringPublisher(odeProps);
+    }
 
-   @Autowired
-   public SpatReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
+    public SpatReceiver(OdeProperties odeProps, int port, int bufferSize) {
+        super(odeProps, port, bufferSize);
 
-      this.spatPublisher = new StringPublisher(odeProps);
-   }
+        this.spatPublisher = new StringPublisher(odeProps);
+    }
 
-   public SpatReceiver(OdeProperties odeProps, int port, int bufferSize) {
-      super(odeProps, port, bufferSize);
+    @Override
+    public void run() {
 
-      this.spatPublisher = new StringPublisher(odeProps);
-   }
+        logger.debug("SPaT UDP Receiver Service started.");
 
-   @Override
-   public void run() {
+        byte[] buffer = new byte[bufferSize];
 
-      logger.debug("SPAT UDP Receiver Service started.");
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-      byte[] buffer = new byte[bufferSize];
+        do {
+            try {
+                logger.debug("Waiting for UDP SPaT packets...");
+                socket.receive(packet);
+                if (packet.getLength() > 0) {
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-      DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    // extract the actualPacket from the buffer
+                    byte[] payload = packet.getData();
+                    if (payload == null)
+                        continue;
 
-      do {
-         try {
-            logger.debug("Waiting for UDP SPAT packets...");
-            socket.receive(packet);
-            if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
+                    // convert bytes to hex string and verify identity
+                    String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
+                    if (payloadHexString.indexOf(odeProperties.getSpatStartFlag()) == -1)
+                        continue;
+                    logger.debug("Full SPaT packet: {}", payloadHexString);
+                    payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getSpatStartFlag());
+                    logger.debug("Stripped SPaT packet: {}", payloadHexString);
 
-               // extract the actualPacket from the buffer
-               byte[] payload = removeHeader(packet.getData());
-               if (payload == null)
-                  continue;
-               String payloadHexString = HexUtils.toHexString(payload);
-               logger.debug("Packet: {}", payloadHexString);
-               
-               // Add header data for the decoding process
-               ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+                    OdeAsn1Payload spatPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+                    OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
 
-               JSONObject metadataObject = new JSONObject();
-               metadataObject.put("utctimestamp", timestamp);
-               metadataObject.put("originRsu", senderIp);
+                    // Add header data for the decoding process
+                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+                    String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    spatMetadata.setOdeReceivedAt(timestamp);
 
-               JSONObject messageObject = new JSONObject();
-               messageObject.put("metadata", metadataObject);
-               messageObject.put("payload", payloadHexString);
+                    spatMetadata.setOriginIp(senderIp);
+                    spatMetadata.setSpatSource(SpatSource.RSU);
+                    spatMetadata.setRecordType(RecordType.spatTx);
+                    spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+                    spatMetadata.setSecurityResultCode(SecurityResultCode.success);
 
-               JSONArray messageList = new JSONArray();
-               messageList.put(messageObject);
-
-               JSONObject jsonObject = new JSONObject();
-               jsonObject.put("SpatMessageContent", messageList);
-
-               logger.debug("SPAT JSON Object: {}", jsonObject.toString());
-
-               // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               this.spatPublisher.publish(jsonObject.toString(), this.spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+                    spatPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(spatMetadata, spatPayload), false),
+                        spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                }
+            } catch (Exception e) {
+                logger.error("Error receiving packet", e);
             }
-         } catch (Exception e) {
-            logger.error("Error receiving packet", e);
-         }
-      } while (!isStopped());
-   }
-
-   /**
-    * Attempts to strip WSMP header bytes. If message starts with "0013",
-    * message is raw SPAT. Otherwise, headers are >= 20 bytes, so look past that
-    * for start of payload SPAT.
-    * 
-    * @param packet
-    */
-   public byte[] removeHeader(byte[] packet) {
-      String hexPacket = HexUtils.toHexString(packet);
-
-      int startIndex = hexPacket.indexOf(SPAT_START_FLAG);
-      if (startIndex == 0) {
-         logger.debug("Message is raw SPAT with no headers.");
-      } else if (startIndex == -1) {
-         logger.error("Message contains no SPAT start flag.");
-         return null;
-      } else {
-         // We likely found a message with a header, look past the first 20
-         // bytes for the start of the SPAT
-         int trueStartIndex = HEADER_MINIMUM_SIZE
-               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(SPAT_START_FLAG);
-         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
-      }
-
-      return HexUtils.fromHexString(hexPacket);
-   }
+        } while (!isStopped());
+    }
 }

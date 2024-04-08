@@ -14,14 +14,22 @@ public abstract class AbstractAsn1DecodeMessageJSON extends AbstractSubscriberPr
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected StringPublisher codecPublisher;
+    protected String payload_start_flag;
 
 	public AbstractAsn1DecodeMessageJSON() {
 		super();
 	}
 
-	public AbstractAsn1DecodeMessageJSON(StringPublisher codecPublisher) {
+	public AbstractAsn1DecodeMessageJSON(StringPublisher codecPublisher, String payload_start_flag) {
 		super();
 		this.codecPublisher = codecPublisher;
+		this.payload_start_flag = payload_start_flag;
+	}
+
+	// Strips the IEEE 1609.2 security header (if it exists) and returns the payload
+	protected String stripDot2Header(String hexString) {
+		hexString = hexString.toLowerCase();
+		return hexString.substring(hexString.indexOf(payload_start_flag), hexString.length());
 	}
 
 	protected void publishEncodedMessageToAsn1Decoder(OdeData odeData) {

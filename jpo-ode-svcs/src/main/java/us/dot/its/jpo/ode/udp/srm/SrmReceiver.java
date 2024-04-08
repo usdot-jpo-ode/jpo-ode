@@ -4,8 +4,6 @@ import java.net.DatagramPacket;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -13,112 +11,88 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.OdeSrmMetadata;
+import us.dot.its.jpo.ode.model.OdeSrmMetadata.SrmSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class SrmReceiver extends AbstractUdpReceiverPublisher {
+    private static Logger logger = LoggerFactory.getLogger(SrmReceiver.class);
 
-   private static Logger logger = LoggerFactory.getLogger(SrmReceiver.class);
+    private StringPublisher srmPublisher;
 
-   private static final String SRM_START_FLAG = "001d"; // these bytes indicate
-                                                        // start of SRM payload
-   private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
-                                                      // least 20 bytes long
+    @Autowired
+    public SrmReceiver(OdeProperties odeProps) {
+        this(odeProps, odeProps.getSrmReceiverPort(), odeProps.getSrmBufferSize());
 
-   private StringPublisher srmPublisher;
+        this.srmPublisher = new StringPublisher(odeProps);
+    }
 
-   @Autowired
-   public SrmReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getSrmReceiverPort(), odeProps.getSrmBufferSize());
+    public SrmReceiver(OdeProperties odeProps, int port, int bufferSize) {
+        super(odeProps, port, bufferSize);
 
-      this.srmPublisher = new StringPublisher(odeProps);
-   }
+        this.srmPublisher = new StringPublisher(odeProps);
+    }
 
-   public SrmReceiver(OdeProperties odeProps, int port, int bufferSize) {
-      super(odeProps, port, bufferSize);
+    @Override
+    public void run() {
 
-      this.srmPublisher = new StringPublisher(odeProps);
-   }
+        logger.debug("SRM UDP Receiver Service started.");
 
-   @Override
-   public void run() {
+        byte[] buffer = new byte[bufferSize];
 
-      logger.debug("SRM UDP Receiver Service started.");
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-      byte[] buffer = new byte[bufferSize];
+        do {
+            try {
+                logger.debug("Waiting for UDP SRM packets...");
+                socket.receive(packet);
+                if (packet.getLength() > 0) {
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-      DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    // extract the actualPacket from the buffer
+                    byte[] payload = packet.getData();
+                    if (payload == null)
+                        continue;
 
-      do {
-         try {
-            logger.debug("Waiting for UDP SRM packets...");
-            socket.receive(packet);
-            if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
+                    // convert bytes to hex string and verify identity
+                    String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
+                    if (payloadHexString.indexOf(odeProperties.getSrmStartFlag()) == -1)
+                        continue;
+                    logger.debug("Full SRM packet: {}", payloadHexString);
+                    payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getSrmStartFlag());
+                    logger.debug("Stripped SRM packet: {}", payloadHexString);
 
-               // extract the actualPacket from the buffer
-               byte[] payload = removeHeader(packet.getData());
-               if (payload == null)
-                  continue;
-               String payloadHexString = HexUtils.toHexString(payload);
-               logger.debug("Packet: {}", payloadHexString);
+                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+                    OdeAsn1Payload srmPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+                    OdeSrmMetadata srmMetadata = new OdeSrmMetadata(srmPayload);
 
-               // Add header data for the decoding process
-               ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    // Add header data for the decoding process
+                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+                    String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    srmMetadata.setOdeReceivedAt(timestamp);
 
-               JSONObject metadataObject = new JSONObject();
-               metadataObject.put("utctimestamp", timestamp);
-               metadataObject.put("originRsu", senderIp);
-               metadataObject.put("source", "RSU");
+                    srmMetadata.setOriginIp(senderIp);
+                    srmMetadata.setSrmSource(SrmSource.RSU);
+                    srmMetadata.setRecordType(RecordType.srmTx);
+                    srmMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
+                    srmMetadata.setSecurityResultCode(SecurityResultCode.success);
 
-               JSONObject messageObject = new JSONObject();
-               messageObject.put("metadata", metadataObject);
-               messageObject.put("payload", payloadHexString);
-
-               JSONArray messageList = new JSONArray();
-               messageList.put(messageObject);
-
-               JSONObject jsonObject = new JSONObject();
-               jsonObject.put("SrmMessageContent", messageList);
-
-               logger.debug("SRM JSON Object: {}", jsonObject.toString());
-
-               // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               this.srmPublisher.publish(jsonObject.toString(), this.srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+                    srmPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(srmMetadata, srmPayload), false),
+                        srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+                }
+            } catch (Exception e) {
+                logger.error("Error receiving packet", e);
             }
-         } catch (Exception e) {
-            logger.error("Error receiving packet", e);
-         }
-      } while (!isStopped());
-   }
-
-   /**
-    * Attempts to strip WSMP header bytes. If message starts with "001d",
-    * message is raw SRM. Otherwise, headers are >= 20 bytes, so look past that
-    * for start of payload SRM.
-    * 
-    * @param packet
-    */
-   public byte[] removeHeader(byte[] packet) {
-      String hexPacket = HexUtils.toHexString(packet);
-
-      int startIndex = hexPacket.indexOf(SRM_START_FLAG);
-      if (startIndex == 0) {
-         logger.debug("Message is raw SRM with no headers.");
-      } else if (startIndex == -1) {
-         logger.error("Message contains no SRM start flag.");
-         return null;
-      } else {
-         // We likely found a message with a header, look past the first 20
-         // bytes for the start of the SRM
-         int trueStartIndex = HEADER_MINIMUM_SIZE
-               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(SRM_START_FLAG);
-         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
-      }
-
-      return HexUtils.fromHexString(hexPacket);
-   }
+        } while (!isStopped());
+    }
 }
