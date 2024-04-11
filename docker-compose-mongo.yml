@@ -18,13 +18,13 @@ services:
       - bash
       - -c
       - |
-          cp /keyfile /mongo_keyfile
+          openssl rand -base64 741 > /mongo_keyfile
           chmod 400 /mongo_keyfile
           chown 999:999 /mongo_keyfile
           exec docker-entrypoint.sh $$@
     command: "mongod --bind_ip_all --replSet rs0 --keyFile /mongo_keyfile"
     volumes:
-      - ./scripts/mongo/mongo_rs_keyfile:/keyfile
+      - mongo_data:/data/db
     healthcheck:
       test: | 
         echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
@@ -109,6 +109,4 @@ services:
       - connect
 
 volumes:
-  mongo1_data:
-  mongo2_data:
-  mongo3_data:
+  mongo_data:
