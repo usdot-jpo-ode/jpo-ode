@@ -38,6 +38,12 @@ public class Asn1DecodeSRMJSON extends AbstractAsn1DecodeMessageJSON {
 			String payloadHexString = ((JSONObject) ((JSONObject) rawSrmJsonObject.get("payload")).get("data"))
 					.getString("bytes");
 			payloadHexString = super.stripDot2Header(payloadHexString);
+
+			if (payloadHexString.equals("BAD DATA")) {
+				logger.error("NON-SRM DATA ENCOUNTERED IN THE ASN1DECODESRMJSON CLASS");
+				return null;
+			}
+
 			OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
 
 			messageToPublish = new OdeAsn1Data(metadata, payload);
