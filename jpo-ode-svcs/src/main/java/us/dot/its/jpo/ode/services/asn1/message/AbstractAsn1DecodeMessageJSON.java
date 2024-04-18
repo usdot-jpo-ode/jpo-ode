@@ -29,7 +29,10 @@ public abstract class AbstractAsn1DecodeMessageJSON extends AbstractSubscriberPr
 	// Strips the IEEE 1609.2 security header (if it exists) and returns the payload
 	protected String stripDot2Header(String hexString) {
 		hexString = hexString.toLowerCase();
-		return hexString.substring(hexString.indexOf(payload_start_flag), hexString.length());
+		int startIndex = hexString.indexOf(payload_start_flag);
+		if (startIndex == -1)
+			return "BAD DATA";
+		return hexString.substring(startIndex, hexString.length());
 	}
 
 	protected void publishEncodedMessageToAsn1Decoder(OdeData odeData) {
