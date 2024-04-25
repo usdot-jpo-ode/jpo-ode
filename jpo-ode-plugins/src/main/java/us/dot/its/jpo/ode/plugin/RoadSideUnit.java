@@ -15,10 +15,15 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class RoadSideUnit {
     public static class RSU extends OdeObject {
+
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         private static final long serialVersionUID = 3149576493038209597L;
 
@@ -33,8 +38,8 @@ public class RoadSideUnit {
         public RSU() {
             super();
 
-            // default to 4.1 SNMP protocol
-            this.snmpProtocol = SnmpProtocol.FOURDOT1;
+        setDefaultSnmpProtocol();
+
         }
 
         public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout) {
@@ -45,8 +50,8 @@ public class RoadSideUnit {
             this.rsuRetries = rsuRetries;
             this.rsuTimeout = rsuTimeout;
 
-            // default to 4.1 SNMP protocol
-            this.snmpProtocol = SnmpProtocol.FOURDOT1;
+            setDefaultSnmpProtocol();
+            
         }
 
         public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout, SnmpProtocol snmpProtocol) {
@@ -108,6 +113,27 @@ public class RoadSideUnit {
 
         public void setSnmpProtocol(SnmpProtocol snmpProtocol) {
             this.snmpProtocol = snmpProtocol;
+        }
+
+        public void setDefaultSnmpProtocol() {
+            String defaultSnmpProtocol = System.getenv("DEFAULT_SNMP_PROTOCOL");
+            if (defaultSnmpProtocol != null) {
+                switch (defaultSnmpProtocol) {
+                    case "FOURDOT1":
+                        this.snmpProtocol = SnmpProtocol.FOURDOT1;
+                        break;
+                    case "NTCIP1218":
+                        this.snmpProtocol = SnmpProtocol.NTCIP1218;
+                        break;
+                    default:
+                        logger.error("Unrecognized SNMP Protocol: {}, defaulting to NTCIP1218", defaultSnmpProtocol);
+                        this.snmpProtocol = SnmpProtocol.NTCIP1218;
+                        break;
+                }
+            } else {
+                logger.info("No SNMP Protocol specified, using NTCIP1218");
+                this.snmpProtocol = SnmpProtocol.NTCIP1218;
+            }
         }
 
         @Override

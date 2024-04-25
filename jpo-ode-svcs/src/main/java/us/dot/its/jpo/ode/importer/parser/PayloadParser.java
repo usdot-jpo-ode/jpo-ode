@@ -33,12 +33,6 @@ public class PayloadParser extends LogFileParser {
    private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
    private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
-   // Maximum header size for 1609 payload headers
-   private static final int HEADER_SIZE_1609 = 20; 
-
-   // Maximum header size for WSMP payload headers
-   private static final int HEADER_SIZE_WSMP = 35; 
-
    public static final int PAYLOAD_LENGTH = 2;
    
    protected short payloadLength;
@@ -63,7 +57,6 @@ public class PayloadParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH, ByteOrder.LITTLE_ENDIAN);
-            logger.debug("Payload length is: " + length);
             setPayloadLength(length);
          }
 
@@ -72,7 +65,7 @@ public class PayloadParser extends LogFileParser {
             status = parseStep(bis, getPayloadLength());
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayload(removeHeader(Arrays.copyOf(readBuffer, getPayloadLength())));
+            setPayload(stripDot3Header(Arrays.copyOf(readBuffer, getPayloadLength())));
          }
          
          resetStep();
@@ -104,43 +97,41 @@ public class PayloadParser extends LogFileParser {
       return this;
    }
 
-  @Override
-  public void writeTo(OutputStream os) throws IOException {
-    os.write(CodecUtils.shortToBytes(payloadLength, ByteOrder.LITTLE_ENDIAN));
-    os.write(payload, 0, payloadLength);
-  }
+   @Override
+   public void writeTo(OutputStream os) throws IOException {
+      os.write(CodecUtils.shortToBytes(payloadLength, ByteOrder.LITTLE_ENDIAN));
+      os.write(payload, 0, payloadLength);
+   }
 
 
-   // Removes the 1609.2 header but will keep the 1609.1 header
-   public byte[] removeHeader(byte[] packet) {
-      String hexPacket = HexUtils.toHexString(packet);
+   /* Strips the 1609.3 and unsigned 1609.2 headers if they are present.
+   Will return the payload with a signed 1609.2 header if it is present.
+   Otherwise, returns just the payload. */
+   public byte[] stripDot3Header(byte[] packet) {
+      String hexString = HexUtils.toHexString(packet);
       String hexPacketParsed = "";
-      for (String key : msgStartFlags.keySet()) {
-         String startFlag = msgStartFlags.get(key);
-         int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
-         if (hexPacketParsed.equals("")) {
-            logger.debug("Start index for: " + key + " is: " + startIndex);
-            if (startIndex == -1) {
-               logger.debug("Message does not have header for: " + key);
-               continue;
-            } else if (startIndex <= HEADER_SIZE_1609) {
-               logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
-               hexPacketParsed = hexPacket;
-            // If the header type is WSMP, the header will be stripped from the payload.
-            } else if (startIndex > HEADER_SIZE_1609 && startIndex < HEADER_SIZE_WSMP) {
-               int trueStartIndex = HEADER_SIZE_1609
-                     + hexPacket.substring(HEADER_SIZE_1609, hexPacket.length()).indexOf(startFlag);
-               logger.debug("Found payload start at: " + trueStartIndex);
-               hexPacketParsed = hexPacket.substring(trueStartIndex, hexPacket.length());
-            }
-         }
+
+      for (String start_flag : msgStartFlags.values()) {
+         int payloadStartIndex = hexString.indexOf(start_flag);
+         if (payloadStartIndex == -1)
+            continue;
+
+         String headers = hexString.substring(0, payloadStartIndex);
+         String payload = hexString.substring(payloadStartIndex, hexString.length());
+         // Look for the index of the start flag of a signed 1609.2 header, if one exists
+         int signedDot2StartIndex = headers.indexOf("038100");
+         if (signedDot2StartIndex == -1)
+            hexPacketParsed = payload;
+         else
+            hexPacketParsed = headers.substring(signedDot2StartIndex, headers.length()) + payload;
+         break;
       }
+
       if (hexPacketParsed.equals("")) {
-         hexPacketParsed = hexPacket;
-         logger.debug("Could not identify a Header in the following packet: " + hexPacketParsed);
-      } else {
-         logger.debug("Payload hex: " + hexPacketParsed);
+         hexPacketParsed = hexString;
+         logger.debug("Packet is not a BSM, TIM or Map message: " + hexPacketParsed);
       }
+
       return HexUtils.fromHexString(hexPacketParsed);
    }
 }
