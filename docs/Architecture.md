@@ -12,7 +12,7 @@ Booz Allen Hamilton\
 8283 Greensboro Drive\
 McLean, VA 22102
 
-_Last updated June 11, 2021_
+_Last updated April 26th, 2024_
 
 # Contents
 
@@ -79,13 +79,13 @@ brokering, processing and routing data from various data sources,
 including connected vehicles, field devices, Transportation Management
 Center (TMC) applications and a variety of other data users. Data users
 include but not limited to transportation software applications,
-Research Data Exchange (RDE), US DOT Situation Data Warehouse.
+Research Data Exchange (RDE), and the [Situational Data Exchange (SDX)](https://sdx.trihydro.com/).
 
 As a data provisioning service, the ODE can provision data from
 disparate data sources to software applications that have placed data
 subscription requests to the ODE. On the other direction, the ODE can
 accept data from CV applications and broadcast them to field devices
-through Road Side Units (RSU) and US DOT Situation Data Warehouse which
+through Road Side Units (RSU) and the Situational Data Exchange (SDX) which
 in turn will transmit the data to Sirius XM satellites for delivery to
 the connected vehicles in the field.
 
