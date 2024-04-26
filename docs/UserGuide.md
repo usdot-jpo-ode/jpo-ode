@@ -567,7 +567,7 @@ ODE uses Logback logging framework to log application and data events.
 -   As it stands, the current logging framework has two separate log
     files. The first log file is for application output called ode.log.
     Application debug information and backend service messages are
-    output to this file. The second log file, Events.log contains
+    output to this file. The second log file, Events.log, contains
     informational messages pertaining to the services a message goes
     through inside of the system.
 
@@ -837,10 +837,10 @@ SDW_API_KEY=myApiKey
 #### 7.5.2 - Outbound TIM to S3 Bucket Setup
 
 Depositing a TIM message to an S3 bucket can be done using the pre-built
-jpo-s3-depositor repository. To set this service up:
+jpo-s3-deposit repository. To set this service up:
 
 1.  Follow the steps in the ODE README.md to clone and compile the S3
-    depositor service.
+    deposit service.
 
 2.  Set the following environment variables (and/or use the RDE prefixed
     variables, these prefixes are for guidance only and do not
@@ -856,7 +856,7 @@ jpo-s3-depositor repository. To set this service up:
 
     -   CVPEP\_TIM\_S3\_TOPIC
 
-3.  Follow the rest of the ODE setup steps. The S3 depositor service
+3.  Follow the rest of the ODE setup steps. The S3 deposit service
     containers will be automatically created by docker-compose.
 
 4.  Verify arrival of messages in S3 by visiting the AWS UI or an S3
@@ -922,13 +922,13 @@ TBD
 ### 7.8 - String S3 Depositor
 
 The ODE has the capability to deposit any string messages to any S3
-buckets using the application in the jpo-s3-depositor repository. To
+buckets using the application in the jpo-s3-deposit repository. To
 obtain and build this service, follow the instructions in the ODE
 README.md document. Once downloaded and compiled, all the user must do
 is set the relevant environment variables, the rest is managed
 automatically by docker-compose.
 
-Four example S3 depositor configurations are provided in the
+Four example S3 deposit configurations are provided in the
 docker-compose.yml file in the root of the jpo-ode directory, a BSM and
 TIM depositor for both CVPEP and RDE: cvpep\_bsm\_s3dep,
 rde\_bsm\_s3dep, cvpep\_tim\_s3dep, and rde\_tim\_s3dep. These example
@@ -942,19 +942,17 @@ or copied to create new a new S3 depositor.
 
 ODE integrates with the
 [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)
-(JSS) module for performing message signing, verification, encryption
-and decryption. ODE sends TIM messages to JSS module to be signed before
+(SEC) module for performing message signing, verification, encryption
+and decryption. ODE sends TIM messages to SEC module to be signed before
 broadcasting the message to RSUs and SDX. No new configuration
 properties need to be set if the module and ODE run in Docker containers
-on the same server. However, if they are running o different host
+on the same server. However, if they are running on different host
 machines the property _ode.securitySvcsSignatureUri_ must be set to
-point to the JSS domain name or IP:Port number. The JSS module must,
+point to the SEC domain name or IP:Port number. The SEC module must,
 however, be configured with the DNS name or IP:Port of the Green Hills
 HSM security service URI. This property can be defined using the
 environment variable _SEC\_CRYPTO\_SERVICE\_BASE\_URI_. It must be set
-to [http://ip:port](http://ip:port) of the Green Hills appliance. If you
-do not want to sign the data set
-_SEC\_CRYPTO\_SERVICE\_BASE\_URI=UNSECURED_
+to [http://ip:port](http://ip:port) of the Green Hills appliance. By default, the ODE will not sign TIMs that are delivered to RSUs. This can be changed by setting the value of the DATA_SIGNING_ENABLED_RSU environment variable found in the provided sample.env file. Additionally, signing of SDX-delivery TIMs can be configured by setting the value of the environment variable DATA_SIGNING_ENABLED_SDW found in sample.env. 
 
 <a name="appendix-a-ode-interface-specification"></a>
 
