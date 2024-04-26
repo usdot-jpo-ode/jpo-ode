@@ -48,7 +48,7 @@ _Last updated April 26th, 2024_
   - [7.4 - Probe Data Management](#probe-data-management)
     - [7.4.1 - PDM Broadcast Request Quick Start Guide](#pdm-broadcast-request-quick-start-guide)
   - [7.5 - Outbound TIM Broadcast](#outbound-tim-broadcast)
-    - [7.5.1 - Outbound TIM to SDW Websocket Setup](#outbound-tim-to-sdw-websocket-setup)
+    - [7.5.1 - Outbound TIM to SDX Websocket Setup](#outbound-tim-to-sdx-websocket-setup)
     - [7.5.2 - Outbound TIM to S3 Bucket Setup](#outbound-tim-to-s3-bucket-setup)
     - [7.5.3 - TIM Broadcast Request Quick Start Guide](#tim-broadcast-request-quick-start-guide)
   - [7.6 - Privacy Protection Module (PPM)](#privacy-protection-module-ppm)
@@ -130,13 +130,13 @@ brokering, processing and routing data from various data sources,
 including connected vehicles, field devices, Transportation Management
 Center (TMC) applications and a variety of other data users. Data users
 include but not limited to transportation software applications,
-Research Data Exchange (RDE), US DOT Situation Data Warehouse.
+Research Data Exchange (RDE), and the [Situational Data Exchange (SDX)](https://sdx.trihydro.com/).
 
 As a data provisioning service, the ODE can provision data from
 disparate data sources to software applications that have placed data
 subscription requests to the ODE. On the other direction, the ODE can
 accept data from CV applications and broadcast them to field devices
-through Road Side Units (RSU) and US DOT Situation Data Warehouse which
+through Road Side Units (RSU)s and the Situational Data Exchange (SDX) which
 in turn will transmit the data to Sirius XM satellites for delivery to
 the connected vehicles in the field.
 
@@ -157,7 +157,7 @@ validation and sanitization.
 
 # 3 - System Overview
 
-JPO ODE is an open-sourced software application that will enable the
+JPO ODE is an open-source software application that will enable the
 transfer of data between field devices and backend TMC systems for
 operational, monitoring, and research purposes. The system will enable
 applications to submit data through a variety standard interfaces as
@@ -175,13 +175,13 @@ capabilities to the JPO-ODE product owner._
 
 ![](images/userguide/figure1.png)
 
-Figure 1 - ODE System Data Producers and Consumers
+_Figure 1 - ODE System Data Producers and Consumers_
 
 <a name="audience"></a>
 
 # 4 - Audience
 
-This document is intended for use by the ODE client applications.
+This document is intended for use by the ODE client applications that will be interfacing with the ODE.
 
 <a name="glossary"></a>
 
@@ -201,7 +201,8 @@ This document is intended for use by the ODE client applications.
 | SAE       | SAE International is a global association of more than 128,000 engineers and related technical experts in the aerospace, automotive and commercial-vehicle industries.                                                                                                                                                                               |
 | J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                                                                          |
-| SDW       | Situation Data Warehouse                                                                                                                                                                                                                                                                                                                             |
+| SDX       | Situational Data Exchange                                                                                                                                                                                                                                                                                                                             |
+| SDW       | Situational Data Warehouse (the old name for the SDX)                                                                                                                                                                                                                                                                                                                             |
 | TIM       | Traveler Information Message                                                                                                                                                                                                                                                                                                                         |
 | US DOT    | Unites States Department of Transportation                                                                                                                                                                                                                                                                                                           |
 | WebSocket | WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol. Its only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request.                                              |
@@ -388,8 +389,8 @@ _Table 1 - ODE Application Properties_
 | ode.uploadLocationObuLog                 | ./uploads/bsmlog                                                                              |                        | Specific location for OBU log files with header fields to specify direction, UTC timestamp, and other metadata                                                                                                                                                                                                                            |
 | ode.pluginsLocations                     | ./plugins                                                                                     |                        | Location of the jar files for ODE plugins.                                                                                                                                                                                                                                                                                                |
 | ode.kafkaProducerType                    | async                                                                                         |                        | Specifies whether publishing to Kafka will be synchronous (i.e. blocking until the data has been persisted) or asynchronous (i.e. publish and forget). Valid values are: sync or async. Sync will generally be slower but more reliable, async is faster with the risk of losing data if kafka crashes during the write operation.        |
-| ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situation Data Warehouse                                                                                                                                                                                                                                                     |
-| ode.ddsCasPassword                       | null                                                                                          | X                      | Password to be used for authentication when interfacing with Situation Data Warehouse (SDW)                                                                                                                                                                                                                                               |
+| ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situational Data Exchange                                                                                                                                                                                                                                                     |
+| ode.ddsCasPassword                       | null                                                                                          | X                      | Password to be used for authentication when interfacing with Situational Data Exchange (SDX)                                                                                                                                                                                                                                               |
 | ode.ddsCasUrl                            | <https://cas.cvmvp.com/accounts/v1/tickets>                                                     |                        | URL of the US DOT security server.                                                                                                                                                                                                                                                                                                        |
 | ode.ddsWebsocketUrl                      | wss://webapp.cvmvp.com/whtools/websocket                                                      |                        | URL of the US DOT SDW WebSockets API                                                                                                                                                                                                                                                                                                      |
 | ode.sdcIp                                | 104.130.170.234                                                                               |                        | IPv4 address of SDC                                                                                                                                                                                                                                                                                                                       |
@@ -744,26 +745,26 @@ in JSON format from which a fully formed ASN.1 compliant J2735
 TravelerInformation message will be constructed and sent to an array of
 RSUs. The RSUs must be specified in the TIM broadcast message received
 by the ODE. In addition to the RSU devices, the TIM message is also
-deposited to the US DOT Situation Data Warehouse (SDW) from which the
+deposited to the Situational Data Exchange (SDX) from which the
 SiriusXM satellites will pull from and broadcast to vehicles that are
-not within range of RSUs. SDW parameters are also specified in the TIM
+not within range of RSUs. SDX parameters are also specified in the TIM
 REST interface. Please refer to the Swagger file documentation for
 details of a TIM REST interface.
 
 <a name="outbound-tim-to-sdw-websocket-setup"></a>
 
-#### 7.5.1 Outbound TIM to SDW Setup
+#### 7.5.1 Outbound TIM to SDX Setup
 
-Traveler Information Messages may be distributed to RSUs, the SDW, or both by including certain objects in the JSON message sent to the `/tim` endpoint:
+Traveler Information Messages may be distributed to RSUs, the SDX, or both by including certain objects in the JSON message sent to the `/tim` endpoint:
 
 -   **RSU Distribution**: The /tim REST service will send the TIM messages to RSUs
     if both "rsus" and "snmp" elements of the request body are defined
     and valid. If either "rsus" or "snmp" are missing, the request will
     not be sent to the RSUs.
 
--   **SDW Enablement**: /tim REST service sends the TIM messages to SDW
+-   **SDX Enablement**: /tim REST service sends the TIM messages to SDX
     if the "sdw" element of the request body is defined and valid. If
-    "sdw" element is missing, the request will not be sent to the SDW.
+    "sdw" element is missing, the request will not be sent to the SDX.
 
 **Option 1: Websocket Interface**
 
@@ -797,13 +798,13 @@ SDWPASSWORD=<SDWPASSWORD>
 ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET=true
 ```
 
-**Note**: This option uses the ODE's built-in SDW depositor and does not
-require a SDW service to be running. Therefore, jpo-sdw-depositor
+**Note**: This option uses the ODE's built-in SDX depositor and does not
+require a SDX service to be running. Therefore, jpo-sdw-depositor
 service should be removed from docker-compose.yml.
 
 **Option 2 (Recommended): SDW Depositor Submodule**
 
-Depositing a TIM message to the Situation Data Warehouse can be done
+Depositing a TIM message to the Situational Data Exchange can be done
 using the pre-built jpo-sdw-depositor repository. To set this service
 up:
 
@@ -826,7 +827,7 @@ SDW_API_KEY=myApiKey
 4.  Follow the rest of the ODE setup steps. The SDW depositor service
     containers will be automatically created by docker-compose.
 
-5.  Verify arrival of messages in SDW by verifying response status
+5.  Verify arrival of messages in SDX by verifying response status
     messages in the logs.
 
 <a name="outbound-tim-to-s3-bucket-setup"></a>
@@ -877,11 +878,11 @@ instructions:
     REST tool such as Postman to send the TIM broadcast request to the
     ODE. Make sure the REST request body contains the "snmp" and "rsus"
     elements with valid IP addresses of the RSUs that you intend to send
-    the message to as well as the required SDW parameters.
+    the message to as well as the required SDX parameters.
 
 4.  The REST interface will return a response indicating the deposit
     success ("success":"true") or failure ("success":"false") for each
-    RSU and the SDW deposit:
+    RSU and the SDX deposit:
 
 ```json
 {
@@ -941,7 +942,7 @@ ODE integrates with the
 [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 (JSS) module for performing message signing, verification, encryption
 and decryption. ODE sends TIM messages to JSS module to be signed before
-broadcasting the message to RSUs and SDW. No new configuration
+broadcasting the message to RSUs and SDX. No new configuration
 properties need to be set if the module and ODE run in Docker containers
 on the same server. However, if they are running o different host
 machines the property _ode.securitySvcsSignatureUri_ must be set to
