@@ -17,13 +17,11 @@ By contributing to the US Department of Transportation Joint Program office (JPO
 
 [JPO-ODE GitHub page](https://github.com/usdot-jpo-ode/jpo-ode)
 
-[Confluence Wiki](https://usdotjpoode.atlassian.net/wiki/)
-
 [ODE Architecture](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/JPO%20ODE%20Architecture.docx)
 
 [ODE User Guide](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/JPO_ODE_UserGuide.docx)
 
-[ODE REST API Guide](usdot-jpo-ode.github.io)
+[ODE REST API Guide](https://usdot-jpo-ode.github.io)
 
 [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
@@ -50,8 +48,15 @@ All pull requests will be reviewed by the JPO-ODE team. The team member will eit
 	5.	Update the documentation.
 		- User QA procedures are documented within the Github Wiki
 		- Architecture and user guide documentation should be included in the word document under the `docs/` folder
-		- Please contact the ODE with qny questions
+		- Please contact the ODE team with any questions
 	6.	Format your code as outlined in the style guide
+
+## Release Processes
+### Quarterly Release
+At the end of each quarter, a 'release/version' branch will be created from the develop branch for all release changes. This branch should be used to stabilize the code and prepare for a release. Any non-release changes continue to be pushed to the develop branch as part of the ongoing development process. Validation testing will be conducted on the release branch to ensure that the code is stable and ready for release. Once the release branch is stable, it will be merged into the master branch and tagged with the release version. If hotfixes are necessary during validation, a hotfix branch is created from the master branch. To conclude the release process, changes from the master branch, including all updates and hotfixes, are merged back into the develop branch.
+
+### Hotfix Release
+If a critical bug or issue is found in the master branch, a hotfix branch should be created from the master branch. The hotfix branch should be used to fix the critical bug or issue. Once the hotfix branch is stable, it can be merged into the master branch and tagged with the release version. The master branch will then be merged back into the develop branch to ensure that the develop branch is up to date with the latest changes.
 
 ## Contributor Covenant Code of Conduct
 ### Our Pledge
