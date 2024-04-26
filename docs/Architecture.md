@@ -32,7 +32,7 @@ _Last updated June 11, 2021_
 - [6 - Appendix](#appendix)
   - [6.1 - Glossary](#glossary)
 
-<a name="version-history">
+<a name="version-history"></a>
 
 # Version History
 
@@ -43,7 +43,7 @@ _Last updated June 11, 2021_
 | 1.1       | Hamid Musavi   | 4/17/2017                                         | Updated to reflect ORNL De-identification service |
 | 1.2       | Hamid Musavi   | 12/21/2018                                        | General Update                                    |
 
-<a name="introduction">
+<a name="introduction"></a>
 
 # 1 - Introduction
 
@@ -62,7 +62,7 @@ This document is a living document and will be updated throughout the
 life of the JPO ODE project to reflect the most recent changes in the
 ODE design and stakeholder feedback.
 
-<a name="project-overview">
+<a name="project-overview"></a>
 
 # 2 - Project Overview
 
@@ -102,7 +102,7 @@ validation and sanitization.
     compromise the privacy of the individual(s) that might be linked to
     the data.
 
-<a name="system-overview">
+<a name="system-overview"></a>
 
 # 3 - System Overview
 
@@ -112,7 +112,7 @@ operational, monitoring, and research purposes. The system will enable
 applications to submit data through a variety standard interfaces as
 illustrated in the figure below.
 
-<a name="ode-technology-stack">
+<a name="ode-technology-stack"></a>
 
 ### 3.1 - ODE Technology Stack
 
@@ -134,7 +134,7 @@ the JPO-ODE product owner.*
 
 Figure 2 - ODE Data Integration Clients
 
-<a name="producer-mechanisms">
+<a name="producer-mechanisms"></a>
 
 ### 3.2 - Producer Mechanisms
 
@@ -174,7 +174,7 @@ Notation (JSON), environmental and various other system logs.
     and process new records. *This interface is suitable only to
     applications residing in the private network domain.*
 
-<a name="consumer-mechanisms">
+<a name="consumer-mechanisms"></a>
 
 ### 3.3 - Consumer Mechanisms
 
@@ -209,7 +209,7 @@ well as encoded TIM data.
 -   **Database Data Consumers**: Data messages can be directly inserted
     into a shared application database and made available for queries.
 
-<a name="ode-management-console">
+<a name="ode-management-console"></a>
 
 ### 3.4 - ODE Management Console
 
@@ -217,7 +217,7 @@ ODE is envisioned to provide a management console for functions such as
 SNMP device management and provisioning. Other configuration functions
 can be included in a future management console.
 
-<a name="architecture-pattern">
+<a name="architecture-pattern"></a>
 
 # 4 - Architecture Pattern
 
@@ -228,7 +228,7 @@ and service-oriented architectures.
 
 <sup>1</sup> _In software engineering, a **monolithic application** describes a single-tiered software **application** in which the user interface and data access code are combined into a single program from a single platform. A **monolithic application** is self-contained, and independent from other computing **applications**._
 
-<a name="pattern-description">
+<a name="pattern-description"></a>
 
 ### 4.1 - Pattern Description
 
@@ -257,7 +257,7 @@ The micro-services pattern consists of three major concepts:
 
 _Figure 3 - Basic Micro-services architecture pattern_
 
-<a name="pattern-topology">
+<a name="pattern-topology"></a>
 
 ### 4.2 - Pattern Topology
 
@@ -351,7 +351,7 @@ designed as depicted in Figure 6.
 
 _Figure 6 - Kafka Publish/Subscribe Model_
 
-<a name="jpo-ode-micro-services-topology">
+<a name="jpo-ode-micro-services-topology"></a>
 
 # 5 - JPO ODE Micro-services Topology
 
@@ -363,7 +363,7 @@ the major architectural components with which these services interact.
 
 _Figure 7 - JPO ODE Micro-services Topology_
 
-<a name="deployments">
+<a name="deployments"></a>
 
 ### 5.1 - Deployments
 
@@ -374,11 +374,11 @@ containers each running a distinct service. The ODE application runs in
 one container and other major frameworks such as Kafka run
 in their own separate containers.
 
-<a name="appendix">
+<a name="appendix"></a>
 
 # 6 - Appendix
 
-<a name="glossary">
+<a name="glossary"></a>
 
 ### 6.1 - Glossary
 
