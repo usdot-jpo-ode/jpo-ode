@@ -358,8 +358,8 @@ Docker is utilized as the primary deployment mechanism to
 compartmentalize each of the designed micro-services into separate
 containers. Docker is used to package all components in a composite of
 containers each running a distinct service. The ODE application runs in
-one container and other major frameworks such as Kafka run
-in their own separate containers.
+one container, its submodules run in separate containers and other major
+frameworks such as Kafka run in their own separate containers.
 
 <a name="appendix"></a>
 
