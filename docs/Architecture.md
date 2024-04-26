@@ -85,7 +85,7 @@ As a data provisioning service, the ODE can provision data from
 disparate data sources to software applications that have placed data
 subscription requests to the ODE. On the other direction, the ODE can
 accept data from CV applications and broadcast them to field devices
-through Road Side Units (RSU) and the Situational Data Exchange (SDX) which
+through Road Side Units (RSU)s and the Situational Data Exchange (SDX) which
 in turn will transmit the data to Sirius XM satellites for delivery to
 the connected vehicles in the field.
 
@@ -121,10 +121,10 @@ each technology layer.
 
 ![](images/architecture/figure1.png)
 
-Figure 1 - ODE Technology Stack
+_Figure 1 - ODE Technology Stack_
 
 Data Integration later of JPO-ODE supports the producers and consumers
-of CV data as illustrated in Figure 2 below. Not all components or
+of CV data as illustrated in Figure 2 below. It is possible that not all components or
 services shown in this diagram have been implemented. *The
 implementation timeline for the identified interfaces will depend on the
 needs of the JPO ODE customers and the priority of these capabilities to
@@ -132,7 +132,7 @@ the JPO-ODE product owner.*
 
 ![](images/architecture/figure2.png)
 
-Figure 2 - ODE Data Integration Clients
+_Figure 2 - ODE Data Integration Clients_
 
 <a name="producer-mechanisms"></a>
 
@@ -179,7 +179,7 @@ Notation (JSON), environmental and various other system logs.
 ### 3.3 - Consumer Mechanisms
 
 The JPO-ODE is designed to support the following mechanisms for
-outputting decoded BSM, Map and Signal Phase and Timing (SPaT) data as
+outputting decoded BSM, Map, and Signal Phase & Timing (SPaT) data as
 well as encoded TIM data.
 
 -   **Streaming Data Consumers (Direct):** Applications can subscribe
@@ -191,20 +191,7 @@ well as encoded TIM data.
     to the messaging service through the use of a standard WebSocket
     API. *This interface is suitable to all applications whether
     residing in the private network domain or in the cloud. For cloud
-    applications Secure WebSocket (wss) protocol should be utillized.*
-
--   **RESTful API Data Consumers:** Applications can connect directly
-    with a RESTful API and submit messages to the messaging service
-    through HTTP commands. *This interface is suitable to all
-    applications whether residing in the private network domain or in
-    the cloud. For cloud applications Secure HTTP (https) protocol
-    should be utilized.*
-
--   **File System Data Consumers:** Through the use of a shared file
-    repository, applications can monitor collection of data messages.
-    *This interface is suitable to applications residing in the private
-    network domain or in the cloud. This interface should be utilized
-    through Secure Copy (scp) protocol.*
+    applications Secure WebSocket (wss) protocol should be utilized.*
 
 -   **Database Data Consumers**: Data messages can be directly inserted
     into a shared application database and made available for queries.
