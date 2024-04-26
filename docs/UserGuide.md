@@ -288,12 +288,14 @@ be found in the jpo-ode/README.md document:
 | jpo-s3-deposit | public     | S3 depositor service    | <https://github.com/usdot-jpo-ode/jpo-s3-deposit> |
 | jpo-cvdp       | public     | PII sanitization module | <https://github.com/usdot-jpo-ode/jpo-cvdp>       |
 | asn1\_codec    | public     | ASN.1 encoder/decoder   | <https://github.com/usdot-jpo-ode/asn1_codec>     |
+| jpo-sdw-depositor | public | SDX depositor service   | <https://github.com/usdot-jpo-ode/jpo-sdw-depositor> |
+| jpo-security-svcs | public | Security services module | <https://github.com/usdot-jpo-ode/jpo-security-svcs> |
 
 <a name="open-source-repository"></a>
 
 #### 6.6.1 - Open-Source Repository
 
-The ODE deployment artifact consists of one of more jar files that make
+The ODE deployment artifact consists of one or more jar files that make
 up the collection of software modules and service components. Initially,
 there will be only one executable jar file (one micros service) but in
 the future as the ODE functionality expands it is envisioned that
@@ -328,11 +330,11 @@ The following components make up the JPO ODE software:
 #### 6.6.2 - ASN.1 Java API
 
 The data uploaded or deposited to the ODE from the connected vehicles
-(CV) and the road-side units (RSU) is encoded in ASN.1 format. In order
+(CV) and the road-side units (RSU)s is encoded in ASN.1 format. In order
 for the ODE to utilize the data, it must be able to decode the data from
 ASN.1 format into a more generic format, in this case Plain Old Java
-Objects (POJOs). ODE utilizes an open-source ASN.1 codec library
-provided on GitHub at <https://github.com/vlm/asn1c> . ODE team has
+Objects (POJOs). ODE utilizes a fork of an open-source ASN.1 codec library
+provided on GitHub at <https://github.com/mouse07410/asn1c> . ODE team has
 built a standalone C/C++ module that uses this library to perform all
 required encoding and decoding needs of the application. The module is a
 submodule of ODE, also provided on GitHub:
@@ -342,7 +344,7 @@ submodule of ODE, also provided on GitHub:
 
 #### 6.6.3 - Build and Deploy Procedure
 
-Follow the steps in jpo-ode/README.md Getting Started guide for building
+Follow the steps in jpo-ode/README.md [Installation](../README.md#3-installation) section for building
 and deploying the JPO-ODE services.
 
 <a name="ode-application-properties"></a>
