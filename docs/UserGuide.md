@@ -48,7 +48,7 @@ _Last updated April 26th, 2024_
   - [7.4 - Probe Data Management](#probe-data-management)
     - [7.4.1 - PDM Broadcast Request Quick Start Guide](#pdm-broadcast-request-quick-start-guide)
   - [7.5 - Outbound TIM Broadcast](#outbound-tim-broadcast)
-    - [7.5.1 - Outbound TIM to SDX Websocket Setup](#outbound-tim-to-sdx-websocket-setup)
+    - [7.5.1 - Outbound TIM to SDX Setup](#outbound-tim-to-sdx-setup)
     - [7.5.2 - Outbound TIM to S3 Bucket Setup](#outbound-tim-to-s3-bucket-setup)
     - [7.5.3 - TIM Broadcast Request Quick Start Guide](#tim-broadcast-request-quick-start-guide)
   - [7.6 - Privacy Protection Module (PPM)](#privacy-protection-module-ppm)
@@ -392,9 +392,6 @@ _Table 1 - ODE Application Properties_
 | ode.pluginsLocations                     | ./plugins                                                                                     |                        | Location of the jar files for ODE plugins.                                                                                                                                                                                                                                                                                                |
 | ode.kafkaProducerType                    | async                                                                                         |                        | Specifies whether publishing to Kafka will be synchronous (i.e. blocking until the data has been persisted) or asynchronous (i.e. publish and forget). Valid values are: sync or async. Sync will generally be slower but more reliable, async is faster with the risk of losing data if kafka crashes during the write operation.        |
 | ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situational Data Exchange                                                                                                                                                                                                                                                     |
-| ode.ddsCasPassword                       | null                                                                                          | X                      | Password to be used for authentication when interfacing with Situational Data Exchange (SDX)                                                                                                                                                                                                                                               |
-| ode.ddsCasUrl                            | <https://cas.cvmvp.com/accounts/v1/tickets>                                                     |                        | URL of the US DOT security server.                                                                                                                                                                                                                                                                                                        |
-| ode.ddsWebsocketUrl                      | wss://webapp.cvmvp.com/whtools/websocket                                                      |                        | URL of the US DOT SDW WebSockets API                                                                                                                                                                                                                                                                                                      |
 | ode.sdcIp                                | 104.130.170.234                                                                               |                        | IPv4 address of SDC                                                                                                                                                                                                                                                                                                                       |
 | ode.sdcPort                              | 46753                                                                                         |                        | Destination port of SDC                                                                                                                                                                                                                                                                                                                   |
 | ode.bsmReceiverPort                      | 46800                                                                                         |                        | The UDP port that ODE will use to listen to BSM messages.                                                                                                                                                                                                                                                                                 |
@@ -753,7 +750,7 @@ not within range of RSUs. SDX parameters are also specified in the TIM
 REST interface. Please refer to the Swagger file documentation for
 details of a TIM REST interface.
 
-<a name="outbound-tim-to-sdw-websocket-setup"></a>
+<a name="outbound-tim-to-sdw-setup"></a>
 
 #### 7.5.1 Outbound TIM to SDX Setup
 
@@ -768,43 +765,7 @@ Traveler Information Messages may be distributed to RSUs, the SDX, or both by in
     if the "sdw" element of the request body is defined and valid. If
     "sdw" element is missing, the request will not be sent to the SDX.
 
-**Option 1: Websocket Interface**
-
-ODE **Configuration**: Update the effective application.properties file
-with username and password for Webapp2/sdw. Substitute your username and
-password for `<SDWUSERNAME>` and `<SDWPASSWORD>`, respectively.
-
-```bash
-ode.ddsCasUsername=<SDWUSERNAME>
-ode.ddsCasPassword=<SDWPASSWORD>
-ode.depositSdwMessagesOverWebsocket=true
-```
-
-(OR)
-
-Define the following command line arguments while launching the ODE through the jpo-ode-svcs JAR:
-
-```bash
---ode.ddsCasUsername=<SDWUSERNAME>,
---ode.ddsCasPassword=<SDWPASSWORD>,
---ode.depositSdwMessagesOverWebsocket=true
-```
-
-(OR)
-
-Define the following environment variables in the environment file:
-
-```bash
-SDW_USERNAME=<SDWUSERNAME>
-SDWPASSWORD=<SDWPASSWORD>
-ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET=true
-```
-
-**Note**: This option uses the ODE's built-in SDX depositor and does not
-require a SDX service to be running. Therefore, jpo-sdw-depositor
-service should be removed from docker-compose.yml.
-
-**Option 2 (Recommended): SDW Depositor Submodule**
+**SDW Depositor Submodule**
 
 Depositing a TIM message to the Situational Data Exchange can be done
 using the pre-built jpo-sdw-depositor repository. To set this service
@@ -813,23 +774,16 @@ up:
 1.  Follow the steps in the ODE README.md to clone and compile the SDW
     depositor service. If you used the `--recurse-submodules` option to clone, it will automatically be cloned.
 
-2.  Set the following environment variable to false OR comment it out using the \# symbol:
-
-```
-ode.depositSdwMessagesOverWebsocket=false
-#ode.depositSdwMessagesOverWebsocket
-```
-
-3.  Set the following environment variables in the _.env_ file:
+2.  Set the following environment variables in the _.env_ file:
 
 ```bash
 SDW_API_KEY=myApiKey
 ```
 
-4.  Follow the rest of the ODE setup steps. The SDW depositor service
+3.  Follow the rest of the ODE setup steps. The SDW depositor service
     containers will be automatically created by docker-compose.
 
-5.  Verify arrival of messages in SDX by verifying response status
+4.  Verify arrival of messages in SDX by verifying response status
     messages in the logs.
 
 <a name="outbound-tim-to-s3-bucket-setup"></a>
