@@ -370,7 +370,7 @@ For example, add
 ```
 
 3. _You may_ specify properties as system environment variables in the
-   form of _ode.DdsCasUsername=fred.flintstone\@stone.age._
+   form of _ode.sdwApiKey=12345_
 
 Other properties not specific to the ODE can also be defined in a
 similar way but without the _ode_ prefix.
@@ -391,7 +391,6 @@ _Table 1 - ODE Application Properties_
 | ode.uploadLocationObuLog                 | ./uploads/bsmlog                                                                              |                        | Specific location for OBU log files with header fields to specify direction, UTC timestamp, and other metadata                                                                                                                                                                                                                            |
 | ode.pluginsLocations                     | ./plugins                                                                                     |                        | Location of the jar files for ODE plugins.                                                                                                                                                                                                                                                                                                |
 | ode.kafkaProducerType                    | async                                                                                         |                        | Specifies whether publishing to Kafka will be synchronous (i.e. blocking until the data has been persisted) or asynchronous (i.e. publish and forget). Valid values are: sync or async. Sync will generally be slower but more reliable, async is faster with the risk of losing data if kafka crashes during the write operation.        |
-| ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situational Data Exchange                                                                                                                                                                                                                                                     |
 | ode.sdcIp                                | 104.130.170.234                                                                               |                        | IPv4 address of SDC                                                                                                                                                                                                                                                                                                                       |
 | ode.sdcPort                              | 46753                                                                                         |                        | Destination port of SDC                                                                                                                                                                                                                                                                                                                   |
 | ode.bsmReceiverPort                      | 46800                                                                                         |                        | The UDP port that ODE will use to listen to BSM messages.                                                                                                                                                                                                                                                                                 |
@@ -823,35 +822,19 @@ jpo-s3-deposit repository. To set this service up:
 To run a local test of the TIM Message API, please follow these
 instructions:
 
-1.  Start the ODE with valid ode.ddsCasUsername and ode.ddsCasPassword
-    in the effective application.properties file.
-
-2.  Reference the Swagger documentation located in the /docs folder of
+1.  Reference the Swagger documentation located in the /docs folder of
     the repo or at <https://usdot-jpo-ode.github.io> to view the
     specifications for the API call.
 
-3.  Copy the curl command, run the python script, or use a web based
+2.  Copy the curl command, run the python script, or use a web based
     REST tool such as Postman to send the TIM broadcast request to the
     ODE. Make sure the REST request body contains the "snmp" and "rsus"
     elements with valid IP addresses of the RSUs that you intend to send
     the message to as well as the required SDX parameters.
 
-4.  The REST interface will return a response indicating the deposit
+3.  The REST interface will return a response indicating the deposit
     success ("success":"true") or failure ("success":"false") for each
     RSU and the SDX deposit:
-
-```json
-{
-	"rsu_responses": [{
-		"target": "192.168.1.100",
-		"success": "true",
-		"message": "Success."
-	}],
-	"dds_deposit": {
-		"success": "true"
-	}
-}
-```
 
 <a name="privacy-protection-module-ppm"></a>
 
