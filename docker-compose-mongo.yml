@@ -85,7 +85,6 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: "ERROR"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=ERROR,org.reflections=ERROR,com.mongodb.kafka=ERROR"
       CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components
-      CONNECT_ZOOKEEPER_CONNECT: "zookeeper:2181"
     volumes:
       - ./jpo-s3-deposit/mongo-connector/connect_start.sh:/scripts/connect_start.sh
 

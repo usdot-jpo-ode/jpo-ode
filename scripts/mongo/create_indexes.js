@@ -95,7 +95,6 @@ try{
                 pwd: ode_pass,
                 roles: [
                     { role: "readWrite", db: ode_db },
-                    { role: "readWrite", db: "admin" }
                 ]
             }
         );
