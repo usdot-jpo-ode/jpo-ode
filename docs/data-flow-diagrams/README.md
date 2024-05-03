@@ -12,17 +12,7 @@ The purpose of these diagrams is to show:
 - The arrows indicate the data flow. The beginning of the arrow is where it flows from and the end of the arrow is where it flows to.
 
 ## Data Flow Explanations
-### Overview Data Flow 1 (Receiver Classes)
-1. Messages come in through the receiver classes and are pushed to the Raw Encoded Messages group of topics.
-1. The AsnCodecMessageServiceController pulls these raw encoded messages and passes them over to the Asn1Decode classes.
-1. These classes push the message to the Asn1DecoderInput topic.
-1. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) pulls from that topic and pushes decoded messages to the Asn1DecoderOutput topic.
-1. The Asn1DecodeDataRouter class pulls from the Asn1DecodeOutput topic and deposits messages into the Pojo Messages group of topics and the Json Messages group of topics.
-1. The [PPM](https://github.com/usdot-jpo-ode/jpo-cvdp) pulls from the Json Messages group of topics and pushes filtered messages to the Filtered Json Messages group of topics.
-1. The [GeoJSON Converter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter) pulls from the Json Messages group of topics, converts the messages and pushes them to the Processed Spat/Map group of topics.
-1. The [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) pulls from the Processed Map/Spat group of topics and pushes to the [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) Output Topics group.
-
-### Overview Data Flow 2 (Tim Depositor Controller)
+### Overview Data Flow 1 (Tim Depositor Controller)
 1. Messages come in through the TimDepositorController class and are pushed to the Broadcast Messages and Json Messages groups of topics, as well as the AsnEncoderInput topic.
 1. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) pulls from the Asn1EncoderInput and pushes encoded messages to the Asn1EncoderOutput topic.
 1. The AsnEncodedDataRouter class pulls from the Asn1EncoderOutput topic and pushes it to the AsnCommandManager class.
@@ -31,6 +21,16 @@ The purpose of these diagrams is to show:
 1. If the message is signed, is meant for the SDX and the message has not been double-encoded, yet, it will be sent back to the Asn1EncoderInput topic for encoding.
 1. If the message is signed, is meant for the SDX and the message has been double-encoded, it will be passed to the SDWDepositorInput, pulled into the [SDWD](https://github.com/usdot-jpo-ode/jpo-sdw-depositor) and sent to the SDX.
 1. The [PPM](https://github.com/usdot-jpo-ode/jpo-cvdp) pulls from the Json Messages group of topics and sends filtered messages to the Filtered Json Messages group of topics.
+1. The [GeoJSON Converter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter) pulls from the Json Messages group of topics, converts the messages and pushes them to the Processed Spat/Map group of topics.
+1. The [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) pulls from the Processed Map/Spat group of topics and pushes to the [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) Output Topics group.
+
+### Overview Data Flow 2 (Receiver Classes)
+1. Messages come in through the receiver classes and are pushed to the Raw Encoded Messages group of topics.
+1. The AsnCodecMessageServiceController pulls these raw encoded messages and passes them over to the Asn1Decode classes.
+1. These classes push the message to the Asn1DecoderInput topic.
+1. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) pulls from that topic and pushes decoded messages to the Asn1DecoderOutput topic.
+1. The Asn1DecodeDataRouter class pulls from the Asn1DecodeOutput topic and deposits messages into the Pojo Messages group of topics and the Json Messages group of topics.
+1. The [PPM](https://github.com/usdot-jpo-ode/jpo-cvdp) pulls from the Json Messages group of topics and pushes filtered messages to the Filtered Json Messages group of topics.
 1. The [GeoJSON Converter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter) pulls from the Json Messages group of topics, converts the messages and pushes them to the Processed Spat/Map group of topics.
 1. The [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) pulls from the Processed Map/Spat group of topics and pushes to the [Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) Output Topics group.
 
