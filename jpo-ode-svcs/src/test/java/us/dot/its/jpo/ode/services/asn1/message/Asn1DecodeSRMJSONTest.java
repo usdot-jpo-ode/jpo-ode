@@ -3,48 +3,44 @@ package us.dot.its.jpo.ode.services.asn1.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeHexByteArray;
 import us.dot.its.jpo.ode.model.OdeSrmMetadata;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class Asn1DecodeSRMJSONTest {
-    
-    private final String json = "{\"SrmMessageContent\": [{ \"metadata\": { \"utctimestamp\":\"2020-11-30T23:45:24.913657Z\", \"originRsu\":\"172.0.0.24\", \"source\":\"RSU\" }, \"payload\":\"001d2130000010090bd341080d00855c6c0c6899853000a534f7c24cb29897694759b7c0\"}]}";
-	private JSONObject jsonObj = new JSONObject();
+	private final String json = "{\"metadata\":{\"recordType\":\"srmTx\",\"securityResultCode\":\"success\",\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"190cbd65-d1e2-488a-ba42-b7d3f03a5c69\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2024-03-15T19:24:04.113614500Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedBy\":\"OBU\",\"sanitized\":false,\"originIp\":\"192.168.0.1\",\"srmSource\":\"RSU\"},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"0381004003807C001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"}}}";
 
 	@Test
 	public void testConstructor() {
 		OdeProperties properties = new OdeProperties();
 		properties.setKafkaBrokers("localhost:9092");
-		assertEquals(properties.getKafkaTopicOdeSrmTxPojo(), "topic.OdeSrmTxPojo");
+		assertEquals(properties.getKafkaTopicOdeRawEncodedSRMJson(), "topic.OdeRawEncodedSRMJson");
 	}
 
 	@Test
-	public void testProcessSrmJson() throws XmlUtilsException, JSONException {
+	public void testProcess() throws XmlUtilsException, JSONException {
 		OdeProperties properties = new OdeProperties();
 		properties.setKafkaBrokers("localhost:9092");
 		Asn1DecodeSRMJSON testDecodeSrmJson = new Asn1DecodeSRMJSON(properties);
-		assertEquals(testDecodeSrmJson.process(json), null);
+		
+		OdeAsn1Data resultOdeObj = testDecodeSrmJson.process(json);
 
-		// metadata
-		OdeData obj = new OdeData();
-		OdeSrmMetadata jsonMetadataObj = new OdeSrmMetadata();
-		jsonMetadataObj.setOdeReceivedAt("2020-11-30T23:45:24.913657Z");
-		jsonObj.put("metadata", jsonMetadataObj);
+		// Validate the metadata
+		OdeSrmMetadata jsonMetadataObj = (OdeSrmMetadata) resultOdeObj.getMetadata();
+		assertEquals(jsonMetadataObj.getSrmSource(), OdeSrmMetadata.SrmSource.RSU);
+		assertEquals(jsonMetadataObj.getEncodings().get(0).getElementName(), "unsecuredData");
+		assertEquals(jsonMetadataObj.getEncodings().get(0).getElementType(), "MessageFrame");
+		assertEquals(jsonMetadataObj.getEncodings().get(0).getEncodingRule(), EncodingRule.UPER);
 
-		// payload
-		String encodedPayload = "001d2130000010090bd341080d00855c6c0c6899853000a534f7c24cb29897694759b7c0";
-		obj.setMetadata(jsonMetadataObj);
-		obj.setPayload(new OdeAsn1Payload(new OdeHexByteArray(encodedPayload)));
-
-		assertEquals("{\"bytes\":\"001d2130000010090bd341080d00855c6c0c6899853000a534f7c24cb29897694759b7c0\"}",
-				obj.getPayload().getData().toJson());
-
+		// Validate the payload
+		String expectedPayload = "{\"bytes\":\"001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"}";
+		OdeAsn1Payload jsonPayloadObj = (OdeAsn1Payload) resultOdeObj.getPayload();
+		assertEquals(jsonPayloadObj.getDataType(), "us.dot.its.jpo.ode.model.OdeHexByteArray");
+		assertEquals(jsonPayloadObj.getData().toString(), expectedPayload);
 	}
 }

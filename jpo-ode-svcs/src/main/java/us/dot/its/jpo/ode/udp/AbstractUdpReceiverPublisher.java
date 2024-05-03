@@ -52,4 +52,19 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
          logger.error("Error creating socket with port " + this.port, e);
       }
    }
+
+   /* Strips the 1609.3 and unsigned 1609.2 headers if they are present.
+   Will return the payload with a signed 1609.2 header if it is present.
+   Otherwise, returns just the payload. */
+   protected String stripDot3Header(String hexString, String payload_start_flag) {
+      int payloadStartIndex = hexString.indexOf(payload_start_flag);
+      String headers = hexString.substring(0, payloadStartIndex);
+      String payload = hexString.substring(payloadStartIndex, hexString.length());
+      // Look for the index of the start flag of a signed 1609.2 header
+      int signedDot2StartIndex = headers.indexOf("038100");
+      if (signedDot2StartIndex == -1)
+         return payload;
+      else
+         return headers.substring(signedDot2StartIndex, headers.length()) + payload;
+   }
 }

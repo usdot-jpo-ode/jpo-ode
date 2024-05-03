@@ -4,8 +4,6 @@ import java.net.DatagramPacket;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -13,16 +11,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.OdeMapMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class MapReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(MapReceiver.class);
-
-    private static final String MAP_START_FLAG = "0012"; // these bytes indicate
-                                                          // start of MAP payload
-    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
-                                                       // least 20 bytes long
 
     private StringPublisher mapPublisher;
 
@@ -42,7 +43,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
     @Override
     public void run() {
 
-        logger.debug("MAP UDP Receiver Service started.");
+        logger.debug("Map UDP Receiver Service started.");
 
         byte[] buffer = new byte[bufferSize];
 
@@ -50,7 +51,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
 
         do {
             try {
-                logger.debug("Waiting for UDP MAP packets...");
+                logger.debug("Waiting for UDP Map packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
                     senderIp = packet.getAddress().getHostAddress();
@@ -58,67 +59,40 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                     // extract the actualPacket from the buffer
-                    byte[] payload = removeHeader(packet.getData());
+                    byte[] payload = packet.getData();
                     if (payload == null)
                         continue;
-                    String payloadHexString = HexUtils.toHexString(payload);
-                    logger.debug("Packet: {}", payloadHexString);
+
+                    // convert bytes to hex string and verify identity
+                    String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
+                    if (payloadHexString.indexOf(odeProperties.getMapStartFlag()) == -1)
+                        continue;
+                    logger.debug("Full Map packet: {}", payloadHexString);
+                    payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getMapStartFlag());
+                    logger.debug("Stripped Map packet: {}", payloadHexString);
+
+                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+                    OdeAsn1Payload mapPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+                    OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);
 
                     // Add header data for the decoding process
                     ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
                     String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    mapMetadata.setOdeReceivedAt(timestamp);
 
-                    JSONObject metadataObject = new JSONObject();
-                    metadataObject.put("utctimestamp", timestamp);
-                    metadataObject.put("originRsu", senderIp);
-                    metadataObject.put("source", "RSU");
-
-                    JSONObject messageObject = new JSONObject();
-                    messageObject.put("metadata", metadataObject);
-                    messageObject.put("payload", payloadHexString);
-
-                    JSONArray messageList = new JSONArray();
-                    messageList.put(messageObject);
-
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("MapMessageContent", messageList);
-
-                    logger.debug("MAP JSON Object: {}", jsonObject.toString());
+                    mapMetadata.setOriginIp(senderIp);
+                    mapMetadata.setMapSource(MapSource.RSU);
+                    mapMetadata.setRecordType(RecordType.mapTx);
+                    mapMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+                    mapMetadata.setSecurityResultCode(SecurityResultCode.success);
 
                     // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    this.mapPublisher.publish(jsonObject.toString(),
-                            this.mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
+                    mapPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(mapMetadata, mapPayload), false),
+                        mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
-    }
-
-    /**
-     * Attempts to strip WSMP header bytes. If message starts with "0013", message
-     * is raw SPAT. Otherwise, headers are >= 20 bytes, so look past that for start
-     * of payload SPAT.
-     * 
-     * @param packet
-     */
-    public byte[] removeHeader(byte[] packet) {
-        String hexPacket = HexUtils.toHexString(packet);
-
-        int startIndex = hexPacket.indexOf(MAP_START_FLAG);
-        if (startIndex == 0) {
-            logger.debug("Message is raw MAP with no headers.");
-        } else if (startIndex == -1) {
-            logger.error("Message contains no MAP start flag.");
-            return null;
-        } else {
-            // We likely found a message with a header, look past the first 20
-            // bytes for the start of the MAP
-            int trueStartIndex = HEADER_MINIMUM_SIZE
-                    + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(MAP_START_FLAG);
-            hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
-        }
-
-        return HexUtils.fromHexString(hexPacket);
     }
 }
