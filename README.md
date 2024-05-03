@@ -356,7 +356,72 @@ There is a provided docker-compose file (docker-compose-confluent-cloud.yml) tha
 This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.	
 
 [Back to top](#toc)
-	
+
+# MongoDB Integration
+
+## Description and Configuration
+
+To sink streamed kafka topic data to a MongoDB database, a kafka connect and MongoDB instance can be deployed for the ODE. By running the provided docker compose [file](./docker-compose-mongo.yml) the following topics will be streamed to MongoDB:
+
+- OdeRawEncodedBSMJson
+- OdeBsmJson
+- OdeRawEncodedMAPJson
+- OdeMapJson
+- OdeRawEncodedSPATJson
+- OdeSpatJson
+- OdeRawEncodedTIMJson
+- OdeTimJson
+- OdeRawEncodedPsmJson
+- OdePsmJson
+
+The configuration that defines this is in the jpo-s3-deposit submodule [here](jpo-s3-deposit\mongo-connector\connect_start.sh). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`.
+
+## Environment variables
+
+### Purpose & Usage
+
+- The `MONGO_IP` environment variable is used to define the IP address of the MongoDB container. This can be configured to use a remote MongoDB instance instead of using the provided docker deployed container.
+
+- The `MONGO_DB_NAME` environmental variable defines the name of the DB created in MongoDB. This variable is used for both configuring user permission access as well as a destination for the connectors defined in the `connect` container.
+
+- The `MONGO_ADMIN_DB_USER` and `MONGO_ADMIN_DB_PASS` define the credentials for the `admin` MongoDB user. This user has full control of the cluster and the password must be securely set for production deployments.
+
+- The `MONGO_ODE_DB_USER` and `MONGO_ODE_DB_PASS` define the credentials for the `ode` MongoDB user. This user has `readWrite` permissions to the `MONGO_DB_NAME` database.
+
+- The `MONGO_URI` environmental variable contains the complete connection string used to connect to the MongoDB when creating connectors in the `connect` container.
+
+- The `MONGO_COLLECTION_TTL` environmental variable configures the Time To Live (TTL) for created TTL indexes. Setting this value too high will result in much more storage usage.
+
+### Values
+In order to utilize Confluent Cloud:
+
+- `MONGO_IP` must be set to the IP address of the MongoDB container. This can be left as `${DOCKER_HOST_IP}` for deployments using the provided MongoDB instance included in the docker-compose file.
+
+- `MONGO_DB_NAME` configures the created DB name in MongoDB.
+
+- `MONGO_ADMIN_DB_USER` configures the MongoDB admin user's name.
+
+- `MONGO_ADMIN_DB_PASS` configures the MongoDB admin user's name. This must be changed to a more secure password for production deployments.
+
+- `MONGO_ODE_DB_USER` configures the username of the initialized user with `readwrite` access to the initialized database.
+
+- `MONGO_ODE_DB_PASS` configures the password of the initialized user with `readwrite` access to the initialized database.
+
+- `MONGO_URI` defines the connection URI used by the kafka connect instance. MongoDB connection URI options are documented [here](https://www.mongodb.com/docs/manual/reference/connection-string/)
+
+- `MONGO_COLLECTION_TTL` sets the Time To Live (TTL) for the created TTL indexes.
+
+
+## Mongo Docker Compose File
+
+There is a provided docker-compose [file](docker-compose-mongo.yml) that spins up a MongoDB instance with a kafka connect service. There is also a initialization container that configures the RBAC and replica set of the MongoDB container. 
+
+## Note
+
+Kafka connect is being used for MongoDB in this implimentation but it can interact with many types of databases, here is further documentation for [kafka connect](https://docs.confluent.io/platform/current/connect/index.html)
+
+[Back to top](#toc)
+
 <!--
 #########################################
 ############# File Manifest #############
