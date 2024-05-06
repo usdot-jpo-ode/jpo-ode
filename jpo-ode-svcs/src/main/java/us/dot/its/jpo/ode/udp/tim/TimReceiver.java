@@ -75,7 +75,7 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
 
                // Add header data for the decoding process
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+               String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                timMetadata.setOdeReceivedAt(timestamp);
 
                timMetadata.setOriginIp(senderIp);

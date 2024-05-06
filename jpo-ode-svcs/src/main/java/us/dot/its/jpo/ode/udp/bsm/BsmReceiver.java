@@ -81,7 +81,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                // Set BSM Metadata values that can be assumed from the UDP endpoint
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+               String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                bsmMetadata.setOdeReceivedAt(timestamp);
 
                ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
