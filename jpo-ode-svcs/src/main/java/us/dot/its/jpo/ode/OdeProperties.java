@@ -270,11 +270,6 @@ public class OdeProperties implements EnvironmentAware {
       this.version = version;
    }
 
-   public boolean dataSigningEnabled() {
-      return getSecuritySvcsSignatureUri() != null && !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri())
-            && !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
-   }
-
    public List<Path> getUploadLocations() {
       return this.uploadLocations;
    }
