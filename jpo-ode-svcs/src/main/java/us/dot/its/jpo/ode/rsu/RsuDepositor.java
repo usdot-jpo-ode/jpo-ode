@@ -127,9 +127,10 @@ public class RsuDepositor extends Thread {
 							logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
 									destIndex);
 						} else {
-							// Misc error
-							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code "
-									+ rsuResponse.getResponse().getErrorStatus() + " " + rsuResponse.getResponse().getErrorStatusText());
+							// Misc error, provide context
+							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code '"
+									+ rsuResponse.getResponse().getErrorStatus() + "' '" + rsuResponse.getResponse().getErrorStatusText()
+									+ "' Request PDU: " + rsuResponse.getRequest() + " Response PDU: " + rsuResponse.getResponse());
 						}
 
 					}
