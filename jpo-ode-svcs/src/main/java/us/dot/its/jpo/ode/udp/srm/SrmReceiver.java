@@ -5,7 +5,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,21 +57,10 @@ public class SrmReceiver extends AbstractUdpReceiverPublisher {
                     senderPort = packet.getPort();
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-                    // extract the actualPacket from the buffer
-                    byte[] payload = packet.getData();
-                    if (payload == null)
-                        continue;
-
-                    // convert bytes to hex string and verify identity
-                    String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
-                    if (payloadHexString.indexOf(odeProperties.getSrmStartFlag()) == -1)
-                        continue;
-                    logger.debug("Full SRM packet: {}", payloadHexString);
-                    payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getSrmStartFlag());
-                    logger.debug("Stripped SRM packet: {}", payloadHexString);
-
                     // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload srmPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+                    OdeAsn1Payload srmPayload = super.getPayloadHexString(packet, "SRM");
+                    if (srmPayload == null)
+                        continue;
                     OdeSrmMetadata srmMetadata = new OdeSrmMetadata(srmPayload);
 
                     // Add header data for the decoding process
