@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +47,9 @@ import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.uper.UperUtil;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
-	private static final String BSM_FLAG = "0014";
-    private static final String TIM_FLAG = "001f";
-    private static final String MAP_FLAG = "0012";
 
 	public static class LogFileToAsn1CodecPublisherException extends Exception {
 
@@ -66,7 +62,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	}
 
 	protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
-	protected static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
 	protected StringPublisher publisher;
 	protected LogFileParser fileParser;
@@ -75,9 +70,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	public LogFileToAsn1CodecPublisher(StringPublisher dataPub) {
 		this.publisher = dataPub;
 		this.serialId = new SerialId();
-		msgStartFlags.put("BSM", BSM_FLAG);
-		msgStartFlags.put("TIM", TIM_FLAG);
-		msgStartFlags.put("MAP", MAP_FLAG);
 	}
 
 	public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType)
@@ -170,51 +162,28 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				publisher.publish(JsonUtils.toJson(odeData, false),
 					publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
 			} else {
-				// Determine the message type (MAP or TIM are the current other options)
-				String messageType = determineMessageType(msgPayload);
+				// Determine the message type (MAP, TIM, SSM, SRM, or PSM)
+				String messageType = UperUtil.determineMessageType(msgPayload);
 				if (messageType == "MAP") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
 				} else if (messageType == "TIM") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
+				} else if (messageType == "SSM") {
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
+				} else if (messageType == "SRM") {
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+				} else if (messageType == "PSM") {
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedPSMJson());
 				}
 			}
 
 			serialId.increment();
 		}
-	}
-
-	/**
-		* Determines the message type based off the most likely start flag
-		* 
-		* @param payload The OdeMsgPayload to check the content of.
-		*/
-	public String determineMessageType(OdeMsgPayload payload) {
-		String messageType = "";
-		try {
-			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
-			String hexString = payloadJson.getString("bytes").toLowerCase();
-
-			HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
-			flagIndexes.put("MAP", hexString.indexOf(msgStartFlags.get("MAP")));
-			flagIndexes.put("TIM", hexString.indexOf(msgStartFlags.get("TIM")));
-
-			int lowestIndex = Integer.MAX_VALUE;
-			for (String key : flagIndexes.keySet()) {
-				if (flagIndexes.get(key) == -1) {
-					logger.debug("This message is not of type " + key);
-					continue;
-				}
-				if (flagIndexes.get(key) < lowestIndex) {
-					messageType = key;
-					lowestIndex = flagIndexes.get(key);
-				}
-			}
-		} catch (JsonUtilsException e) {
-			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
-		}
-		return messageType;
 	}
 
 	// This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal) 
