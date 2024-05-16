@@ -22,15 +22,12 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.tomcat.util.buf.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import us.dot.its.jpo.ode.uper.UperUtil;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class PayloadParser extends LogFileParser {
 
-   private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
    private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
    public static final int PAYLOAD_LENGTH = 2;
@@ -65,7 +62,7 @@ public class PayloadParser extends LogFileParser {
             status = parseStep(bis, getPayloadLength());
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayload(stripDot3Header(Arrays.copyOf(readBuffer, getPayloadLength())));
+            setPayload(UperUtil.stripDot3Header(Arrays.copyOf(readBuffer, getPayloadLength()), msgStartFlags));
          }
          
          resetStep();
@@ -101,37 +98,5 @@ public class PayloadParser extends LogFileParser {
    public void writeTo(OutputStream os) throws IOException {
       os.write(CodecUtils.shortToBytes(payloadLength, ByteOrder.LITTLE_ENDIAN));
       os.write(payload, 0, payloadLength);
-   }
-
-
-   /* Strips the 1609.3 and unsigned 1609.2 headers if they are present.
-   Will return the payload with a signed 1609.2 header if it is present.
-   Otherwise, returns just the payload. */
-   public byte[] stripDot3Header(byte[] packet) {
-      String hexString = HexUtils.toHexString(packet);
-      String hexPacketParsed = "";
-
-      for (String start_flag : msgStartFlags.values()) {
-         int payloadStartIndex = hexString.indexOf(start_flag);
-         if (payloadStartIndex == -1)
-            continue;
-
-         String headers = hexString.substring(0, payloadStartIndex);
-         String payload = hexString.substring(payloadStartIndex, hexString.length());
-         // Look for the index of the start flag of a signed 1609.2 header, if one exists
-         int signedDot2StartIndex = headers.indexOf("038100");
-         if (signedDot2StartIndex == -1)
-            hexPacketParsed = payload;
-         else
-            hexPacketParsed = headers.substring(signedDot2StartIndex, headers.length()) + payload;
-         break;
-      }
-
-      if (hexPacketParsed.equals("")) {
-         hexPacketParsed = hexString;
-         logger.debug("Packet is not a BSM, TIM or Map message: " + hexPacketParsed);
-      }
-
-      return HexUtils.fromHexString(hexPacketParsed);
    }
 }
