@@ -18,11 +18,14 @@ package us.dot.its.jpo.ode.plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class RoadSideUnit {
     public static class RSU extends OdeObject {
 
+        @JsonIgnore
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         private static final long serialVersionUID = 3149576493038209597L;
