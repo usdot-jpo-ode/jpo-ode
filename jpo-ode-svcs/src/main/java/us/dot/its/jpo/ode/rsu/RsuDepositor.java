@@ -130,12 +130,15 @@ public class RsuDepositor extends Thread {
 									destIndex);
 						} else {
 							// Misc error
-							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code "
-									+ rsuResponse.getResponse().getErrorStatus() + " " + rsuResponse.getResponse().getErrorStatusText());
+							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code '"
+									+ rsuResponse.getResponse().getErrorStatus() + "' '" + rsuResponse.getResponse().getErrorStatusText() + "'");
+							// Log the PDUs involved in the failed deposit
+							logger.debug("PDUs involved in failed RSU SNMP deposit to " + curRsu.getRsuTarget()
+									+ " => Request PDU: " + rsuResponse.getRequest() + " Response PDU: " + rsuResponse.getResponse());
 						}
 
 					}
-					logger.info("TIM deposit response {}", responseList);					
+					logger.info("TIM deposit response {}", responseList);				
 				}
 				Thread.sleep(100);
 			}
