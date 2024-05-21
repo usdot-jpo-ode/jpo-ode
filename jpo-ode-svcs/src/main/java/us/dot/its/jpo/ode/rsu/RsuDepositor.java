@@ -127,14 +127,16 @@ public class RsuDepositor extends Thread {
 							logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
 									destIndex);
 						} else {
-							// Misc error, provide context
+							// Misc error
 							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code '"
-									+ rsuResponse.getResponse().getErrorStatus() + "' '" + rsuResponse.getResponse().getErrorStatusText()
-									+ "' Request PDU: " + rsuResponse.getRequest() + " Response PDU: " + rsuResponse.getResponse());
+									+ rsuResponse.getResponse().getErrorStatus() + "' '" + rsuResponse.getResponse().getErrorStatusText() + "'");
+							// Log the PDUs involved in the failed deposit
+							logger.debug("PDUs involved in failed RSU SNMP deposit to " + curRsu.getRsuTarget()
+									+ " => Request PDU: " + rsuResponse.getRequest() + " Response PDU: " + rsuResponse.getResponse());
 						}
 
 					}
-					logger.info("TIM deposit response {}", responseList);					
+					logger.info("TIM deposit response {}", responseList);				
 				}
 				Thread.sleep(100);
 			}
