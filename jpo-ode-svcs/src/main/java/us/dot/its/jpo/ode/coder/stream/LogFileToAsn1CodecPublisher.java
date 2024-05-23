@@ -35,8 +35,6 @@ import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.SpatLogFileParser;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
@@ -156,76 +154,67 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 	private void publishList(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
 		serialId.setBundleSize(dataList.size());
+
 		for (OdeData odeData : dataList) {
 			OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
 			OdeMsgPayload msgPayload = (OdeMsgPayload) odeData.getPayload();
 			msgMetadata.setSerialId(serialId);
 
 			if (isDriverAlertRecord()) {
-				logger.debug("Publishing a driverAlert.");
-
 				publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
+			} else if (isBsmRecord()) {
+				publisher.publish(JsonUtils.toJson(odeData, false),
+				publisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
+			} else if (isSpatRecord()) {
+				publisher.publish(JsonUtils.toJson(odeData, false),
+					publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
 			} else {
-				if (isBsmRecord()) {
-					logger.debug("Publishing a BSM");
-				} else if (isSpatRecord()) {
-					logger.debug("Publishing a Spat");
-				} else {
-					logger.debug("Publishing a TIM or MAP");
+				// Determine the message type (MAP or TIM are the current other options)
+				String messageType = determineMessageType(msgPayload);
+				if (messageType == "MAP") {
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
+				} else if (messageType == "TIM") {
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
 				}
-
-				if (!(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata
-        			&& !((OdeSpatMetadata) msgMetadata).getIsCertPresent())) {
-					if (checkHeader(msgPayload) == "Ieee1609Dot2Data") {
-						Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-						msgMetadata.addEncoding(msgEncoding);
-					}
-				}
-
-				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-						EncodingRule.UPER);
-				msgMetadata.addEncoding(unsecuredDataEncoding);
-
-				publisher.publish(xmlUtils.toXml(odeData),
-						publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
 			}
+
 			serialId.increment();
 		}
 	}
 
-	
 	/**
-		* Checks the header of the OdeMsgPayload and determines the encoding rule to be used in the Asn1DecoderInput XML.
-		* The payload is checked for various message start flags. It will add the encoding rule to the Asn1DecoderInput XML
-		* to tell the ASN1 codec to extract data from the header into the output message.
+		* Determines the message type based off the most likely start flag
 		* 
-		* @param payload The OdeMsgPayload to check the header of.
-		* @return The encoding rule to be used in the Asn1DecoderInput XML.
+		* @param payload The OdeMsgPayload to check the content of.
 		*/
-	public String checkHeader(OdeMsgPayload payload) {
-		JSONObject payloadJson;
-		String header = null;
+	public String determineMessageType(OdeMsgPayload payload) {
+		String messageType = "";
 		try {
-			payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
-			String hexPacket = payloadJson.getString("bytes");
+			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
+			String hexString = payloadJson.getString("bytes").toLowerCase();
 
-			for (String key : msgStartFlags.keySet()) {
-				String startFlag = msgStartFlags.get(key);
-				int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
-				logger.debug("Start index for " + key + "(" + startFlag + ")" + " is: " + startIndex);
-				if (startIndex <= 20 && startIndex != 0 && startIndex != -1) {
-					logger.debug("Message has supported Ieee1609Dot2Data header, adding encoding rule to Asn1DecoderInput XML");
-					header = "Ieee1609Dot2Data";
-					break;
+			HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
+			flagIndexes.put("MAP", hexString.indexOf(msgStartFlags.get("MAP")));
+			flagIndexes.put("TIM", hexString.indexOf(msgStartFlags.get("TIM")));
+
+			int lowestIndex = Integer.MAX_VALUE;
+			for (String key : flagIndexes.keySet()) {
+				if (flagIndexes.get(key) == -1) {
+					logger.debug("This message is not of type " + key);
+					continue;
 				}
-				logger.debug("Payload JSON: " + payloadJson);
+				if (flagIndexes.get(key) < lowestIndex) {
+					messageType = key;
+					lowestIndex = flagIndexes.get(key);
+				}
 			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
-
 		}
-		return header;
+		return messageType;
 	}
 
 	// This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal) 
