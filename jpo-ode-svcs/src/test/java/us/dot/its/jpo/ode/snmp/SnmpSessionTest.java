@@ -155,19 +155,22 @@ public class SnmpSessionTest {
 		SNMP testParams = new SNMP(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel, rsuSRMTxInterval,
 				"2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.FOURDOT1);
+		boolean rsuDataSigningEnabled = true;
+
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.FOURDOT1, rsuDataSigningEnabled);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
 		assertEquals(expectedResult, result.getVariableBindings().toString());
 
-		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.FOURDOT1);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.FOURDOT1, rsuDataSigningEnabled);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
 		assertEquals(expectedResult2, result2.getVariableBindings().toString());
 	}
 
 	@Test
-	public void shouldCreatePDUWithNTCIP1218Protocol() throws ParseException {
+	public void shouldCreatePDUWithNTCIP1218Protocol_dataSigningEnabledRsu_True() throws ParseException {
+		// prepare
 		String expectedResult = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 10, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = 00]";
 		String expectedResult2 = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = 00]";
 		String rsuSRMPsid = "00000083";
@@ -180,13 +183,45 @@ public class SnmpSessionTest {
 		SNMP testParams = new SNMP(rsuSRMPsid, 0, 0, rsuSRMTxChannel, rsuSRMTxInterval, "2017-12-02T17:47:11-05:00",
 				"2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.NTCIP1218);
+		boolean rsuDataSigningEnabled = true;
 
+		// execute
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.NTCIP1218, true);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.NTCIP1218, true);
+
+		// verify
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
 		assertEquals(expectedResult, result.getVariableBindings().toString());
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
+		assertEquals(expectedResult2, result2.getVariableBindings().toString());
+	}
 
-		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.NTCIP1218);
+	@Test
+	public void shouldCreatePDUWithNTCIP1218Protocol_dataSigningEnabledRsu_False() throws ParseException {
+		// prepare
+		String expectedResult = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 10, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = 80]";
+		String expectedResult2 = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f:0b:00, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = 80]";
+		String rsuSRMPsid = "00000083";
+		int rsuSRMTxChannel = 4;
+		int rsuSRMTxInterval = 5;
+		String rsuSRMPayload = "88";
+		int rsuSRMEnable = 9;
+		int rsuSRMStatus = 10;
 
+		SNMP testParams = new SNMP(rsuSRMPsid, 0, 0, rsuSRMTxChannel, rsuSRMTxInterval, "2017-12-02T17:47:11-05:00",
+				"2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
+
+		System.setProperty("DATA_SIGNING_ENABLED_RSU", "false");
+
+		boolean rsuDataSigningEnabled = false;
+
+		// execute
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.NTCIP1218, rsuDataSigningEnabled);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.NTCIP1218, rsuDataSigningEnabled);
+
+		// verify
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
+		assertEquals(expectedResult, result.getVariableBindings().toString());
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
 		assertEquals(expectedResult2, result2.getVariableBindings().toString());
 	}

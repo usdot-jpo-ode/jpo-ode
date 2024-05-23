@@ -61,6 +61,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private Asn1CommandManager asn1CommandManager;
+   private boolean dataSigningEnabledRSU;
+   private boolean dataSigningEnabledSDW;
 
    public Asn1EncodedDataRouter(OdeProperties odeProperties) {
       super();
@@ -72,6 +74,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
       this.asn1CommandManager = new Asn1CommandManager(odeProperties);
 
+      this.dataSigningEnabledRSU = System.getenv("DATA_SIGNING_ENABLED_RSU") != null && !System.getenv("DATA_SIGNING_ENABLED_RSU").isEmpty()
+            ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_RSU"))
+            : false;
+      this.dataSigningEnabledSDW = System.getenv("DATA_SIGNING_ENABLED_SDW") != null && !System.getenv("DATA_SIGNING_ENABLED_SDW").isEmpty()
+            ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
+            : true;
    }
 
    @Override
@@ -90,26 +98,28 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (metadata.has(TimTransmogrifier.REQUEST_STRING)) {
             JSONObject request = metadata.getJSONObject(TimTransmogrifier.REQUEST_STRING);
-
             if (request.has(TimTransmogrifier.RSUS_STRING)) {
-               JSONObject rsusIn = (JSONObject) request.get(TimTransmogrifier.RSUS_STRING);
-               if (rsusIn.has(TimTransmogrifier.RSUS_STRING)) {
-                  Object rsu = rsusIn.get(TimTransmogrifier.RSUS_STRING);
-                  JSONArray rsusOut = new JSONArray();
-                  if (rsu instanceof JSONArray) {
-                     logger.debug("Multiple RSUs exist in the request: {}", request);
-                     JSONArray rsusInArray = (JSONArray) rsu;
-                     for (int i = 0; i < rsusInArray.length(); i++) {
-                        rsusOut.put(rsusInArray.get(i));
+               Object rsus = request.get(TimTransmogrifier.RSUS_STRING);
+               if (rsus instanceof JSONObject) {
+                  JSONObject rsusIn = (JSONObject) request.get(TimTransmogrifier.RSUS_STRING);
+                  if (rsusIn.has(TimTransmogrifier.RSUS_STRING)) {
+                     Object rsu = rsusIn.get(TimTransmogrifier.RSUS_STRING);
+                     JSONArray rsusOut = new JSONArray();
+                     if (rsu instanceof JSONArray) {
+                        logger.debug("Multiple RSUs exist in the request: {}", request);
+                        JSONArray rsusInArray = (JSONArray) rsu;
+                        for (int i = 0; i < rsusInArray.length(); i++) {
+                           rsusOut.put(rsusInArray.get(i));
+                        }
+                        request.put(TimTransmogrifier.RSUS_STRING, rsusOut);
+                     } else if (rsu instanceof JSONObject) {
+                        logger.debug("Single RSU exists in the request: {}", request);
+                        rsusOut.put(rsu);
+                        request.put(TimTransmogrifier.RSUS_STRING, rsusOut);
+                     } else {
+                        logger.debug("No RSUs exist in the request: {}", request);
+                        request.remove(TimTransmogrifier.RSUS_STRING);
                      }
-                     request.put(TimTransmogrifier.RSUS_STRING, rsusOut);
-                  } else if (rsu instanceof JSONObject) {
-                     logger.debug("Single RSU exists in the request: {}", request);
-                     rsusOut.put(rsu);
-                     request.put(TimTransmogrifier.RSUS_STRING, rsusOut);
-                  } else {
-                     logger.debug("No RSUs exist in the request: {}", request);
-                     request.remove(TimTransmogrifier.RSUS_STRING);
                   }
                }
             }
@@ -177,54 +187,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
          //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
-         if (odeProperties.dataSigningEnabled()) {
-            logger.debug("Sending message for signature! ");
-            String base64EncodedTim = CodecUtils.toBase64(
-                  CodecUtils.fromHex(hexEncodedTim));
-            JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
-            // get max duration time and convert from minutes to milliseconds (unsigned
-            // integer valid 0 to 2^32-1 in units of
-            // milliseconds.) from metadata
-            int maxDurationTime = Integer.valueOf(matadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
-            String timpacketID = matadataObjs.getString("odePacketID");
-            String timStartDateTime = matadataObjs.getString("odeTimStartDateTime");
-            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
-            try {
-               hexEncodedTim = CodecUtils.toHex(
-                     CodecUtils.fromBase64(
-                           JsonUtils.toJSONObject(JsonUtils.toJSONObject(signedResponse).getString("result")).getString("message-signed")));
-
-               JSONObject TimWithExpiration = new JSONObject();
-               TimWithExpiration.put("packetID", timpacketID);
-               TimWithExpiration.put("startDateTime", timStartDateTime);
-               SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-               try {
-                  JSONObject jsonResult = JsonUtils
-                        .toJSONObject((JsonUtils.toJSONObject(signedResponse).getString("result")));
-                  // messageExpiry uses unit of seconds
-                  long messageExpiry = Long.valueOf(jsonResult.getString("message-expiry"));
-                  TimWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
-               } catch (Exception e) {
-                  logger.error("Unable to get expiration date from signed messages response {}", e);
-                  TimWithExpiration.put("expirationDate", "null");
-               }
-
-               try {
-                  Date parsedtimTimeStamp = dateFormat.parse(timStartDateTime);
-                  Date requiredExpirationDate = new Date();
-                  requiredExpirationDate.setTime(parsedtimTimeStamp.getTime() + maxDurationTime);
-                  TimWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
-               } catch (Exception e) {
-                  logger.error("Unable to parse requiredExpirationDate {}", e);
-                  TimWithExpiration.put("requiredExpirationDate", "null");
-               }
-               //publish to Tim expiration kafka
-               stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null,
-                     TimWithExpiration.toString());
-
-            } catch (JsonUtilsException e1) {
-               logger.error("Unable to parse signed message response {}", e1);
-            }
+         // Case 1: SNMP-deposit
+         if (dataSigningEnabledRSU && request.getRsus() != null) {
+            hexEncodedTim = signTIM(hexEncodedTim, consumedObj);
          }
          else {
             // if header is present, strip it
@@ -246,6 +211,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             asn1CommandManager.sendToRsus(request, hexEncodedTim);
          }
 
+         hexEncodedTim = mfObj.getString(BYTES);
+
+         // Case 2: SDX-deposit
+         if (dataSigningEnabledSDW && request.getSdw() != null) {
+            hexEncodedTim = signTIM(hexEncodedTim, consumedObj);
+         }
+
          if (request.getSdw() != null) {
             // Case 2 only
 
@@ -258,8 +230,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       } else {
          //We have encoded ASD. It could be either UNSECURED or secured.
          logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
-
-         if (odeProperties.dataSigningEnabled()) {
+         if (dataSigningEnabledSDW && request.getSdw() != null) {
             logger.debug("Signed message received. Depositing it to SDW.");
             // We have a ASD with signed MessageFrame
             // Case 3
@@ -353,6 +324,59 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       logger.info("TIM deposit response {}", responseList);
    }
 
+   public String signTIM(String encodedTIM, JSONObject consumedObj) {
+      logger.debug("Sending message for signature! ");
+      String base64EncodedTim = CodecUtils.toBase64(
+            CodecUtils.fromHex(encodedTIM));
+      JSONObject metadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+      // get max duration time and convert from minutes to milliseconds (unsigned
+      // integer valid 0 to 2^32-1 in units of
+      // milliseconds.) from metadata
+      int maxDurationTime = Integer.valueOf(metadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
+      String timpacketID = metadataObjs.getString("odePacketID");
+      String timStartDateTime = metadataObjs.getString("odeTimStartDateTime");
+      String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
+      try {
+         String hexEncodedTim = CodecUtils.toHex(
+               CodecUtils.fromBase64(
+                     JsonUtils.toJSONObject(JsonUtils.toJSONObject(signedResponse).getString("result")).getString("message-signed")));
+
+         JSONObject timWithExpiration = new JSONObject();
+         timWithExpiration.put("packetID", timpacketID);
+         timWithExpiration.put("startDateTime", timStartDateTime);
+         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+         try {
+            JSONObject jsonResult = JsonUtils
+                  .toJSONObject((JsonUtils.toJSONObject(signedResponse).getString("result")));
+            // messageExpiry uses unit of seconds
+            long messageExpiry = Long.valueOf(jsonResult.getString("message-expiry"));
+            timWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
+         } catch (Exception e) {
+            logger.error("Unable to get expiration date from signed messages response {}", e);
+            timWithExpiration.put("expirationDate", "null");
+         }
+
+         try {
+            Date parsedtimTimeStamp = dateFormat.parse(timStartDateTime);
+            Date requiredExpirationDate = new Date();
+            requiredExpirationDate.setTime(parsedtimTimeStamp.getTime() + maxDurationTime);
+            timWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
+         } catch (Exception e) {
+            logger.error("Unable to parse requiredExpirationDate {}", e);
+            timWithExpiration.put("requiredExpirationDate", "null");
+         }
+         //publish to Tim expiration kafka
+         stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null,
+               timWithExpiration.toString());
+
+         return hexEncodedTim;
+
+      } catch (JsonUtilsException e1) {
+         logger.error("Unable to parse signed message response {}", e1);
+      }
+      return encodedTIM;
+   }
+   
    /**
     * Checks if header is present in encoded message
     */

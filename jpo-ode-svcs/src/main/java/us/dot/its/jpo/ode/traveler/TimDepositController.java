@@ -75,6 +75,8 @@ public class TimDepositController {
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
 
+   private boolean dataSigningEnabledSDW;
+
    public static class TimDepositControllerException extends Exception {
 
       private static final long serialVersionUID = 1L;
@@ -98,6 +100,10 @@ public class TimDepositController {
             odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
       this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
             null, OdeTimSerializer.class.getName(), odeProperties.getKafkaTopicsDisabledSet());
+
+      this.dataSigningEnabledSDW = System.getenv("DATA_SIGNING_ENABLED_SDW") != null && !System.getenv("DATA_SIGNING_ENABLED_SDW").isEmpty()
+      ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
+      : true;
 
    }
 
@@ -226,7 +232,7 @@ public class TimDepositController {
          logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
          String xmlMsg;
          DdsAdvisorySituationData asd = null;
-         if (!odeProperties.dataSigningEnabled()) {
+         if (!this.dataSigningEnabledSDW) {
             // We need to send data UNSECURED, so we should try to build the ASD as well as
             // MessageFrame
             asd = TimTransmogrifier.buildASD(odeTID.getRequest());

@@ -1,6 +1,6 @@
-| Travis Build Status | Sonar Code Quality | Sonar Code Coverage |
-|---------------------|---------------------|---------------------|
- [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=coverage)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) |
+| Sonar Code Quality | Sonar Code Coverage |
+|---------------------|---------------------|
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=coverage)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) |
 
 # jpo-ode
 
@@ -15,36 +15,38 @@ _Figure 1: ODE Dataflows_
 **Documentation:**
 
 1. [ODE Architecture](docs/Architecture.md)
-2. [ODE User Guide](docs/UserGuide.md)
-3. [ODE Output Schema Reference Guide](docs/ODE_Output_Schema_Reference.docx)
-4. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
-5. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
+1. [ODE User Guide](docs/UserGuide.md)
+1. [ODE Output Schema Reference Guide](docs/ODE_Output_Schema_Reference.docx)
+1. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
+1. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
 All stakeholders are invited to provide input to these documents. To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-ode/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
 ---
 
-<a name="toc"/>
+<a name="toc"></a>
 
-## Release Notes
+**Release Notes**
+
 The current version and release history of the JPO-ODE: [ODE Release Notes](<docs/Release_notes.md>)
 
-## Table of Contents
+**Table of Contents**
 
-1.  [Usage Example](#usage-example)
-2.  [Configuration](#configuration)
-3.  [Installation](#installation)
-4.  [File Manifest](#file-manifest)
-5.  [Development Setup](#development-setup)
-6.  [Release History](#release-history)
-7.  [Contact Information](#contact-information)
-8.  [Contributing](#contributing)
-9.  [Known Bugs](#known-bugs)
-10. [Credits and Acknowledgement](#credits-and-acknowledgement)
-11. [Code.gov Registration Info](#codegov-registration-info)
-12. [Kubernetes](#kubernetes)
-13. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
-14. [SNMP](#snmp)
+1. [Usage Example](#usage-example)
+1. [Configuration](#configuration)
+1. [Installation](#installation)
+1. [File Manifest](#file-manifest)
+1. [Development Setup](#development-setup)
+1. [Release History](#release-history)
+1. [Contact Information](#contact-information)
+1. [Contributing](#contributing)
+1. [Credits and Acknowledgement](#credits-and-acknowledgement)
+1. [Code.gov Registration Info](#codegov-registration-info)
+1. [Kubernetes](#kubernetes)
+1. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
+1. [SNMP](#snmp)
+
+
 
 <!--
 #########################################
@@ -52,7 +54,7 @@ The current version and release history of the JPO-ODE: [ODE Release Notes](<doc
 #########################################
  -->
 
-<a name="usage-example"/>
+<a name="usage-example"></a>
 
 ## 1. Usage Example
 
@@ -105,13 +107,15 @@ Supported message types:
 
 [Back to top](#toc)
 
+
+
 <!--
 #########################################
 ############# Configuration #############
 #########################################
  -->
 
-<a name="configuration"/>
+<a name="configuration"></a>
 
 ## 2. Configuration
 
@@ -124,10 +128,10 @@ Supported message types:
    -  Windows 10/11 Professional (Professional version required for Docker virtualization)
    -  OSX 13
 
-The ODE software can run on most standard Window, Mac, or Linux based computers with
+The ODE software can run on most standard Windows, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
 the system.  Larger data flows can require much larger space requirements depending on the
-amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 8 runtime environment.
+amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 21 runtime environment.
 
 ### Software Prerequisites
 
@@ -153,7 +157,6 @@ The following guide contains information about the data flow diagrams for the OD
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 - Additionally `git` commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
 - Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
-- Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
 - A compatibility guide containing recommendations for suitable versions of submodules for each main module version can be found [here](docs/compatibility.md).
 
 **Configuration:**
@@ -163,9 +166,12 @@ If you wish to change the application properties, such as change the location of
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
 **Important!**
+
 You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
 
 [Back to top](#toc)
+
+
 
 <!--
 ########################################
@@ -173,7 +179,7 @@ You must rename `sample.env` to `.env` for Docker to automatically read the file
 ########################################
  -->
 
-<a name="installation"/>
+<a name="installation"></a>
 
 ## 3. Installation
 
@@ -244,6 +250,7 @@ cp ./J2735_201603DA.ASN asn1_codec/asn1c_combined/
 #### Step 2 - Build and run the application
 
 **Notes:**
+
 - Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 - In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`. **This file will contain private keys, do not put add it to version control.**
@@ -257,34 +264,34 @@ Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME
 Navigate to the root directory of the jpo-ode project and run the following command:
 
 ```bash
-docker-compose up --build -d
-docker-compose ps
+docker compose up --build -d
+docker compose ps
 ```
 
 To bring down the services and remove the running containers run the following command:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 For a fresh restart, run:
 
 ```bash
-docker-compose down
-docker-compose up --build -d
-docker-compose ps
+docker compose down
+docker compose up --build -d
+docker compose ps
 ```
 
 To completely rebuild from scratch, run:
 
 ```bash
-docker-compose down
-docker-compose rm -fvs
-docker-compose up --build -d
-docker-compose ps
+docker compose down
+docker compose rm -fvs
+docker compose up --build -d
+docker compose ps
 ```
 
-Check the deployment by running `docker-compose ps`. You can start and stop containers using `docker-compose start` and `docker-compose stop` commands.
-If using the multi-broker docker-compose file, you can change the scaling by running `docker-compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker-compose scale kafka=3`.
+Check the deployment by running `docker compose ps`. You can start and stop containers using `docker compose start` and `docker compose stop` commands.
+If using the multi-broker docker compose file, you can change the scaling by running `docker compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker compose scale kafka=3`.
 
 
 #### asn1_codec Module (ASN.1 Encoder and Decoder)
@@ -314,15 +321,15 @@ cd $BASE_PPM_DIR/jpo-cvdp/build
 $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 
-# Confluent Cloud Integration
+### Confluent Cloud Integration
 
 Rather than using a local kafka instance, the ODE can utilize an instance of kafka hosted by Confluent Cloud via SASL.
 
 
 
-## Environment variables
+#### Environment variables
 
-### Purpose & Usage
+##### Purpose & Usage
 
 - The DOCKER_HOST_IP environment variable is used to communicate with the bootstrap server that the instance of Kafka is running on.
 
@@ -332,7 +339,7 @@ Rather than using a local kafka instance, the ODE can utilize an instance of kaf
 
 
 
-### Values
+##### Values
 In order to utilize Confluent Cloud:
 
 - DOCKER_HOST_IP must be set to the bootstrap server address (excluding the port)
@@ -345,13 +352,13 @@ In order to utilize Confluent Cloud:
 
 
 
-## CC Docker Compose File
+#### CC Docker Compose File
 
 There is a provided docker-compose file (docker-compose-confluent-cloud.yml) that passes the above environment variables into the container that gets created. Further, this file doesn't spin up a local kafka instance since it is not required.
 
 
 
-## Note
+#### Note
 
 This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.	
 
@@ -428,7 +435,7 @@ Kafka connect is being used for MongoDB in this implimentation but it can intera
 #########################################
  -->
 
-<a name="file-manifest"/>
+<a name="file-manifest"></a>
 
 ## 4. File Manifest
 
@@ -449,11 +456,11 @@ This section outlines the software technology stacks of the ODE.
 
 ### Continuous Integration
 
-- [TravisCI](https://travis-ci.org/)
+- [GitHub Workflows](https://docs.github.com/en/actions/using-workflows)
 
 ### ODE Code
 
-- [Java 8](https://openjdk.java.net/)
+- [Java 21](https://openjdk.java.net/)
 - [Maven](https://maven.apache.org/)
 - [Spring Boot](http://spring.io/projects/spring-boot)
 - [Logback](https://logback.qos.ch/)
@@ -471,13 +478,15 @@ This section outlines the software technology stacks of the ODE.
 
 [Back to top](#toc)
 
+
+
 <!--
 #############################################
 ############# Development Setup #############
 #############################################
  -->
 
-<a name="development-setup"/>
+<a name="development-setup"></a>
 
 ## 5. Development Setup
 
@@ -488,15 +497,18 @@ Install the IDE of your choice:
 * Eclipse: [https://eclipse.org/](https://eclipse.org/)
 * STS: [https://spring.io/tools/sts/all](https://spring.io/tools/sts/all)
 * IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
+* VSCode: [https://code.visualstudio.com/](https://code.visualstudio.com/)
 
 ### Continuous Integration
 
-* TravisCI: <https://travis-ci.org/usdot-jpo-ode/jpo-ode>
+See the [GitHub Workflows](.github/workflows/) defined for this project.
 
 ### Dev Container Environment
 The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
 [Back to top](#toc)
+
+
 
 <!--
 ###########################################
@@ -504,7 +516,7 @@ The project can be reopened inside of a dev container in VSCode. This environmen
 ###########################################
  -->
 
-<a name="release-history"/>
+<a name="release-history"></a>
 
 ## 6. Release History
 
@@ -512,13 +524,15 @@ The project can be reopened inside of a dev container in VSCode. This environmen
 
 [Back to top](#toc)
 
+
+
 <!--
 ###############################################
 ############# Contact Information #############
 ###############################################
  -->
 
-<a name="contact-information"/>
+<a name="contact-information"></a>
 
 ## 7. Contact Information
 
@@ -537,13 +551,15 @@ permissions and limitations under the [License](http://www.apache.org/licenses/L
 
 [Back to top](#toc)
 
+
+
 <!--
 ########################################
 ############# Contributing #############
 ########################################
  -->
 
-<a name="contributing"/>
+<a name="contributing"></a>
 
 ## 8. Contributing
 
@@ -559,66 +575,22 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
 	- <https://github.com/usdot-jpo-ode/jpo-s3-deposit>
 - Security services repository on GitHub (public)
   - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
+- SDW Depositor Module on GitHub (public)
+  - <https://github.com/usdot-jpo-ode/jpo-sdw-depositor>
 - ODE Output Validatory Library (public)
   - https://github.com/usdot-jpo-ode/ode-output-validator-library
-
-### Agile Project Management - Jira
-<https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE>
-
-### Wiki - Confluence
-<https://usdotjpoode.atlassian.net/wiki/>
-
-### Continuous Integration and Delivery
-<https://travis-ci.org/usdot-jpo-ode/jpo-ode>
-
-<details><summary>Using Travis for your build</summary>
-
-
-To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (<https://github.com/travis-ci/travis.rb>).
-
-Run:
-
-```
-travis login --org
-```
-Enter personal github account credentials.
-
-In order to allow Sonar to run, personal key must be added with this command:
-(Key can be obtained from the JPO-ODE development team)
-
-```
-travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
-```
-</details>
-<br>
 
 ### Static Code Analysis
 
 <https://sonarcloud.io/organizations/usdot-jpo-ode/projects>
 
-[Back to top](#toc)
-
-<!--
-######################################
-############# Known Bugs #############
-######################################
- -->
-
 ### Quality Assurance
 
 Code quality assurance is reported through the [usdot-jpo-ode SonarCloud organization](https://sonarcloud.io/organizations/usdot-jpo-ode/projects). Code quality reports are generated by the [JaCoCo plugin for Maven](https://www.eclemma.org/jacoco/trunk/doc/maven.html) during the ODE's [webhook-triggered TravisCI build](https://github.com/usdot-jpo-ode/jpo-ode/blob/dev/.travis.yml#L16). After a successful build, the [SonarQube scanner plugin for Maven](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Maven) creates and uploads a code quality report to SonarCloud.
 
-For regression and user acceptance testing, ODE provides an automated test harness. The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
+For regression and user acceptance testing, ODE provides an automated test harness. The test harness is provided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
 
 For more information, please see: https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness
-
-<a name="known-bugs"/>
-
-## 9. Known Bugs
-
-Date: 07/2017
-
-In its current state, the ODE has been developed to accomplish the goals of data transfer, security, and modularity working with the J2735 and 1609.2 security. The system has been designed to support multiple services orchestrated through the Apache Kafka streaming data pipelines, services built and supported as separate applications and described with each service's repository. As a modular system, each component has been built for functionality first, and additional performance testing is needed to understand the limits of the system with large volumes of data.
 
 ### Troubleshooting
 
@@ -628,19 +600,23 @@ Application Support for the ODE currently managed via GitHub's native issue trac
 
 [Back to top](#toc)
 
+
+
 <!--
 #######################################################
 ############# Credits and Acknowledgement #############
 #######################################################
  -->
 
-<a name="credits-and-acknowledgement"/>
+<a name="credits-and-acknowledgement"></a>
 
-## 10. Credits and Acknowledgement
+## 9. Credits and Acknowledgement
 
 [Attribution](ATTRIBUTION.md)
 
 [Back to top](#toc)
+
+
 
 <!--
 ######################################################
@@ -648,9 +624,9 @@ Application Support for the ODE currently managed via GitHub's native issue trac
 ######################################################
  -->
 
-<a name="codegov-registration-info"/>
+<a name="codegov-registration-info"></a>
 
-## 11. Code.gov Registration Info
+## 10. Code.gov Registration Info
 
 Agency: DOT
 
@@ -666,17 +642,30 @@ Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
 
-<a name="kubernetes"/>
 
-## 12. Kubernetes
-The ODE can be run in a k8s environment.
-See [this document](./docs/Kubernetes.md) for more details about this.
+<!--
+#####################################################
+############# Kubernetes ############################
+#####################################################
+ -->
+<a name="kubernetes"></a>
+
+## 11. Kubernetes
+The ODE can be run in a Kubernetes (k8s) environment.
+See [the Kubernetes document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)
 
-<a name="sonar-token-configuration"/>
 
-## 13. Sonar Token Configuration
+<!--
+#####################################################
+############# Sonar Token Configuration #############
+#####################################################
+ -->
+
+<a name="sonar-token-configuration"></a>
+
+## 12. Sonar Token Configuration
 Generating and Using Tokens
 Users can generate tokens that can be used to run analyses or invoke web services without access to the user's actual credentials.
 
@@ -699,7 +688,7 @@ Sonar Host URL: In GitHub, create a new repository secret with SONAR_HOST_URL as
 
 Configure your workflow YAML file as below:
 
-	1. Add GitHub Secrets in ci.yml workflow as SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }
+	1. Add GitHub Secrets in ci.yml workflow as SONAR_TOKEN: ${ secrets.SONAR_TOKEN }
  	2. Update the sonar properties in Sonar scan step (- name: Run Sonar) with new sonar project properties.
   
 Commit and push your code to start the analysis.
@@ -707,19 +696,32 @@ Commit and push your code to start the analysis.
 ### Revoking a token
 You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
 
-<a name="snmp"/>
+[Back to top](#toc)
 
-## 14. SNMP
+
+<!--
+#########################################
+############# SNMP ######################
+#########################################
+ -->
+
+<a name="snmp"></a>
+
+## 13. SNMP
 The ODE is capable of communicating with RSUs to:
 - Query TIMs
 - Deposit TIMs
 - Delete TIMs
 
+By default, the ODE will not sign TIMs that are delivered to RSUs. This can be changed by setting the value of the DATA_SIGNING_ENABLED_RSU environment variable found in the provided sample.env file. Additionally, signing of SDX-delivery TIMs can be configured by setting the value of the environment variable DATA_SIGNING_ENABLED_SDW found in sample.env. 
+
 The following SNMP protocols are supported for communication with RSUs:
 - DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
 - NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
 
-If no protocol is specified in a request containing RSUs, the ODE will communicate with RSUs via the DSRC 4.1 protocol by default. 
+If no protocol is specified in a request containing RSUs, the ODE will communicate with RSUs via the NTCIP1218 protocol by default. 
 This can be changed by setting the value of the DEFAULT_SNMP_PROTOCOL environment variable. 
 
 Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.
+
+[Back to top](#toc)

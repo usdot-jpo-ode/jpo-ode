@@ -77,7 +77,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
 
                     // Add header data for the decoding process
                     ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                     psmMetadata.setOdeReceivedAt(timestamp);
 
                     psmMetadata.setOriginIp(senderIp);
