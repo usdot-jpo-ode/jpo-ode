@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeMapMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class MapReceiver extends AbstractUdpReceiverPublisher {
@@ -58,7 +59,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                     // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload mapPayload = super.getPayloadHexString(packet, "MAP");
+                    OdeAsn1Payload mapPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.MAP);
                     if (mapPayload == null)
                         continue;
                     OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);

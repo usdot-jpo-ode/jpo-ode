@@ -57,7 +57,7 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
       }
    }
 
-   public OdeAsn1Payload getPayloadHexString(DatagramPacket packet, String msgType) {
+   public OdeAsn1Payload getPayloadHexString(DatagramPacket packet, UperUtil.SupportedMessageTypes msgType) {
       String startFlag = UperUtil.getStartFlag(msgType);
       // extract the actual packet from the buffer
       byte[] payload = packet.getData();

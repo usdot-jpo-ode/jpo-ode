@@ -18,6 +18,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TimReceiver extends AbstractUdpReceiverPublisher {
@@ -56,7 +57,7 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
                logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               OdeAsn1Payload timPayload = super.getPayloadHexString(packet, "TIM");
+               OdeAsn1Payload timPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.TIM);
                if (timPayload == null)
                   continue;
                OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);

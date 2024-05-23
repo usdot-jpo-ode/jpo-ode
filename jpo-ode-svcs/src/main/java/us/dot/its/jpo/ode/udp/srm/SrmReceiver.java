@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.model.OdeSrmMetadata;
 import us.dot.its.jpo.ode.model.OdeSrmMetadata.SrmSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class SrmReceiver extends AbstractUdpReceiverPublisher {
@@ -58,7 +59,7 @@ public class SrmReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                     // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload srmPayload = super.getPayloadHexString(packet, "SRM");
+                    OdeAsn1Payload srmPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SRM);
                     if (srmPayload == null)
                         continue;
                     OdeSrmMetadata srmMetadata = new OdeSrmMetadata(srmPayload);

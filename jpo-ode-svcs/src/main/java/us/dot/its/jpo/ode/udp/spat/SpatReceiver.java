@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.model.OdeSpatMetadata;
 import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
@@ -58,7 +59,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                     // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload spatPayload = super.getPayloadHexString(packet, "SPAT");
+                    OdeAsn1Payload spatPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SPAT);
                     if (spatPayload == null)
                         continue;
                     OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);

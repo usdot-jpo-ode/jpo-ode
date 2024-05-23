@@ -15,13 +15,17 @@ public class UperUtil {
     private static Logger logger = LoggerFactory.getLogger(UperUtil.class);
 
     // start flags for BSM, TIM, MAP, SPAT, SRM, SSM, and PSM
-    private final static String BSM_START_FLAG = "0014";
-    private final static String TIM_START_FLAG = "001f";
-    private final static String SPAT_START_FLAG = "0013";
-    private final static String SSM_START_FLAG = "001e";
-    private final static String SRM_START_FLAG = "001d";
-    private final static String MAP_START_FLAG = "0012"; 
-    private final static String PSM_START_FLAG = "0020";
+    private static final String BSM_START_FLAG = "0014";
+    private static final String TIM_START_FLAG = "001f";
+    private static final String SPAT_START_FLAG = "0013";
+    private static final String SSM_START_FLAG = "001e";
+    private static final String SRM_START_FLAG = "001d";
+    private static final String MAP_START_FLAG = "0012"; 
+    private static final String PSM_START_FLAG = "0020";
+
+    public enum SupportedMessageTypes {
+        BSM, TIM, SPAT, SSM, SRM, MAP, PSM
+    }
 
     // Strips the IEEE 1609.2 security header (if it exists) and returns the payload
     public static String stripDot2Header(String hexString, String payload_start_flag) {
@@ -148,21 +152,21 @@ public class UperUtil {
         return PSM_START_FLAG;
     }
 
-    public static String getStartFlag(String msgType) {
+    public static String getStartFlag(SupportedMessageTypes msgType) {
         switch (msgType) {
-        case "BSM":
+        case SupportedMessageTypes.BSM:
             return BSM_START_FLAG;
-        case "TIM":
+        case SupportedMessageTypes.TIM:
             return TIM_START_FLAG;
-        case "SPAT":
+        case SupportedMessageTypes.SPAT:
             return SPAT_START_FLAG;
-        case "SSM":
+        case SupportedMessageTypes.SSM:
             return SSM_START_FLAG;
-        case "SRM":
+        case SupportedMessageTypes.SRM:
             return SRM_START_FLAG;
-        case "MAP":
+        case SupportedMessageTypes.MAP:
             return MAP_START_FLAG;
-        case "PSM":
+        case SupportedMessageTypes.PSM:
             return PSM_START_FLAG;
         default:
             return null;
