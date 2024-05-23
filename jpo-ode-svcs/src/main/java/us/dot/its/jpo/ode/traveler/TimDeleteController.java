@@ -121,17 +121,18 @@ public class TimDeleteController {
       // Provide error codes/text returned from RSU and our interpretation of them
       HttpStatus httpResponseReturnCode = null;
       String httpResponseBodyMessage = "";
+      String rsuIpAddress = queryTarget.getRsuTarget();
       if (null == rsuResponse || null == rsuResponse.getResponse()) {
          // Timeout
          httpResponseReturnCode = HttpStatus.REQUEST_TIMEOUT;
          String timeoutMessage = "Timeout. No response from RSU.";
          httpResponseBodyMessage = JsonUtils.jsonKeyValue(ERRSTR, timeoutMessage);
-         logger.error("Failed to delete message at index {} for RSU {}: {}", index, queryTarget, timeoutMessage);
+         logger.error("Failed to delete message at index {} for RSU {}: {}", index, rsuIpAddress, timeoutMessage);
       } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
          // Success
          httpResponseReturnCode = HttpStatus.OK;
          httpResponseBodyMessage = JsonUtils.jsonKeyValue("deleted_msg", Integer.toString(index));
-         logger.info("Successfully deleted message at index {} for RSU {}", index, queryTarget);
+         logger.info("Successfully deleted message at index {} for RSU {}", index, rsuIpAddress);
       } else {
          // Error
          httpResponseReturnCode = HttpStatus.BAD_REQUEST;
@@ -140,7 +141,7 @@ public class TimDeleteController {
          String givenReason = "Error code " + Integer.toString(errorCodeReturnedByRSU) + ": " + errorTextReturnedByRSU;
          String interpretation = interpretErrorCode(errorCodeReturnedByRSU, index);
          httpResponseBodyMessage = JsonUtils.jsonKeyValue(ERRSTR, givenReason + " => Interpretation: " + interpretation);
-         logger.error("Failed to delete message at index {} for RSU {} due to error: {} => Interpretation: {}", index, queryTarget, givenReason, interpretation);
+         logger.error("Failed to delete message at index {} for RSU {} due to error: {} => Interpretation: {}", index, rsuIpAddress, givenReason, interpretation);
       }
 
       return ResponseEntity.status(httpResponseReturnCode).body(httpResponseBodyMessage);
