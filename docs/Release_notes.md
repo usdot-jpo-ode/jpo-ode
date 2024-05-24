@@ -22,8 +22,10 @@ CDOT PR 70: Updated maven plugin versions
 CDOT PR 71: Updated kafka topic creation
 CDOT PR 72: Fixed timestamp precision bug
 CDOT PR 73: Revised documentation for accuracy
+CDOT PR 74: Kafka Connect & MongoDB Database
 CDOT PR 75: Set NTCIP1218 msgRepeatOptions value based on context
 CDOT PR 76: Updated SnmpSession to report failures to retrieve authoritative engine IDs only if a response is received
+CDOT PR 78: UDP/Log Ingestion Updates
 CDOT PR 79: Updated TimDeleteController to log failures to delete messages as errors
 
 Version 2.0.1, released March 2024
