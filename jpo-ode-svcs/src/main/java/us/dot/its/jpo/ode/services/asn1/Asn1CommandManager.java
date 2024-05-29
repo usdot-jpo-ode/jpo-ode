@@ -15,14 +15,12 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,9 +32,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.dds.DdsDepositor;
-import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
-import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
@@ -80,7 +75,6 @@ public class Asn1CommandManager {
    private MessageProducer<String, String> stringMessageProducer;
 
    private String depositTopic;
-   private DdsDepositor<DdsStatusMessage> depositor;
    private RsuDepositor rsuDepositor;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
@@ -90,7 +84,6 @@ public class Asn1CommandManager {
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
 
       try {
-         this.depositor = new DdsDepositor<>(odeProperties);
          this.rsuDepositor = new RsuDepositor(odeProperties);
          this.rsuDepositor.start();
          this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
@@ -105,27 +98,11 @@ public class Asn1CommandManager {
    }
 
    public void depositToSdw(String depositObj) throws Asn1CommandManagerException {
-
-      if (this.odeProperties.shouldDepositSdwMessagesOverWebsocket()) {
-         try {
-            depositor.deposit(depositObj);
-
-            logger.info("Deposited message to SDW directly via websocket");
-            logger.debug("Message deposited: {}", depositObj);
-            EventLogger.logger.info("Deposited message to SDW directly via websocket");
-            EventLogger.logger.debug("Message deposited: {}", depositObj);
-         } catch (DdsRequestManagerException e) {
-            String msg = "Failed to deposit message to SDW";
-            throw new Asn1CommandManagerException(msg, e);
-         }
-      } else {
-         stringMessageProducer.send(this.getDepositTopic(), null, depositObj);
-
-         logger.info("Published message to SDW deposit topic");
-         EventLogger.logger.info("Published message to SDW deposit topic");
-         logger.debug("Message deposited: {}", depositObj);
-         EventLogger.logger.debug("Message deposited: {}", depositObj);
-      }
+      stringMessageProducer.send(this.getDepositTopic(), null, depositObj);
+      logger.info("Published message to SDW deposit topic");
+      EventLogger.logger.info("Published message to SDW deposit topic");
+      logger.debug("Message deposited: {}", depositObj);
+      EventLogger.logger.debug("Message deposited: {}", depositObj);
    }
 
    public void sendToRsus(ServiceRequest request, String encodedMsg) {
