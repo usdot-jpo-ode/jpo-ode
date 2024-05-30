@@ -6,7 +6,7 @@ services:
     ports:
       - "9092:9092"
     volumes:
-      - "${DOCKER_SHARED_VOLUME}:/bitnami"
+      - kafka:/bitnami
     environment:
       KAFKA_ENABLE_KRAFT: "yes"
       KAFKA_CFG_PROCESS_ROLES: "broker,controller"
@@ -268,3 +268,7 @@ services:
       options:
         max-size: "10m"  
         max-file: "5"
+
+volumes:
+  kafka:
+    {}
