@@ -5,7 +5,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TimReceiver extends AbstractUdpReceiverPublisher {
@@ -56,21 +56,10 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
                senderPort = packet.getPort();
                logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-               // extract the actualPacket from the buffer
-               byte[] payload = packet.getData();
-               if (payload == null)
-                  continue;
-
-               // convert bytes to hex string and verify identity
-               String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
-               if (payloadHexString.indexOf(odeProperties.getTimStartFlag()) == -1)
-                  continue;
-               logger.debug("Full TIM packet: {}", payloadHexString);
-               payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getTimStartFlag());
-               logger.debug("Stripped TIM packet: {}", payloadHexString);
-
                // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               OdeAsn1Payload timPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+               OdeAsn1Payload timPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.TIM);
+               if (timPayload == null)
+                  continue;
                OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
 
                // Add header data for the decoding process
