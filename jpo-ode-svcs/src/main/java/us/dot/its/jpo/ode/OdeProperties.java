@@ -119,6 +119,7 @@ public class OdeProperties implements EnvironmentAware {
    private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
 
    // BSM
+   private final String BSM_START_FLAG = "0014";
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
    private String kafkaTopicOdeBsmRxPojo = "topic.OdeBsmRxPojo";
@@ -130,6 +131,7 @@ public class OdeProperties implements EnvironmentAware {
    private int bsmBufferSize = 500;
 
    // TIM
+   private final String TIM_START_FLAG = "001f";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
    private String kafkaTopicOdeDNMsgJson = "topic.OdeDNMsgJson";
    private String kafkaTopicOdeTimRxJson = "topic.OdeTimRxJson";
@@ -142,6 +144,7 @@ public class OdeProperties implements EnvironmentAware {
    private int timBufferSize = 500;
    
    //SPAT
+   private final String SPAT_START_FLAG = "0013";
    private String kafkaTopicOdeSpatTxPojo = "topic.OdeSpatTxPojo";
    private String kafkaTopicOdeSpatPojo = "topic.OdeSpatPojo";
    private String kafkaTopicOdeSpatJson = "topic.OdeSpatJson";
@@ -153,6 +156,7 @@ public class OdeProperties implements EnvironmentAware {
    private int spatBufferSize = 500;
 
    //SSM
+   private final String SSM_START_FLAG = "001e";
    private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
    private String kafkaTopicOdeSsmJson = "topic.OdeSsmJson";
    private String kafkaTopicOdeRawEncodedSSMJson = "topic.OdeRawEncodedSSMJson";
@@ -160,6 +164,7 @@ public class OdeProperties implements EnvironmentAware {
    private int ssmBufferSize = 500;
 
    //SRM
+   private final String SRM_START_FLAG = "001d";
    private String kafkaTopicOdeSrmTxPojo = "topic.OdeSrmTxPojo";
    private String kafkaTopicOdeSrmJson = "topic.OdeSrmJson";
    private String kafkaTopicOdeRawEncodedSRMJson = "topic.OdeRawEncodedSRMJson";
@@ -167,6 +172,7 @@ public class OdeProperties implements EnvironmentAware {
    private int srmBufferSize = 500;
    
    //MAP
+   private final String MAP_START_FLAG = "0012"; 
    private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
    private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
    private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
@@ -174,6 +180,7 @@ public class OdeProperties implements EnvironmentAware {
    private int mapBufferSize = 2048;
 
    // PSM
+   private final String PSM_START_FLAG = "0020";
    private String kafkaTopicOdeRawEncodedPSMJson = "topic.OdeRawEncodedPSMJson";
    private String kafkaTopicOdePsmTxPojo = "topic.OdePsmTxPojo";
    private String kafkaTopicOdePsmJson = "topic.OdePsmJson";
@@ -380,6 +387,10 @@ public class OdeProperties implements EnvironmentAware {
       this.verboseJson = verboseJson;
    }
 
+   public String getBsmStartFlag() {
+      return BSM_START_FLAG;
+   }
+
    public int getBsmReceiverPort() {
       return bsmReceiverPort;
    }
@@ -394,6 +405,10 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setBsmBufferSize(int bsmBufferSize) {
       this.bsmBufferSize = bsmBufferSize;
+   }
+
+   public String getTimStartFlag() {
+      return TIM_START_FLAG;
    }
 
    public int getTimReceiverPort() {
@@ -412,6 +427,10 @@ public class OdeProperties implements EnvironmentAware {
       this.timBufferSize = timBufferSize;
    }
 
+   public String getSsmStartFlag() {
+      return SSM_START_FLAG;
+   }
+
    public int getSsmReceiverPort() {
       return ssmReceiverPort;
    }
@@ -426,6 +445,10 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSsmBufferSize(int ssmBufferSize) {
       this.ssmBufferSize = ssmBufferSize;
+   }
+
+   public String getSrmStartFlag() {
+      return SRM_START_FLAG;
    }
 
    public int getSrmReceiverPort() {
@@ -444,6 +467,10 @@ public class OdeProperties implements EnvironmentAware {
       this.srmBufferSize = srmBufferSize;
    }
 
+   public String getSpatStartFlag() {
+      return SPAT_START_FLAG;
+   }
+
    public int getSpatReceiverPort() {
       return spatReceiverPort;
    }
@@ -460,6 +487,10 @@ public class OdeProperties implements EnvironmentAware {
       this.spatBufferSize = spatBufferSize;
    }
 
+   public String getMapStartFlag() {
+      return MAP_START_FLAG;
+   }
+
    public int getMapReceiverPort() {
       return mapReceiverPort;
    }
@@ -474,6 +505,10 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setMapBufferSize(int mapBufferSize) {
       this.mapBufferSize = mapBufferSize;
+   }
+
+   public String getPsmStartFlag() {
+      return PSM_START_FLAG;
    }
 
    public int getPsmReceiverPort() {
