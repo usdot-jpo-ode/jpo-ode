@@ -4,7 +4,7 @@ JPO-ODE Release Notes
 Version 2.1.0, released June 2024
 ----------------------------------------
 ### **Summary**
-The updates for the jpo-ode 2.1.0 release include several key improvements and fixes. These updates address issues with PSM and log offloading and enhance the continuous integration processes. The Kafka version has been upgraded and a bug related to log processing has been resolved. Nanoseconds are now trimmed from timestamps and 1609.2 headers are now stripped from unsigned messages. A submodule compatibility guide has been added, along with making the default SNMP protocol configurable. Configurable signing is now possible independently for Road Side Units (RSUs) and the SDX. The Dockerhub documentation now includes a link to the submodule compatibility guide. Maven plugin versions have been updated and the Kafka topic creation process has been improved. A timestamp precision bug has been fixed and the documentation has been revised for accuracy. Additionally, the NTCIP1218 msgRepeatOptions value is now set based on context and SnmpSession now reports failures to retrieve authoritative engine IDs only if a response is received. Finally, the TimDeleteController has been updated to log message deletion failures as errors.
+The updates for the jpo-ode 2.1.0 release include several key improvements and fixes. These updates address issues with PSM and log offloading and enhance the continuous integration processes. The Kafka version has been upgraded and a bug related to log processing has been resolved. Nanoseconds are now trimmed from timestamps and 1609.2 headers are now stripped from unsigned messages. A submodule compatibility guide has been added, along with making the default SNMP protocol configurable. Configurable signing is now possible independently for Road-Side Units (RSUs) and the SDX. The Dockerhub documentation now includes a link to the submodule compatibility guide. Maven plugin versions have been updated and the Kafka topic creation process has been improved. A timestamp precision bug has been fixed and the documentation has been revised for accuracy. Additionally, the NTCIP1218 msgRepeatOptions value is now set based on context and SnmpSession now reports failures to retrieve authoritative engine IDs only if a response is received. Finally, the TimDeleteController has been updated to log message deletion failures as errors.
 
 Enhancements in this release:
 CDOT PR 57: Fixes for PSM & Log Offloading
@@ -17,9 +17,9 @@ CDOT PR 64: Added submodule compatibility guide
 CDOT PR 65: Added support for retaining IEEE 1609.2 security headers
 CDOT PR 66: Made default SNMP protocol configurable
 CDOT PR 67: Added configurable signing independently for RSUs and the SDX
-CDOT PR 69: Added link to submodule compatibility guide to dockerhub documentation
+CDOT PR 69: Added link to submodule compatibility guide to Docker Hub documentation
 CDOT PR 70: Updated maven plugin versions
-CDOT PR 71: Updated kafka topic creation
+CDOT PR 71: Updated Kafka topic creation
 CDOT PR 72: Fixed timestamp precision bug
 CDOT PR 73: Revised documentation for accuracy
 CDOT PR 74: Kafka Connect & MongoDB Database
