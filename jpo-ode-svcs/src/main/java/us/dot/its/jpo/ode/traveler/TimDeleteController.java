@@ -151,7 +151,7 @@ public class TimDeleteController {
       if (errorCodeReturnedByRSU == 12) {
          return "Message previously deleted or doesn't exist at index " + Integer.toString(index);
       } else if (errorCodeReturnedByRSU == 10) {
-         return "Invalid index " + Integer.toString(index);
+         return "Possible SNMP protocol mismatch, check RSU configuration";
       } else {
          return "Unknown error";
       }
