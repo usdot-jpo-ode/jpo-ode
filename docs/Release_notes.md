@@ -28,6 +28,20 @@ CDOT PR 76: Updated SnmpSession to report failures to retrieve authoritative eng
 CDOT PR 78: UDP/Log Ingestion Updates
 CDOT PR 79: Updated TimDeleteController to log failures to delete messages as errors
 
+Version 2.0.2, released April 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 2.0.2 release includes an update to the dataflow for the UDP and log ingestion endpoints. This update allows for the UDP and log ingestion endpoints to handle and strip unsigned IEEE 1609.2 and 1609.3 headers. Signed IEEE 1609.2 security headers are maintained in the encoded Kafka topic prior to being decoded.
+
+Enhancements in this release:
+- Support IEEE 1609.2 and 1609.3 header ingestion
+- Strips unsigned IEEE 1609.2 headers
+- Strips IEEE 1609.2 headers
+- Maintains signed IEEE 1609.3 headers before eventually stripping them before decoding to the J2735 payload
+
+Known Issues:
+- No known issues at this time.
+
 Version 2.0.1, released March 2024
 ----------------------------------------
 ### **Summary**
