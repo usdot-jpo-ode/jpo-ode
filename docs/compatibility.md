@@ -3,7 +3,8 @@ This table serves as a guide, suggesting which versions of individual submodules
 
 | [ODE (this project)](https://github.com/usdot-jpo-ode/jpo-ode/releases) | [ACM](https://github.com/usdot-jpo-ode/asn1_codec/releases) | [PPM](https://github.com/usdot-jpo-ode/jpo-cvdp/releases) | [SEC](https://github.com/usdot-jpo-ode/jpo-security-svcs/releases) | [SDWD](https://github.com/usdot-jpo-ode/jpo-sdw-depositor/releases) | [S3D](https://github.com/usdot-jpo-ode/jpo-s3-deposit/releases) | [GJConverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter/releases) | [CMonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/releases) | [CVisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/releases) | [CVManager](https://github.com/usdot-jpo-ode/jpo-cvmanager/releases) |
 | ----------------- | --- | --- | --- | ---- | --- | ----------- | -------- | ----------- | ----------- |
-| 2.0.1 | 2.0.0 | 1.3.0 | 1.4.0 | 1.6.0 | 1.4.0 | 1.2.0 | 1.2.0 | 1.2.0 | 1.2.0 |
+| 2.1.0 | 2.1.0 | 1.3.0 | 1.4.0 | 1.7.0 | 1.5.0 | 1.3.0 | 1.3.0 | 1.3.0 | 1.3.0 |
+| 2.0.x | 2.0.0 | 1.3.0 | 1.4.0 | 1.6.0 | 1.4.0 | 1.2.0 | 1.2.0 | 1.2.0 | 1.2.0 |
 | 1.5.1 | 1.5.0 | 1.2.0 | 1.3.0 | 1.5.0 | 1.3.0 | 1.1.0 | 1.1.0 | 1.1.0 | 1.1.0 |
 | 1.4.1 | 1.4.1 | 1.1.1 | 1.2.1 | 1.4.1 | 1.2.1 | 1.0.0 | 1.0.1 | 1.0.1 | 1.0.1 |
 | 1.4.0 | 1.4.0 | 1.1.0 | 1.2.0 | 1.4.0 | 1.2.0 | N/A | N/A | N/A | N/A |
