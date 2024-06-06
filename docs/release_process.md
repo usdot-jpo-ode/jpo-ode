@@ -62,11 +62,14 @@ After the release branches are created, preliminary testing should be conducted 
         - [ ] program starts up correctly
         - [ ] http endpoint is reachable
         - [ ] tims can be successfully pushed to http endpoint
-        - [ ] capable of ingesting bsms
-        - [ ] capable of ingesting ssms
-        - [ ] capable of ingesting srms
-        - [ ] capable of ingesting spats
-        - [ ] capable of ingesting maps
+        - [ ] capable of ingesting messages via udp (see scripts in `scripts/tests` directory)
+            - [ ] tims
+            - [ ] bsms
+            - [ ] ssms
+            - [ ] srms
+            - [ ] spats
+            - [ ] maps
+            - [ ] psms
     - [ ] asn1_codec
         - [ ] code compiles
         - [ ] unit tests pass
@@ -99,11 +102,14 @@ After the release branches are created, preliminary testing should be conducted 
     - [ ] jpo-s3-deposit
         - [ ] code compiles
         - [ ] program starts up correctly
+        - [ ] deposits can be made to one of the destinations successfully
     - [ ] jpo-geojsonconverter
         - [ ] code compiles
         - [ ] unit tests pass
         - [ ] program starts up correctly
-        - [ ] valid geojson gets outputted
+        - [ ] program can be configured successfully
+        - [ ] MAP & SPaT messages are consumed successfully
+        - [ ] valid ProcessedMaps & ProcessedSpats are outputted
     - [ ] jpo-conflictmonitor
         - [ ] code compiles
         - [ ] unit tests pass
@@ -132,6 +138,7 @@ After the release branches are created, preliminary testing should be conducted 
         - [ ] code compiles
         - [ ] unit tests pass
         - [ ] program starts up correctly
+        - [ ] GUI functions & can display messages
 
 ## 3. Project Reference Updates & Release Creation
 ### Description
@@ -207,11 +214,14 @@ After the docker images have been built and pushed to DockerHub, they should be 
         - [ ] image starts up correctly
         - [ ] http endpoint is reachable
         - [ ] tims can be successfully pushed to http endpoint
-        - [ ] capable of ingesting bsms
-        - [ ] capable of ingesting ssms
-        - [ ] capable of ingesting srms
-        - [ ] capable of ingesting spats
-        - [ ] capable of ingesting maps
+        - [ ] capable of ingesting messages via udp (see scripts in `scripts/tests` directory)
+            - [ ] tims
+            - [ ] bsms
+            - [ ] ssms
+            - [ ] srms
+            - [ ] spats
+            - [ ] maps
+            - [ ] psms
     - [ ] asn1_codec
         - [ ] image starts up correctly
         - [ ] program can be configured for decoding successfully
@@ -236,9 +246,12 @@ After the docker images have been built and pushed to DockerHub, they should be 
         - [ ] messages are submitted to the SDX successfully
     - [ ] jpo-s3-deposit
         - [ ] image starts up correctly
+        - [ ] deposits can be made to one of the destinations successfully
     - [ ] jpo-geojsonconverter
         - [ ] image starts up correctly
-        - [ ] valid geojson gets outputted
+        - [ ] program can be configured successfully
+        - [ ] MAP & SPaT messages are consumed successfully
+        - [ ] valid ProcessedMaps & ProcessedSpats are outputted
     - [ ] jpo-conflictmonitor
         - [ ] image starts up correctly
         - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (use test scripts for this)
@@ -258,5 +271,7 @@ After the docker images have been built and pushed to DockerHub, they should be 
             - [ ] Test Stop Line Stop Events
     - [ ] jpo-conflictvisualizer-api
         - [ ] image starts up correctly
+        - [ ] GUI functions & can display messages
     - [ ] jpo-conflictvisualizer-keycloak
         - [ ] image starts up correctly
+        - [ ] authentication verified to work
