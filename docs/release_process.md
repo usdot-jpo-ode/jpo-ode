@@ -116,21 +116,20 @@ After the release branches are created, preliminary testing should be conducted 
         - [ ] code compiles
         - [ ] unit tests pass
         - [ ] program starts up correctly
-        - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (use test scripts for this)
-            - [ ] Test BSM Events
-            - [ ] Test BSM JSON Repartition
-            - [ ] Test Connection of Travel Event
-            - [ ] Test Intersection Reference Alignment Events
-            - [ ] Test Lane Direction of Travel Event
-            - [ ] Test Map Broadcast Rate Event
-            - [ ] Test Map Minimum Data Event
-            - [ ] Test Signal Group Alignment Events
-            - [ ] Test Signal State Conflict Events
-            - [ ] Test Spat Broadcast Rate Event
-            - [ ] Test Spat Minimum Data Event
-            - [ ] Test Spat Time Change Details Event
-            - [ ] Test Stop Line Passage Events
-            - [ ] Test Stop Line Stop Events
+        - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
+            - [ ] test BSM events
+            - [ ] test connection of travel event
+            - [ ] test intersection reference alignment events
+            - [ ] test lane direction of travel event
+            - [ ] test MAP broadcast rate event
+            - [ ] test MAP minimum data event
+            - [ ] test signal group alignment events
+            - [ ] test signal state conflict events
+            - [ ] test SPaT broadcast rate event
+            - [ ] test SPaT minimum data event
+            - [ ] test SPaT time change details event
+            - [ ] test stop line passage events
+            - [ ] test stop line stop events
     - [ ] jpo-cvmanager
         - [ ] code compiles
         - [ ] unit tests pass
@@ -256,21 +255,20 @@ After the docker images have been built and pushed to DockerHub, they should be 
         - [ ] valid ProcessedMaps & ProcessedSpats are outputted
     - [ ] jpo-conflictmonitor
         - [ ] image starts up correctly
-        - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (use test scripts for this)
-            - [ ] Test BSM Events
-            - [ ] Test BSM JSON Repartition
-            - [ ] Test Connection of Travel Event
-            - [ ] Test Intersection Reference Alignment Events
-            - [ ] Test Lane Direction of Travel Event
-            - [ ] Test Map Broadcast Rate Event
-            - [ ] Test Map Minimum Data Event
-            - [ ] Test Signal Group Alignment Events
-            - [ ] Test Signal State Conflict Events
-            - [ ] Test Spat Broadcast Rate Event
-            - [ ] Test Spat Minimum Data Event
-            - [ ] Test Spat Time Change Details Event
-            - [ ] Test Stop Line Passage Events
-            - [ ] Test Stop Line Stop Events
+        - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
+            - [ ] test BSM events
+            - [ ] test connection of travel event
+            - [ ] test intersection reference alignment events
+            - [ ] test lane direction of travel event
+            - [ ] test MAP broadcast rate event
+            - [ ] test MAP minimum data event
+            - [ ] test signal group alignment events
+            - [ ] test signal state conflict events
+            - [ ] test SPaT broadcast rate event
+            - [ ] test SPaT minimum data event
+            - [ ] test SPaT time change details event
+            - [ ] test stop line passage events
+            - [ ] test stop line stop events
     - [ ] jpo-conflictvisualizer-api
         - [ ] image starts up correctly
         - [ ] GUI functions & can display messages
