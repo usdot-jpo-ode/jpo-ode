@@ -194,17 +194,17 @@ After preliminary testing is complete, project reference updates should be made 
 16. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-cvmanager project, and add a git tag with the cvmanager version number.
 
 #### Create Releases & Docker Images
-17. Within the github CI/CD release process, use the release tags for each application to produce releases and docker images with the same tag name, containing the version number of each app.
+1. Within the github CI/CD release process, use the release tags for each application to produce releases and docker images with the same tag name, containing the version number of each app.
     
-    17a. The Conflict Visualizer will need two separate images to be created: one for the API and one for Keycloak.
+    1a. The Conflict Visualizer will need two separate images to be created: one for the API and one for Keycloak.
 
-18. Upload docker images to [DockerHub](https://hub.docker.com/u/usdotjpoode).
-19. Tag docker images with the version number of each app. (e.g. 1.0.0)
-20. Tag docker images with year and quarter of release. (e.g. 2024-Q2)
-21. Tag docker images with 'latest' tag for the most recent release.
+2. Upload docker images to [DockerHub](https://hub.docker.com/u/usdotjpoode).
+3. Tag docker images with the version number of each app. (e.g. 1.0.0)
+4. Tag docker images with year and quarter of release. (e.g. 2024-Q2)
+5. Tag docker images with 'latest' tag for the most recent release.
 
 #### Housekeeping
-19. Merge master branches into develop branches for each project & verify that CI/CD passes.
+1. Merge master branches into develop branches for each project & verify that CI/CD passes.
 
 ## 4. DockerHub Image Testing
 ### Description
@@ -309,13 +309,13 @@ After the hotfix branch is created and the code changes are merged, project refe
 4. Merge `hotfix_(year)-(month)-(day)` branch into `master/main` branch for the dependent projects, and add a git tag with the version number of the hotfix.
 
 #### Create Releases & Docker Images
-5. Within the github CI/CD release process, use the release tags for each affected application to produce releases and docker images with the same tag name, containing the version number of each app.
-6. Upload docker images to [DockerHub](https://hub.docker.com/u/usdotjpoode).
-7. Tag docker images with the version number of each app. (e.g. 1.0.0)
-8. Tag docker images with year, month, and day of hotfix. (e.g. 2024-04-01)
-9. Tag docker images with 'latest' tag for the most recent release.
+1. Within the github CI/CD release process, use the release tags for each affected application to produce releases and docker images with the same tag name, containing the version number of each app.
+2. Upload docker images to [DockerHub](https://hub.docker.com/u/usdotjpoode).
+3. Tag docker images with the version number of each app. (e.g. 1.0.0)
+4. Tag docker images with year, month, and day of hotfix. (e.g. 2024-04-01)
+5. Tag docker images with 'latest' tag for the most recent release.
 
 #### Housekeeping
-10. Merge master branches into develop branches for each affected project & verify that CI/CD passes.
+1. Merge master branches into develop branches for each affected project & verify that CI/CD passes.
 
 At this point the standalone hotfix release process is complete.
