@@ -20,8 +20,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Replcae Docker tag
+        id: set_tag
+        run: echo "TAG=$(echo ${GITHUB_REF##*/} | sed 's/\//-/g')" >> $GITHUB_ENV
+
       - name: Build
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: usdotjpoode/jpo-ode:${{ github.ref_name }}
+          tags: usdotjpoode/jpo-ode:${{ env.TAG }}
