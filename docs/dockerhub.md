@@ -43,7 +43,7 @@ services:
     ports:
       - "9092:9092"
     volumes:
-      - "${DOCKER_SHARED_VOLUME}:/bitnami"
+      - kafka:/bitnami
     environment:
       KAFKA_ENABLE_KRAFT: "yes"
       KAFKA_CFG_PROCESS_ROLES: "broker,controller"
@@ -55,14 +55,21 @@ services:
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
       ALLOW_PLAINTEXT_LISTENER: "yes"
       KAFKA_CFG_NODE_ID: "1"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1,topic.OdeRawEncodedPSMJson:1:1,topic.OdePsmTxPojo:1:1,topic.OdePsmJson:1:1"
       KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
       KAFKA_CFG_LOG_RETENTION_HOURS: 2
     logging:
       options:
         max-size: "10m"  
         max-file: "5"
+
+  kafka_init:
+    image: bitnami/kafka:latest
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - ./scripts/kafka/kafka_init.sh:/kafka_init.sh
+    entrypoint: ["/bin/sh", "kafka_init.sh"]
 
   ode:
     image: usdotjpoode/jpo-ode:release_q3
@@ -76,6 +83,7 @@ services:
       - "44910:44910/udp"
       - "44920:44920/udp"
       - "44930:44930/udp"
+      - "44940:44940/udp"
       - "5555:5555/udp"
       - "6666:6666/udp"
     environment:
@@ -84,6 +92,9 @@ services:
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
       ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
       ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      DATA_SIGNING_ENABLED_RSU: ${DATA_SIGNING_ENABLED_RSU}
+      DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
+      DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
     depends_on:
       - kafka
     volumes:
