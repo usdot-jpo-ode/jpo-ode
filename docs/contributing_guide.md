@@ -53,10 +53,14 @@ All pull requests will be reviewed by the JPO-ODE team. The team member will eit
 
 ## Release Processes
 ### Quarterly Release
-At the end of each quarter, a 'release/version' branch will be created from the develop branch for all release changes. This branch should be used to stabilize the code and prepare for a release. Any non-release changes continue to be pushed to the develop branch as part of the ongoing development process. Validation testing will be conducted on the release branch to ensure that the code is stable and ready for release. Once the release branch is stable, it will be merged into the master branch and tagged with the release version. If hotfixes are necessary during validation, a hotfix branch is created from the master branch. To conclude the release process, changes from the master branch, including all updates and hotfixes, are merged back into the develop branch.
+At the end of each quarter, a 'release/version' branch will be created from the develop branch for all release changes. This branch should be used to stabilize the code and prepare for a release. Any non-release changes continue to be pushed to the develop branch as part of the ongoing development process. Validation testing will be conducted on the release branch to ensure that the code is stable and ready for release. If hotfixes are necessary during validation, a hotfix branch is created from the release branch. Once the release branch is stable, it will be merged into the master branch and tagged with the release version. To conclude the release process, changes from the master branch are merged back into the develop branch.
 
-### Hotfix Release
+For more information on the quarterly release process, please refer to the [Release Process](./release_process.md#quarterly-release-process) documentation.
+
+### Standalone Hotfix Release
 If a critical bug or issue is found in the master branch, a hotfix branch should be created from the master branch. The hotfix branch should be used to fix the critical bug or issue. Once the hotfix branch is stable, it can be merged into the master branch and tagged with the release version. The master branch will then be merged back into the develop branch to ensure that the develop branch is up to date with the latest changes.
+
+For more information on the standalone hotfix release process, please refer to the [Release Process](./release_process.md#standalone-hotfix-release-process) documentation.
 
 ## Contributor Covenant Code of Conduct
 ### Our Pledge

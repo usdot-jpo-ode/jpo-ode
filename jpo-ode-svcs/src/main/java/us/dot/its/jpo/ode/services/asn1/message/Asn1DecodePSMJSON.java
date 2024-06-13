@@ -14,13 +14,14 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdePsmMetadata;
+import us.dot.its.jpo.ode.uper.UperUtil;
 
 public class Asn1DecodePSMJSON extends AbstractAsn1DecodeMessageJSON {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public Asn1DecodePSMJSON(OdeProperties odeProps) {
-		super(new StringPublisher(odeProps), odeProps.getPsmStartFlag());
+		super(new StringPublisher(odeProps), UperUtil.getPsmStartFlag());
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class Asn1DecodePSMJSON extends AbstractAsn1DecodeMessageJSON {
 			metadata.addEncoding(unsecuredDataEncoding);
 
             String payloadHexString = ((JSONObject)((JSONObject) rawPsmJsonObject.get("payload")).get("data")).getString("bytes");
-			payloadHexString = super.stripDot2Header(payloadHexString);
+			payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payload_start_flag);
 
 			if (payloadHexString.equals("BAD DATA")) {
 				logger.error("NON-PSM DATA ENCOUNTERED IN THE ASN1DECODEPSMJSON CLASS");

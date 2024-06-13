@@ -5,7 +5,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -62,21 +62,10 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                senderPort = packet.getPort();
                logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-               // extract the actualPacket from the buffer
-               byte[] payload = packet.getData();
-               if (payload == null)
-                  continue;
-
-               // convert bytes to hex string and verify identity
-               String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
-               if (payloadHexString.indexOf(odeProperties.getBsmStartFlag()) == -1)
-                  continue;
-               logger.debug("Full BSM packet: {}", payloadHexString);
-               payloadHexString = super.stripDot3Header(payloadHexString, odeProperties.getBsmStartFlag());
-               logger.debug("Stripped BSM packet: {}", payloadHexString);
-
                // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               OdeAsn1Payload bsmPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+               OdeAsn1Payload bsmPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.BSM);
+               if (bsmPayload == null)
+                  continue;
                OdeBsmMetadata bsmMetadata = new OdeBsmMetadata(bsmPayload);
 
                // Set BSM Metadata values that can be assumed from the UDP endpoint

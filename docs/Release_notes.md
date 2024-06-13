@@ -1,6 +1,47 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 2.1.0, released June 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 2.1.0 release include several key improvements and fixes. These updates address issues with PSM and log offloading and enhance the continuous integration processes. The Kafka version has been upgraded and a bug related to log processing has been resolved. Nanoseconds are now trimmed from timestamps and 1609.2 headers are now stripped from unsigned messages. A submodule compatibility guide has been added, along with making the default SNMP protocol configurable. Configurable signing is now possible independently for Road-Side Units (RSUs) and the SDX. The Dockerhub documentation now includes a link to the submodule compatibility guide. Maven plugin versions have been updated and the Kafka topic creation process has been improved. A timestamp precision bug has been fixed and the documentation has been revised for accuracy. Additionally, the NTCIP1218 msgRepeatOptions value is now set based on context and SnmpSession now reports failures to retrieve authoritative engine IDs only if a response is received. Finally, the TimDeleteController has been updated to log message deletion failures as errors.
+
+Enhancements in this release:
+CDOT PR 57: Fixes for PSM & Log Offloading
+CDOT PR 58: Updated CI
+CDOT PR 59: Updated Kafka version
+CDOT PR 61: Fixed bug with log processing
+CDOT PR 62: Trimmed nanoseconds from snmpTimeStampFromIso
+CDOT PR 63: Stripped 1609.2 headers from unsigned messages
+CDOT PR 64: Added submodule compatibility guide
+CDOT PR 65: Added support for retaining IEEE 1609.2 security headers
+CDOT PR 66: Made default SNMP protocol configurable
+CDOT PR 67: Added configurable signing independently for RSUs and the SDX
+CDOT PR 69: Added link to submodule compatibility guide to Docker Hub documentation
+CDOT PR 70: Updated maven plugin versions
+CDOT PR 71: Updated Kafka topic creation
+CDOT PR 72: Fixed timestamp precision bug
+CDOT PR 73: Revised documentation for accuracy
+CDOT PR 74: Kafka Connect & MongoDB Database
+CDOT PR 75: Set NTCIP1218 msgRepeatOptions value based on context
+CDOT PR 76: Updated SnmpSession to report failures to retrieve authoritative engine IDs only if a response is received
+CDOT PR 78: UDP/Log Ingestion Updates
+CDOT PR 79: Updated TimDeleteController to log failures to delete messages as errors
+
+Version 2.0.2, released April 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 2.0.2 release includes an update to the dataflow for the UDP and log ingestion endpoints. This update allows for the UDP and log ingestion endpoints to handle and strip unsigned IEEE 1609.2 and 1609.3 headers. Signed IEEE 1609.2 security headers are maintained in the encoded Kafka topic prior to being decoded.
+
+Enhancements in this release:
+- Support IEEE 1609.2 and 1609.3 header ingestion
+- Strips unsigned IEEE 1609.2 headers
+- Strips IEEE 1609.2 headers
+- Maintains signed IEEE 1609.3 headers before eventually stripping them before decoding to the J2735 payload
+
+Known Issues:
+- No known issues at this time.
+
 Version 2.0.1, released March 2024
 ----------------------------------------
 ### **Summary**
