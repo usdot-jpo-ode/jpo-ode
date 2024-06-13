@@ -88,7 +88,7 @@ public class OdeProperties implements EnvironmentAware {
    private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
-    * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
+    * USDOT Situation Data Clearinghouse (SDC) / Situational Data Exchange (SDX),
     * a.k.a Data Distribution System (DDS) Properties
     */
    // DDS WebSocket Properties
@@ -189,7 +189,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
    private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
 
-   // SDW Depositor Module
+   // SDX Depositor Module
    private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
    //Signed Tim with expiration

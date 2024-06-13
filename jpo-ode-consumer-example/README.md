@@ -49,7 +49,7 @@ The IP used is the location of the Kafka endpoints.
 ####Create, alter, list, and describe topics.
 
 ```
-kafka-topics --bootstrap-server=192.168.1.151:9092 --list
+kafka-topics --bootstrap-server 192.168.1.151:9092 --list
 sink1
 t1
 t2
@@ -58,11 +58,11 @@ t2
 ####Read data from a Kafka topic and write it to standard output. 
 
 ```
-kafka-console-consumer --bootstrap-server=192.168.1.151:9092 --topic topic.J2735Bsm
+kafka-console-consumer --bootstrap-server 192.168.1.151:9092 --topic topic.J2735Bsm
 ```
 
 ####Read data from standard output and write it to a Kafka topic. 
 
 ```
-kafka-console-producer --bootstrap-server=192.168.1.151:9092 --topic topic.J2735Bsm 
+kafka-console-producer --bootstrap-server 192.168.1.151:9092 --topic topic.J2735Bsm 
 ```

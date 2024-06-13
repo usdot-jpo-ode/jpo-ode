@@ -6,4 +6,4 @@ if [[ -z "$1" ]]; then
 	exit 1;
 fi
 
-$KAFKA_HOME/bin/kafka-console-consumer.sh --topic=$1 --bootstrap-server=`broker-list.sh`
+$KAFKA_HOME/bin/kafka-console-consumer.sh --topic $1 --bootstrap-server `broker-list.sh`

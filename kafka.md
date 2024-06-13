@@ -41,16 +41,7 @@ If you don't specify a broker id in your docker-compose file, it will automatica
 
 ### Automatically create topics
 
-If you want to have kafka-docker automatically create topics in Kafka during
-creation, a ```KAFKA_CREATE_TOPICS``` environment variable can be
-added in ```docker-compose.yml```.
-
-Here is an example snippet from ```docker-compose.yml```:
-
-        environment:
-          KAFKA_CREATE_TOPICS: "Topic1:1:3,Topic2:1:1"
-
-```Topic 1``` will have 1 partition and 3 replicas, ```Topic 2``` will have 1 partition and 1 replica.
+If you want to have Kafka automatically create topics during creation, modify the `scripts\kafka\kafka_init.sh` script to include the topics you want to create. The script is run by a kafka init container upon startup. The default script creates all necessary topics with a replication factor of 1. If you want to change the replication factor, modify the script accordingly.
 
 ### Advertised hostname 
 
