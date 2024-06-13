@@ -8,8 +8,6 @@ export LOG_DIR=/var/log/kafka
 case "$1" in
   start)
         # Start daemon.
-        echo "Starting Zookeeper";
-        $DAEMON_PATH/bin/zookeeper-server-start.sh -daemon $DAEMON_PATH/config/zookeeper.properties
         echo "Starting Kafka";
         $DAEMON_PATH/bin/kafka-server-start.sh -daemon $DAEMON_PATH/config/server.properties
         ;;
@@ -17,9 +15,6 @@ case "$1" in
         # Stop daemons.
         echo "Shutting down Kafka";
         $DAEMON_PATH/bin/kafka-server-stop.sh
-        sleep 2
-        echo "Shutting down Zookeeper";
-        $DAEMON_PATH/bin/zookeeper-server-stop.sh
         ;;
   restart)
         $0 stop
@@ -27,13 +22,6 @@ case "$1" in
         $0 start
         ;;
   status)
-        pid=`ps ax | grep -i 'org.apache.zookeeper.server' | grep -v grep | awk '{print $1}'`
-        if [ -n "$pid" ]
-          then
-          echo "Zookeeper is Running as PID: $pid"
-        else
-          echo "Zookeeper is not Running"
-        fi
         pid=`ps ax | grep -i 'kafka.Kafka' | grep -v grep | awk '{print $1}'`
         if [ -n "$pid" ]
           then

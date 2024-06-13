@@ -118,34 +118,43 @@ public class TimDeleteController {
                .body(JsonUtils.jsonKeyValue(ERRSTR, e.getMessage()));
       }
 
-      // Try to explain common errors
-      HttpStatus returnCode = null;
-      String bodyMsg = "";
+      // Provide error codes/text returned from RSU and our interpretation of them
+      HttpStatus httpResponseReturnCode = null;
+      String httpResponseBodyMessage = "";
+      String rsuIpAddress = queryTarget.getRsuTarget();
       if (null == rsuResponse || null == rsuResponse.getResponse()) {
          // Timeout
-         returnCode = HttpStatus.REQUEST_TIMEOUT;
-         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "Timeout.");
+         httpResponseReturnCode = HttpStatus.REQUEST_TIMEOUT;
+         String timeoutMessage = "Timeout. No response from RSU.";
+         httpResponseBodyMessage = JsonUtils.jsonKeyValue(ERRSTR, timeoutMessage);
+         logger.error("Failed to delete message at index {} for RSU {}: {}", index, rsuIpAddress, timeoutMessage);
       } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
          // Success
-         returnCode = HttpStatus.OK;
-         bodyMsg = JsonUtils.jsonKeyValue("deleted_msg", Integer.toString(index));
-      } else if (rsuResponse.getResponse().getErrorStatus() == 12) {
-         // Message previously deleted or doesn't exist
-         returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "No message at index ".concat(Integer.toString(index)));
-      } else if (rsuResponse.getResponse().getErrorStatus() == 10) {
-         // Invalid index
-         returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "Invalid index ".concat(Integer.toString(index)));
+         httpResponseReturnCode = HttpStatus.OK;
+         httpResponseBodyMessage = JsonUtils.jsonKeyValue("deleted_msg", Integer.toString(index));
+         logger.info("Successfully deleted message at index {} for RSU {}", index, rsuIpAddress);
       } else {
-         // Misc error
-         returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, rsuResponse.getResponse().getErrorStatusText());
+         // Error
+         httpResponseReturnCode = HttpStatus.BAD_REQUEST;
+         int errorCodeReturnedByRSU = rsuResponse.getResponse().getErrorStatus();
+         String errorTextReturnedByRSU = rsuResponse.getResponse().getErrorStatusText();
+         String givenReason = "Error code " + Integer.toString(errorCodeReturnedByRSU) + ": " + errorTextReturnedByRSU;
+         String interpretation = interpretErrorCode(errorCodeReturnedByRSU, index);
+         httpResponseBodyMessage = JsonUtils.jsonKeyValue(ERRSTR, givenReason + " => Interpretation: " + interpretation);
+         logger.error("Failed to delete message at index {} for RSU {} due to error: {} => Interpretation: {}", index, rsuIpAddress, givenReason, interpretation);
       }
 
-      logger.info("Delete call response code: {}, message: {}", returnCode, bodyMsg);
+      return ResponseEntity.status(httpResponseReturnCode).body(httpResponseBodyMessage);
+   }
 
-      return ResponseEntity.status(returnCode).body(bodyMsg);
+   private String interpretErrorCode(int errorCodeReturnedByRSU, int index) {
+      if (errorCodeReturnedByRSU == 12) {
+         return "Message previously deleted or doesn't exist at index " + Integer.toString(index);
+      } else if (errorCodeReturnedByRSU == 10) {
+         return "Invalid index " + Integer.toString(index);
+      } else {
+         return "Unknown error";
+      }
    }
 
 }

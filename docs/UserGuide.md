@@ -9,7 +9,7 @@ Booz Allen Hamilton\
 8283 Greensboro Drive\
 McLean, VA 22102
 
-_Last updated February 7, 2019_
+_Last updated April 26th, 2024_
 
 # Table of Contents
 - [Version History](#version-history)
@@ -48,7 +48,7 @@ _Last updated February 7, 2019_
   - [7.4 - Probe Data Management](#probe-data-management)
     - [7.4.1 - PDM Broadcast Request Quick Start Guide](#pdm-broadcast-request-quick-start-guide)
   - [7.5 - Outbound TIM Broadcast](#outbound-tim-broadcast)
-    - [7.5.1 - Outbound TIM to SDW Websocket Setup](#outbound-tim-to-sdw-websocket-setup)
+    - [7.5.1 - Outbound TIM to SDX Setup](#outbound-tim-to-sdx-setup)
     - [7.5.2 - Outbound TIM to S3 Bucket Setup](#outbound-tim-to-s3-bucket-setup)
     - [7.5.3 - TIM Broadcast Request Quick Start Guide](#tim-broadcast-request-quick-start-guide)
   - [7.6 - Privacy Protection Module (PPM)](#privacy-protection-module-ppm)
@@ -67,7 +67,7 @@ _Last updated February 7, 2019_
     - [8.3.2 - ODE Output Schema Reference](#ode-output-schema-reference)
 - [9 - References](#references)
 
-<a name="version-history">
+<a name="version-history"></a>
 
 # Version History
 
@@ -91,7 +91,7 @@ _Last updated February 7, 2019_
 | 0.16      | ODE Team       | 2/4/2019      | Removed deprecated properties. Added ode.kafkaDisabledTopics                                                     |
 | 0.17      | ODE Team       | 2/6/2019      | Added SDW depositor submodule instructions. Removed deprecated properties and capabilities (VSD deposit to SDC). |
 
-<a name="introduction">
+<a name="introduction"></a>
 
 # 1 - Introduction
 
@@ -113,7 +113,7 @@ in the project's GitHub repository
 GitHub account to create an issue. If you don't have an account, a
 dialog will be presented to you to create one at no cost.
 
-<a name="project-overview">
+<a name="project-overview"></a>
 
 # 2 - Project Overview
 
@@ -130,13 +130,13 @@ brokering, processing and routing data from various data sources,
 including connected vehicles, field devices, Transportation Management
 Center (TMC) applications and a variety of other data users. Data users
 include but not limited to transportation software applications,
-Research Data Exchange (RDE), US DOT Situation Data Warehouse.
+Research Data Exchange (RDE), and the [Situational Data Exchange (SDX)](https://sdx.trihydro.com/).
 
 As a data provisioning service, the ODE can provision data from
 disparate data sources to software applications that have placed data
 subscription requests to the ODE. On the other direction, the ODE can
 accept data from CV applications and broadcast them to field devices
-through Road Side Units (RSU) and US DOT Situation Data Warehouse which
+through Road Side Units (RSU)s and the Situational Data Exchange (SDX) which
 in turn will transmit the data to Sirius XM satellites for delivery to
 the connected vehicles in the field.
 
@@ -153,11 +153,11 @@ validation and sanitization.
     compromise the privacy of the individual(s) that might be linked to
     the data.
 
-<a name="system-overview">
+<a name="system-overview"></a>
 
 # 3 - System Overview
 
-JPO ODE is an open-sourced software application that will enable the
+JPO ODE is an open-source software application that will enable the
 transfer of data between field devices and backend TMC systems for
 operational, monitoring, and research purposes. The system will enable
 applications to submit data through a variety standard interfaces as
@@ -175,15 +175,15 @@ capabilities to the JPO-ODE product owner._
 
 ![](images/userguide/figure1.png)
 
-Figure 1 - ODE System Data Producers and Consumers
+_Figure 1 - ODE System Data Producers and Consumers_
 
-<a name="audience">
+<a name="audience"></a>
 
 # 4 - Audience
 
-This document is intended for use by the ODE client applications.
+This document is intended for use by the ODE client applications that will be interfacing with the ODE.
 
-<a name="glossary">
+<a name="glossary"></a>
 
 # 5 - Glossary
 
@@ -201,17 +201,17 @@ This document is intended for use by the ODE client applications.
 | SAE       | SAE International is a global association of more than 128,000 engineers and related technical experts in the aerospace, automotive and commercial-vehicle industries.                                                                                                                                                                               |
 | J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                                                                          |
-| SDW       | Situation Data Warehouse                                                                                                                                                                                                                                                                                                                             |
+| SDX       | Situational Data Exchange                                                                                                                                                                                                                                                                                                                             |
+| SDW       | Situational Data Warehouse (the old name for the SDX)                                                                                                                                                                                                                                                                                                                             |
 | TIM       | Traveler Information Message                                                                                                                                                                                                                                                                                                                         |
 | US DOT    | Unites States Department of Transportation                                                                                                                                                                                                                                                                                                           |
 | WebSocket | WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol. Its only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request.                                              |
-| ZooKeeper | Apache ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.                                                                                                                                                                                    |
 
-<a name="ode-development-environment">
+<a name="ode-development-environment"></a>
 
 # 6 - ODE Development Environment
 
-<a name="java-development-tools">
+<a name="java-development-tools"></a>
 
 ### 6.1 - Java Development Tools
 
@@ -225,15 +225,15 @@ Tools:
 - Maven
 - GitHub: <https://github.com/usdot-jpo-ode/jpo-ode>
 
-<a name="java">
+<a name="java"></a>
 
 ### 6.2 - Java
 
-Install Java Development Kit (JDK) 1.8
+Install Java Development Kit (JDK) 21
 
-<http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
+<https://www.oracle.com/java/technologies/downloads/#java21>
 
-<a name="eclipse-ide">
+<a name="eclipse-ide"></a>
 
 ### 6.3 - Eclipse IDE
 
@@ -241,11 +241,11 @@ Download and install Eclipse.
 
 <https://eclipse.org>
 
-Configure Eclipse to use Java 1.8 JDK. Local installation of Tomcat can
+Configure Eclipse to use Java 21 JDK. Local installation of Tomcat can
 integrate with Eclipse and can help with prototyping or debugging the
 application.
 
-<a name="maven">
+<a name="maven"></a>
 
 ### 6.4 - Maven
 
@@ -256,7 +256,7 @@ pre-installed with a Maven plug-in.
 
 Download and install Maven: <https://maven.apache.org/>
 
-<a name="git-version-control">
+<a name="git-version-control"></a>
 
 ### 6.5 - Git Version Control
 
@@ -274,7 +274,7 @@ It is recommended that GIT plug-ins are installed with your IDE so that
 your IDE is Git "aware". Newer versions of eclipse (Luna and later
 versions) comes pre-installed with a Git plug-in.
 
-<a name="building-ode-software-artifacts">
+<a name="building-ode-software-artifacts"></a>
 
 ### 6.6 - Building ODE Software Artifacts
 
@@ -288,12 +288,14 @@ be found in the jpo-ode/README.md document:
 | jpo-s3-deposit | public     | S3 depositor service    | <https://github.com/usdot-jpo-ode/jpo-s3-deposit> |
 | jpo-cvdp       | public     | PII sanitization module | <https://github.com/usdot-jpo-ode/jpo-cvdp>       |
 | asn1\_codec    | public     | ASN.1 encoder/decoder   | <https://github.com/usdot-jpo-ode/asn1_codec>     |
+| jpo-sdw-depositor | public | SDX depositor service   | <https://github.com/usdot-jpo-ode/jpo-sdw-depositor> |
+| jpo-security-svcs | public | Security services module | <https://github.com/usdot-jpo-ode/jpo-security-svcs> |
 
-<a name="open-source-repository">
+<a name="open-source-repository"></a>
 
 #### 6.6.1 - Open-Source Repository
 
-The ODE deployment artifact consists of one of more jar files that make
+The ODE deployment artifact consists of one or more jar files that make
 up the collection of software modules and service components. Initially,
 there will be only one executable jar file (one micros service) but in
 the future as the ODE functionality expands it is envisioned that
@@ -323,29 +325,29 @@ The following components make up the JPO ODE software:
   ODE and other applications. This module will replace the private
   repository jpo-ode-private.
 
-<a name="asn1-java-api">
+<a name="asn1-java-api"></a>
 
 #### 6.6.2 - ASN.1 Java API
 
 The data uploaded or deposited to the ODE from the connected vehicles
-(CV) and the road-side units (RSU) is encoded in ASN.1 format. In order
+(CV) and the road-side units (RSU)s is encoded in ASN.1 format. In order
 for the ODE to utilize the data, it must be able to decode the data from
 ASN.1 format into a more generic format, in this case Plain Old Java
-Objects (POJOs). ODE utilizes an open-source ASN.1 codec library
-provided on GitHub at <https://github.com/vlm/asn1c> . ODE team has
+Objects (POJOs). ODE utilizes a fork of an open-source ASN.1 codec library
+provided on GitHub at <https://github.com/mouse07410/asn1c> . ODE team has
 built a standalone C/C++ module that uses this library to perform all
 required encoding and decoding needs of the application. The module is a
 submodule of ODE, also provided on GitHub:
 <https://github.com/usdot-jpo-ode/asn1_codec>
 
-<a name="build-and-deploy-procedure">
+<a name="build-and-deploy-procedure"></a>
 
 #### 6.6.3 - Build and Deploy Procedure
 
-Follow the steps in jpo-ode/README.md Getting Started guide for building
+Follow the steps in jpo-ode/README.md [Installation](../README.md#3-installation) section for building
 and deploying the JPO-ODE services.
 
-<a name="ode-application-properties">
+<a name="ode-application-properties"></a>
 
 #### 6.6.4 - ODE Application Properties
 
@@ -368,7 +370,7 @@ For example, add
 ```
 
 3. _You may_ specify properties as system environment variables in the
-   form of _ode.DdsCasUsername=fred.flintstone\@stone.age._
+   form of _ode.sdwApiKey=12345_
 
 Other properties not specific to the ODE can also be defined in a
 similar way but without the _ode_ prefix.
@@ -389,10 +391,6 @@ _Table 1 - ODE Application Properties_
 | ode.uploadLocationObuLog                 | ./uploads/bsmlog                                                                              |                        | Specific location for OBU log files with header fields to specify direction, UTC timestamp, and other metadata                                                                                                                                                                                                                            |
 | ode.pluginsLocations                     | ./plugins                                                                                     |                        | Location of the jar files for ODE plugins.                                                                                                                                                                                                                                                                                                |
 | ode.kafkaProducerType                    | async                                                                                         |                        | Specifies whether publishing to Kafka will be synchronous (i.e. blocking until the data has been persisted) or asynchronous (i.e. publish and forget). Valid values are: sync or async. Sync will generally be slower but more reliable, async is faster with the risk of losing data if kafka crashes during the write operation.        |
-| ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situation Data Warehouse                                                                                                                                                                                                                                                     |
-| ode.ddsCasPassword                       | null                                                                                          | X                      | Password to be used for authentication when interfacing with Situation Data Warehouse (SDW)                                                                                                                                                                                                                                               |
-| ode.ddsCasUrl                            | <https://cas.cvmvp.com/accounts/v1/tickets>                                                     |                        | URL of the US DOT security server.                                                                                                                                                                                                                                                                                                        |
-| ode.ddsWebsocketUrl                      | wss://webapp.cvmvp.com/whtools/websocket                                                      |                        | URL of the US DOT SDW WebSockets API                                                                                                                                                                                                                                                                                                      |
 | ode.sdcIp                                | 104.130.170.234                                                                               |                        | IPv4 address of SDC                                                                                                                                                                                                                                                                                                                       |
 | ode.sdcPort                              | 46753                                                                                         |                        | Destination port of SDC                                                                                                                                                                                                                                                                                                                   |
 | ode.bsmReceiverPort                      | 46800                                                                                         |                        | The UDP port that ODE will use to listen to BSM messages.                                                                                                                                                                                                                                                                                 |
@@ -420,7 +418,7 @@ _Table 1 - ODE Application Properties_
 | ode.rsuPassword                          | null                                                                                          | If not present in JSON | The SNMP password used to authenticate with an RSU when depositing, deleting, or querying TIMs.                                                                                                                                                                                                                                           |
 | ode.kafkaTopicsDisabled                  | topic.OdeBsmRxPojo, topic.OdeBsmTxPojo, topic.OdeBsmDuringEventPojo,topic.OdeTimBroadcastPojo |                        | List of topics to be disabled from publishing.                                                                                                                                                                                                                                                                                            |
 
-<a name="ode-logging-properties">
+<a name="ode-logging-properties"></a>
 
 #### 6.6.5 - ODE Logging Properties
 
@@ -439,7 +437,7 @@ source _src/main/resources/logback.xml_ file before building the
 software or place a different _logback.xml_ file with the modified
 values in the working directory of the application.
 
-<a name="ode-features">
+<a name="ode-features"></a>
 
 # 7 - ODE Features
 
@@ -468,7 +466,7 @@ applications:
 
 11. Data Sanitization
 
-<a name="managing-snmp-devices">
+<a name="managing-snmp-devices"></a>
 
 ### 7.1 - Managing SNMP Devices
 
@@ -477,7 +475,7 @@ existing Road Side Unit to ensure the system is up and running. To
 trigger a specific heartbeat call, the ODE provides two separate
 interfaces to deploy a message to an RSU.
 
-<a name="query-parameters">
+<a name="query-parameters"></a>
 
 ##### 7.1.1 - Query Parameters
 
@@ -493,7 +491,7 @@ _The OIDs for the RSUs are specified in the DSRC Roadside Unit (RSU)
 Specifications Document v4.1. The units also respond to ISO standard
 OIDs, as demonstrated in the screenshot below._
 
-<a name="api-details">
+<a name="api-details"></a>
 
 ##### 7.1.2 - API Details
 
@@ -510,7 +508,7 @@ was last powered on)
 
 \[1.3.6.1.2.1.1.3.0 = 0:05:12.59\]
 
-<a name="web-based-view">
+<a name="web-based-view"></a>
 
 #### 7.1.3 - Web Based View
 
@@ -519,7 +517,7 @@ through the existing web interface located at the root of the
 application. On it, a user will see a section for RSU SNMP Query and may
 enter in the same IP and OID information as the API Endpoint.
 
-<a name="additional-features-discussion-points">
+<a name="additional-features-discussion-points"></a>
 
 #### 7.1.4 - Additional Features/ Discussion Points
 
@@ -530,13 +528,13 @@ enter in the same IP and OID information as the API Endpoint.
 -   Should the responses from the application be in a standard format?
     (JSON)
 
-<a name="logging-events">
+<a name="logging-events"></a>
 
 ### 7.2 - Logging Events
 
 ODE uses Logback logging framework to log application and data events.
 
-<a name="log-levels">
+<a name="log-levels"></a>
 
 #### 7.2.1 - Log Levels
 
@@ -558,14 +556,14 @@ ODE uses Logback logging framework to log application and data events.
 
 8.  WARN - Logger reports application warnings
 
-<a name="logging-setup">
+<a name="logging-setup"></a>
 
 #### 7.2.2 - Logging setup
 
 -   As it stands, the current logging framework has two separate log
     files. The first log file is for application output called ode.log.
     Application debug information and backend service messages are
-    output to this file. The second log file, Events.log contains
+    output to this file. The second log file, Events.log, contains
     informational messages pertaining to the services a message goes
     through inside of the system.
 
@@ -575,11 +573,11 @@ ODE uses Logback logging framework to log application and data events.
     deletion, and rolling archive file naming. For the full list of
     features visit this URL: <https://logback.qos.ch/manual/>
 
-<a name="steps-to-turn-on-off-logging-during-application-runtime">
+<a name="steps-to-turn-on-off-logging-during-application-runtime"></a>
 
 #### 7.2.3 - Steps to turn on/off logging during application runtime.
 
-1.  Start ode, Kafka, and Zookeeper as normal.
+1.  Start ode and Kafka as normal.
 
 2.  In a new terminal window run \"jconsole\".
 
@@ -611,7 +609,7 @@ ODE uses Logback logging framework to log application and data events.
 13. Save the file and go back to the jconsole and click the button
     reloadbyfilename to submit changes.
 
-<a name="inbound-data-distribution">
+<a name="inbound-data-distribution"></a>
 
 ### 7.3 Inbound Data Distribution
 
@@ -631,7 +629,7 @@ as POJO). ODE uses Kryo serializer for serializing POJOs before
 publishing. See section 8.3.1 for the topic names to which applications
 can subscribe.
 
-<a name="inbound-bsm-log-file-processing-and-distribution">
+<a name="inbound-bsm-log-file-processing-and-distribution"></a>
 
 #### 7.3.1 - Inbound BSM Log File Processing and Distribution
 
@@ -648,7 +646,7 @@ can subscribe.
     1. Received messages (purge third)
         1. Received BSMs from nearby OBUs are logged and deposited to the ODE via the file copy interface.
 
-<a name="inbound-tim-log-file-processing-and-distribution">
+<a name="inbound-tim-log-file-processing-and-distribution"></a>
 
 #### 7.3.2 - Inbound TIM Log File Processing and Distribution
 
@@ -663,7 +661,7 @@ can subscribe.
     1. We have a log for driver's alerts, it will need to flag alerts that were not given because of a higher priority alert (purge ninth)
         1. Location, time, alert (FCW, TIM, not DNM)
 
-<a name="inbound-other-log-file-processing-and-distribution">
+<a name="inbound-other-log-file-processing-and-distribution"></a>
 
 #### 7.3.3 Inbound Other Log File Processing and Distribution
 
@@ -686,13 +684,13 @@ can subscribe.
         1. Log success/fail of firmware updates
         2. Log availability of firmware updates
 
-<a name="inbound-bsm-text-file-processing-hex-and-json">
+<a name="inbound-bsm-text-file-processing-hex-and-json"></a>
 
 #### 7.3.4 - Inbound BSM - Text File Processing (HEX and JSON)
 
 HEX and JSON file processing is no longer supported
 
-<a name="probe-data-management">
+<a name="probe-data-management"></a>
 
 ### 7.4 - Probe Data Management
 
@@ -701,7 +699,7 @@ PDM messages via the REST API interface. The ODE accepts data elements
 in JSON which are then sent via SNMP to an array of Roadside Units
 (RSUs) which are also specified in that same JSON string.
 
-<a name="pdm-broadcast-request-quick-start-guide">
+<a name="pdm-broadcast-request-quick-start-guide"></a>
 
 #### 7.4.1 - PDM Broadcast Request Quick Start Guide
 
@@ -735,7 +733,7 @@ instructions.
 }
 ```
 
-<a name="outbound-tim-broadcast">
+<a name="outbound-tim-broadcast"></a>
 
 ### 7.5 - Outbound TIM Broadcast
 
@@ -745,100 +743,57 @@ in JSON format from which a fully formed ASN.1 compliant J2735
 TravelerInformation message will be constructed and sent to an array of
 RSUs. The RSUs must be specified in the TIM broadcast message received
 by the ODE. In addition to the RSU devices, the TIM message is also
-deposited to the US DOT Situation Data Warehouse (SDW) from which the
+deposited to the Situational Data Exchange (SDX) from which the
 SiriusXM satellites will pull from and broadcast to vehicles that are
-not within range of RSUs. SDW parameters are also specified in the TIM
+not within range of RSUs. SDX parameters are also specified in the TIM
 REST interface. Please refer to the Swagger file documentation for
 details of a TIM REST interface.
 
-<a name="outbound-tim-to-sdw-websocket-setup">
+<a name="outbound-tim-to-sdw-setup"></a>
 
-#### 7.5.1 Outbound TIM to SDW Setup
+#### 7.5.1 Outbound TIM to SDX Setup
 
-Traveler Information Messages may be distributed to RSUs, the SDW, or both by including certain objects in the JSON message sent to the `/tim` endpoint:
+Traveler Information Messages may be distributed to RSUs, the SDX, or both by including certain objects in the JSON message sent to the `/tim` endpoint:
 
 -   **RSU Distribution**: The /tim REST service will send the TIM messages to RSUs
     if both "rsus" and "snmp" elements of the request body are defined
     and valid. If either "rsus" or "snmp" are missing, the request will
     not be sent to the RSUs.
 
--   **SDW Enablement**: /tim REST service sends the TIM messages to SDW
+-   **SDX Enablement**: /tim REST service sends the TIM messages to SDX
     if the "sdw" element of the request body is defined and valid. If
-    "sdw" element is missing, the request will not be sent to the SDW.
+    "sdw" element is missing, the request will not be sent to the SDX.
 
-**Option 1: Websocket Interface**
+**SDW Depositor Submodule**
 
-ODE **Configuration**: Update the effective application.properties file
-with username and password for Webapp2/sdw. Substitute your username and
-password for `<SDWUSERNAME>` and `<SDWPASSWORD>`, respectively.
-
-```bash
-ode.ddsCasUsername=<SDWUSERNAME>
-ode.ddsCasPassword=<SDWPASSWORD>
-ode.depositSdwMessagesOverWebsocket=true
-```
-
-(OR)
-
-Define the following command line arguments while launching the ODE through the jpo-ode-svcs JAR:
-
-```bash
---ode.ddsCasUsername=<SDWUSERNAME>,
---ode.ddsCasPassword=<SDWPASSWORD>,
---ode.depositSdwMessagesOverWebsocket=true
-```
-
-(OR)
-
-Define the following environment variables in the environment file:
-
-```bash
-SDW_USERNAME=<SDWUSERNAME>
-SDWPASSWORD=<SDWPASSWORD>
-ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET=true
-```
-
-**Note**: This option uses the ODE's built-in SDW depositor and does not
-require a SDW service to be running. Therefore, jpo-sdw-depositor
-service should be removed from docker-compose.yml.
-
-**Option 2 (Recommended): SDW Depositor Submodule**
-
-Depositing a TIM message to the Situation Data Warehouse can be done
+Depositing a TIM message to the Situational Data Exchange can be done
 using the pre-built jpo-sdw-depositor repository. To set this service
 up:
 
 1.  Follow the steps in the ODE README.md to clone and compile the SDW
     depositor service. If you used the `--recurse-submodules` option to clone, it will automatically be cloned.
 
-2.  Set the following environment variable to false OR comment it out using the \# symbol:
-
-```
-ode.depositSdwMessagesOverWebsocket=false
-#ode.depositSdwMessagesOverWebsocket
-```
-
-3.  Set the following environment variables in the _.env_ file:
+2.  Set the following environment variables in the _.env_ file:
 
 ```bash
 SDW_API_KEY=myApiKey
 ```
 
-4.  Follow the rest of the ODE setup steps. The SDW depositor service
+3.  Follow the rest of the ODE setup steps. The SDW depositor service
     containers will be automatically created by docker-compose.
 
-5.  Verify arrival of messages in SDW by verifying response status
+4.  Verify arrival of messages in SDX by verifying response status
     messages in the logs.
 
-<a name="outbound-tim-to-s3-bucket-setup">
+<a name="outbound-tim-to-s3-bucket-setup"></a>
 
 #### 7.5.2 - Outbound TIM to S3 Bucket Setup
 
 Depositing a TIM message to an S3 bucket can be done using the pre-built
-jpo-s3-depositor repository. To set this service up:
+jpo-s3-deposit repository. To set this service up:
 
 1.  Follow the steps in the ODE README.md to clone and compile the S3
-    depositor service.
+    deposit service.
 
 2.  Set the following environment variables (and/or use the RDE prefixed
     variables, these prefixes are for guidance only and do not
@@ -854,50 +809,34 @@ jpo-s3-depositor repository. To set this service up:
 
     -   CVPEP\_TIM\_S3\_TOPIC
 
-3.  Follow the rest of the ODE setup steps. The S3 depositor service
+3.  Follow the rest of the ODE setup steps. The S3 deposit service
     containers will be automatically created by docker-compose.
 
 4.  Verify arrival of messages in S3 by visiting the AWS UI or an S3
     client application.
 
-<a name="tim-broadcast-request-quick-start-guide">
+<a name="tim-broadcast-request-quick-start-guide"></a>
 
 #### 7.5.3 - TIM Broadcast Request Quick Start Guide
 
 To run a local test of the TIM Message API, please follow these
 instructions:
 
-1.  Start the ODE with valid ode.ddsCasUsername and ode.ddsCasPassword
-    in the effective application.properties file.
-
-2.  Reference the Swagger documentation located in the /docs folder of
+1.  Reference the Swagger documentation located in the /docs folder of
     the repo or at <https://usdot-jpo-ode.github.io> to view the
     specifications for the API call.
 
-3.  Copy the curl command, run the python script, or use a web based
+2.  Copy the curl command, run the python script, or use a web based
     REST tool such as Postman to send the TIM broadcast request to the
     ODE. Make sure the REST request body contains the "snmp" and "rsus"
     elements with valid IP addresses of the RSUs that you intend to send
-    the message to as well as the required SDW parameters.
+    the message to as well as the required SDX parameters.
 
-4.  The REST interface will return a response indicating the deposit
+3.  The REST interface will return a response indicating the deposit
     success ("success":"true") or failure ("success":"false") for each
-    RSU and the SDW deposit:
+    RSU and the SDX deposit:
 
-```json
-{
-	"rsu_responses": [{
-		"target": "192.168.1.100",
-		"success": "true",
-		"message": "Success."
-	}],
-	"dds_deposit": {
-		"success": "true"
-	}
-}
-```
-
-<a name="privacy-protection-module-ppm">
+<a name="privacy-protection-module-ppm"></a>
 
 ### 7.6 Privacy Protection Module (PPM)
 
@@ -909,24 +848,24 @@ details. For instructions about configuration and integration of the PPM
 with ODE, please refer to the ODE README file at the root of the GitHub
 page <https://github.com/usdot-jpo-ode/jpo-ode> .
 
-<a name="data-validation">
+<a name="data-validation"></a>
 
 ### 7.7 - Data validation
 
 TBD
 
-<a name="string-s3-depositor">
+<a name="string-s3-depositor"></a>
 
 ### 7.8 - String S3 Depositor
 
 The ODE has the capability to deposit any string messages to any S3
-buckets using the application in the jpo-s3-depositor repository. To
+buckets using the application in the jpo-s3-deposit repository. To
 obtain and build this service, follow the instructions in the ODE
 README.md document. Once downloaded and compiled, all the user must do
 is set the relevant environment variables, the rest is managed
 automatically by docker-compose.
 
-Four example S3 depositor configurations are provided in the
+Four example S3 deposit configurations are provided in the
 docker-compose.yml file in the root of the jpo-ode directory, a BSM and
 TIM depositor for both CVPEP and RDE: cvpep\_bsm\_s3dep,
 rde\_bsm\_s3dep, cvpep\_tim\_s3dep, and rde\_tim\_s3dep. These example
@@ -934,27 +873,25 @@ templates are provided for convenience and guidance but may be
 removed/commented out by adding a \# symbol to the front of each line,
 or copied to create new a new S3 depositor.
 
-<a name="security-services-module">
+<a name="security-services-module"></a>
 
 ### 7.9 - Security Services Module
 
 ODE integrates with the
 [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)
-(JSS) module for performing message signing, verification, encryption
-and decryption. ODE sends TIM messages to JSS module to be signed before
-broadcasting the message to RSUs and SDW. No new configuration
+(SEC) module for performing message signing, verification, encryption
+and decryption. ODE sends TIM messages to SEC module to be signed before
+broadcasting the message to RSUs and SDX. No new configuration
 properties need to be set if the module and ODE run in Docker containers
-on the same server. However, if they are running o different host
+on the same server. However, if they are running on different host
 machines the property _ode.securitySvcsSignatureUri_ must be set to
-point to the JSS domain name or IP:Port number. The JSS module must,
+point to the SEC domain name or IP:Port number. The SEC module must,
 however, be configured with the DNS name or IP:Port of the Green Hills
 HSM security service URI. This property can be defined using the
 environment variable _SEC\_CRYPTO\_SERVICE\_BASE\_URI_. It must be set
-to [http://ip:port](http://ip:port) of the Green Hills appliance. If you
-do not want to sign the data set
-_SEC\_CRYPTO\_SERVICE\_BASE\_URI=UNSECURED_
+to [http://ip:port](http://ip:port) of the Green Hills appliance. By default, the ODE will not sign TIMs that are delivered to RSUs. This can be changed by setting the value of the DATA_SIGNING_ENABLED_RSU environment variable found in the provided sample.env file. Additionally, signing of SDX-delivery TIMs can be configured by setting the value of the environment variable DATA_SIGNING_ENABLED_SDW found in sample.env. 
 
-<a name="appendix-a-ode-interface-specification">
+<a name="appendix-a-ode-interface-specification"></a>
 
 # 8 - Appendix A: ODE Interface Specification
 
@@ -976,7 +913,7 @@ application) to send and receive data to and from the ODE
 
 All of the above interfaces can be secured using SSL encryption.
 
-<a name="file-copy-data-deposit">
+<a name="file-copy-data-deposit"></a>
 
 ### 8.1 - File Copy Data Deposit
 
@@ -1026,7 +963,7 @@ field of the output messages if and only if the payload is not signed
 with a valid signature. If the payload contains a valid 1609.2
 signature, the generationTime from 1609.2 header will be used.
 
-<a name="messages-and-alerts">
+<a name="messages-and-alerts"></a>
 
 #### 8.1.1 - Messages and Alerts
 
@@ -1075,7 +1012,7 @@ Table 2 - File Copy Data Deposit Messages and Alerts
 | “IMPORTER - Failed to open or process file: {}” SecurityException                | Application log file | When a data file is copied into one of the ODE upload folders, ODE will try to open the file and process its content. This error message is logged when ODE fails to read the file due to lack of Java security privileges. | If a security manager exists and its checkRead method denies read access to the file, a message will be logged to the application log file.”                        |
 | “IMPORTER - Failed to open or process file: {}” Error decoding data.             | Application log file | When a data file is copied into one of the ODE upload folders, ODE will try to open the file and process its content. This error message is logged when ODE fails to decode the data from ASN.1 format.                     | If the message is not encoded to the expected ASN.1 encoding, ODE will raise this error to indicate failure to decode the data.                                     |
 
-<a name="ode-rest-api">
+<a name="ode-rest-api"></a>
 
 ### 8.2 - ODE REST API
 
@@ -1097,7 +1034,7 @@ the repository at docs/ODESwagger.yml.
 
 Figure 3 - ODE REST API Editor Tool
 
-<a name="upload-bsm-file">
+<a name="upload-bsm-file"></a>
 
 #### 8.2.1 - Upload BSM File
 
@@ -1105,7 +1042,7 @@ ODE provides a REST API interface to upload a file to the ODE. Refer to
 [ODE REST API](https://usdot-jpo-ode.github.io/) online documentation
 (<https://usdot-jpo-ode.github.io>) for details.
 
-<a name="traveler-information-message-tim-interface">
+<a name="traveler-information-message-tim-interface"></a>
 
 #### 8.2.2 - Traveler Information Message (TIM) Interface
 
@@ -1113,7 +1050,7 @@ Refer to the
 [ODESwagger.yaml](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/ODESwagger.yaml)
 for details of the TIM interface.
 
-<a name="probe-data-management-messages-pdm-interface">
+<a name="probe-data-management-messages-pdm-interface"></a>
 
 #### 8.2.3 - Probe Data Management Messages (PDM) Interface
 
@@ -1121,7 +1058,7 @@ Refer to the
 [ODESwagger.yaml](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/ODESwagger.yaml)
 for details of the PDM interface.
 
-<a name="ode-streaming-api">
+<a name="ode-streaming-api"></a>
 
 ### 8.3 - ODE Streaming API
 
@@ -1136,7 +1073,7 @@ two distinct but dependent interfaces.
     (<http://tools.ietf.org/html/rfc6455> ). See section 7.3.2 for
     details.
 
-<a name="direct-kafka-interface">
+<a name="direct-kafka-interface"></a>
 
 #### 8.3.1 - Direct Kafka Interface
 
@@ -1162,7 +1099,7 @@ For a complete list and description of ODE publish/subscribe topics,
 refer to [ODE Output Schema Reference Document](#references). (Booz
 Allen Hamilton 2018)
 
-<a name="ode-output-schema-reference">
+<a name="ode-output-schema-reference"></a>
 
 #### 8.3.2 - ODE Output Schema Reference
 
@@ -1170,7 +1107,7 @@ Full details of ODE streaming interface schemas are provided in the [ODE
 Output Schema Reference Document](#references). (Booz Allen Hamilton
 2018)
 
-<a name="references">
+<a name="references"></a>
 
 # 9 - References
 

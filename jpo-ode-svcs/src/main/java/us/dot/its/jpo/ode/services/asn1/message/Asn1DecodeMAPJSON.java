@@ -14,6 +14,7 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeMapMetadata;
+import us.dot.its.jpo.ode.uper.UperUtil;
 
 public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -21,7 +22,7 @@ public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 
 
 	public Asn1DecodeMAPJSON(OdeProperties odeProps) {
-		super(new StringPublisher(odeProps), odeProps.getMapStartFlag());
+		super(new StringPublisher(odeProps), UperUtil.getMapStartFlag());
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 			metadata.addEncoding(unsecuredDataEncoding);
 
 			String payloadHexString = ((JSONObject)((JSONObject) rawMapJsonObject.get("payload")).get("data")).getString("bytes");
-			payloadHexString = super.stripDot2Header(payloadHexString);
+			payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payload_start_flag);
 
 			if (payloadHexString.equals("BAD DATA")) {
 				logger.error("NON-MAP DATA ENCOUNTERED IN THE ASN1DECODEMAPJSON CLASS");
