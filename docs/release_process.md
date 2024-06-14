@@ -155,20 +155,31 @@ After preliminary testing is complete, project reference updates should be made 
     - jpo-s3-deposit
 
     1a. Create a release for the asn1_codec project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. asn1_codec-x.x.x)
+
     1b. Create a release for the jpo-cvdp project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-cvdp-x.x.x)
+    
     1c. Create a release for the jpo-security-svcs project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-security-svcs-x.x.x)
+    
     1d. Create a release for the jpo-sdw-depositor project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-sdw-depositor-x.x.x)
+    
     1e. Create a release for the jpo-s3-deposit project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-s3-deposit-x.x.x)
 
 2. Update git submodule references for the ‘jpo-ode’ project to point to tagged commits in projects with updated `master/main` branches. Also update the version numbers within the pom.xmls of each of the ode subprojects (jpo-ode-common, jpo-ode-plugins, jpo-ode-svcs) to be self-consistent.
     
     2a. Open the jpo-ode project in an IDE and update the version numbers in the pom.xml files of the jpo-ode-common, jpo-ode-plugins, and jpo-ode-svcs projects to match the version number of the release. (e.g. 1.0.0)
+    
     2b. Navigate to the asn1_codec directory and run `git checkout tags/asn1_codec-x.x.x` to update the submodule reference.
+    
     2c. Navigate to the jpo-cvdp directory and run `git checkout tags/jpo-cvdp-x.x.x` to update the submodule reference.
+    
     2d. Navigate to the jpo-security-svcs directory and run `git checkout tags/jpo-security-svcs-x.x.x` to update the submodule reference.
+    
     2e. Navigate to the jpo-sdw-depositor directory and run `git checkout tags/jpo-sdw-depositor-x.x.x` to update the submodule reference.
+    
     2f. Navigate to the jpo-s3-deposit directory and run `git checkout tags/jpo-s3-deposit-x.x.x` to update the submodule reference. 
+    
     2g. Commit these changes to the `release_(year)-(quarter)` branch & push the changes to the remote repository.
+    
     2h. Ensure these changes pass CI/CD checks before continuing.
 
 3. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
@@ -176,9 +187,13 @@ After preliminary testing is complete, project reference updates should be made 
 4. Update git submodule references for the ‘jpo-geojsonconverter’ project to point to the tagged commit in jpo-ode master/main branch. Also update the corresponding version number for the jpo-ode dependency in the pom.xml of the geojsonconverter project.
 
     4a. Open the jpo-geojsonconverter project in an IDE.
+    
     4b. Navigate to the jpo-ode directory and run `git checkout tags/jpo-ode-x.x.x` to update the submodule reference.
+    
     4c. Update the version number in the pom.xml for the jpo-ode dependency to match the version number of the release. (e.g. 1.0.0)
+    
     4d. Commit these changes to the `release_(year)-(quarter)` branch & push the changes to the remote repository.
+    
     4e. Ensure these changes pass CI/CD checks before continuing.
 
 5. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-geojsonconverter project, and create a release with the version number of the release. (e.g. jpo-geojsonconverter-x.x.x)
@@ -186,9 +201,13 @@ After preliminary testing is complete, project reference updates should be made 
 6. Update git submodule references for the `jpo-conflictmonitor` project to point to the tagged commit in jpo-geojsonconverter master/main branch. Also update the corresponding version number for the jpo-geojsonconverter dependency in the pom.xml files of the conflictmonitor project. This change will be necessary in the jpo-conflictmonitor/pom.xml, jpo-deduplicator/pom.xml and message-sender/pom.xml files.
 
     6a. Open the jpo-conflictmonitor project in an IDE.
+    
     6b. Navigate to the jpo-geojsonconverter directory and run `git checkout tags/jpo-geojsonconverter-x.x.x` to update the submodule reference.
+    
     6c. Update the version number in the pom.xml filesfor the jpo-geojsonconverter dependency to match the version number of the release. (e.g. 1.0.0)
+    
     6d. Commit these changes to the `release_(year)-(quarter)` branch & push the changes to the remote repository.
+    
     6e. Ensure these changes pass CI/CD checks before continuing.
 
 7. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-conflictmonitor project, and create a release with the version number of the release. (e.g. jpo-conflictmonitor-x.x.x)
@@ -196,11 +215,17 @@ After preliminary testing is complete, project reference updates should be made 
 8. Update git submodule references for the `jpo-conflictvisualizer` project to point to the tagged commit in jpo-conflictmonitor master/main branch. Also update the corresponding version number for the jpo-conflictmonitor dependency in the pom.xml file of the conflictvisualizer project.
 
     8a. Open the jpo-conflictvisualizer project in an IDE.
+    
     8b. Navigate to the jpo-conflictmonitor directory and run `git checkout tags/jpo-conflictmonitor-x.x.x` to update the submodule reference.
+    
     8c. Update the version number in the pom.xml files for the jpo-conflictmonitor dependency to match the version number of the release. (e.g. 1.0.0)
+    
     8d. Update the version number in the pom.xml file for the jpo-geojsonconverter dependency to match the version number of the release. (e.g. 1.0.0)
+    
     8e. Update the version number in the pom.xml file for the jpo-ode dependency to match the version number of the release. (e.g. 1.0.0)
+    
     8f. Commit these changes to the `release_(year)-(quarter)` branch & push the changes to the remote repository.
+    
     8g. Ensure these changes pass CI/CD checks before continuing.
 
 9. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-conflictvisualizer project, and create a release with the version number of the release. (e.g. jpo-conflictvisualizer-x.x.x)
