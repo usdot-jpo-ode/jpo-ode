@@ -41,7 +41,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
                            // transfer
    private String recordID;        // DSRC.TemporaryID -- used by the provider to overwrite
                            // existing record(s)
-   private int timeToLive;         // TimeToLive -- indicates how long the SDW should persist
+   private int timeToLive;         // TimeToLive -- indicates how long the SDX should persist
                             // the record(s)
    private DdsGeoRegion serviceRegion; // GeoRegion, -- NW and SE corners of the region
                                // applicable

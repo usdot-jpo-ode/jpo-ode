@@ -38,7 +38,9 @@ public class RsuDepositor extends Thread {
 	private OdeProperties odeProperties; 
 	private ArrayList<RsuDepositorEntry> depositorEntries = new ArrayList<RsuDepositorEntry>();
 	
-
+	private static boolean dataSigningEnabledRSU = System.getenv("DATA_SIGNING_ENABLED_RSU") != null && !System.getenv("DATA_SIGNING_ENABLED_RSU").isEmpty()
+	? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_RSU"))
+	: false;
 
 	class RsuDepositorEntry{
 		public RsuDepositorEntry(ServiceRequest request, String encodedMsg) {
@@ -92,7 +94,7 @@ public class RsuDepositor extends Thread {
 
 						String httpResponseStatus;
 						try {
-							rsuResponse = SnmpSession.createAndSend(entry.request.getSnmp(), curRsu, entry.encodedMsg, entry.request.getOde().getVerb());
+							rsuResponse = SnmpSession.createAndSend(entry.request.getSnmp(), curRsu, entry.encodedMsg, entry.request.getOde().getVerb(), dataSigningEnabledRSU);
 							if (null == rsuResponse || null == rsuResponse.getResponse()) {
 								// Timeout
 								httpResponseStatus = "Timeout";
@@ -128,12 +130,15 @@ public class RsuDepositor extends Thread {
 									destIndex);
 						} else {
 							// Misc error
-							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code "
-									+ rsuResponse.getResponse().getErrorStatus() + " " + rsuResponse.getResponse().getErrorStatusText());
+							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code '"
+									+ rsuResponse.getResponse().getErrorStatus() + "' '" + rsuResponse.getResponse().getErrorStatusText() + "'");
+							// Log the PDUs involved in the failed deposit
+							logger.debug("PDUs involved in failed RSU SNMP deposit to " + curRsu.getRsuTarget()
+									+ " => Request PDU: " + rsuResponse.getRequest() + " Response PDU: " + rsuResponse.getResponse());
 						}
 
 					}
-					logger.info("TIM deposit response {}", responseList);					
+					logger.info("TIM deposit response {}", responseList);				
 				}
 				Thread.sleep(100);
 			}

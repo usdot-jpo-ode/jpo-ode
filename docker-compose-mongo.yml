@@ -1,0 +1,92 @@
+version: '3'
+
+include:
+  - docker-compose.yml
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo 
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_DB_PASS}
+      MONGO_INITDB_DATABASE: admin 
+    entrypoint:
+      - bash
+      - -c
+      - |
+          openssl rand -base64 741 > /mongo_keyfile
+          chmod 400 /mongo_keyfile
+          chown 999:999 /mongo_keyfile
+          exec docker-entrypoint.sh $$@
+    command: "mongod --bind_ip_all --replSet rs0 --keyFile /mongo_keyfile"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: | 
+        echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      start_period: 30s
+
+  mongo-setup:
+    image: mongo:7
+    container_name: mongo_setup
+    depends_on:
+      - mongo
+    restart: on-failure
+    environment:
+      MONGO_ADMIN_DB_USER: ${MONGO_ADMIN_DB_USER}
+      MONGO_ADMIN_DB_PASS: ${MONGO_ADMIN_DB_PASS}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_ODE_DB_USER: ${MONGO_ODE_DB_USER}
+      MONGO_ODE_DB_PASS: ${MONGO_ODE_DB_PASS}
+      MONGO_COLLECTION_TTL: ${MONGO_COLLECTION_TTL}
+    entrypoint: ["/bin/bash", "setup_mongo.sh"]
+    volumes:
+      - ./scripts/mongo/setup_mongo.sh:/setup_mongo.sh
+      - ./scripts/mongo/create_indexes.js:/create_indexes.js
+
+
+  connect:
+    image: kafka-connect:latest
+    restart: always
+    build:
+      context: ./jpo-s3-deposit/mongo-connector
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      CONNECT_BOOTSTRAP_SERVERS: ${DOCKER_HOST_IP}:9092
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: topic.kafka-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_CONFIG_STORAGE_CLEANUP_POLICY: compact
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: topic.kafka-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_CLEANUP_POLICY: compact
+      CONNECT_STATUS_STORAGE_TOPIC: topic.kafka-connect-status
+      CONNECT_STATUS_STORAGE_CLEANUP_POLICY: compact
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "ERROR"
+      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=ERROR,org.reflections=ERROR,com.mongodb.kafka=ERROR"
+      CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components
+    volumes:
+      - ./jpo-s3-deposit/mongo-connector/connect_start.sh:/scripts/connect_start.sh
+
+volumes:
+  mongo_data:

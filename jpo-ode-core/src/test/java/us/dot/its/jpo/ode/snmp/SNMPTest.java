@@ -76,4 +76,10 @@ public class SNMPTest {
       String snmpTS = SNMP.snmpTimestampFromIso("2017-05-04T21:55:00-05:00");
       assertEquals("07E1050415370000", snmpTS);
    }
+
+   @Test
+   public void testSnmpTimestampFromIsoNanosecondFormat() throws ParseException {
+      String snmpTS = SNMP.snmpTimestampFromIso("2024-03-01T20:29:33.033Z");
+      assertEquals("07E80301141D211F", snmpTS);
+   }
 }

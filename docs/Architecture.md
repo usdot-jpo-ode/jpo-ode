@@ -12,7 +12,7 @@ Booz Allen Hamilton\
 8283 Greensboro Drive\
 McLean, VA 22102
 
-_Last updated June 11, 2021_
+_Last updated April 26th, 2024_
 
 # Contents
 
@@ -32,7 +32,7 @@ _Last updated June 11, 2021_
 - [6 - Appendix](#appendix)
   - [6.1 - Glossary](#glossary)
 
-<a name="version-history">
+<a name="version-history"></a>
 
 # Version History
 
@@ -43,7 +43,7 @@ _Last updated June 11, 2021_
 | 1.1       | Hamid Musavi   | 4/17/2017                                         | Updated to reflect ORNL De-identification service |
 | 1.2       | Hamid Musavi   | 12/21/2018                                        | General Update                                    |
 
-<a name="introduction">
+<a name="introduction"></a>
 
 # 1 - Introduction
 
@@ -62,7 +62,7 @@ This document is a living document and will be updated throughout the
 life of the JPO ODE project to reflect the most recent changes in the
 ODE design and stakeholder feedback.
 
-<a name="project-overview">
+<a name="project-overview"></a>
 
 # 2 - Project Overview
 
@@ -79,13 +79,13 @@ brokering, processing and routing data from various data sources,
 including connected vehicles, field devices, Transportation Management
 Center (TMC) applications and a variety of other data users. Data users
 include but not limited to transportation software applications,
-Research Data Exchange (RDE), US DOT Situation Data Warehouse.
+Research Data Exchange (RDE), and the [Situational Data Exchange (SDX)](https://sdx.trihydro.com/).
 
 As a data provisioning service, the ODE can provision data from
 disparate data sources to software applications that have placed data
 subscription requests to the ODE. On the other direction, the ODE can
 accept data from CV applications and broadcast them to field devices
-through Road Side Units (RSU) and US DOT Situation Data Warehouse which
+through Road Side Units (RSU)s and the Situational Data Exchange (SDX) which
 in turn will transmit the data to Sirius XM satellites for delivery to
 the connected vehicles in the field.
 
@@ -102,7 +102,7 @@ validation and sanitization.
     compromise the privacy of the individual(s) that might be linked to
     the data.
 
-<a name="system-overview">
+<a name="system-overview"></a>
 
 # 3 - System Overview
 
@@ -112,7 +112,7 @@ operational, monitoring, and research purposes. The system will enable
 applications to submit data through a variety standard interfaces as
 illustrated in the figure below.
 
-<a name="ode-technology-stack">
+<a name="ode-technology-stack"></a>
 
 ### 3.1 - ODE Technology Stack
 
@@ -121,10 +121,10 @@ each technology layer.
 
 ![](images/architecture/figure1.png)
 
-Figure 1 - ODE Technology Stack
+_Figure 1 - ODE Technology Stack_
 
 Data Integration later of JPO-ODE supports the producers and consumers
-of CV data as illustrated in Figure 2 below. Not all components or
+of CV data as illustrated in Figure 2 below. It is possible that not all components or
 services shown in this diagram have been implemented. *The
 implementation timeline for the identified interfaces will depend on the
 needs of the JPO ODE customers and the priority of these capabilities to
@@ -132,9 +132,9 @@ the JPO-ODE product owner.*
 
 ![](images/architecture/figure2.png)
 
-Figure 2 - ODE Data Integration Clients
+_Figure 2 - ODE Data Integration Clients_
 
-<a name="producer-mechanisms">
+<a name="producer-mechanisms"></a>
 
 ### 3.2 - Producer Mechanisms
 
@@ -174,12 +174,12 @@ Notation (JSON), environmental and various other system logs.
     and process new records. *This interface is suitable only to
     applications residing in the private network domain.*
 
-<a name="consumer-mechanisms">
+<a name="consumer-mechanisms"></a>
 
 ### 3.3 - Consumer Mechanisms
 
 The JPO-ODE is designed to support the following mechanisms for
-outputting decoded BSM, Map and Signal Phase and Timing (SPaT) data as
+outputting decoded BSM, Map, and Signal Phase & Timing (SPaT) data as
 well as encoded TIM data.
 
 -   **Streaming Data Consumers (Direct):** Applications can subscribe
@@ -191,25 +191,12 @@ well as encoded TIM data.
     to the messaging service through the use of a standard WebSocket
     API. *This interface is suitable to all applications whether
     residing in the private network domain or in the cloud. For cloud
-    applications Secure WebSocket (wss) protocol should be utillized.*
-
--   **RESTful API Data Consumers:** Applications can connect directly
-    with a RESTful API and submit messages to the messaging service
-    through HTTP commands. *This interface is suitable to all
-    applications whether residing in the private network domain or in
-    the cloud. For cloud applications Secure HTTP (https) protocol
-    should be utilized.*
-
--   **File System Data Consumers:** Through the use of a shared file
-    repository, applications can monitor collection of data messages.
-    *This interface is suitable to applications residing in the private
-    network domain or in the cloud. This interface should be utilized
-    through Secure Copy (scp) protocol.*
+    applications Secure WebSocket (wss) protocol should be utilized.*
 
 -   **Database Data Consumers**: Data messages can be directly inserted
     into a shared application database and made available for queries.
 
-<a name="ode-management-console">
+<a name="ode-management-console"></a>
 
 ### 3.4 - ODE Management Console
 
@@ -217,7 +204,7 @@ ODE is envisioned to provide a management console for functions such as
 SNMP device management and provisioning. Other configuration functions
 can be included in a future management console.
 
-<a name="architecture-pattern">
+<a name="architecture-pattern"></a>
 
 # 4 - Architecture Pattern
 
@@ -228,7 +215,7 @@ and service-oriented architectures.
 
 <sup>1</sup> _In software engineering, a **monolithic application** describes a single-tiered software **application** in which the user interface and data access code are combined into a single program from a single platform. A **monolithic application** is self-contained, and independent from other computing **applications**._
 
-<a name="pattern-description">
+<a name="pattern-description"></a>
 
 ### 4.1 - Pattern Description
 
@@ -257,7 +244,7 @@ The micro-services pattern consists of three major concepts:
 
 _Figure 3 - Basic Micro-services architecture pattern_
 
-<a name="pattern-topology">
+<a name="pattern-topology"></a>
 
 ### 4.2 - Pattern Topology
 
@@ -351,7 +338,7 @@ designed as depicted in Figure 6.
 
 _Figure 6 - Kafka Publish/Subscribe Model_
 
-<a name="jpo-ode-micro-services-topology">
+<a name="jpo-ode-micro-services-topology"></a>
 
 # 5 - JPO ODE Micro-services Topology
 
@@ -363,7 +350,7 @@ the major architectural components with which these services interact.
 
 _Figure 7 - JPO ODE Micro-services Topology_
 
-<a name="deployments">
+<a name="deployments"></a>
 
 ### 5.1 - Deployments
 
@@ -371,14 +358,14 @@ Docker is utilized as the primary deployment mechanism to
 compartmentalize each of the designed micro-services into separate
 containers. Docker is used to package all components in a composite of
 containers each running a distinct service. The ODE application runs in
-one container and other major frameworks such as ZooKeeper and Kafka run
-in their own separate containers.
+one container, its submodules run in separate containers and other major
+frameworks such as Kafka run in their own separate containers.
 
-<a name="appendix">
+<a name="appendix"></a>
 
 # 6 - Appendix
 
-<a name="glossary">
+<a name="glossary"></a>
 
 ### 6.1 - Glossary
 
@@ -391,4 +378,3 @@ in their own separate containers.
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                             |
 | US DOT    | Unites States Department of Transportation                                                                                                                                                                                                                                                              |
 | WebSocket | WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol. Its only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request. |
-| ZooKeeper | Apache ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.                                                                                                                                       |

@@ -134,22 +134,28 @@ public class SnmpSession {
       // Try to send the SNMP request (synchronously)
       ResponseEvent responseEvent = null;
       try {
+         // attempt to discover & set authoritative engine ID
          byte[] authEngineID = snmpob.discoverAuthoritativeEngineID(targetob.getAddress(), 1000);
          if (authEngineID != null && authEngineID.length > 0) {
             targetob.setAuthoritativeEngineID(authEngineID);
          }
-         if (authEngineID != null) {
-            responseEvent = snmpob.set(pdu, targetob);
-            if (!keepOpen) {
-               snmpob.close();
+
+         // send request
+         responseEvent = snmpob.set(pdu, targetob);
+         if (!keepOpen) {
+            snmpob.close();
+         }
+
+         // if RSU responded and we didn't get an authEngineID, log a warning
+         if (responseEvent != null && responseEvent.getResponse() != null) {
+            if (authEngineID == null) {
+               logger.warn("Failed to discover authoritative engine ID for SNMP target: {}", targetob.getAddress());
             }
-         } else {
-            logger.error("Unable to send TIM to RSU {}: authEngineID is null", targetob.getAddress());
          }
       } catch (IOException e) {
          throw new IOException("Failed to send SNMP request: " + e);
       }
-
+      
       return responseEvent;
    }
 
@@ -206,14 +212,14 @@ public class SnmpSession {
     * @throws IOException
     * @throws ParseException
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb)
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb, boolean dataSigningEnabledRSU)
          throws ParseException, IOException {
 
       SnmpSession session = new SnmpSession(rsu);
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = SnmpSession.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb, rsu.getSnmpProtocol());
+      ScopedPDU pdu = SnmpSession.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb, rsu.getSnmpProtocol(), dataSigningEnabledRSU);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
       String msg = "Message Sent to {}, index {}: {}";
       EventLogger.logger.debug(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
@@ -258,12 +264,12 @@ public class SnmpSession {
     * @return PDU
     * @throws ParseException
     */
-   public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb, SnmpProtocol snmpProtocol) throws ParseException {
+   public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb, SnmpProtocol snmpProtocol, boolean dataSigningEnabledRSU) throws ParseException {
       switch (snmpProtocol) {
       case FOURDOT1:
          return createPDUWithFourDot1Protocol(snmp, payload, index, verb);
       case NTCIP1218:
-         return createPDUWithNTCIP1218Protocol(snmp, payload, index, verb);
+         return createPDUWithNTCIP1218Protocol(snmp, payload, index, verb, dataSigningEnabledRSU);
       default:
          logger.error("Unknown SNMP protocol: {}", snmpProtocol);
          return null;
@@ -354,7 +360,7 @@ public class SnmpSession {
          return pdu;
    }
 
-   private static ScopedPDU createPDUWithNTCIP1218Protocol(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException {
+   private static ScopedPDU createPDUWithNTCIP1218Protocol(SNMP snmp, String payload, int index, RequestVerb verb, boolean dataSigningEnabledRSU) throws ParseException {
          //////////////////////////////
          // - OID examples - //
          //////////////////////////////
@@ -376,8 +382,8 @@ public class SnmpSession {
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 4
          // rsuMsgRepeatPriority.3 = 6
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6
-         // rsuMsgRepeatOptions.3 = "C0"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "C0"
+         // rsuMsgRepeatOptions.3 = "00"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "00"
          //////////////////////////////
 
          VariableBinding rsuMsgRepeatPsid = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatPsid(index, snmp.getRsuid());
@@ -391,7 +397,14 @@ public class SnmpSession {
          VariableBinding rsuMsgRepeatEnable = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatEnable(index, snmp.getEnable());
          VariableBinding rsuMsgRepeatStatus = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(index, snmp.getStatus());
          VariableBinding rsuMsgRepeatPriority = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatPriority(index);
-         VariableBinding rsuMsgRepeatOptions = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatOptions(index);
+         VariableBinding rsuMsgRepeatOptions;
+         if (dataSigningEnabledRSU) {
+            // set options to 0x00 to tell RSU to broadcast message without signing or attaching a 1609.2 header
+            rsuMsgRepeatOptions = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatOptions(index, 0x00);
+         } else {
+            // set options to 0x80 to tell RSU to sign & attach a 1609.2 header before broadcasting
+            rsuMsgRepeatOptions = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatOptions(index, 0x80);
+         }
 
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(rsuMsgRepeatPsid);

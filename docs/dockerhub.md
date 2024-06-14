@@ -18,7 +18,6 @@ The image expects the following environment variables to be set:
 ## Direct Dependencies
 The ODE will fail to start up if the following containers/services are not already present:
 - Kafka or Confluent & related requirements
-- Zookeeper (relied on by Kafka when run locally)
 
 ## Indirect Dependencies
 Some functionality will be unreachable without the participation of the following programs (except by directly pushing to kafka topics):
@@ -28,6 +27,9 @@ Some functionality will be unreachable without the participation of the followin
 - jpo-sdw-depositor
 - jpo-s3-deposit
 
+### Submodule Compatibility
+To find the compatible submodule versions, please refer to the [Submodule Compatibility Guide](https://github.com/CDOT-CV/jpo-ode/blob/dev/docs/compatibility.md). Based on your ODE version, you can find the compatible submodule versions by looking at the corresponding row of the provided table.
+
 ## Configuration
 For further configuration options, see the [GitHub repository](https://github.com/usdot-jpo-ode/jpo-ode).
 
@@ -35,43 +37,39 @@ For further configuration options, see the [GitHub repository](https://github.co
 ```
 version: '3'
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
   kafka:
-    image: wurstmeister/kafka
+    image: bitnami/kafka:latest
+    hostname: kafka
     ports:
       - "9092:9092"
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ZK: ${DOCKER_HOST_IP}:2181
-      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1"
-      KAFKA_DELETE_TOPIC_ENABLED: "true"
-      KAFKA_CLEANUP_POLICY: "delete" # delete old logs
-      KAFKA_LOG_RETENTION_HOURS: 2
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
-      KAFKA_RETENTION_MS: 7200000    # delete old logs after 2 hours
-      KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 hours.
-                                     # This configuration controls the period of time after
-                                     # which Kafka will force the log to roll even if the segment
-                                     # file isn't full to ensure that retention can delete or compact old data.
-    depends_on:
-      - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+      - kafka:/bitnami
+    environment:
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092"
+      KAFKA_BROKER_ID: "1"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_CFG_LOG_RETENTION_HOURS: 2
     logging:
       options:
-        max-size: "10m"
+        max-size: "10m"  
         max-file: "5"
+
+  kafka_init:
+    image: bitnami/kafka:latest
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - ./scripts/kafka/kafka_init.sh:/kafka_init.sh
+    entrypoint: ["/bin/sh", "kafka_init.sh"]
 
   ode:
     image: usdotjpoode/jpo-ode:release_q3
@@ -85,6 +83,7 @@ services:
       - "44910:44910/udp"
       - "44920:44920/udp"
       - "44930:44930/udp"
+      - "44940:44940/udp"
       - "5555:5555/udp"
       - "6666:6666/udp"
     environment:
@@ -93,6 +92,9 @@ services:
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
       ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
       ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      DATA_SIGNING_ENABLED_RSU: ${DATA_SIGNING_ENABLED_RSU}
+      DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
+      DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
     depends_on:
       - kafka
     volumes:

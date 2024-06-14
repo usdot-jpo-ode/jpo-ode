@@ -1,13 +1,17 @@
 package us.dot.its.jpo.ode.udp;
 
 import java.net.DatagramSocket;
+import java.net.DatagramPacket;
 import java.net.SocketException;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.uper.UperUtil;
 
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
 
@@ -53,18 +57,24 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
       }
    }
 
-   /* Strips the 1609.3 and unsigned 1609.2 headers if they are present.
-   Will return the payload with a signed 1609.2 header if it is present.
-   Otherwise, returns just the payload. */
-   protected String stripDot3Header(String hexString, String payload_start_flag) {
-      int payloadStartIndex = hexString.indexOf(payload_start_flag);
-      String headers = hexString.substring(0, payloadStartIndex);
-      String payload = hexString.substring(payloadStartIndex, hexString.length());
-      // Look for the index of the start flag of a signed 1609.2 header
-      int signedDot2StartIndex = headers.indexOf("038100");
-      if (signedDot2StartIndex == -1)
-         return payload;
-      else
-         return headers.substring(signedDot2StartIndex, headers.length()) + payload;
+   public OdeAsn1Payload getPayloadHexString(DatagramPacket packet, UperUtil.SupportedMessageTypes msgType) {
+      String startFlag = UperUtil.getStartFlag(msgType);
+      // extract the actual packet from the buffer
+      byte[] payload = packet.getData();
+      if (payload == null)
+         return null;
+      // convert bytes to hex string and verify identity
+      String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
+      if (payloadHexString.indexOf(startFlag) == -1)
+         return null;
+      
+      logger.debug("Full {} packet: {}", msgType, payloadHexString);
+      payloadHexString = UperUtil.stripDot3Header(payloadHexString, startFlag);
+      logger.debug("Stripped {} packet: {}", msgType, payloadHexString);
+
+      OdeAsn1Payload timPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+      
+      return timPayload;
    }
+
 }
