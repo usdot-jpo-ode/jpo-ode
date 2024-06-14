@@ -180,7 +180,7 @@ After preliminary testing is complete, project reference updates should be made 
 
 4. Update git submodule references for the ‘jpo-ode’ project to point to tagged commits in projects with updated `master/main` branches.
     
-    4a. Open the jpo-ode project in an IDE and update the version numbers in the pom.xml files of the jpo-ode-common, jpo-ode-plugins, and jpo-ode-svcs projects to match the version number of the release. (e.g. 1.0.0)
+    4a. Open the jpo-ode project in an IDE.
     
     4b. Navigate to the asn1_codec directory and run `git checkout tags/asn1_codec-x.x.x` to update the submodule reference.
     
