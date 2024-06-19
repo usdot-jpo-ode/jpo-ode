@@ -134,8 +134,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
       } catch (Exception e) {
          String msg = "Error in processing received message from ASN.1 Encoder module: " + consumedData;
-         EventLogger.logger.error(msg, e);
-         logger.error(msg, e);
+         if (logger.isDebugEnabled()) {
+            // print error message and stack trace
+            EventLogger.logger.error(msg, e);
+            logger.error(msg, e);
+         }
+         else {
+            // print error message only
+            EventLogger.logger.error(msg);
+            logger.error(msg);
+         }
       }
       return null;
    }
