@@ -113,26 +113,6 @@ services:
       - kafka
     restart: on-failure
 
-  ppm_tim:
-    build:
-      context: ./jpo-cvdp
-      dockerfile: Dockerfile-nsv
-      args:
-        PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
-        PPM_MAP_FILE: ${PPM_MAP_FILE}
-    image: jpoode_ppm_tim:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
-      PPM_MAP_FILE: ${PPM_MAP_FILE}
-      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
-      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
-      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
-    volumes:
-      - ${DOCKER_SHARED_VOLUME}/ppm_tim:/ppm_data
-    depends_on:
-      - kafka
-
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest

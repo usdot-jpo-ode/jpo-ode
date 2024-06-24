@@ -86,20 +86,6 @@ services:
       PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
       PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
 
-  ppmtim:
-    build:
-      context: ./jpo-cvdp
-      dockerfile: Dockerfile.cdot
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
-      PPM_CONFIG_FILE: cdot_ppmTim.properties
-      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
-      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
-      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
-
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
