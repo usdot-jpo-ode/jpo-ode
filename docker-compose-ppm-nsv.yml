@@ -152,19 +152,6 @@ services:
     depends_on:
      - kafka
 
-  rde_tim_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-    depends_on:
-     - kafka
-
   sdw_depositor:
     build: ./jpo-sdw-depositor
     image: jpoode_sdwdep:latest
