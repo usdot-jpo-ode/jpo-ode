@@ -167,9 +167,15 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				if (messageType == "MAP") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
+				} else if(messageType == "SPAT"){
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
 				} else if (messageType == "TIM") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
+				} else if (messageType == "BSM") {
+						publisher.publish(JsonUtils.toJson(odeData, false),
+							publisher.getOdeProperties().getKafkaTopicOdeBsmJson());
 				} else if (messageType == "SSM") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());

@@ -54,34 +54,43 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                 logger.debug("Waiting for UDP SSM packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    senderIp = packet.getAddress().getHostAddress();
-                    senderPort = packet.getPort();
-                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
+                    
+                    String ssmJson = buildJsonSsmFromPacket(packet);
 
-                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload ssmPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SSM);
-                    if (ssmPayload == null)
-                        continue;
-                    OdeSsmMetadata ssmMetadata = new OdeSsmMetadata(ssmPayload);
-
-                    // Add header data for the decoding process
-                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                    ssmMetadata.setOdeReceivedAt(timestamp);
-
-                    ssmMetadata.setOriginIp(senderIp);
-                    ssmMetadata.setSsmSource(SsmSource.RSU);
-                    ssmMetadata.setRecordType(RecordType.ssmTx);
-                    ssmMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-                    ssmMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    ssmPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(ssmMetadata, ssmPayload), false),
-                        ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
+                    if(ssmJson!=null){
+                        // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+                        ssmPublisher.publish(ssmJson, ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
+                    }
+                    
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
+    }
+
+    public static String buildJsonSsmFromPacket(DatagramPacket packet){
+        String senderIp = packet.getAddress().getHostAddress();
+        int senderPort = packet.getPort();
+        logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+        OdeAsn1Payload ssmPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SSM);
+        if (ssmPayload == null)
+            return null;
+        OdeSsmMetadata ssmMetadata = new OdeSsmMetadata(ssmPayload);
+
+        // Add header data for the decoding process
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        ssmMetadata.setOdeReceivedAt(timestamp);
+
+        ssmMetadata.setOriginIp(senderIp);
+        ssmMetadata.setSsmSource(SsmSource.RSU);
+        ssmMetadata.setRecordType(RecordType.ssmTx);
+        ssmMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        ssmMetadata.setSecurityResultCode(SecurityResultCode.success);
+
+        return JsonUtils.toJson(new OdeAsn1Data(ssmMetadata, ssmPayload), false);
     }
 }

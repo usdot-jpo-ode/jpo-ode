@@ -54,34 +54,44 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                 logger.debug("Waiting for UDP Map packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    senderIp = packet.getAddress().getHostAddress();
-                    senderPort = packet.getPort();
-                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload mapPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.MAP);
-                    if (mapPayload == null)
-                        continue;
-                    OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);
-
-                    // Add header data for the decoding process
-                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                    mapMetadata.setOdeReceivedAt(timestamp);
-
-                    mapMetadata.setOriginIp(senderIp);
-                    mapMetadata.setMapSource(MapSource.RSU);
-                    mapMetadata.setRecordType(RecordType.mapTx);
-                    mapMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-                    mapMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    mapPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(mapMetadata, mapPayload), false),
-                        mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
+                    
+                    String mapJson = buildJsonMapFromPacket(packet);
+                    if(mapJson != null){
+                        // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+                        mapPublisher.publish(mapJson, mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
+                    }
+                    
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
+
+
+    public static String buildJsonMapFromPacket(DatagramPacket packet){
+        String senderIp = packet.getAddress().getHostAddress();
+        int senderPort = packet.getPort();
+        logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+        OdeAsn1Payload mapPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.MAP);
+        if (mapPayload == null)
+            return null;
+        OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);
+      
+        // Add header data for the decoding process
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        mapMetadata.setOdeReceivedAt(timestamp);
+
+        mapMetadata.setOriginIp(senderIp);
+        mapMetadata.setMapSource(MapSource.RSU);
+        mapMetadata.setRecordType(RecordType.mapTx);
+        mapMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        mapMetadata.setSecurityResultCode(SecurityResultCode.success);
+
+        return JsonUtils.toJson(new OdeAsn1Data(mapMetadata, mapPayload), false);
+      
+   }
 }

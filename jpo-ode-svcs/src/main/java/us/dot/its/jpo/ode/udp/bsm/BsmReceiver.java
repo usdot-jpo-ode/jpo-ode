@@ -58,45 +58,54 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
             logger.debug("Waiting for UDP BSM packets...");
             socket.receive(packet);
             if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
                // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               OdeAsn1Payload bsmPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.BSM);
-               if (bsmPayload == null)
-                  continue;
-               OdeBsmMetadata bsmMetadata = new OdeBsmMetadata(bsmPayload);
+               String bsmJson = buildJsonBsmFromPacket(packet);
 
-               // Set BSM Metadata values that can be assumed from the UDP endpoint
-               ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-               bsmMetadata.setOdeReceivedAt(timestamp);
-
-               ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-               OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
-                  "unavailable", 
-                  "unavailable", 
-                  "unavailable", 
-                  "unavailable", 
-                  "unavailable");
-					receivedMessageDetails.setRxSource(RxSource.RSU);
-               receivedMessageDetails.setLocationData(locationData);
-               bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);
-
-               bsmMetadata.setOriginIp(senderIp);
-               bsmMetadata.setBsmSource(BsmSource.EV);
-               bsmMetadata.setRecordType(RecordType.bsmTx);
-               bsmMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
-               bsmMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-               // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               bsmPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(bsmMetadata, bsmPayload), false),
-                  bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
+               if(bsmJson != null){
+                  // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+                  bsmPublisher.publish(bsmJson, bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
+               }
+               
+               
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
          }
       } while (!isStopped());
+   }
+
+   public static String buildJsonBsmFromPacket(DatagramPacket packet){
+      String senderIp = packet.getAddress().getHostAddress();
+      int senderPort = packet.getPort();
+      logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+      OdeAsn1Payload bsmPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.BSM);
+      if (bsmPayload == null)
+         return null;
+      OdeBsmMetadata bsmMetadata = new OdeBsmMetadata(bsmPayload);
+      
+      // Set BSM Metadata values that can be assumed from the UDP endpoint
+      ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+      String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+      bsmMetadata.setOdeReceivedAt(timestamp);
+
+      ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+      OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
+         "unavailable", 
+         "unavailable", 
+         "unavailable", 
+         "unavailable", 
+         "unavailable");
+      receivedMessageDetails.setRxSource(RxSource.RSU);
+      receivedMessageDetails.setLocationData(locationData);
+      bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);
+
+      bsmMetadata.setOriginIp(senderIp);
+      bsmMetadata.setBsmSource(BsmSource.EV);
+      bsmMetadata.setRecordType(RecordType.bsmTx);
+      bsmMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
+      bsmMetadata.setSecurityResultCode(SecurityResultCode.success);
+      
+      return JsonUtils.toJson(new OdeAsn1Data(bsmMetadata, bsmPayload), false);
    }
 }

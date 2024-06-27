@@ -54,34 +54,42 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                 logger.debug("Waiting for UDP SPaT packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    senderIp = packet.getAddress().getHostAddress();
-                    senderPort = packet.getPort();
-                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload spatPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SPAT);
-                    if (spatPayload == null)
-                        continue;
-                    OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
-
-                    // Add header data for the decoding process
-                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                    spatMetadata.setOdeReceivedAt(timestamp);
-
-                    spatMetadata.setOriginIp(senderIp);
-                    spatMetadata.setSpatSource(SpatSource.RSU);
-                    spatMetadata.setRecordType(RecordType.spatTx);
-                    spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-                    spatMetadata.setSecurityResultCode(SecurityResultCode.success);
-
+                    
+                    String spatJson = buildJsonSpatFromPacket(packet);
                     // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    spatPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(spatMetadata, spatPayload), false),
-                        spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
+
+
+    public static String buildJsonSpatFromPacket(DatagramPacket packet){
+        String senderIp = packet.getAddress().getHostAddress();
+        int senderPort = packet.getPort();
+        logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+        OdeAsn1Payload spatPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SPAT);
+        if (spatPayload == null)
+            return null;
+        OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
+
+        // Add header data for the decoding process
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        spatMetadata.setOdeReceivedAt(timestamp);
+
+        spatMetadata.setOriginIp(senderIp);
+        spatMetadata.setSpatSource(SpatSource.RSU);
+        spatMetadata.setRecordType(RecordType.spatTx);
+        spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        spatMetadata.setSecurityResultCode(SecurityResultCode.success);
+
+
+        return JsonUtils.toJson(new OdeAsn1Data(spatMetadata, spatPayload), false);
+      
+   }
 }
