@@ -30,4 +30,4 @@ while True:
   sock.sendto(bytes.fromhex(SSM_MESSAGE), (UDP_IP, UDP_PORT))
   sock.sendto(bytes.fromhex(SRM_MESSAGE), (UDP_IP, UDP_PORT))
   sock.sendto(bytes.fromhex(TIM_MESSAGE), (UDP_IP, UDP_PORT))
-  sock.sendto(bytes.fromhex(JUNK_MESSAGE), (UDP_IP, UDP_PORT))
+  sock.sendto(bytes.fromhex(BAD_MESSAGE), (UDP_IP, UDP_PORT))
