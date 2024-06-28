@@ -1,26 +1,14 @@
 package us.dot.its.jpo.ode.udp.map;
 
 import java.net.DatagramPacket;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.OdeMapMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.uper.UperUtil;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 
 public class MapReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(MapReceiver.class);
@@ -55,7 +43,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
                     
-                    String mapJson = buildJsonMapFromPacket(packet);
+                    String mapJson = UdpHexDecoder.buildJsonMapFromPacket(packet);
                     if(mapJson != null){
                         // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                         mapPublisher.publish(mapJson, mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
@@ -69,29 +57,5 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
     }
 
 
-    public static String buildJsonMapFromPacket(DatagramPacket packet){
-        String senderIp = packet.getAddress().getHostAddress();
-        int senderPort = packet.getPort();
-        logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-        OdeAsn1Payload mapPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.MAP);
-        if (mapPayload == null)
-            return null;
-        OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);
-      
-        // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        mapMetadata.setOdeReceivedAt(timestamp);
-
-        mapMetadata.setOriginIp(senderIp);
-        mapMetadata.setMapSource(MapSource.RSU);
-        mapMetadata.setRecordType(RecordType.mapTx);
-        mapMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-        mapMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-        return JsonUtils.toJson(new OdeAsn1Data(mapMetadata, mapPayload), false);
-      
-   }
+    
 }

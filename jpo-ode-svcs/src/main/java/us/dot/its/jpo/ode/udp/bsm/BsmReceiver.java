@@ -22,6 +22,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -59,7 +60,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
             socket.receive(packet);
             if (packet.getLength() > 0) {
                // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               String bsmJson = buildJsonBsmFromPacket(packet);
+               String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
 
                if(bsmJson != null){
                   // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
@@ -74,38 +75,5 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       } while (!isStopped());
    }
 
-   public static String buildJsonBsmFromPacket(DatagramPacket packet){
-      String senderIp = packet.getAddress().getHostAddress();
-      int senderPort = packet.getPort();
-      logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-      OdeAsn1Payload bsmPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.BSM);
-      if (bsmPayload == null)
-         return null;
-      OdeBsmMetadata bsmMetadata = new OdeBsmMetadata(bsmPayload);
-      
-      // Set BSM Metadata values that can be assumed from the UDP endpoint
-      ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-      String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-      bsmMetadata.setOdeReceivedAt(timestamp);
-
-      ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-      OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
-         "unavailable", 
-         "unavailable", 
-         "unavailable", 
-         "unavailable", 
-         "unavailable");
-      receivedMessageDetails.setRxSource(RxSource.RSU);
-      receivedMessageDetails.setLocationData(locationData);
-      bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);
-
-      bsmMetadata.setOriginIp(senderIp);
-      bsmMetadata.setBsmSource(BsmSource.EV);
-      bsmMetadata.setRecordType(RecordType.bsmTx);
-      bsmMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      bsmMetadata.setSecurityResultCode(SecurityResultCode.success);
-      
-      return JsonUtils.toJson(new OdeAsn1Data(bsmMetadata, bsmPayload), false);
-   }
+   
 }

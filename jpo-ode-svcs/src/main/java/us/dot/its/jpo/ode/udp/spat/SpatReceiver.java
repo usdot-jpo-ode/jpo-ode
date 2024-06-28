@@ -1,26 +1,14 @@
 package us.dot.its.jpo.ode.udp.spat;
 
 import java.net.DatagramPacket;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.uper.UperUtil;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
@@ -55,7 +43,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
                     
-                    String spatJson = buildJsonSpatFromPacket(packet);
+                    String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
                     // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                     spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
                 }
@@ -66,30 +54,5 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
     }
 
 
-    public static String buildJsonSpatFromPacket(DatagramPacket packet){
-        String senderIp = packet.getAddress().getHostAddress();
-        int senderPort = packet.getPort();
-        logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-        OdeAsn1Payload spatPayload = AbstractUdpReceiverPublisher.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SPAT);
-        if (spatPayload == null)
-            return null;
-        OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
-
-        // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        spatMetadata.setOdeReceivedAt(timestamp);
-
-        spatMetadata.setOriginIp(senderIp);
-        spatMetadata.setSpatSource(SpatSource.RSU);
-        spatMetadata.setRecordType(RecordType.spatTx);
-        spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-        spatMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-
-        return JsonUtils.toJson(new OdeAsn1Data(spatMetadata, spatPayload), false);
-      
-   }
+    
 }

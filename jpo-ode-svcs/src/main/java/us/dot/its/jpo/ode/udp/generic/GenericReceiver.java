@@ -9,13 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
-import us.dot.its.jpo.ode.udp.map.MapReceiver;
-import us.dot.its.jpo.ode.udp.psm.PsmReceiver;
-import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
-import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
-import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
-import us.dot.its.jpo.ode.udp.tim.TimReceiver;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.uper.UperUtil;
 
 public class GenericReceiver extends AbstractUdpReceiverPublisher {
@@ -72,37 +66,37 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Detected Message Type {}", messageType);
 
                     if (messageType == "MAP") {
-                        String mapJson = MapReceiver.buildJsonMapFromPacket(packet);
+                        String mapJson = UdpHexDecoder.buildJsonMapFromPacket(packet);
                         if(mapJson != null){
                             publisher.publish(mapJson, publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
                         }
                     } else if(messageType == "SPAT") {
-                        String spatJson = SpatReceiver.buildJsonSpatFromPacket(packet);
+                        String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
                         if(spatJson != null){
                             publisher.publish(spatJson, publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
                         }
                     } else if (messageType == "TIM") {
-                        String timJson = TimReceiver.buildJsonTimFromPacket(packet);
+                        String timJson = UdpHexDecoder.buildJsonTimFromPacket(packet);
                         if(timJson != null){
                             publisher.publish(timJson, publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
                         }
                     } else if (messageType == "BSM") {
-                        String bsmJson = BsmReceiver.buildJsonBsmFromPacket(packet);
+                        String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
                         if(bsmJson!=null){
                             publisher.publish(bsmJson, this.odeProperties.getKafkaTopicOdeRawEncodedBSMJson());
                         }
                     } else if (messageType == "SSM") {
-                        String ssmJson = SsmReceiver.buildJsonSsmFromPacket(packet);
+                        String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
                         if(ssmJson!=null){
                             publisher.publish(ssmJson, this.odeProperties.getKafkaTopicOdeRawEncodedSSMJson());
                         }
                     } else if (messageType == "SRM") {
-                        String srmJson = SrmReceiver.buildJsonSrmFromPacket(packet);
+                        String srmJson = UdpHexDecoder.buildJsonSrmFromPacket(packet);
                         if(srmJson!=null){
                             publisher.publish(srmJson, this.odeProperties.getKafkaTopicOdeRawEncodedSRMJson());
                         }
                     } else if (messageType == "PSM") {
-                        String psmJson = PsmReceiver.buildJsonPsmFromPacket(packet);
+                        String psmJson = UdpHexDecoder.buildJsonPsmFromPacket(packet);
                         if(psmJson!=null){
                             publisher.publish(psmJson, this.odeProperties.getKafkaTopicOdeRawEncodedPSMJson());
                         }
