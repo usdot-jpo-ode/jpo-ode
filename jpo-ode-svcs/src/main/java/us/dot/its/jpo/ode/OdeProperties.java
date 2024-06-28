@@ -179,6 +179,10 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdePsmJson = "topic.OdePsmJson";
    private int psmReceiverPort = 44940;
    private int psmBufferSize = 500;
+ 
+   // Generic Receiver
+   private int genericReceiverPort = 44990;
+   private int genericBufferSize = 2000;
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -490,6 +494,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setPsmBufferSize(int psmBufferSize) {
       this.psmBufferSize = psmBufferSize;
+   }
+
+   public int getGenericReceiverPort() {
+      return genericReceiverPort;
+   }
+
+   public void setGenericReceiverPort(int genericReceiverPort) {
+      this.genericReceiverPort = genericReceiverPort;
+   }
+
+   public int getGenericBufferSize() {
+      return genericBufferSize;
+   }
+
+   public void setGenericBufferSize(int psmBufferSize) {
+      this.genericBufferSize = genericBufferSize;
    }
 
    public String getDdsCasUrl() {

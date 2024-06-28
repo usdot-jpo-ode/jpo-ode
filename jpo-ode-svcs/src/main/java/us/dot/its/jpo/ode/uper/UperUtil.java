@@ -88,40 +88,62 @@ public class UperUtil {
             return headers.substring(signedDot2StartIndex, headers.length()) + payload;
     }
 
-    	/**
-		* Determines the message type based off the most likely start flag
-		* 
-		* @param payload The OdeMsgPayload to check the content of.
-		*/
+    /**
+    * Determines the message type based off the most likely start flag
+    * 
+    * @param payload The OdeMsgPayload to check the content of.
+    */
 	public static String determineMessageType(OdeMsgPayload payload) {
 		String messageType = "";
 		try {
 			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
 			String hexString = payloadJson.getString("bytes").toLowerCase();
+            messageType = determineHexPacketType(hexString);
 
-			HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
-			flagIndexes.put("MAP", hexString.indexOf(MAP_START_FLAG));
-			flagIndexes.put("TIM", hexString.indexOf(TIM_START_FLAG));
-			flagIndexes.put("SSM", hexString.indexOf(SSM_START_FLAG));
-			flagIndexes.put("PSM", hexString.indexOf(PSM_START_FLAG));
-			flagIndexes.put("SRM", hexString.indexOf(SRM_START_FLAG));
-
-			int lowestIndex = Integer.MAX_VALUE;
-			for (String key : flagIndexes.keySet()) {
-				if (flagIndexes.get(key) == -1) {
-					logger.debug("This message is not of type " + key);
-					continue;
-				}
-				if (flagIndexes.get(key) < lowestIndex) {
-					messageType = key;
-					lowestIndex = flagIndexes.get(key);
-				}
-			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
 		}
 		return messageType;
 	}
+
+    public static String determineHexPacketType(String hexString){
+
+        String messageType = "";
+        HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
+        
+        flagIndexes.put("MAP", findValidStartFlagLocation(hexString, MAP_START_FLAG));
+        flagIndexes.put("SPAT", findValidStartFlagLocation(hexString, SPAT_START_FLAG));
+        flagIndexes.put("TIM", findValidStartFlagLocation(hexString, TIM_START_FLAG));
+        flagIndexes.put("BSM", findValidStartFlagLocation(hexString, BSM_START_FLAG));
+        flagIndexes.put("SSM", findValidStartFlagLocation(hexString, SSM_START_FLAG));
+        flagIndexes.put("PSM", findValidStartFlagLocation(hexString, PSM_START_FLAG));
+        flagIndexes.put("SRM", findValidStartFlagLocation(hexString, SRM_START_FLAG));
+
+        int lowestIndex = Integer.MAX_VALUE;
+        for (String key : flagIndexes.keySet()) {
+            if (flagIndexes.get(key) == -1) {
+                logger.debug("This message is not of type " + key);
+                continue;
+            }
+            if (flagIndexes.get(key) < lowestIndex) {
+                messageType = key;
+                lowestIndex = flagIndexes.get(key);
+            }
+        }
+        return messageType;
+    }
+
+    public static int findValidStartFlagLocation(String hexString, String startFlag){
+        int index = hexString.indexOf(startFlag);
+
+        // Make sure start flag is on an even numbered byte
+        while(index != -1 && index %2 != 0){
+            index = hexString.indexOf(startFlag, index+1);
+        }
+        return index;
+    }
+
+    
 
     // Get methods for message start flags
     public static String getBsmStartFlag() {
