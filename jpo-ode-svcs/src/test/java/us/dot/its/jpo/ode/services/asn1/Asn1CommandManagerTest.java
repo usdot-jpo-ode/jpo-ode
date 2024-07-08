@@ -27,7 +27,6 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
@@ -75,14 +74,14 @@ public class Asn1CommandManagerTest {
 
    @Test
    public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
-         throws DdsRequestManagerException, IOException, ParseException {
+         throws IOException, ParseException {
 
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 
    @Test
    public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
-         throws DdsRequestManagerException, IOException, ParseException {
+         throws IOException, ParseException {
 
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }

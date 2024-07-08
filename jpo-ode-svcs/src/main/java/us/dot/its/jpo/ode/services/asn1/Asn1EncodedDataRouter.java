@@ -44,7 +44,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
    private static final String MESSAGE_FRAME = "MessageFrame";
 
-   private static final String ERROR_ON_DDS_DEPOSIT = "Error on DDS deposit.";
+   private static final String ERROR_ON_SDX_DEPOSIT = "Error on SDX deposit.";
 
    public static class Asn1EncodedDataRouterException extends Exception {
 
@@ -172,7 +172,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       // - craft ASD object
       // - publish back to encoder stream
       // CASE 3: If SDW in metadata and ASD in body (double encoding complete)
-      // - send to DDS
+      // - send to SDX
 
       if (!dataObj.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING)) {
          logger.debug("Unsigned message received");
@@ -241,7 +241,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                deposit.put("encodedMsg", asdObj.getString(BYTES));
                asn1CommandManager.depositToSdw(deposit.toString());
             } catch (JSONException | Asn1CommandManagerException e) {
-               String msg = ERROR_ON_DDS_DEPOSIT;
+               String msg = ERROR_ON_SDX_DEPOSIT;
                logger.error(msg, e);
             }
          } else {
@@ -271,23 +271,18 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          if (null != asdObj) {
             String asdBytes = asdObj.getString(BYTES);
 
-            // Deposit to DDS
-            String ddsMessage = "";
             try {
                JSONObject deposit = new JSONObject();
                deposit.put("estimatedRemovalDate", request.getSdw().getEstimatedRemovalDate());
                deposit.put("encodedMsg", asdBytes);
                asn1CommandManager.depositToSdw(deposit.toString());
-               ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
-               logger.info("DDS deposit successful.");
+               logger.info("SDX deposit successful.");
             } catch (Exception e) {
-               ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
-               String msg = ERROR_ON_DDS_DEPOSIT;
+               String msg = ERROR_ON_SDX_DEPOSIT;
                logger.error(msg, e);
                EventLogger.logger.error(msg, e);
             }
 
-            responseList.put("ddsMessage", ddsMessage);
          } else if (logger.isErrorEnabled()) { // Added to avoid Sonar's "Invoke method(s) only conditionally." code smell
             String msg = "ASN.1 Encoder did not return ASD encoding {}";
             EventLogger.logger.error(msg, consumedObj.toString());
