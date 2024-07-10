@@ -86,20 +86,6 @@ services:
       PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
       PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
 
-  ppmtim:
-    build:
-      context: ./jpo-cvdp
-      dockerfile: Dockerfile.cdot
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
-      PPM_CONFIG_FILE: cdot_ppmTim.properties
-      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
-      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
-      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
-
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
@@ -164,30 +150,6 @@ services:
       HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
       DEPOSIT_GROUP: ${CVPEP_TIM_GROUP}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  rde_tim_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
-      K_AWS_SECRET_ACCESS_SECRET: ${RDE_TIM_K_AWS_SECRET_ACCESS_SECRET}
-      K_AWS_SESSION_TOKEN: ${RDE_TIM_K_AWS_SESSION_TOKEN}
-      K_AWS_EXPIRATION: ${RDE_TIM_K_AWS_EXPIRATION}
-      API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
-      HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
-      HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
-      DEPOSIT_GROUP: ${RDE_TIM_GROUP}
       KAFKA_TYPE: ${KAFKA_TYPE}
       CONFLUENT_KEY: ${CONFLUENT_KEY}
       CONFLUENT_SECRET: ${CONFLUENT_SECRET}
