@@ -7,6 +7,7 @@ sh -c rc-status
 # Create the necessary file to run a service on openrc. This is necessary when using an alpine image
 touch /run/openrc/softlevel
 # Start the SSH/SCP server on boot of the new container
+# This will utilize the /root/.ssh/authorized_keys file for determining authorized users - this is intended to be Onboard Units
 rc-service sshd start
 
 # Start the jpo-ode application
