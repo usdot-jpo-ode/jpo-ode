@@ -23,7 +23,7 @@ WORKDIR /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.properties /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
-COPY startup_jpoode.sh /home
+COPY ./scripts/startup_jpoode.sh /home
 
 RUN apk add openssh
 RUN apk add openrc
