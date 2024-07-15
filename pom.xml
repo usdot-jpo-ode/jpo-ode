@@ -49,6 +49,8 @@
     <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <sonar.language>java</sonar.language>
     <jmockit.version>1.49</jmockit.version>
+    <!-- Allow override of github organization when publishing artifacts to github -->
+    <github_organization>usdot-jpo-ode</github_organization>
   </properties>
 
   <dependencies>
@@ -161,5 +163,11 @@
       </plugins>
     </pluginManagement>
   </build>
-
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/${github_organization}/jpo-s3-deposit</url>
+    </repository>
+  </distributionManagement>
 </project>
