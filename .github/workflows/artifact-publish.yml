@@ -1,10 +1,9 @@
 name: Publish Java Package
 
-# on:
-#   push:
-#     tags:
-#       - 'jpo-ode-*'
-on: [pull_request, push]
+on:
+  push:
+    tags:
+      - 'jpo-ode-*'
 
 jobs:
   build:
