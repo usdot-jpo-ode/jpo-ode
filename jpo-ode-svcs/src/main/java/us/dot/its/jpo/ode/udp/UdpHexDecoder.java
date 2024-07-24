@@ -52,9 +52,9 @@ public class UdpHexDecoder {
       payloadHexString = UperUtil.stripDot3Header(payloadHexString, startFlag);
       logger.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
-      OdeAsn1Payload timPayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+      OdeAsn1Payload odePayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
       
-      return timPayload;
+      return odePayload;
    }
 
    public static String buildJsonMapFromPacket(DatagramPacket packet){
