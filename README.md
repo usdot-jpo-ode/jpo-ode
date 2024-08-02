@@ -45,8 +45,7 @@ The current version and release history of the JPO-ODE: [ODE Release Notes](<doc
 1. [Kubernetes](#kubernetes)
 1. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
 1. [SNMP](#snmp)
-
-
+1. [GitHub Artifact Usage](#githhub-artifact-usage)
 
 <!--
 #########################################
@@ -724,7 +723,9 @@ This can be changed by setting the value of the DEFAULT_SNMP_PROTOCOL environmen
 
 Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.
 
-## 13. GitHub Artifact Usage
+<a name="githhub-artifact-usage"></a>
+
+## 14. GitHub Artifact Usage
 
 To use this library in another application, add the GitHub package URLs to the `repositories` section in `pom.xml` of the consumer application or in your local `~/.m2/settings.xml` file. Here is an example implementation of using the GitHub artifact in a consumer application:
 
