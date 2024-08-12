@@ -18,7 +18,7 @@ public class UperUtilTest {
     public void testStripDot2Header() {
         String testHexString = "10110014000000";
         String testPayloadStartFlag = "0014";
-        String expectedValue = "0014000000";
+        String expectedValue = "001400";
         assertEquals(expectedValue, UperUtil.stripDot2Header(testHexString, testPayloadStartFlag));
     }
 
@@ -33,7 +33,7 @@ public class UperUtilTest {
     @Test
     public void testStripDot3Header() {
         byte[] testPacket = { 0x10, 0x20, 0x00, 0x1f, 0x00, 0x00 };
-        byte[] testExpected = { 0x00, 0x1f, 0x00, 0x00 };
+        byte[] testExpected = { 0x00, 0x1f, 0x00 };
         HashMap<String, String> testMsgStartFlag = new HashMap<>();
         testMsgStartFlag.put("TIM", "001f");
         byte[] testResult = UperUtil.stripDot3Header(testPacket, testMsgStartFlag);
@@ -53,7 +53,7 @@ public class UperUtilTest {
     @Test
     public void testStripDot3HeaderString() {
         String testPacketString = "0102001f0000";
-        String testExpectedString = "001f0000";
+        String testExpectedString = "001f00";
         String testMsgStartFlag = "001f";
         assertEquals(testExpectedString, UperUtil.stripDot3Header(testPacketString, testMsgStartFlag));
     }

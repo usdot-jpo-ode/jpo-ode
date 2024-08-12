@@ -33,7 +33,8 @@ public class UperUtil {
         int startIndex = hexString.indexOf(payload_start_flag);
         if (startIndex == -1)
             return "BAD DATA";
-        return hexString.substring(startIndex, hexString.length());
+        String strippedPayload = stripTrailingZeros(hexString.substring(startIndex, hexString.length()));
+        return strippedPayload;
     }
 
     /*
@@ -66,8 +67,11 @@ public class UperUtil {
         if (hexPacketParsed.equals("")) {
             hexPacketParsed = hexString;
             logger.debug("Packet is not a BSM, TIM or Map message: " + hexPacketParsed);
+        } else {
+            logger.debug("Base packet: " + hexPacketParsed);
+            hexPacketParsed = stripTrailingZeros(hexPacketParsed);
+            logger.debug("Stripped packet: " + hexPacketParsed);
         }
-
         return HexUtils.fromHexString(hexPacketParsed);
     }
 
@@ -80,12 +84,15 @@ public class UperUtil {
         int payloadStartIndex = hexString.indexOf(payload_start_flag);
         String headers = hexString.substring(0, payloadStartIndex);
         String payload = hexString.substring(payloadStartIndex, hexString.length());
+        logger.debug("Base payload: " + payload);
+        String strippedPayload = stripTrailingZeros(payload);
+        logger.debug("Stripped payload: " + strippedPayload);
         // Look for the index of the start flag of a signed 1609.2 header
         int signedDot2StartIndex = headers.indexOf("038100");
         if (signedDot2StartIndex == -1)
-            return payload;
+            return strippedPayload;
         else
-            return headers.substring(signedDot2StartIndex, headers.length()) + payload;
+            return headers.substring(signedDot2StartIndex, headers.length()) + strippedPayload;
     }
 
     	/**
@@ -122,6 +129,23 @@ public class UperUtil {
 		}
 		return messageType;
 	}
+
+    private static String stripTrailingZeros(String payload) {
+        // Remove trailing '0's
+        while (payload.endsWith("0")) {
+            payload = payload.substring(0, payload.length() - 1);
+        }
+    
+        // Ensure the payload length is even
+        if (payload.length() % 2 != 0) {
+            payload += "0";
+        }
+    
+        // Append '00' to ensure one remaining byte of '00's
+        payload += "00";
+    
+        return payload;
+    }
 
     // Get methods for message start flags
     public static String getBsmStartFlag() {
