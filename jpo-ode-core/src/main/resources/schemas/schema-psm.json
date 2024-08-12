@@ -104,6 +104,12 @@
                 },
                 "sanitized": {
                     "type": "boolean"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -120,7 +126,8 @@
                 "odePacketID",
                 "odeTimStartDateTime",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ]
         },
         "payload": {

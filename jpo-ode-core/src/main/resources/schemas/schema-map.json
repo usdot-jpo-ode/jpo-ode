@@ -94,6 +94,9 @@
                         "serialNumber"
                     ],
                     "type": "object"
+                },
+                "asn1": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -111,7 +114,8 @@
                 "odePacketID",
                 "odeTimStartDateTime",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ],
             "type": "object"
         },
