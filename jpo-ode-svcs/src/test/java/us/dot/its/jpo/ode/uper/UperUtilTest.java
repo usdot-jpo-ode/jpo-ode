@@ -77,4 +77,17 @@ public class UperUtilTest {
         assertEquals(UperUtil.determineMessageType(timPayload), "TIM");
     }
 
+    @Test
+    public void testStripTrailingZeros() {
+        // Test case: String with trailing zeros
+        String input1 = "12340000";
+        String expected1 = "123400";
+        assertEquals(expected1, UperUtil.stripTrailingZeros(input1));
+
+        // Test case: String without extra zero at end of payload
+        String input2 = "123450000";
+        String expected2 = "123456000";
+        assertEquals(expected2, UperUtil.stripTrailingZeros(input2));
+    }
+
 }
