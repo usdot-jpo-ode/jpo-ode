@@ -49,7 +49,7 @@ public class UdpHexDecoder {
          return null;
       
       logger.debug("Full {} packet: {}", msgType, payloadHexString);
-      payloadHexString = UperUtil.stripDot3Header(payloadHexString, startFlag);
+      payloadHexString = UperUtil.stripDot3Header(payloadHexString, startFlag).toLowerCase();
       logger.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
       OdeAsn1Payload odePayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
