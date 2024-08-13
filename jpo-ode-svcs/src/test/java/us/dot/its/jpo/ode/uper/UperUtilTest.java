@@ -86,7 +86,7 @@ public class UperUtilTest {
 
         // Test case: String without extra zero at end of payload
         String input2 = "123450000";
-        String expected2 = "123456000";
+        String expected2 = "12345000";
         assertEquals(expected2, UperUtil.stripTrailingZeros(input2));
     }
 
