@@ -1,0 +1,31 @@
+name: Publish Java Package
+
+on:
+  push:
+    tags:
+      - 'jpo-ode-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+
+    - name: Remove snapshot from version
+      run: mvn versions:set -DremoveSnapshot
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Publish to GitHub Packages
+      run: mvn --batch-mode -Dgithub_organization=${{ github.repository_owner }} deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
