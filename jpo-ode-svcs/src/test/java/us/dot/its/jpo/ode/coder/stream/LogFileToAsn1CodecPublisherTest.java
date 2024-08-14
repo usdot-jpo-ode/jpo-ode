@@ -45,7 +45,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 public class LogFileToAsn1CodecPublisherTest {
 
    private static final String GZ = ".gz";
-   private static String schemaVersion = "6";
+   private static String schemaVersion = "7";
 
    @Tested
    LogFileToAsn1CodecPublisher testLogFileToAsn1CodecPublisher;

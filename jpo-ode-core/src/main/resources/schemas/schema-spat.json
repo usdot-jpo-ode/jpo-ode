@@ -214,7 +214,7 @@
                 },
                 "schemaVersion": {
                     "type": "integer",
-                    "const": 6
+                    "const": 7
                 },
                 "maxDurationTime": {
                     "type": [
