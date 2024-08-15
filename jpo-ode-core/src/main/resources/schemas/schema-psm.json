@@ -85,6 +85,7 @@
                     "type": "string"
                 },
                 "schemaVersion": {
+                    "const": 7,
                     "type": "integer"
                 },
                 "maxDurationTime": {
@@ -106,10 +107,7 @@
                     "type": "boolean"
                 },
                 "asn1": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             },
             "required": [

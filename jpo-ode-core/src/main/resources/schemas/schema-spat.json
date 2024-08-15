@@ -259,10 +259,7 @@
                     "type": "boolean"
                 },
                 "asn1": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 }
             }
         },

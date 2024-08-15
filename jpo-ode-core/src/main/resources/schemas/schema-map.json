@@ -63,6 +63,7 @@
                     "type": "boolean"
                 },
                 "schemaVersion": {
+                    "const": 7,
                     "type": "integer"
                 },
                 "securityResultCode": {
