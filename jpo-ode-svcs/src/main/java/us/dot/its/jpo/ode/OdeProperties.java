@@ -58,7 +58,7 @@ public class OdeProperties implements EnvironmentAware {
     * General Properties
     */
    private String version;
-   public static final int OUTPUT_SCHEMA_VERSION = 6;
+   public static final int OUTPUT_SCHEMA_VERSION = 7;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
    private static final String DEFAULT_KAFKA_PORT = "9092";

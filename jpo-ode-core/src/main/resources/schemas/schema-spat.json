@@ -19,7 +19,8 @@
                 "odeReceivedAt",
                 "schemaVersion",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ],
             "properties": {
                 "spatSource": {
@@ -213,7 +214,7 @@
                 },
                 "schemaVersion": {
                     "type": "integer",
-                    "const": 6
+                    "const": 7
                 },
                 "maxDurationTime": {
                     "type": [
@@ -256,6 +257,12 @@
                 },
                 "sanitized": {
                     "type": "boolean"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             }
         },
