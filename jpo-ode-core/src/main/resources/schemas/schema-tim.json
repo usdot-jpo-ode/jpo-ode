@@ -74,7 +74,10 @@
                     "type": "object"
                 },
                 "asn1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [

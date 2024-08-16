@@ -15,6 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -41,8 +42,10 @@ public class OdeMsgMetadata extends OdeObject {
    private String odeTimStartDateTime;
    private String recordGeneratedAt;
    private GeneratedBy recordGeneratedBy;
-   private String asn1 = "";
    private boolean sanitized = false;
+
+   @JsonInclude(JsonInclude.Include.NON_NULL)
+   private String asn1 = null;
 
    public OdeMsgMetadata() {
       this(OdeMsgPayload.class.getName(), new SerialId(), DateTimeUtils.now());

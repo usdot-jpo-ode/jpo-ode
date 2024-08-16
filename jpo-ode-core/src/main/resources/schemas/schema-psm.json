@@ -107,7 +107,10 @@
                     "type": "boolean"
                 },
                 "asn1": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
