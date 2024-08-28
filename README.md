@@ -257,7 +257,6 @@ Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
-- Specifying the variable: ${DOCKER_SHARED_VOLUME_WINDOWS} to "C:" may be required for certain Windows users.
 
 Navigate to the root directory of the jpo-ode project and run the following command:
 
