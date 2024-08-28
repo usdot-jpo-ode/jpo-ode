@@ -138,6 +138,11 @@ The ODE is bundled as a series of submodules running in Docker containers and ma
 
 - Docker: <https://docs.docker.com/engine/installation/>
 - Docker-Compose: <https://docs.docker.com/compose/install/>
+  - NOTE: Requires version 2.20 or newer
+- Make: <https://www.gnu.org/software/make/>
+  - Windows install with Choco: `choco install make`
+    - Windows install Choco: <https://chocolatey.org/install>
+  - Ubuntu install with apt: `sudo apt install make`
 
 ### Tips and Advice
 
@@ -204,7 +209,7 @@ The ODE software system consists of the following modules hosted in separate Git
 |[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
-|[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
+|[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable|
 
 You may download the stable, default branch for ALL of these dependencies by using the following recursive git clone command:
 
@@ -257,6 +262,38 @@ Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
+- Copy jpo-utils/sample.env to jpo-utils/.env
+  - Fill in the variables as described in the [README](jpo-utils/README.md)
+
+**Make:**
+
+Navigate to the root directory of the jpo-ode project and run the following command:
+
+```bash
+# View available options:
+$ make
+Make target options:
+`make start` to run the ODE
+`make build` to build the ODE
+`make stop` to stop the ODE
+`make delete` to stop the ODE and remove the volumes
+`make rebuild` to stop, delete, and then rebuild the containers
+`make clean-build` to rebuild the containers without using the cache
+```
+
+Possible error messages if `.env` files are not created:
+
+```bash
+# jpo-ode .env is missing
+$ make start
+Makefile:11: *** "ERROR: jpo-ode Environment file `.env` not found in ".  Stop.
+
+# jpo-utils .env is missing
+$ make start
+Makefile:14: *** "ERROR: jpo-utils Environment file `.env` not found in ".  Stop.
+```
+
+**Docker Compose:**
 
 Navigate to the root directory of the jpo-ode project and run the following command:
 
@@ -290,6 +327,14 @@ docker compose ps
 Check the deployment by running `docker compose ps`. You can start and stop containers using `docker compose start` and `docker compose stop` commands.
 If using the multi-broker docker compose file, you can change the scaling by running `docker compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker compose scale kafka=3`.
 
+To configure what services are started, use the `COMPOSE_PROFILE` environmental variable and set a comma separated string of profiles you want to start up. The following are the available profiles that the ODE is currently configured to use along with the services they will enable:
+
+- Profile name: `ode_base`
+  - Services: `ode, adm, and aem`
+- Profile name: `ode_full`
+  - Services: `ode, adm, aem, ppm_bsm, sdw_depositor, and sec`
+
+Profiles are also available for each service name to individually specify a service to enable.
 
 #### asn1_codec Module (ASN.1 Encoder and Decoder)
 ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` file is set up to build and deploy the module in a Docker container. If you wish to run `asn1_codec` module outside Docker (i.e. directly on the host machine), please refer to the documentation of `asn1_codec` module.
@@ -322,8 +367,6 @@ $ ./bsmjson_privacy -c ../config/ppm.properties
 
 Rather than using a local kafka instance, the ODE can utilize an instance of kafka hosted by Confluent Cloud via SASL.
 
-
-
 #### Environment variables
 
 ##### Purpose & Usage
@@ -334,9 +377,8 @@ Rather than using a local kafka instance, the ODE can utilize an instance of kaf
 
 - The CONFLUENT_KEY and CONFLUENT_SECRET environment variables are used to authenticate with the bootstrap server. If the KAFKA_TYPE environment variable is not set, then these are not required.
 
-
-
 ##### Values
+
 In order to utilize Confluent Cloud:
 
 - DOCKER_HOST_IP must be set to the bootstrap server address (excluding the port)
@@ -347,17 +389,9 @@ In order to utilize Confluent Cloud:
 
 - CONFLUENT_SECRET must be set to the API secret being utilized for CC
 
-
-
-#### CC Docker Compose File
-
-There is a provided docker-compose file (docker-compose-confluent-cloud.yml) that passes the above environment variables into the container that gets created. Further, this file doesn't spin up a local kafka instance since it is not required.
-
-
-
 #### Note
 
-This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.	
+This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.
 
 [Back to top](#toc)
 
@@ -365,60 +399,17 @@ This has only been tested with Confluent Cloud but technically all SASL authenti
 
 ## Description and Configuration
 
-To sink streamed kafka topic data to a MongoDB database, a kafka connect and MongoDB instance can be deployed for the ODE. By running the provided docker compose [file](./docker-compose-mongo.yml) the following topics will be streamed to MongoDB:
+To sink streamed kafka topic data to a MongoDB database, a kafka connect and MongoDB instance can be deployed for the ODE. To deploy the kafka connect and MongoDB instance, add the following profiles to your `COMPOSE_PROFILES` env variable: `ode_base,kafka_connect_standalone,kafka_setup`. This will result in the following topics being synced to MongoDB:
 
-- OdeRawEncodedBSMJson
 - OdeBsmJson
-- OdeRawEncodedMAPJson
 - OdeMapJson
-- OdeRawEncodedSPATJson
 - OdeSpatJson
-- OdeRawEncodedTIMJson
 - OdeTimJson
-- OdeRawEncodedPsmJson
 - OdePsmJson
 
-The configuration that defines this is in the jpo-utils submodule [here](jpo-utils\kafka-connect-mongo\scripts\kafka-connect). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`.
+The configuration that defines this is in the jpo-utils submodule [here](jpo-utils\kafka-connect\connect_start.sh). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`. The script can be overridden by setting the `CONNECT_SCRIPT_RELATIVE_PATH` to a location relative to the `/jpo-utils` repository.
 
-## Environment variables
-
-### Purpose & Usage
-
-- The `MONGO_IP` environment variable is used to define the IP address of the MongoDB container. This can be configured to use a remote MongoDB instance instead of using the provided docker deployed container.
-
-- The `MONGO_DB_NAME` environmental variable defines the name of the DB created in MongoDB. This variable is used for both configuring user permission access as well as a destination for the connectors defined in the `connect` container.
-
-- The `MONGO_ADMIN_DB_USER` and `MONGO_ADMIN_DB_PASS` define the credentials for the `admin` MongoDB user. This user has full control of the cluster and the password must be securely set for production deployments.
-
-- The `MONGO_ODE_DB_USER` and `MONGO_ODE_DB_PASS` define the credentials for the `ode` MongoDB user. This user has `readWrite` permissions to the `MONGO_DB_NAME` database.
-
-- The `MONGO_URI` environmental variable contains the complete connection string used to connect to the MongoDB when creating connectors in the `connect` container.
-
-- The `MONGO_COLLECTION_TTL` environmental variable configures the Time To Live (TTL) for created TTL indexes. Setting this value too high will result in much more storage usage.
-
-### Values
-In order to utilize Confluent Cloud:
-
-- `MONGO_IP` must be set to the IP address of the MongoDB container. This can be left as `${DOCKER_HOST_IP}` for deployments using the provided MongoDB instance included in the docker-compose file.
-
-- `MONGO_DB_NAME` configures the created DB name in MongoDB.
-
-- `MONGO_ADMIN_DB_USER` configures the MongoDB admin user's name.
-
-- `MONGO_ADMIN_DB_PASS` configures the MongoDB admin user's name. This must be changed to a more secure password for production deployments.
-
-- `MONGO_ODE_DB_USER` configures the username of the initialized user with `readwrite` access to the initialized database.
-
-- `MONGO_ODE_DB_PASS` configures the password of the initialized user with `readwrite` access to the initialized database.
-
-- `MONGO_URI` defines the connection URI used by the kafka connect instance. MongoDB connection URI options are documented [here](https://www.mongodb.com/docs/manual/reference/connection-string/)
-
-- `MONGO_COLLECTION_TTL` sets the Time To Live (TTL) for the created TTL indexes.
-
-
-## Mongo Docker Compose File
-
-There is a provided docker-compose [file](docker-compose-mongo.yml) that spins up a MongoDB instance with a kafka connect service. There is also a initialization container that configures the RBAC and replica set of the MongoDB container. 
+For further documentation on configuring the MongoDB Kafka Connect image refer [to this readme](jpo-utils/README.md).
 
 ## Note
 
