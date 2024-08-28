@@ -202,7 +202,6 @@ The ODE software system consists of the following modules hosted in separate Git
 |----|----------|-----------|
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
 |[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
-|[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 |[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
@@ -380,7 +379,7 @@ To sink streamed kafka topic data to a MongoDB database, a kafka connect and Mon
 - OdeRawEncodedPsmJson
 - OdePsmJson
 
-The configuration that defines this is in the jpo-s3-deposit submodule [here](jpo-s3-deposit\mongo-connector\connect_start.sh). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`.
+The configuration that defines this is in the jpo-utils submodule [here](jpo-utils\kafka-connect-mongo\scripts\kafka-connect). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`.
 
 ## Environment variables
 
@@ -424,7 +423,7 @@ There is a provided docker-compose [file](docker-compose-mongo.yml) that spins u
 
 ## Note
 
-Kafka connect is being used for MongoDB in this implimentation but it can interact with many types of databases, here is further documentation for [kafka connect](https://docs.confluent.io/platform/current/connect/index.html)
+Kafka connect is being used for MongoDB in this implementation but it can interact with many types of databases, here is further documentation for [kafka connect](https://docs.confluent.io/platform/current/connect/index.html)
 
 [Back to top](#toc)
 
@@ -570,8 +569,8 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
 	- <https://github.com/usdot-jpo-ode/jpo-ode>
 - Data Privacy Module on Github (public)
 	- <https://github.com/usdot-jpo-ode/jpo-cvdp>
-- S3 Depositor Module on Github (public)
-	- <https://github.com/usdot-jpo-ode/jpo-s3-deposit>
+- Utils Module on Github (public)
+	- <https://github.com/usdot-jpo-ode/jpo-utils>
 - Security services repository on GitHub (public)
   - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
 - SDW Depositor Module on GitHub (public)
