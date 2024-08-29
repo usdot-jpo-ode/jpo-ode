@@ -17,6 +17,12 @@ endif
 	docker compose up -d
 
 build:
+ifeq ("$(wildcard .env)", "")
+	$(error "ERROR: jpo-ode Environment file `.env` not found in ${PWD}")
+endif
+ifeq ("$(wildcard ./jpo-utils/.env)", "")
+	$(error "ERROR: jpo-utils Environment file `.env` not found in ${PWD}")
+endif
 	docker compose build
 
 stop:

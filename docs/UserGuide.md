@@ -291,6 +291,7 @@ be found in the jpo-ode/README.md document:
 | asn1\_codec    | public     | ASN.1 encoder/decoder   | <https://github.com/usdot-jpo-ode/asn1_codec>     |
 | jpo-sdw-depositor | public | SDX depositor service   | <https://github.com/usdot-jpo-ode/jpo-sdw-depositor> |
 | jpo-security-svcs | public | Security services module | <https://github.com/usdot-jpo-ode/jpo-security-svcs> |
+| jpo-utils | public     | Utilities for JPO repositories    | <https://github.com/usdot-jpo-ode/jpo-utils> |
 
 <a name="open-source-repository"></a>
 
