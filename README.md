@@ -327,7 +327,7 @@ docker compose ps
 Check the deployment by running `docker compose ps`. You can start and stop containers using `docker compose start` and `docker compose stop` commands.
 If using the multi-broker docker compose file, you can change the scaling by running `docker compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker compose scale kafka=3`.
 
-To configure what services are started, use the `COMPOSE_PROFILE` environmental variable and set a comma separated string of profiles you want to start up. The following are the available profiles that the ODE is currently configured to use along with the services they will enable:
+To configure what services are started, use the `COMPOSE_PROFILE` environmental variable and set a comma separated string of profiles you want to start up. This project also supports all `COMPOSE_PROFILE` values implemented in the [jpo-utils](jpo-utils/README.md) `docker-compose.yml`. The following are the available profiles that the ODE is currently configured to use along with the services they will enable:
 
 - Profile name: `ode_base`
   - Services: `ode, adm, and aem`
