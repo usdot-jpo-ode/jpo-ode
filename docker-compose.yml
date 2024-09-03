@@ -41,10 +41,17 @@ services:
       DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
       DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+    healthcheck:
+      test: ["CMD", "wget" ,"--spider", "http://localhost:8080"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
     logging:
       options:
         max-size: "10m"
@@ -74,7 +81,8 @@ services:
       ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
       ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
@@ -106,7 +114,8 @@ services:
       ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
       ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
@@ -141,7 +150,8 @@ services:
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     logging:
       options:
         max-size: "10m"
@@ -177,7 +187,8 @@ services:
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
 
   sdw_depositor:
     profiles:
@@ -204,8 +215,10 @@ services:
       CONFLUENT_KEY: ${CONFLUENT_KEY}
       CONFLUENT_SECRET: ${CONFLUENT_SECRET}
     depends_on:
-     - kafka
-     - ode
+      kafka:
+        condition: service_healthy
+      ode:
+        condition: service_healthy
     logging:
       options:
         max-size: "10m" 
