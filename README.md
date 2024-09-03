@@ -250,6 +250,29 @@ cp ./J2735_201603DA.ASN asn1_codec/asn1c_combined/
 </p>
 </details>
 
+<details><summary>(Advanced) Removing an old submodule reference</summary>
+<p>
+
+The following commands help with removing an old submodule reference. The following refers to the removal of the jpo-s3-deposit submodule however the logic can be used for other Git submodules as well.
+
+```bash
+# Remove references to the git submodule
+git submodule deinit -f jpo-s3-deposit
+rm -rf .git/modules/jpo-s3-deposit
+rm -rf jpo-s3-deposit
+git rm --cached jpo-s3-deposit
+
+# Run the following commands to reset existing branch
+git reset --hard
+git submodule foreach --recursive git reset --hard
+
+# The next command wipes out all of the submodules and re-initializes them.
+git submodule deinit -f . && git submodule update --recursive --init
+```
+
+</p>
+</details>
+
 #### Step 2 - Build and run the application
 
 **Notes:**
