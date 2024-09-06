@@ -6,14 +6,14 @@ This script is responsible for initializing the replica set, creating collection
 console.log("Running create_indexes.js");
 
 const ode_db = process.env.MONGO_DB_NAME;
-const ode_user = process.env.MONGO_ODE_DB_USER;
-const ode_pass = process.env.MONGO_ODE_DB_PASS;
+const rw_user = process.env.MONGO_READ_WRITE_USER;
+const rw_pass = process.env.MONGO_READ_WRITE_PASS;
 
 const ttlInDays = process.env.MONGO_COLLECTION_TTL; // TTL in days
 const expire_seconds = ttlInDays * 24 * 60 * 60;
 const retry_milliseconds = 5000;
 
-console.log("ODE DB Name: " + ode_db);
+console.log("DB Name: " + ode_db);
 
 try {
     console.log("Initializing replica set...");
@@ -41,19 +41,10 @@ try {
 
 const collections = [
     {name: "OdeBsmJson", ttlField: "recordGeneratedAt", timeField: "metadata.odeReceivedAt"},
-    {name: "OdeRawEncodedBSMJson", ttlField: "recordGeneratedAt", timeField: "none"},
-
     {name: "OdeMapJson", ttlField: "recordGeneratedAt", timeField: "metadata.odeReceivedAt"},
-    {name: "OdeRawEncodedMAPJson", ttlField: "recordGeneratedAt", timeField: "none"},
-
     {name: "OdeSpatJson", ttlField: "recordGeneratedAt", timeField: "metadata.odeReceivedAt"},
-    {name: "OdeRawEncodedSPATJson", ttlField: "recordGeneratedAt", timeField: "none"},
-    
     {name: "OdeTimJson", ttlField: "recordGeneratedAt", timeField: "metadata.odeReceivedAt"},
-    {name: "OdeRawEncodedTIMJson", ttlField: "recordGeneratedAt", timeField: "none"},
-
     {name: "OdePsmJson", ttlField: "recordGeneratedAt", timeField: "metadata.odeReceivedAt"},
-    {name: "OdeRawEncodedPsmJson", ttlField: "recordGeneratedAt", timeField: "none"},
 ];
 
 // Function to check if the replica set is ready
@@ -84,22 +75,22 @@ try{
     }
     sleep(retry_milliseconds);
     // creates another user
-    console.log("Creating ODE user...");
+    console.log("Creating Read Write user...");
     admin = db.getSiblingDB("admin");
     // Check if user already exists
-    var user = admin.getUser(ode_user);
+    var user = admin.getUser(rw_user);
     if (user == null) {
         admin.createUser(
             {
-                user: ode_user,
-                pwd: ode_pass,
+                user: rw_user,
+                pwd: rw_pass,
                 roles: [
                     { role: "readWrite", db: ode_db },
                 ]
             }
         );
     } else {
-        console.log("User \"" + ode_user + "\" already exists.");
+        console.log("User \"" + rw_user + "\" already exists.");
     }
 
 } catch (error) {
