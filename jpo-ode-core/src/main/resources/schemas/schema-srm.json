@@ -87,7 +87,10 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "type": "null"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "sanitized": {
                     "type": "boolean"
