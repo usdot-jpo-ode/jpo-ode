@@ -31,7 +31,19 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "type": "string"
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ],
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "recordType": {
                     "type": "string"
