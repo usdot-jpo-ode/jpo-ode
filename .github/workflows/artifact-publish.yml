@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'jpo-ode-*'
+  pull_request:
+    types:
+      - synchronize
 
 jobs:
   build:
