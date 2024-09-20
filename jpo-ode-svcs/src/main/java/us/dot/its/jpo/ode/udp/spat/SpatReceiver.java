@@ -42,10 +42,10 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                 logger.debug("Waiting for UDP SPaT packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    
                     String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
-                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    if(spatJson != null){
+                        spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);

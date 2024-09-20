@@ -43,11 +43,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
             logger.debug("Waiting for UDP BSM packets...");
             socket.receive(packet);
             if (packet.getLength() > 0) {
-               // Create OdeMsgPayload and OdeLogMetadata objects and populate them
                String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
 
                if(bsmJson != null){
-                  // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                   bsmPublisher.publish(bsmJson, bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
                }
                

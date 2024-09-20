@@ -44,7 +44,6 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
                
                String timJson = UdpHexDecoder.buildJsonTimFromPacket(packet);
                if(timJson != null){
-                  // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                   timPublisher.publish(timJson, timPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
                }
                

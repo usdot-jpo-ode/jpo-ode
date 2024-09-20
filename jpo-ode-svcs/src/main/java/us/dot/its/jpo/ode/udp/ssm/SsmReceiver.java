@@ -46,7 +46,6 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                     String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
 
                     if(ssmJson!=null){
-                        // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                         ssmPublisher.publish(ssmJson, ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
                     }
                     

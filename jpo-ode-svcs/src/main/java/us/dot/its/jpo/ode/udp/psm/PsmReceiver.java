@@ -44,7 +44,6 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
                 if (packet.getLength() > 0) {
                     String psmJson = UdpHexDecoder.buildJsonPsmFromPacket(packet);
                     if(psmJson != null){
-                        // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                         psmPublisher.publish(psmJson, psmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedPSMJson());
                     }
                 }

@@ -35,7 +35,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class UdpHexDecoder {
     
-    private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
+    private static Logger logger = LoggerFactory.getLogger(UdpHexDecoder.class);
 
     public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet, UperUtil.SupportedMessageTypes msgType) {
       String startFlag = UperUtil.getStartFlag(msgType);
@@ -69,9 +69,7 @@ public class UdpHexDecoder {
         OdeMapMetadata mapMetadata = new OdeMapMetadata(mapPayload);
       
         // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        mapMetadata.setOdeReceivedAt(timestamp);
+        mapMetadata.setOdeReceivedAt(getUtcTimeString());
 
         mapMetadata.setOriginIp(senderIp);
         mapMetadata.setMapSource(MapSource.RSU);
@@ -94,9 +92,7 @@ public class UdpHexDecoder {
         OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
 
         // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        spatMetadata.setOdeReceivedAt(timestamp);
+        spatMetadata.setOdeReceivedAt(getUtcTimeString());
 
         spatMetadata.setOriginIp(senderIp);
         spatMetadata.setSpatSource(SpatSource.RSU);
@@ -121,9 +117,7 @@ public class UdpHexDecoder {
       OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
 
       // Add header data for the decoding process
-      ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-      String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-      timMetadata.setOdeReceivedAt(timestamp);
+      timMetadata.setOdeReceivedAt(getUtcTimeString());
 
       timMetadata.setOriginIp(senderIp);
       timMetadata.setRecordType(RecordType.timMsg);
@@ -143,9 +137,7 @@ public class UdpHexDecoder {
       OdeBsmMetadata bsmMetadata = new OdeBsmMetadata(bsmPayload);
       
       // Set BSM Metadata values that can be assumed from the UDP endpoint
-      ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-      String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-      bsmMetadata.setOdeReceivedAt(timestamp);
+      bsmMetadata.setOdeReceivedAt(getUtcTimeString());
 
       ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
       OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
@@ -179,9 +171,7 @@ public class UdpHexDecoder {
         OdeSsmMetadata ssmMetadata = new OdeSsmMetadata(ssmPayload);
 
         // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        ssmMetadata.setOdeReceivedAt(timestamp);
+        ssmMetadata.setOdeReceivedAt(getUtcTimeString());
 
         ssmMetadata.setOriginIp(senderIp);
         ssmMetadata.setSsmSource(SsmSource.RSU);
@@ -204,9 +194,7 @@ public class UdpHexDecoder {
         OdeSrmMetadata srmMetadata = new OdeSrmMetadata(srmPayload);
 
         // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        srmMetadata.setOdeReceivedAt(timestamp);
+        srmMetadata.setOdeReceivedAt(getUtcTimeString());
 
         srmMetadata.setOriginIp(senderIp);
         srmMetadata.setSrmSource(SrmSource.RSU);
@@ -228,9 +216,7 @@ public class UdpHexDecoder {
             return null;
         OdePsmMetadata psmMetadata = new OdePsmMetadata(psmPayload);
         // Add header data for the decoding process
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-        psmMetadata.setOdeReceivedAt(timestamp);
+        psmMetadata.setOdeReceivedAt(getUtcTimeString());
 
         psmMetadata.setOriginIp(senderIp);
         psmMetadata.setPsmSource(PsmSource.RSU);
@@ -239,6 +225,12 @@ public class UdpHexDecoder {
         psmMetadata.setSecurityResultCode(SecurityResultCode.success);
 
         return JsonUtils.toJson(new OdeAsn1Data(psmMetadata, psmPayload), false);
+    }
+
+    public static String getUtcTimeString(){
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        return timestamp;
     }
 
    

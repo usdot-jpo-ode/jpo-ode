@@ -44,8 +44,9 @@ public class SrmReceiver extends AbstractUdpReceiverPublisher {
                 if (packet.getLength() > 0) {
                     
                     String srmJson = UdpHexDecoder.buildJsonSrmFromPacket(packet);
-                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    srmPublisher.publish(srmJson, srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+                    if(srmJson != null){
+                        srmPublisher.publish(srmJson, srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);

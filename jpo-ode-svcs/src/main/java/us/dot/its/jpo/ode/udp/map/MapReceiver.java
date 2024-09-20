@@ -45,7 +45,6 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     
                     String mapJson = UdpHexDecoder.buildJsonMapFromPacket(packet);
                     if(mapJson != null){
-                        // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                         mapPublisher.publish(mapJson, mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
                     }
                     
