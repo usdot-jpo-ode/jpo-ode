@@ -23,9 +23,9 @@ jobs:
       run: mvn versions:set -DremoveSnapshot
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B clean package --file pom.xml -DskipTests -Ppackage-jar
 
     - name: Publish to GitHub Packages
-      run: mvn --batch-mode -Dgithub_organization=${{ github.repository_owner }} deploy
+      run: mvn --batch-mode -Dgithub_organization=${{ github.repository_owner }} deploy -DskipTests -Ppackage-jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
