@@ -23,15 +23,10 @@ WORKDIR /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.properties /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
+COPY ./scripts/startup_jpoode.sh /home
 
-ENTRYPOINT ["java", \
-	"-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
-	"-Dcom.sun.management.jmxremote.port=9090", \
-	"-Dcom.sun.management.jmxremote.rmi.port=9090", \
-	"-Dcom.sun.management.jmxremote", \
-	"-Dcom.sun.management.jmxremote.local.only=true", \
-	"-Dcom.sun.management.jmxremote.authenticate=false", \
-	"-Dcom.sun.management.jmxremote.ssl=false", \
-	"-Dlogback.configurationFile=/home/logback.xml", \
-	"-jar", \
-	"/home/jpo-ode-svcs.jar"]
+RUN apk add openssh
+RUN apk add openrc
+RUN rc-update add sshd
+
+ENTRYPOINT ["sh", "/home/startup_jpoode.sh"]

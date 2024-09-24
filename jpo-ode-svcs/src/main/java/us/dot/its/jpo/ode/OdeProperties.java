@@ -58,7 +58,7 @@ public class OdeProperties implements EnvironmentAware {
     * General Properties
     */
    private String version;
-   public static final int OUTPUT_SCHEMA_VERSION = 6;
+   public static final int OUTPUT_SCHEMA_VERSION = 7;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
    private static final String DEFAULT_KAFKA_PORT = "9092";
@@ -86,20 +86,6 @@ public class OdeProperties implements EnvironmentAware {
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogLog = "bsmlog";
    private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
-
-   /*
-    * USDOT Situation Data Clearinghouse (SDC) / Situational Data Exchange (SDX),
-    * a.k.a Data Distribution System (DDS) Properties
-    */
-   // DDS WebSocket Properties
-   private String ddsCasUrl = "https://cas.cvmvp.com/accounts/v1/tickets";
-   private String ddsCasUsername = "";
-   private String ddsCasPass = "";
-   private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
-
-   // Enable/disable depositing SDW messages over Websocket(true) or REST(false)
-   @Value("${ode.depositSdwMessagesOverWebsocket:false}")
-   private boolean depositSdwMessagesOverWebsocket = false;
 
    /*
     * UDP Properties
@@ -324,14 +310,6 @@ public class OdeProperties implements EnvironmentAware {
       return uploadLocationRoot;
    }
 
-   public String getDdsCasPassword() {
-      return ddsCasPass;
-   }
-
-   public void setDdsCasPassword(String ddsCasPass) {
-      this.ddsCasPass = ddsCasPass;
-   }
-
    public int getMessagesUntilTrustReestablished() {
       return messagesUntilTrustReestablished;
    }
@@ -490,30 +468,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setPsmBufferSize(int psmBufferSize) {
       this.psmBufferSize = psmBufferSize;
-   }
-
-   public String getDdsCasUrl() {
-      return ddsCasUrl;
-   }
-
-   public void setDdsCasUrl(String ddsCasUrl) {
-      this.ddsCasUrl = ddsCasUrl;
-   }
-
-   public String getDdsCasUsername() {
-      return ddsCasUsername;
-   }
-
-   public void setDdsCasUsername(String ddsCasUsername) {
-      this.ddsCasUsername = ddsCasUsername;
-   }
-
-   public String getDdsWebsocketUrl() {
-      return ddsWebsocketUrl;
-   }
-
-   public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
-      this.ddsWebsocketUrl = ddsWebsocketUrl;
    }
 
    public void setUploadLocationRoot(String uploadLocationRoot) {
@@ -756,13 +710,6 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicSdwDepositorInput = kafkaTopicSdwDepositorInput;
    }
 
-   public boolean shouldDepositSdwMessagesOverWebsocket() {
-      return depositSdwMessagesOverWebsocket;
-   }
-
-   public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
-      this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
-   }
    public String getKafkaTopicSignedOdeTimJsonExpiration() {
       return kafkaTopicSignedOdeTimJsonExpiration;
    }

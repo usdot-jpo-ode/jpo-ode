@@ -25,7 +25,6 @@ Some functionality will be unreachable without the participation of the followin
 - jpo-cvdp
 - jpo-security-svcs
 - jpo-sdw-depositor
-- jpo-s3-deposit
 
 ### Submodule Compatibility
 To find the compatible submodule versions, please refer to the [Submodule Compatibility Guide](https://github.com/CDOT-CV/jpo-ode/blob/dev/docs/compatibility.md). Based on your ODE version, you can find the compatible submodule versions by looking at the corresponding row of the provided table.

@@ -1,6 +1,25 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 3.0.0, released September 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 3.0.0 release include several key improvements and cleanups. Outdated 'deposit over WebSocket to SDX' code was removed and the ppm_tim service was eliminated from Docker compose files. Additionally, the jpo-s3-deposit submodule was replaced with the jpo-utils submodule. Error handling was enhanced, particularly in interpreting "SNMP Error Code 10" from RSUs and stack traces for bad encoded data from ACM are now printed only when debug logging is enabled. Documentation updates provide more granular project references and mapfile references in ppm*.properties files were updated. Build and deployment improvements include resolving a UID conflict for container builds and adding Maven JAR publishing to GitHub Maven Central via GitHub Actions. Lastly, a Docker startup script was introduced for log offloading via SSH/SCP and source ASN1 bytes payload support was added for IMP depositors.
+
+Enhancements in this release:
+- CDOT PR 83: Removed stale 'deposit over WebSocket to SDX' code
+- CDOT PR 86: Improved interpretation of the "SNMP Error Code 10" error message returned by RSUs
+- CDOT PR 89: Expanded project reference update documentation to be more granular
+- CDOT PR 90: Updated mapfile reference in `ppm*.properties` files
+- CDOT PR 91: Modified code to print stack trace upon receiving bad encoded data from ACM only if debug logging is enabled
+- CDOT PR 92: Added a startup script to Dockerfile to allow for log offloading support via SSH/SCP
+- CDOT PR 93: Removed `ppm_tim` service from the docker compose files
+- CDOT PR 94: Added maven JAR publishing to GitHub Maven Central via Github Actions
+- CDOT PR 95: Fixed dev container build failure due to specified uid being taken
+- CDOT PR 96: Added the source ASN1 bytes payload to message topics to allow for IMP depositor support
+- CDOT PR 97: Removed jpo-s3-deposit submodule and added jpo-utils repository as a submodule
+
+
 Version 2.1.0, released June 2024
 ----------------------------------------
 ### **Summary**
@@ -131,7 +150,7 @@ Version 1.3.0, released Mar 30th 2023
 ----------------------------------------
 
 ### **Summary**
-The updates for jpo-ode 1.3.0 release includes enhancements such as support for Confluent Cloud, better debugging with the C++ submodules, new JSON output schemas, and improvements for all J2735 message type ser/des. Along with the enhancements below, several bug fixes and CI related enhancements are included in this release.
+The updates for jpo-ode 1.3.0 release includes enhancements such as support for Confluent Cloud, better debugging with the C++ submodules, new JSON output schemas and improvements for all J2735 message type ser/des. Along with the enhancements below, several bug fixes and CI related enhancements are included in this release.
 
 Enhancements in this release:
 -	Issue 466: Removes duplicated J2735 payload data due to Jackson serialization default behavior. Adds annotations to payload classes. Resolves BSM coreData support issues.
@@ -197,7 +216,7 @@ Enhancements in this release:
 
 Fixes in this release:
 - Issue 443: Fixed Log File Parser is unable to parse SPaT log files sent from V2XHub
-- Issue 432: Fixed Replace single Kafka topic consumer with multiple message type specific consumers by three different topics for receiving encoded BSM, encoded TIM, and encoded SPAT.
+- Issue 432: Fixed Replace single Kafka topic consumer with multiple message type specific consumers by three different topics for receiving encoded BSM, encoded TIM and encoded SPAT.
 - Issue 436: Fixed S3 depositor group name to be configurable rather than a static value which fixes the issues when running multiple containers as Kafka.
 
 Version 1.2.1., released March 9th, 2021

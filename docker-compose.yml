@@ -1,42 +1,21 @@
-version: '3'
+include:
+  - jpo-utils/docker-compose.yml
+
 services:
-  kafka:
-    image: bitnami/kafka:latest
-    hostname: kafka
-    ports:
-      - "9092:9092"
-    volumes:
-      - kafka:/bitnami
-    environment:
-      KAFKA_ENABLE_KRAFT: "yes"
-      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092"
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
-      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092"
-      KAFKA_BROKER_ID: "1"
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_CFG_NODE_ID: "1"
-      KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_CFG_LOG_RETENTION_HOURS: 2
-    logging:
-      options:
-        max-size: "10m"  
-        max-file: "5"
-
-  kafka_init:
-    image: bitnami/kafka:latest
-    depends_on:
-      kafka:
-        condition: service_started
-    volumes:
-      - ./scripts/kafka/kafka_init.sh:/kafka_init.sh
-    entrypoint: ["/bin/sh", "kafka_init.sh"]
-
   ode:
+    profiles:
+      - all
+      - ode_full
+      - ode_base
+      - ode
     build: .
     image: jpoode_ode:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -52,68 +31,118 @@ services:
       - "6666:6666/udp"
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ZK: ${DOCKER_HOST_IP}:2181
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
       ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
       ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       DATA_SIGNING_ENABLED_RSU: ${DATA_SIGNING_ENABLED_RSU}
       DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
       DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+    healthcheck:
+      test: ["CMD", "wget" ,"--spider", "http://localhost:8080"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
     logging:
       options:
         max-size: "10m"
         max-file: "5"
 
   adm:
+    profiles:
+      - all
+      - ode_full
+      - ode_base
+      - adm
     build: ./asn1_codec
     image: jpoode_acm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       ACM_CONFIG_FILE: adm.properties
       ACM_LOG_TO_CONSOLE: ${ADM_LOG_TO_CONSOLE}
       ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
       ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
       options:
         max-size: "10m"
         max-file: "5"
-    restart: on-failure
 
   aem:
+    profiles:
+      - all
+      - ode_full
+      - ode_base
+      - aem
     build: ./asn1_codec
     image: jpoode_acm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       ACM_CONFIG_FILE: aem.properties
       ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
       ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
       ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
       options:
         max-size: "10m"
         max-file: "5"
-    restart: on-failure
 
   ppm_bsm:
+    profiles:
+      - all
+      - ode_full
+      - ppm_bsm
     build:
       context: ./jpo-cvdp
       dockerfile: Dockerfile
     image: jpoode_ppm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       PPM_CONFIG_FILE: ppmBsm.properties
       PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
       PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
@@ -121,145 +150,93 @@ services:
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     logging:
       options:
         max-size: "10m"
         max-file: "5"
 
-  ppm_tim:
+  # NOTE: This service does not spin up unless the COMPOSE_PROFILE includes "ppm_bsm_nsv"
+  ppm_bsm_nsv:
+    profiles:
+      - ppm_bsm_nsv
     build:
       context: ./jpo-cvdp
-      dockerfile: Dockerfile
-    image: jpoode_ppm:latest
+      dockerfile: Dockerfile-nsv
+      args:
+        PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_bsm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ppmTim.properties
-      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
-      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
-      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
+      PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+      - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
-      - kafka
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  cvpep_bsm_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
-      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
-      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
-      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
-      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
-      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
-      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
-      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
-      DEPOSIT_GROUP: ${CVPEP_BSM_GROUP}
-    depends_on:
-     - kafka
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  rde_bsm_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
-      K_AWS_ACCESS_KEY_ID: ${RDE_BSM_K_AWS_ACCESS_KEY_ID}
-      K_AWS_SECRET_ACCESS_SECRET: ${RDE_BSM_K_AWS_SECRET_ACCESS_SECRET}
-      K_AWS_SESSION_TOKEN: ${RDE_BSM_K_AWS_SESSION_TOKEN}
-      K_AWS_EXPIRATION: ${RDE_BSM_K_AWS_EXPIRATION}
-      API_ENDPOINT: ${RDE_BSM_API_ENDPOINT}
-      HEADER_ACCEPT: ${RDE_BSM_HEADER_ACCEPT}
-      HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
-      DEPOSIT_GROUP: ${RDE_BSM_GROUP}
-    depends_on:
-     - kafka
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  cvpep_tim_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
-      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
-      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
-      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
-      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
-      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
-      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
-      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
-      DEPOSIT_GROUP: ${CVPEP_TIM_GROUP}
-    depends_on:
-     - kafka
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  rde_tim_depositor:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
-      K_AWS_SECRET_ACCESS_SECRET: ${RDE_TIM_K_AWS_SECRET_ACCESS_SECRET}
-      K_AWS_SESSION_TOKEN: ${RDE_TIM_K_AWS_SESSION_TOKEN}
-      K_AWS_EXPIRATION: ${RDE_TIM_K_AWS_EXPIRATION}
-      API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
-      HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
-      HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
-      DEPOSIT_GROUP: ${RDE_TIM_GROUP}
-    depends_on:
-     - kafka
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
+      kafka:
+        condition: service_healthy
 
   sdw_depositor:
+    profiles:
+      - all
+      - ode_full
+      - sdw_depositor
     build: ./jpo-sdw-depositor
     image: jpoode_sdwdep:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      #SDW_GROUP_ID: ${SDW_GROUP_ID}
-      #SDW_KAFKA_PORT: ${SDW_KAFKA_PORT}
-      #SDW_SUBSCRIPTION_TOPICS: ${SDW_SUBSCRIPTION_TOPICS}
-      #SDW_DESTINATION_URL: ${SDW_DESTINATION_URL}
+      SDW_EMAIL_LIST: ${SDW_EMAIL_LIST}
+      SDW_EMAIL_FROM: ${SDW_EMAIL_FROM}
       SDW_API_KEY: ${SDW_API_KEY}
+      SDW_DESTINATION_URL: ${SDW_DESTINATION_URL}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SDW_SUBSCRIPTION_TOPIC: ${SDW_SUBSCRIPTION_TOPIC}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
     depends_on:
-     - kafka
-     - ode
+      kafka:
+        condition: service_healthy
+      ode:
+        condition: service_healthy
     logging:
       options:
         max-size: "10m" 
         max-file: "5"
 
   sec:
+    profiles:
+      - all
+      - ode_full
+      - sec
     build: ./jpo-security-svcs
     image: jpoode_sec:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
     ports:
      - "8090:8090"
     environment:
@@ -268,7 +245,3 @@ services:
       options:
         max-size: "10m"  
         max-file: "5"
-
-volumes:
-  kafka:
-    {}

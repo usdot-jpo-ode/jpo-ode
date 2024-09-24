@@ -51,6 +51,15 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -63,6 +72,7 @@
                     "type": "boolean"
                 },
                 "schemaVersion": {
+                    "const": 7,
                     "type": "integer"
                 },
                 "securityResultCode": {
@@ -94,6 +104,12 @@
                         "serialNumber"
                     ],
                     "type": "object"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -111,7 +127,8 @@
                 "odePacketID",
                 "odeTimStartDateTime",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ],
             "type": "object"
         },
