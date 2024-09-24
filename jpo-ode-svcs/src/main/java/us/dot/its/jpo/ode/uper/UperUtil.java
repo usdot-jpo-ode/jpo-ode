@@ -33,7 +33,8 @@ public class UperUtil {
         int startIndex = findValidStartFlagLocation(hexString, payload_start_flag);
         if (startIndex == -1)
             return "BAD DATA";
-        return hexString.substring(startIndex, hexString.length());
+        String strippedPayload = stripTrailingZeros(hexString.substring(startIndex, hexString.length()));
+        return strippedPayload;
     }
 
     /*
@@ -44,13 +45,13 @@ public class UperUtil {
     public static byte[] stripDot3Header(byte[] packet, HashMap<String, String> msgStartFlags) {
         String hexString = HexUtils.toHexString(packet);
         String hexPacketParsed = "";
-
+        
         for (String start_flag : msgStartFlags.values()) {
-            int payloadStartIndex = findValidStartFlagLocation(hexString,start_flag);
-
-            if (payloadStartIndex == -1)
+            int payloadStartIndex = findValidStartFlagLocation(hexString, start_flag);
+            if (payloadStartIndex == -1){
                 continue;
-
+            }
+                
             String headers = hexString.substring(0, payloadStartIndex);
             String payload = hexString.substring(payloadStartIndex, hexString.length());
             
@@ -66,8 +67,11 @@ public class UperUtil {
         if (hexPacketParsed.equals("")) {
             hexPacketParsed = hexString;
             logger.debug("Packet is not a BSM, TIM or Map message: " + hexPacketParsed);
+        } else {
+            logger.debug("Base packet: " + hexPacketParsed);
+            hexPacketParsed = stripTrailingZeros(hexPacketParsed);
+            logger.debug("Stripped packet: " + hexPacketParsed);
         }
-
         return HexUtils.fromHexString(hexPacketParsed);
     }
 
@@ -80,12 +84,15 @@ public class UperUtil {
         int payloadStartIndex = findValidStartFlagLocation(hexString,payload_start_flag);
         String headers = hexString.substring(0, payloadStartIndex);
         String payload = hexString.substring(payloadStartIndex, hexString.length());
+        logger.debug("Base payload: " + payload);
+        String strippedPayload = stripTrailingZeros(payload);
+        logger.debug("Stripped payload: " + strippedPayload);
         // Look for the index of the start flag of a signed 1609.2 header
         int signedDot2StartIndex = headers.indexOf("038100");
         if (signedDot2StartIndex == -1)
-            return payload;
+            return strippedPayload;
         else
-            return headers.substring(signedDot2StartIndex, headers.length()) + payload;
+            return headers.substring(signedDot2StartIndex, headers.length()) + strippedPayload;
     }
 
     /**
@@ -98,6 +105,7 @@ public class UperUtil {
 		try {
 			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
 			String hexString = payloadJson.getString("bytes").toLowerCase();
+            hexString = stripTrailingZeros(hexString);
             messageType = determineHexPacketType(hexString);
 
 		} catch (JsonUtilsException e) {
@@ -113,7 +121,7 @@ public class UperUtil {
         
         flagIndexes.put("MAP", findValidStartFlagLocation(hexString, MAP_START_FLAG));
         flagIndexes.put("SPAT", findValidStartFlagLocation(hexString, SPAT_START_FLAG));
-	flagIndexes.put("TIM", findValidStartFlagLocation(hexString, TIM_START_FLAG));
+	    flagIndexes.put("TIM", findValidStartFlagLocation(hexString, TIM_START_FLAG));
         flagIndexes.put("BSM", findValidStartFlagLocation(hexString, BSM_START_FLAG));
         flagIndexes.put("SSM", findValidStartFlagLocation(hexString, SSM_START_FLAG));
         flagIndexes.put("PSM", findValidStartFlagLocation(hexString, PSM_START_FLAG));
@@ -136,12 +144,16 @@ public class UperUtil {
     public static int findValidStartFlagLocation(String hexString, String startFlag){
         int index = hexString.indexOf(startFlag);
 
-	// If the message has a header, make sure not to missidentify the message by the header
-	// Maximum Header Length is 17 Bytes: https://www.researchgate.net/figure/WAVE-Short-Message-format-Reproduced-by-permission_fig6_224242297
-	// At 2 Hex Chars per byte that is a maximum length of 38
-	if (index != 0){
-	    index = hexString.indexOf(startFlag, 38); 
-	}
+        // If the message has a header, make sure not to missidentify the message by the header
+        // Maximum Header Length is 17 Bytes: https://www.researchgate.net/figure/WAVE-Short-Message-format-Reproduced-by-permission_fig6_224242297
+        // At 2 Hex Chars per byte that is a maximum length of 38
+        
+        if(index == 0 || index == -1){
+            return -1;
+        }
+        else{
+            index = hexString.indexOf(startFlag,4); 
+        }
 		
         // Make sure start flag is on an even numbered byte
         while(index != -1 && index %2 != 0){
@@ -151,6 +163,28 @@ public class UperUtil {
     }
 
     
+    /**
+		* Trims extra `00` bytes off of the end of an ASN1 payload string
+		* This is remove the padded bytes added to the payload when receiving ASN1 payloads
+        *
+		* @param payload The OdeMsgPayload as a string to trim.
+		*/
+    public static String stripTrailingZeros(String payload) {
+        // Remove trailing '0's
+        while (payload.endsWith("0")) {
+            payload = payload.substring(0, payload.length() - 1);
+        }
+    
+        // Ensure the payload length is even
+        if (payload.length() % 2 != 0) {
+            payload += "0";
+        }
+    
+        // Append '00' to ensure one remaining byte of '00's for decoding
+        payload += "00";
+    
+        return payload;
+    }
 
     // Get methods for message start flags
     public static String getBsmStartFlag() {

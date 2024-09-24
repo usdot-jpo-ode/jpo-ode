@@ -49,15 +49,16 @@ public class UdpHexDecoder {
          return null;
       
       logger.debug("Full {} packet: {}", msgType, payloadHexString);
-      payloadHexString = UperUtil.stripDot3Header(payloadHexString, startFlag).toLowerCase();
+      
+      payloadHexString = UperUtil.stripTrailingZeros(UperUtil.stripDot3Header(payloadHexString, startFlag)).toLowerCase();
       logger.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
       OdeAsn1Payload odePayload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
       
       return odePayload;
-   }
+    }
 
-   public static String buildJsonMapFromPacket(DatagramPacket packet){
+    public static String buildJsonMapFromPacket(DatagramPacket packet){
         String senderIp = packet.getAddress().getHostAddress();
         int senderPort = packet.getPort();
         logger.debug("Packet received from {}:{}", senderIp, senderPort);
@@ -106,24 +107,24 @@ public class UdpHexDecoder {
 
    public static String buildJsonTimFromPacket(DatagramPacket packet){
 
-      String senderIp = packet.getAddress().getHostAddress();
-      int senderPort = packet.getPort();
-      logger.debug("Packet received from {}:{}", senderIp, senderPort);
+        String senderIp = packet.getAddress().getHostAddress();
+        int senderPort = packet.getPort();
+        logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-      // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-      OdeAsn1Payload timPayload = getPayloadHexString(packet, UperUtil.SupportedMessageTypes.TIM);
-      if (timPayload == null)
-         return null;
-      OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
+        // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+        OdeAsn1Payload timPayload = getPayloadHexString(packet, UperUtil.SupportedMessageTypes.TIM);
+        if (timPayload == null)
+            return null;
+        OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
 
-      // Add header data for the decoding process
-      timMetadata.setOdeReceivedAt(getUtcTimeString());
+        // Add header data for the decoding process
+        timMetadata.setOdeReceivedAt(getUtcTimeString());
 
-      timMetadata.setOriginIp(senderIp);
-      timMetadata.setRecordType(RecordType.timMsg);
-      timMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-      timMetadata.setSecurityResultCode(SecurityResultCode.success);
-      return JsonUtils.toJson(new OdeAsn1Data(timMetadata, timPayload), false);
+        timMetadata.setOriginIp(senderIp);
+        timMetadata.setRecordType(RecordType.timMsg);
+        timMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        timMetadata.setSecurityResultCode(SecurityResultCode.success);
+        return JsonUtils.toJson(new OdeAsn1Data(timMetadata, timPayload), false);
    }
 
    public static String buildJsonBsmFromPacket(DatagramPacket packet){

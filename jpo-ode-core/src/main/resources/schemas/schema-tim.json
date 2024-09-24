@@ -31,7 +31,19 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "type": "string"
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ],
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "recordType": {
                     "type": "string"
@@ -40,6 +52,7 @@
                     "type": "string"
                 },
                 "schemaVersion": {
+                    "const": 7,
                     "type": "string"
                 },
                 "securityResultCode": {
@@ -71,6 +84,12 @@
                         "bundleId"
                     ],
                     "type": "object"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -88,7 +107,8 @@
                 "serialId",
                 "logFileName",
                 "odeReceivedAt",
-                "originIp"
+                "originIp",
+                "asn1"
             ],
             "type": "object"
         },

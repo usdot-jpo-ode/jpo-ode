@@ -4,7 +4,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>jpo-ode-svcs</artifactId>
   <packaging>jar</packaging>
@@ -102,12 +102,12 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-core</artifactId>
-      <version>2.1.0-SNAPSHOT</version>
+      <version>3.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
-      <version>2.1.0-SNAPSHOT</version>
+      <version>3.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -148,4 +148,38 @@
       </plugin>
     </plugins>
   </build>
+  <!-- profile to output only source code and not include any spring boot dependencies in published jar -->
+  <profiles>
+    <profile>
+      <id>package-jar</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>lib/</classpathPrefix>
+                  <mainClass>us.dot.its.jpo.ode.OdeSvcsApplication</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>repackage</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
