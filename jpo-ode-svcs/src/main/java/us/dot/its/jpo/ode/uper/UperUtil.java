@@ -43,6 +43,7 @@ public class UperUtil {
      * Otherwise, returns just the payload.
      */
     public static byte[] stripDot3Header(byte[] packet, HashMap<String, String> msgStartFlags) {
+
         String hexString = HexUtils.toHexString(packet);
         String hexPacketParsed = "";
         
@@ -145,11 +146,9 @@ public class UperUtil {
         int index = hexString.indexOf(startFlag);
 
         // If the message has a header, make sure not to missidentify the message by the header
-        // Maximum Header Length is 17 Bytes: https://www.researchgate.net/figure/WAVE-Short-Message-format-Reproduced-by-permission_fig6_224242297
-        // At 2 Hex Chars per byte that is a maximum length of 38
         
         if(index == 0 || index == -1){
-            return -1;
+            return index;
         }
         else{
             index = hexString.indexOf(startFlag,4); 
