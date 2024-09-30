@@ -8,8 +8,12 @@ metadata:
 spec:
   type: LoadBalancer 
   ports:
-  - port: 8080
-    name: ode-webserver 
+  - name: ode-scp
+    protocol: TCP
+    port: 22
+  - name: ode-webserver
+    protocol: TCP
+    port: 8080
   loadBalancerSourceRanges:
     {{- range .Values.config.ode.sourceRanges }}
     - {{ . | title }}
@@ -35,11 +39,19 @@ spec:
   - name: ode-rsu-tim
     protocol: UDP
     port: 47900
+  - name: ode-rsu-ssm
+    protocol: UDP
+    port: 44900
+  - name: ode-rsu-spat
+    protocol: UDP
+    port: 44910
+  - name: ode-rsu-map
+    protocol: UDP
+    port: 44920
+  - name: ode-rsu-srm
+    protocol: UDP
+    port: 44930
   externalTrafficPolicy: Local
-  loadBalancerSourceRanges:
-    {{- range .Values.config.ode.sourceRanges }}
-    - {{ . | title }}
-    {{- end }}
   selector:
     app: jpoode-ode
 ---
@@ -66,8 +78,22 @@ spec:
     {{- end }}
   selector:
     app: jpoode-ode
----
 {{- end }}
+---
+# ConfigMap for OpenSSH configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ssh-config
+data:
+  sshd_config: |
+    PasswordAuthentication no
+    ChallengeResponseAuthentication no
+  authorized_keys: |
+    ssh-keys-goes-here
+    each-key-goes-on-a-new-lines
+    another-key
+---
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
@@ -94,6 +120,7 @@ spec:
           tty: true
           stdin: true
           ports:
+          - containerPort: 22
           - containerPort: 8080
           - containerPort: 9090
           - containerPort: 46800
@@ -128,7 +155,23 @@ spec:
                 name: jpoode-secrets
                 key: ode_rsu_password
           volumeMounts:
-            - mountPath: /jpo-ode
-              name: jpoode-ode-storage 
+            - name: config-volume
+              mountPath: /home/logging
+            - name: ssh-volume
+              subPath: sshd_config
+              mountPath: /etc/ssh/sshd_config
+            - name: ssh-volume
+              subPath: authorized_keys
+              mountPath: /root/.ssh/authorized_keys
+            - name: obulog-volume
+              mountPath: /home/uploads/backup
       volumes:
-        - name: jpoode-ode-storage
+        - name: config-volume
+          configMap:
+            name: logback-conf
+        - name: ssh-volume
+          configMap:
+            name: ssh-config
+        - name: obulog-volume
+          persistentVolumeClaim:
+            claimName: filestore-pvc

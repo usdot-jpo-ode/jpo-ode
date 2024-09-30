@@ -164,19 +164,25 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 			} else {
 				// Determine the message type (MAP, TIM, SSM, SRM, or PSM)
 				String messageType = UperUtil.determineMessageType(msgPayload);
-				if (messageType == "MAP") {
+				if (messageType.equals("MAP")) {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
-				} else if (messageType == "TIM") {
+				} else if(messageType.equals("SPAT")){
+					publisher.publish(JsonUtils.toJson(odeData, false),
+						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+				} else if (messageType.equals("TIM")) {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
-				} else if (messageType == "SSM") {
+				} else if (messageType.equals("BSM")) {
+						publisher.publish(JsonUtils.toJson(odeData, false),
+							publisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
+				} else if (messageType.equals("SSM")) {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
-				} else if (messageType == "SRM") {
+				} else if (messageType.equals("SRM")) {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
-				} else if (messageType == "PSM") {
+				} else if (messageType.equals("PSM")) {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedPSMJson());
 				}

@@ -1,25 +1,14 @@
 package us.dot.its.jpo.ode.udp.tim;
 
 import java.net.DatagramPacket;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.uper.UperUtil;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 
 public class TimReceiver extends AbstractUdpReceiverPublisher {
    private static Logger logger = LoggerFactory.getLogger(TimReceiver.class);
@@ -52,33 +41,18 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
             logger.debug("Waiting for UDP TIM packets...");
             socket.receive(packet);
             if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-               // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-               OdeAsn1Payload timPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.TIM);
-               if (timPayload == null)
-                  continue;
-               OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
-
-               // Add header data for the decoding process
-               ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-               String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-               timMetadata.setOdeReceivedAt(timestamp);
-
-               timMetadata.setOriginIp(senderIp);
-               timMetadata.setRecordType(RecordType.timMsg);
-               timMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-               timMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-               // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               timPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(timMetadata, timPayload), false),
-                  timPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
+               
+               String timJson = UdpHexDecoder.buildJsonTimFromPacket(packet);
+               if(timJson != null){
+                  timPublisher.publish(timJson, timPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
+               }
+               
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
          }
       } while (!isStopped());
    }
+
+   
 }

@@ -104,6 +104,9 @@ public class RsuDepositor extends Thread {
 							} else if (rsuResponse.getResponse().getErrorStatus() == 5) {
 								// Error, message already exists
 								httpResponseStatus = "Message already exists at ".concat(Integer.toString(curRsu.getRsuIndex()));
+							} else if (rsuResponse.getResponse().getErrorStatus() == 10) {
+								// Error, possible SNMP protocol mismatch
+								httpResponseStatus = "Possible SNMP protocol mismatch, check RSU configuration";
 							} else {
 								// Misc error
 								httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
@@ -128,6 +131,10 @@ public class RsuDepositor extends Thread {
 							Integer destIndex = curRsu.getRsuIndex();
 							logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
 									destIndex);
+						} else if (rsuResponse.getResponse().getErrorStatus() == 10) {
+							// Error, possible SNMP protocol mismatch
+							logger.error("Error on RSU SNMP deposit to {}: Possible SNMP protocol mismatch, check RSU configuration.",
+									curRsu.getRsuTarget());
 						} else {
 							// Misc error
 							logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code '"

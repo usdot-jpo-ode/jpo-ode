@@ -71,6 +71,7 @@
                     "type": "string"
                 },
                 "schemaVersion": {
+                    "const": 7,
                     "type": "integer"
                 },
                 "maxDurationTime": {
@@ -86,10 +87,28 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "type": "null"
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ],
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "sanitized": {
                     "type": "boolean"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -106,7 +125,8 @@
                 "odePacketID",
                 "odeTimStartDateTime",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ]
         },
         "payload": {

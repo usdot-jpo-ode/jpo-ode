@@ -30,7 +30,6 @@ import mockit.Mocked;
 import mockit.Tested;
 //import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -72,7 +71,7 @@ public class RsuDepositorTest  {
 
 	@Test
 	public void testDeposit(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
-			throws DdsRequestManagerException, IOException, ParseException {
+			throws IOException, ParseException {
 			      
 	      testRsuDepositor.deposit(mockOdeTravelerInputData.getRequest(), "message");
 	

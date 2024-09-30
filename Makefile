@@ -1,33 +1,38 @@
 default:
 	$(info Make target options:)
-	$(info `make start` to build and run the ODE)
+	$(info `make start` to run the ODE)
+	$(info `make build` to build the ODE)
 	$(info `make stop` to stop the ODE)
-	$(info `make delete` to destroy the current Docker containers)
+	$(info `make delete` to stop the ODE and remove the volumes)
 	$(info `make rebuild` to stop, delete, and then rebuild the containers)
+	$(info `make clean-build` to rebuild the containers without using the cache)
 
 start:
-ifeq ("$(wildcard ./jpo-ode-private)", "")
-	$(error "ERROR: Directory `jpo-ode-private` not found in ${PWD}")
-endif
-ifeq ("$(wildcard ./asn1_codec/asn1c_combined/J2735_201603DA.ASN)", "")
-	cp ./jpo-ode-private/j2735/J2735_201603DA.ASN ./asn1_codec/asn1c_combined/J2735_201603DA.ASN
-endif
-ifndef DOCKER_HOST_IP
-	$(error ERROR: Environment variable DOCKER_HOST_IP is not set)
-endif
-ifndef DOCKER_SHARED_VOLUME
-	$(error ERROR: Environment variable DOCKER_SHARED_VOLUME is not set)
-endif
 ifeq ("$(wildcard .env)", "")
-	$(warning "WARNING: Environment file `.env` not found in ${PWD}")
+	$(error "ERROR: jpo-ode Environment file `.env` not found in ${PWD}")
 endif
-	docker-compose up --build -d
+ifeq ("$(wildcard ./jpo-utils/.env)", "")
+	$(error "ERROR: jpo-utils Environment file `.env` not found in ${PWD}")
+endif
+	docker compose up -d
+
+build:
+ifeq ("$(wildcard .env)", "")
+	$(error "ERROR: jpo-ode Environment file `.env` not found in ${PWD}")
+endif
+ifeq ("$(wildcard ./jpo-utils/.env)", "")
+	$(error "ERROR: jpo-utils Environment file `.env` not found in ${PWD}")
+endif
+	docker compose build
 
 stop:
-	docker-compose down
+	docker compose down
 
 delete:
-	docker-compose rm -fvs
+	docker compose down -v
 
 rebuild:
-	$(MAKE) stop delete start
+	$(MAKE) stop delete build start
+
+clean-build:
+	docker compose build --no-cache

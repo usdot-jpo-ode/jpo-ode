@@ -108,10 +108,6 @@ public class OdePropertiesTest {
             String testRsuUsername = "testRsuUsername";
             String testRsuPassword = "testRsuPassword";
 
-            testOdeProperties.setDdsCasPassword(testDdsCasPassword);
-            testOdeProperties.setDdsCasUrl(testDdsCasUrl);
-            testOdeProperties.setDdsCasUsername(testDdsCasUsername);
-            testOdeProperties.setDdsWebsocketUrl(testDdsWebsocketUrl);
             testOdeProperties.setEnv(mockEnv);
             testOdeProperties.setEnvironment(mockEnv);
             testOdeProperties.setKafkaBrokers(testKafkaBrokers);
@@ -156,10 +152,6 @@ public class OdePropertiesTest {
             testOdeProperties.setRsuUsername(testRsuUsername);
             testOdeProperties.setRsuPassword(testRsuPassword);
 
-            assertEquals("Incorrect testDdsCasPassword", testDdsCasPassword, testOdeProperties.getDdsCasPassword());
-            assertEquals("Incorrect testDdsCasUrl", testDdsCasUrl, testOdeProperties.getDdsCasUrl());
-            assertEquals("Incorrect testDdsCasUsername", testDdsCasUsername, testOdeProperties.getDdsCasUsername());
-            assertEquals("Incorrect testDdsWebsocketUrl", testDdsWebsocketUrl, testOdeProperties.getDdsWebsocketUrl());
             assertEquals("Incorrect testEnv", mockEnv, testOdeProperties.getEnv());
             assertEquals("Incorrect testKafkaBrokers", testKafkaBrokers, testOdeProperties.getKafkaBrokers());
             assertEquals("Incorrect testKafkaProducerType", testKafkaProducerType,

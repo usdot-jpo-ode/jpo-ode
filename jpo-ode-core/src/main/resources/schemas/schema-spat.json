@@ -19,7 +19,8 @@
                 "odeReceivedAt",
                 "schemaVersion",
                 "recordGeneratedAt",
-                "sanitized"
+                "sanitized",
+                "asn1"
             ],
             "properties": {
                 "spatSource": {
@@ -213,7 +214,7 @@
                 },
                 "schemaVersion": {
                     "type": "integer",
-                    "const": 6
+                    "const": 7
                 },
                 "maxDurationTime": {
                     "type": [
@@ -237,25 +238,28 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "enum": [
-                                "TMC",
-                                "OBU",
-                                "RSU",
-                                "TMC_VIA_SAT",
-                                "TMC_VIA_SNMP",
-                                "UNKNOWN"
-                            ]
-                        },
-                        {
-                            "type": "null"
-                        }
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ],
+                    "type": [
+                        "string",
+                        "null"
                     ]
                 },
                 "sanitized": {
                     "type": "boolean"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             }
         },

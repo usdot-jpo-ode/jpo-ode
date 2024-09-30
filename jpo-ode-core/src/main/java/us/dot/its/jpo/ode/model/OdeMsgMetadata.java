@@ -15,12 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.util.DateTimeUtils;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 @JsonPropertyOrder({ "logFileName", "recordType", "receivedMessageDetails", "payloadType", "serialId",
-      "odeReceivedAt", "schemaVersion", "maxDurationTime", "recordGeneratedAt", "recordGeneratedBy", "sanitized" })
+      "odeReceivedAt", "schemaVersion", "maxDurationTime", "recordGeneratedAt", "recordGeneratedBy", "sanitized", "asn1" })
 public class OdeMsgMetadata extends OdeObject {
 
    public enum GeneratedBy {
@@ -42,6 +44,9 @@ public class OdeMsgMetadata extends OdeObject {
    private GeneratedBy recordGeneratedBy;
    private boolean sanitized = false;
 
+   @JsonInclude(JsonInclude.Include.NON_NULL)
+   private String asn1 = null;
+
    public OdeMsgMetadata() {
       this(OdeMsgPayload.class.getName(), new SerialId(), DateTimeUtils.now());
    }
@@ -52,6 +57,7 @@ public class OdeMsgMetadata extends OdeObject {
 
    private OdeMsgMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
       this(payload.getClass().getName(), serialId, receivedAt);
+      setAsn1(payload);
    }
 
    public OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
@@ -156,6 +162,21 @@ public class OdeMsgMetadata extends OdeObject {
       staticSchemaVersion = aSchemaVersion;
    }
 
+   public String getAsn1() {
+      return asn1;
+   }
+
+   public void setAsn1(String asn1) {
+      this.asn1 = asn1;
+   }
+
+   public void setAsn1(OdeMsgPayload payload) {
+      if (payload != null && payload.getData() != null ) {
+         if (JsonUtils.getJsonNode(payload.getData().toString(), "bytes") != null)
+            this.asn1 = JsonUtils.getJsonNode(payload.getData().toString(), "bytes").asText();
+      }
+  }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -167,6 +188,7 @@ public class OdeMsgMetadata extends OdeObject {
       result = prime * result + (sanitized ? 1231 : 1237);
       result = prime * result + schemaVersion;
       result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
+      result = prime * result +  ((asn1 == null) ? 0 : asn1.hashCode());
       return result;
    }
 
@@ -204,6 +226,11 @@ public class OdeMsgMetadata extends OdeObject {
          if (other.serialId != null)
             return false;
       } else if (!serialId.equals(other.serialId))
+         return false;
+      if (asn1 == null) {
+         if (other.asn1 != null)
+            return false;
+      } else if (!asn1.equals(other.asn1))
          return false;
       return true;
    }
