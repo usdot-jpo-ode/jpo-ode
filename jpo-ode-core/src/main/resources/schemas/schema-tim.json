@@ -107,8 +107,7 @@
                 "serialId",
                 "logFileName",
                 "odeReceivedAt",
-                "originIp",
-                "asn1"
+                "originIp"
             ],
             "type": "object"
         },
