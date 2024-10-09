@@ -9,12 +9,16 @@ public class TimIngestWatcher implements Runnable {
 
     @Override
     public void run() {
-        Integer ingested = TimIngestTracker.getInstance().getTotalMessagesReceived();
+        TimIngestTracker tracker = TimIngestTracker.getInstance();
+        Integer ingested = tracker.getTotalMessagesReceived();
 
         if (ingested == 0) {
             logger.warn("ODE has not received TIM deposits.");
         } else {
             logger.debug("ODE has received {} TIM deposits.", ingested);
         }
+        
+        // After checking the number of TIMs ingested in the last interval, reset the counter
+        tracker.resetTotalMessagesReceived();
     }
 }

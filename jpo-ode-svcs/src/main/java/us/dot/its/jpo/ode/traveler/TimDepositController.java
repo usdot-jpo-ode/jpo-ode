@@ -19,6 +19,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.ConfigEnvironmentVariables;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
@@ -106,6 +110,12 @@ public class TimDepositController {
       ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
       : true;
 
+      Boolean timIngestMonitoringEnabled = Boolean.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
+      if (timIngestMonitoringEnabled) {
+         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+         Integer ingestMonitoringInterval = Integer.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL));
+         executorService.scheduleAtFixedRate(new TimIngestWatcher(), ingestMonitoringInterval, ingestMonitoringInterval, TimeUnit.SECONDS);
+      }
    }
 
    /**
