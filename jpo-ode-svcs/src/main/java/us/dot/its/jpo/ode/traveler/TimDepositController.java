@@ -62,6 +62,7 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 public class TimDepositController {
 
    private static final Logger logger = LoggerFactory.getLogger(TimDepositController.class);
+   private static final TimIngestTracker INGEST_MONITOR = TimIngestTracker.getInstance();
 
    private static final String ERRSTR = "error";
    private static final String WARNING = "warning";
@@ -260,6 +261,8 @@ public class TimDepositController {
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
+
+      INGEST_MONITOR.incrementTotalMessagesReceived();
 
       return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(SUCCESS, "true"));
    }
