@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
+import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
 import us.dot.its.jpo.ode.udp.psm.PsmReceiver;
 import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
@@ -52,6 +53,9 @@ public class UdpServicesController {
 
       // PSM internal port
       rm.submit(new PsmReceiver(odeProps));
+
+      // Generic Receiver internal port
+      rm.submit(new GenericReceiver(odeProps));
 
       logger.debug("UDP receiver services started.");
    }

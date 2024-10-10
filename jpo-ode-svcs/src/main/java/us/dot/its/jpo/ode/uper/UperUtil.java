@@ -30,7 +30,7 @@ public class UperUtil {
     // Strips the IEEE 1609.2 security header (if it exists) and returns the payload
     public static String stripDot2Header(String hexString, String payload_start_flag) {
         hexString = hexString.toLowerCase();
-        int startIndex = hexString.indexOf(payload_start_flag);
+        int startIndex = findValidStartFlagLocation(hexString, payload_start_flag);
         if (startIndex == -1)
             return "BAD DATA";
         String strippedPayload = stripTrailingZeros(hexString.substring(startIndex, hexString.length()));
@@ -43,15 +43,16 @@ public class UperUtil {
      * Otherwise, returns just the payload.
      */
     public static byte[] stripDot3Header(byte[] packet, HashMap<String, String> msgStartFlags) {
+
         String hexString = HexUtils.toHexString(packet);
         String hexPacketParsed = "";
-
+        
         for (String start_flag : msgStartFlags.values()) {
-            int payloadStartIndex = hexString.indexOf(start_flag);
-
-            if (payloadStartIndex == -1)
+            int payloadStartIndex = findValidStartFlagLocation(hexString, start_flag);
+            if (payloadStartIndex == -1){
                 continue;
-
+            }
+                
             String headers = hexString.substring(0, payloadStartIndex);
             String payload = hexString.substring(payloadStartIndex, hexString.length());
             
@@ -81,7 +82,7 @@ public class UperUtil {
      * Otherwise, returns just the payload.
      */
     public static String stripDot3Header(String hexString, String payload_start_flag) {
-        int payloadStartIndex = hexString.indexOf(payload_start_flag);
+        int payloadStartIndex = findValidStartFlagLocation(hexString,payload_start_flag);
         String headers = hexString.substring(0, payloadStartIndex);
         String payload = hexString.substring(payloadStartIndex, hexString.length());
         logger.debug("Base payload: " + payload);
@@ -95,41 +96,72 @@ public class UperUtil {
             return headers.substring(signedDot2StartIndex, headers.length()) + strippedPayload;
     }
 
-    	/**
-		* Determines the message type based off the most likely start flag
-		* 
-		* @param payload The OdeMsgPayload to check the content of.
-		*/
+    /**
+    * Determines the message type based off the most likely start flag
+    * 
+    * @param payload The OdeMsgPayload to check the content of.
+    */
 	public static String determineMessageType(OdeMsgPayload payload) {
 		String messageType = "";
 		try {
 			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
 			String hexString = payloadJson.getString("bytes").toLowerCase();
+            hexString = stripTrailingZeros(hexString);
+            messageType = determineHexPacketType(hexString);
 
-			HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
-			flagIndexes.put("MAP", hexString.indexOf(MAP_START_FLAG));
-			flagIndexes.put("TIM", hexString.indexOf(TIM_START_FLAG));
-			flagIndexes.put("SSM", hexString.indexOf(SSM_START_FLAG));
-			flagIndexes.put("PSM", hexString.indexOf(PSM_START_FLAG));
-			flagIndexes.put("SRM", hexString.indexOf(SRM_START_FLAG));
-
-			int lowestIndex = Integer.MAX_VALUE;
-			for (String key : flagIndexes.keySet()) {
-				if (flagIndexes.get(key) == -1) {
-					logger.debug("This message is not of type " + key);
-					continue;
-				}
-				if (flagIndexes.get(key) < lowestIndex) {
-					messageType = key;
-					lowestIndex = flagIndexes.get(key);
-				}
-			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
 		}
 		return messageType;
 	}
 
+    public static String determineHexPacketType(String hexString){
+
+        String messageType = "";
+        HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
+        
+        flagIndexes.put("MAP", findValidStartFlagLocation(hexString, MAP_START_FLAG));
+        flagIndexes.put("SPAT", findValidStartFlagLocation(hexString, SPAT_START_FLAG));
+	    flagIndexes.put("TIM", findValidStartFlagLocation(hexString, TIM_START_FLAG));
+        flagIndexes.put("BSM", findValidStartFlagLocation(hexString, BSM_START_FLAG));
+        flagIndexes.put("SSM", findValidStartFlagLocation(hexString, SSM_START_FLAG));
+        flagIndexes.put("PSM", findValidStartFlagLocation(hexString, PSM_START_FLAG));
+        flagIndexes.put("SRM", findValidStartFlagLocation(hexString, SRM_START_FLAG));
+
+        int lowestIndex = Integer.MAX_VALUE;
+        for (String key : flagIndexes.keySet()) {
+            if (flagIndexes.get(key) == -1) {
+                logger.debug("This message is not of type " + key);
+                continue;
+            }
+            if (flagIndexes.get(key) < lowestIndex) {
+                messageType = key;
+                lowestIndex = flagIndexes.get(key);
+            }
+        }
+        return messageType;
+    }
+
+    public static int findValidStartFlagLocation(String hexString, String startFlag){
+        int index = hexString.indexOf(startFlag);
+
+        // If the message has a header, make sure not to missidentify the message by the header
+        
+        if(index == 0 || index == -1){
+            return index;
+        }
+        else{
+            index = hexString.indexOf(startFlag,4); 
+        }
+		
+        // Make sure start flag is on an even numbered byte
+        while(index != -1 && index %2 != 0){
+            index = hexString.indexOf(startFlag, index+1);
+        }
+        return index;
+    }
+
+    
     /**
 		* Trims extra `00` bytes off of the end of an ASN1 payload string
 		* This is remove the padded bytes added to the payload when receiving ASN1 payloads
