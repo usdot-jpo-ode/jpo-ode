@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.traveler;
 
 public class TimIngestTracker {
 
-    private Integer totalMessagesReceived;
+    private long totalMessagesReceived;
 
     private TimIngestTracker() {
         totalMessagesReceived = 0;
@@ -16,7 +16,7 @@ public class TimIngestTracker {
         private static final TimIngestTracker INSTANCE = new TimIngestTracker();
     }
 
-    public Integer getTotalMessagesReceived() {
+    public long getTotalMessagesReceived() {
         return totalMessagesReceived;
     }
 

@@ -170,10 +170,10 @@ public class TimDepositControllerTest {
    @Test
    public void testSuccessfulTimIngestIsTracked(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
       String timToSubmit = "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
-      Integer priorIngestCount = TimIngestTracker.getInstance().getTotalMessagesReceived();
+      long priorIngestCount = TimIngestTracker.getInstance().getTotalMessagesReceived();
       ResponseEntity<String> actualResponse = testTimDepositController.postTim(timToSubmit);
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
-      assertEquals(priorIngestCount + 1, TimIngestTracker.getInstance().getTotalMessagesReceived().intValue());
+      assertEquals(priorIngestCount + 1, TimIngestTracker.getInstance().getTotalMessagesReceived());
    }
 
    @Test

@@ -17,7 +17,7 @@ public class TimIngestWatcherTest {
 
         // we can't easily test that the run method wrote the correct log message, but we can test that it reset the total messages received after running
         TimIngestTracker testTimIngestTracker = TimIngestTracker.getInstance();
-        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived().intValue());
+        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived());
     }
 
 }

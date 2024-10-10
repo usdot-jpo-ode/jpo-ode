@@ -9,9 +9,9 @@ public class TimIngestTrackerTest {
     @Test
     public void testCanIncrementTotalMessagesReceived() {
         TimIngestTracker testTimIngestTracker = TimIngestTracker.getInstance();
-        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived().intValue());
+        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived());
         testTimIngestTracker.incrementTotalMessagesReceived();
-        assertEquals(1, testTimIngestTracker.getTotalMessagesReceived().intValue());
+        assertEquals(1, testTimIngestTracker.getTotalMessagesReceived());
     }
 
     @Test
@@ -20,6 +20,6 @@ public class TimIngestTrackerTest {
         testTimIngestTracker.incrementTotalMessagesReceived();
         assertTrue(testTimIngestTracker.getTotalMessagesReceived()> 0);
         testTimIngestTracker.resetTotalMessagesReceived();
-        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived().intValue());
+        assertEquals(0, testTimIngestTracker.getTotalMessagesReceived());
     }
 }

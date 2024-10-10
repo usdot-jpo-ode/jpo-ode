@@ -15,7 +15,7 @@ public class TimIngestWatcher implements Runnable {
     @Override
     public void run() {
         TimIngestTracker tracker = TimIngestTracker.getInstance();
-        Integer ingested = tracker.getTotalMessagesReceived();
+        long ingested = tracker.getTotalMessagesReceived();
 
         if (ingested == 0) {
             logger.warn("ODE has not received TIM deposits in {} seconds.", interval);
