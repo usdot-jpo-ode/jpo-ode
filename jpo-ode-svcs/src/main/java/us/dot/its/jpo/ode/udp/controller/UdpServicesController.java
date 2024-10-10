@@ -7,12 +7,12 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
-import us.dot.its.jpo.ode.udp.tim.TimReceiver;
-import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
-import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
-import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
 import us.dot.its.jpo.ode.udp.psm.PsmReceiver;
+import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
+import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
+import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
+import us.dot.its.jpo.ode.udp.tim.TimReceiver;
 
 /**
  * Centralized UDP service dispatcher.

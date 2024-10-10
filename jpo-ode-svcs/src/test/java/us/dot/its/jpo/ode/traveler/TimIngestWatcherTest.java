@@ -5,18 +5,14 @@
 
 package us.dot.its.jpo.ode.traveler;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TimIngestWatcherTest {
 
     @Test
     public void testRun() {
-        TimIngestWatcher watcher = new TimIngestWatcher();
+        TimIngestWatcher watcher = new TimIngestWatcher(0);
         watcher.run();
 
         // we can't easily test that the run method wrote the correct log message, but we can test that it reset the total messages received after running

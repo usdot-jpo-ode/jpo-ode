@@ -21,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -110,11 +109,17 @@ public class TimDepositController {
       ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
       : true;
 
+      // start the TIM ingest monitoring service if enabled
       Boolean timIngestMonitoringEnabled = Boolean.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
       if (timIngestMonitoringEnabled) {
-         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-         Integer ingestMonitoringInterval = Integer.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL));
-         executorService.scheduleAtFixedRate(new TimIngestWatcher(), ingestMonitoringInterval, ingestMonitoringInterval, TimeUnit.SECONDS);
+         logger.info("TIM ingest monitoring enabled.");
+         
+         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+         Long monitoringInterval = Long.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL));
+         
+         scheduledExecutorService.scheduleAtFixedRate(new TimIngestWatcher(monitoringInterval), monitoringInterval, monitoringInterval, java.util.concurrent.TimeUnit.SECONDS);
+      } else {
+         logger.info("TIM ingest monitoring disabled.");
       }
    }
 
