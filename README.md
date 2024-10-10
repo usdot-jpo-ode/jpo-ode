@@ -287,6 +287,7 @@ Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 - Copy jpo-utils/sample.env to jpo-utils/.env
   - Fill in the variables as described in the [README](jpo-utils/README.md)
+- If you want to see log-based alerts notifying you if no TIMs were ingested in a specific period of time, you will want to update your `.env` file to set `ODE_TIM_INGEST_MONITORING_ENABLED=true` and `ODE_TIM_INGEST_MONITORING_INTERVAL=<seconds between ingest count checks>`. See [TimIngestWatcher](jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/traveler/TimIngestWatcher.java) to see the log-based monitoring provided.
 
 **Make:**
 
