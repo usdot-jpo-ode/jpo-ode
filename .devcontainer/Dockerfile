@@ -75,3 +75,6 @@ RUN apt install -y autoconf libtool
 
 ENV REDACTION_PROPERTIES_PATH /workspaces/jpo-ode/jpo-cvdp/config/fieldsToRedact.txt
 ENV RPM_DEBUG true
+
+# Python3
+RUN apt-get install -y python3 python3-venv python3-pip

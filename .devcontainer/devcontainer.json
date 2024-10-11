@@ -24,7 +24,8 @@
 				"redhat.java",
 				"redhat.vscode-commons",
 				"ms-vscode.cpptools",
-				"ms-vscode.cmake-tools"
+				"ms-vscode.cmake-tools",
+				"ms-python.python"
 			]
 		}
 	},
