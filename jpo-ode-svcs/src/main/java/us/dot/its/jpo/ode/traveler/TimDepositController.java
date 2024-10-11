@@ -115,7 +115,9 @@ public class TimDepositController {
          logger.info("TIM ingest monitoring enabled.");
          
          ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-         Long monitoringInterval = Long.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL));
+         // 3600 seconds, or one hour, was determined to be a sane default for the monitoring interval if monitoring is enabled
+         // but there was no interval set in the .env file
+         Long monitoringInterval = Long.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL, "3600"));
          
          scheduledExecutorService.scheduleAtFixedRate(new TimIngestWatcher(monitoringInterval), monitoringInterval, monitoringInterval, java.util.concurrent.TimeUnit.SECONDS);
       } else {
