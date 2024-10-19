@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
         "metadata": {
@@ -9,11 +9,11 @@
             "$ref": "#/$defs/OdeTimPayload"
         }
     },
+    "additionalProperties": false,
     "required": [
         "metadata",
         "payload"
     ],
-    "additionalProperties": false,
     "$defs": {
         "OdeTimMetadata": {
             "type": "object",
@@ -189,7 +189,7 @@
                     "oneOf": [
                         {
                             "type": "array",
-                            "items": [
+                            "prefixItems": [
                                 {
                                     "$ref": "#/$defs/J2735DateFrame"
                                 }
@@ -258,7 +258,7 @@
                             "oneOf": [
                                 {
                                     "type": "array",
-                                    "items": [
+                                    "prefixItems": [
                                         {
                                             "$ref": "#/$defs/J2735DF_Regions"
                                         }
@@ -472,7 +472,7 @@
                             "oneOf": [
                                 {
                                     "type": "array",
-                                    "items": [
+                                    "prefixItems": [
                                         {
                                             "$ref": "#/$defs/J2735OffsetSystem"
                                         }
@@ -495,7 +495,7 @@
                             "oneOf": [
                                 {
                                     "type": "array",
-                                    "items": [
+                                    "prefixItems": [
                                         {
                                             "$ref": "#/$defs/J2735GeometricProjection"
                                         }
@@ -558,7 +558,7 @@
                     "properties": {
                         "NodeXY": {
                             "type": "array",
-                            "items": [
+                            "prefixItems": [
                                 {
                                     "$ref": "#/$defs/J2735NodeXY"
                                 }
@@ -582,7 +582,7 @@
                     "properties": {
                         "NodeLL": {
                             "type": "array",
-                            "items": [
+                            "prefixItems": [
                                 {
                                     "$ref": "#/$defs/J2735NodeLL"
                                 }
@@ -828,7 +828,7 @@
                             "type": "string"
                         },
                         "units": {
-                            "type": "string"
+                            "$ref": "#/$defs/J2735DistanceUnits"
                         }
                     },
                     "required": [
@@ -909,7 +909,7 @@
                     "properties": {
                         "SEQUENCE": {
                             "type": "array",
-                            "items": [
+                            "prefixItems": [
                                 {
                                     "$ref": "#/$defs/J2735DF_ContentSequenceItem"
                                 }
@@ -1066,6 +1066,98 @@
             },
             "required": [
                 "id"
+            ]
+        },
+        "J2735DistanceUnits": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "centimeter": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "centimeter"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "cm2-5": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "cm2-5"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "decimeter": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "decimeter"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "meter": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "meter"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "kilometer": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "kilometer"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "foot": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "foot"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "yard": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "yard"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "mile": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "mile"
+                    ]
+                }
             ]
         },
         "BooleanObject": {
