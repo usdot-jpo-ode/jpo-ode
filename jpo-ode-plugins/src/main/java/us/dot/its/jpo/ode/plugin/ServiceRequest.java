@@ -101,6 +101,15 @@ public class ServiceRequest extends OdeObject {
    private SituationDataWarehouse.SDW sdw;
    private RSU[] rsus;
    private SNMP snmp;
+   private String uuid;
+
+   public String getUUID() {
+      return uuid;
+   }
+
+   public void setUUID(String timUUID) {
+      this.uuid= timUUID;
+   }
 
    public RSU[] getRsus() {
       return rsus;

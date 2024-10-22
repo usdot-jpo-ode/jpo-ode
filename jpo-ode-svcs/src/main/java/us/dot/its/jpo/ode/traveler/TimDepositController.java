@@ -57,6 +57,7 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
+import java.util.UUID;
 
 @RestController
 public class TimDepositController {
@@ -201,6 +202,18 @@ public class TimDepositController {
 
       String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
       stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, obfuscatedTimData);
+
+      try {
+         String generatedBy = (new JSONObject(obfuscatedTimData)).getJSONObject("metadata").getString("recordGeneratedBy");
+         if (generatedBy.equalsIgnoreCase("TMC")) {
+            // add UUID to TIM Metadata for later querying
+            String timUUID = UUID.randomUUID().toString();
+            request.setUUID(timUUID);
+            stringMsgProducer.send(odeProperties.getKafkaTopicKeyedOdeTimJson(), timUUID, obfuscatedTimData);
+         }
+      } catch (Exception e) {
+         logger.error("Error while checking recordGeneratedBy field: {}", e.getMessage());
+      }
 
       // Now that the message gas been published to OdeBradcastTim topic, it should be
       // changed to J2735BroadcastTim serialId
