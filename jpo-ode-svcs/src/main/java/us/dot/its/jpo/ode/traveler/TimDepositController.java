@@ -110,7 +110,7 @@ public class TimDepositController {
       : true;
 
       // start the TIM ingest monitoring service if enabled
-      Boolean timIngestMonitoringEnabled = Boolean.valueOf(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
+      boolean timIngestMonitoringEnabled = Boolean.parseBoolean(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
       if (timIngestMonitoringEnabled) {
          logger.info("TIM ingest monitoring enabled.");
          
@@ -118,13 +118,12 @@ public class TimDepositController {
          // 3600 seconds, or one hour, was determined to be a sane default for the monitoring interval if monitoring is enabled
          // but there was no interval set in the .env file
          String interval = odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL);
-         // getProperty(name, default) method will not use the default value if the value is set to an empty string, so we are using getProperty(name) 
-         // and then checking if it is null or empty to protect against the case where the value is set to an empty string in the .env file so that we can
-         // use Long.valueOf() without risk of a NumberFormatException. 
-         if (interval == null || interval.isEmpty()) {
-            interval = "3600";
+         long monitoringInterval;
+         try {
+            monitoringInterval = Long.parseLong(interval);
+         } catch (NumberFormatException e) {
+            monitoringInterval = 3600;
          }
-         Long monitoringInterval = Long.valueOf(interval);
          
          scheduledExecutorService.scheduleAtFixedRate(new TimIngestWatcher(monitoringInterval), monitoringInterval, monitoringInterval, java.util.concurrent.TimeUnit.SECONDS);
       } else {
