@@ -41,6 +41,7 @@ services:
       DATA_SIGNING_ENABLED_RSU: ${DATA_SIGNING_ENABLED_RSU}
       DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
       DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
+      KAFKA_LINGER_MS: ${KAFKA_LINGER_MS}
     depends_on:
       kafka:
         condition: service_healthy
