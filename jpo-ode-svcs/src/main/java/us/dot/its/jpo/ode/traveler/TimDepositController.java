@@ -203,18 +203,6 @@ public class TimDepositController {
       String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
       stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, obfuscatedTimData);
 
-      try {
-         String generatedBy = (new JSONObject(obfuscatedTimData)).getJSONObject("metadata").getString("recordGeneratedBy");
-         if (generatedBy.equalsIgnoreCase("TMC")) {
-            // add UUID to TIM Metadata for later querying
-            String timUUID = UUID.randomUUID().toString();
-            request.setUUID(timUUID);
-            stringMsgProducer.send(odeProperties.getKafkaTopicKeyedOdeTimJson(), timUUID, obfuscatedTimData);
-         }
-      } catch (Exception e) {
-         logger.error("Error while checking recordGeneratedBy field: {}", e.getMessage());
-      }
-
       // Now that the message gas been published to OdeBradcastTim topic, it should be
       // changed to J2735BroadcastTim serialId
       timMetadata.setSerialId(serialIdJ2735);
@@ -264,7 +252,8 @@ public class TimDepositController {
          // publish Broadcast TIM to a J2735 compliant topic.
          stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
          // publish J2735 TIM also to general un-filtered TIM topic
-         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, obfuscatedj2735Tim);
+         // with streamID as key
+         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), serialIdJ2735.getStreamId(), obfuscatedj2735Tim);
 
          serialIdOde.increment();
          serialIdJ2735.increment();

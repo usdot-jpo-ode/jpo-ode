@@ -94,7 +94,6 @@ public class OdePropertiesTest {
             String testKafkaTopicOdeDNMsgJson = "testKafkaTopicOdeDNMsgJson";
             String testKafkaTopicOdeTimJson = "testKafkaTopicOdeTimJson";
             String testKafkaTopicOdeTimJsonTMCFiltered = "testKafkaTopicOdeTimJsonTMCFiltered";
-            String testKafkaTopicKeyedOdeTimJson = "testKafkaTopicKeyedOdeTimJson";
             String testKafkaTopicOdeBsmDuringEventPojo = "testKafkaTopicOdeBsmDuringEventPojo";
             String testKafkaTopicOdeBsmRxPojo = "testKafkaTopicOdeBsmRxPojo";
             String testKafkaTopicOdeBsmTxPojo = "testKafkaTopicOdeBsmTxPojo";
@@ -140,7 +139,6 @@ public class OdePropertiesTest {
             testOdeProperties.setKafkaTopicOdeDNMsgJson(testKafkaTopicOdeDNMsgJson);
             testOdeProperties.setKafkaTopicOdeTimJson(testKafkaTopicOdeTimJson);
             testOdeProperties.setKafkaTopicOdeTimJsonTMCFiltered(testKafkaTopicOdeTimJsonTMCFiltered);
-            testOdeProperties.setKafkaTopicKeyedOdeTimJson(testKafkaTopicKeyedOdeTimJson);
             testOdeProperties.setKafkaTopicOdeBsmDuringEventPojo(testKafkaTopicOdeBsmDuringEventPojo);
             testOdeProperties.setKafkaTopicOdeBsmRxPojo(testKafkaTopicOdeBsmRxPojo);
             testOdeProperties.setKafkaTopicOdeBsmTxPojo(testKafkaTopicOdeBsmTxPojo);
@@ -205,8 +203,6 @@ public class OdePropertiesTest {
                         testOdeProperties.getKafkaTopicOdeTimJson());
             assertEquals("Incorrect testKafkaTopicOdeTimJsonTMCFiltered", testKafkaTopicOdeTimJsonTMCFiltered,
                         testOdeProperties.getKafkaTopicOdeTimJsonTMCFiltered());
-            assertEquals("Incorrect testKafkaTopicOdeKeyedOdeTimJson", testKafkaTopicKeyedOdeTimJson,
-                        testOdeProperties.getKafkaTopicKeyedOdeTimJson());
             assertEquals("Incorrect testKafkaTopicOdeBsmDuringEventPojo", testKafkaTopicOdeBsmDuringEventPojo,
                         testOdeProperties.getKafkaTopicOdeBsmDuringEventPojo());
             assertEquals("Incorrect testKafkaTopicOdeBsmRxPojo", testKafkaTopicOdeBsmRxPojo,

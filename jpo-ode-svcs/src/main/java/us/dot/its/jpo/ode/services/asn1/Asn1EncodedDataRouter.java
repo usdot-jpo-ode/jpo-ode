@@ -201,9 +201,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          // Cases 1 & 2
          // Sign and send to RSUs
 
-         // Deposit to filtered topic if TIM is TMC-generated
-         depositToFilteredTopic(metadataObj, dataObj, request);
-
          JSONObject mfObj = dataObj.getJSONObject(MESSAGE_FRAME);
 
          String hexEncodedTim = mfObj.getString(BYTES);
@@ -240,6 +237,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          if (dataSigningEnabledSDW && request.getSdw() != null) {
             hexEncodedTim = signTIM(hexEncodedTim, consumedObj);
          }
+
+         // Deposit encoded & signed TIM to TMC-filtered topic if TMC-generated
+         depositToFilteredTopic(metadataObj, hexEncodedTim, request);
 
          if (request.getSdw() != null) {
             // Case 2 only
@@ -418,31 +418,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return toReturn;
    }
 
-   private Void depositToFilteredTopic(JSONObject metadataObj, JSONObject dataObj, ServiceRequest request) {
+   private Void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim, ServiceRequest request) {
       try {
          String generatedBy = metadataObj.getString("recordGeneratedBy");
-         String uuid = request.getUUID();
+         String streamId = metadataObj.getJSONObject("serialId").getString("streamId");
          if (generatedBy.equalsIgnoreCase("TMC")) {
             try {
-               String timString = odeTimJsonTopology.query(uuid);
+               String timString = odeTimJsonTopology.query(streamId);
 
                if (timString != null) {
                   // Set ASN1 data in TIM metadata
                   JSONObject timJSON = new JSONObject(timString);
                   JSONObject metadataJSON = timJSON.getJSONObject("metadata");
-                  metadataJSON.put("asn1", dataObj.getJSONObject("MessageFrame").getString("bytes"));
-
-                  // Remove TIM UUID from request
-                  JSONObject requestJSON = metadataJSON.getJSONObject("request");
-                  requestJSON.put("uuid", (Object) null);
-                  metadataJSON.put("request", requestJSON);
+                  metadataJSON.put("asn1", hexEncodedTim);
                   timJSON.put("metadata", metadataJSON);
 
                   // Send the message w/ asn1 data to the TMC-filtered topic
                   stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJsonTMCFiltered(), null, timJSON.toString());
-
-                  // Remove the message from the KTable
-                  stringMsgProducer.send(odeProperties.getKafkaTopicKeyedOdeTimJson(), uuid, null);
                }
             } catch (Exception e) {
                logger.error("Error while updating TIM: {}", e.getMessage());

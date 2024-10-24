@@ -118,7 +118,6 @@ public class OdeProperties implements EnvironmentAware {
    // TIM
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
    private String kafkaTopicOdeTimJsonTMCFiltered = "topic.OdeTimJsonTMCFiltered";
-   private String kafkaTopicKeyedOdeTimJson = "topic.KeyedOdeTimJson";
    private String kafkaTopicOdeDNMsgJson = "topic.OdeDNMsgJson";
    private String kafkaTopicOdeTimRxJson = "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo = "topic.OdeTimBroadcastPojo";
@@ -600,14 +599,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicOdeTimJsonTMCFiltered(String kafkaTopicOdeTimJsonTMCFiltered) {
       this.kafkaTopicOdeTimJsonTMCFiltered = kafkaTopicOdeTimJsonTMCFiltered;
-   }
-
-   public String getKafkaTopicKeyedOdeTimJson() {
-      return kafkaTopicKeyedOdeTimJson;
-   }
-
-   public void setKafkaTopicKeyedOdeTimJson(String kafkaTopicKeyedOdeTimJson) {
-      this.kafkaTopicKeyedOdeTimJson = kafkaTopicKeyedOdeTimJson;
    }
 
    public String getUploadLocationObuLog() {

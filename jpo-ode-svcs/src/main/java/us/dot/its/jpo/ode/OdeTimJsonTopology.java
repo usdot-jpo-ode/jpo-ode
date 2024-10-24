@@ -65,7 +65,7 @@ public class OdeTimJsonTopology {
 
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
-        builder.table("topic.KeyedOdeTimJson", Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
+        builder.table("topic.OdeTimJson", Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
         return builder.build();
     }
 
