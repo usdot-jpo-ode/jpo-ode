@@ -65,24 +65,141 @@
                 },
                 "asn1": {
                     "type": "string"
+                },
+                "request": {
+                    "$ref": "#/$defs/MetadataRequest"
                 }
             },
             "required": [
-                "securityResultCode",
-                "recordGeneratedBy",
                 "schemaVersion",
+                "recordGeneratedBy",
+                "payloadType",
                 "odePacketID",
+                "serialId",
                 "sanitized",
                 "recordGeneratedAt",
-                "recordType",
                 "maxDurationTime",
-                "odeTimStartDateTime",
-                "receivedMessageDetails",
-                "payloadType",
-                "serialId",
-                "logFileName",
-                "odeReceivedAt",
-                "originIp"
+                "odeReceivedAt"
+            ]
+        },
+        "MetadataRequest": {
+            "type": "object",
+            "properties": {
+                "ode": {
+                    "$ref": "#/$defs/RequestOde"
+                },
+                "rsus": {
+                    "type": "object",
+                    "properties": {
+                        "rsus": {
+                            "$ref": "#/$defs/RequestRsus"
+                        }
+                    },
+                    "required": [
+                        "rsus"
+                    ]
+                },
+                "snmp": {
+                    "$ref": "#/$defs/RequestSnmp"
+                }
+            },
+            "required": [
+                "ode",
+                "rsus",
+                "snmp"
+            ]
+        },
+        "RequestOde": {
+            "type": "object",
+            "properties": {
+                "verb": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "verb",
+                "version"
+            ]
+        },
+        "RequestRsus": {
+            "type": "object",
+            "properties": {
+                "rsuTarget": {
+                    "type": "string"
+                },
+                "rsuUsername": {
+                    "type": "string"
+                },
+                "rsuPassword": {
+                    "type": "string"
+                },
+                "snmpProtocol": {
+                    "type": "string"
+                },
+                "rsuRetries": {
+                    "type": "string"
+                },
+                "rsuTimeout": {
+                    "type": "string"
+                },
+                "rsuIndex": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "rsuTarget",
+                "rsuUsername",
+                "rsuPassword",
+                "snmpProtocol",
+                "rsuRetries",
+                "rsuTimeout",
+                "rsuIndex"
+            ]
+        },
+        "RequestSnmp": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string"
+                },
+                "deliverystop": {
+                    "type": "string"
+                },
+                "rsuid": {
+                    "type": "string"
+                },
+                "deliverystart": {
+                    "type": "string"
+                },
+                "enable": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "msgid": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mode",
+                "deliverystart",
+                "deliverystop",
+                "rsuid",
+                "enable",
+                "channel",
+                "msgid",
+                "interval",
+                "status"
             ]
         },
         "OdeRecordGeneratedBy": {
