@@ -20,9 +20,9 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
@@ -39,6 +39,8 @@ public class AsnCodecRouterServiceControllerTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+   @Injectable
+   OdeKafkaProperties odeKafkaProperties;
 
    @Test @Disabled
    public void shouldStartTwoConsumers() {
@@ -50,7 +52,7 @@ public class AsnCodecRouterServiceControllerTest {
          }
       };
 
-      assertNotNull(new AsnCodecRouterServiceController(injectableOdeProperties));
+      assertNotNull(new AsnCodecRouterServiceController(injectableOdeProperties, odeKafkaProperties));
    }
 
 }

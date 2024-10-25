@@ -165,7 +165,10 @@ The following guide contains information about the data flow diagrams for the OD
 
 **Configuration:**
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` 
+properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log 
+file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.yaml` file as desired.
+To adjust the settings in your unit/integration tests, modify the `jpo-ode-svcs\src\test\resources\application.yaml` file.
 
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
@@ -302,6 +305,7 @@ Make target options:
 `make build` to build the ODE
 `make stop` to stop the ODE
 `make delete` to stop the ODE and remove the volumes
+`make restart` to restart the ODE
 `make rebuild` to stop, delete, and then rebuild the containers
 `make clean-build` to rebuild the containers without using the cache
 ```
@@ -396,7 +400,8 @@ The only requirement for deploying `asn1_codec` module on Docker is the setup of
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
 
- - ODE properties for communications with PPM (set in application.properties)
+[//]: # (&#40;TODO&#40;@mcook42&#41;: Once the application.yaml file is updated with the correct properties at the end of the OdeProperties refactor effort, update the following list with the correct instructions&#41;)
+ - ODE properties for communications with PPM (set in application.yaml)
 	 - ode.kafkaTopicOdeBsmJson  (default = topic.OdeBsmJson)
 	 - ode.kafkaTopicFilteredOdeBsmJson (default = topic.FilteredOdeBsmJson)
  - PPM properties for communications with ODE (set in yourconfig.properties)

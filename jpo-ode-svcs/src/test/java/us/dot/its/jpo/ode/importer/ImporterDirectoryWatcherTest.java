@@ -28,6 +28,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
@@ -38,6 +39,8 @@ public class ImporterDirectoryWatcherTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+   @Injectable
+   OdeKafkaProperties odeKafkaProperties;
    @Injectable
    Path inbox;
    @Injectable
@@ -87,7 +90,7 @@ public class ImporterDirectoryWatcherTest {
             mockScheduledExecutorService.awaitTermination(anyLong, TimeUnit.SECONDS);
          }
       };
-      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, backupDir, failureDir, backupDir, injectableImporterFileType, timePeriod);
+      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, odeKafkaProperties, backupDir, failureDir, backupDir, injectableImporterFileType, timePeriod);
 
       testImporterDirectoryWatcher.run();
    }
