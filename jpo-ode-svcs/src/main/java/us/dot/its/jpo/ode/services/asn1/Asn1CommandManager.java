@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
@@ -77,7 +78,7 @@ public class Asn1CommandManager {
    private String depositTopic;
    private RsuDepositor rsuDepositor;
 
-   public Asn1CommandManager(OdeProperties odeProperties) {
+   public Asn1CommandManager(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
 
       this.odeProperties = odeProperties;
 
@@ -86,8 +87,9 @@ public class Asn1CommandManager {
       try {
          this.rsuDepositor = new RsuDepositor(odeProperties);
          this.rsuDepositor.start();
-         this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-               odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+         this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
+                 odeKafkaProperties.getProducerType(),
+                 odeKafkaProperties.getDisabledTopics());
          this.setDepositTopic(odeProperties.getKafkaTopicSdwDepositorInput());
       } catch (Exception e) {
          String msg = "Error starting SDW depositor";

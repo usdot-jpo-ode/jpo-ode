@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -20,8 +21,8 @@ public class Asn1DecodeSRMJSON extends AbstractAsn1DecodeMessageJSON {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ObjectMapper objectMapper = new ObjectMapper();
 
-	public Asn1DecodeSRMJSON(OdeProperties odeProps) {
-		super(new StringPublisher(odeProps), UperUtil.getSrmStartFlag());
+	public Asn1DecodeSRMJSON(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
+		super(new StringPublisher(odeProperties, odeKafkaProperties), UperUtil.getSrmStartFlag());
 	}
 
 	@Override

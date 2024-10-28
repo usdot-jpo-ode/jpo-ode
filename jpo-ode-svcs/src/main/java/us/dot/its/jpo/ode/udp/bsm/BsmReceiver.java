@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -14,19 +16,17 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
 
-   private StringPublisher bsmPublisher;
+   private final StringPublisher bsmPublisher;
 
    @Autowired
-   public BsmReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
-
-      this.bsmPublisher = new StringPublisher(odeProps);
+   public BsmReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
+      this(odeProps, odeKafkaProperties, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
    }
 
-   public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
+   public BsmReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
 
-      this.bsmPublisher = new StringPublisher(odeProps);
+      this.bsmPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
    }
 
    @Override
@@ -41,7 +41,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       do {
          try {
             logger.debug("Waiting for UDP BSM packets...");
-            socket.receive(packet);
+            this.socket.receive(packet);
             if (packet.getLength() > 0) {
                String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
 

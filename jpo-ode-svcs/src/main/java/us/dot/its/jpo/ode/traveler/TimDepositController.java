@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.ConfigEnvironmentVariables;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -72,6 +73,7 @@ public class TimDepositController {
    private static final String SUCCESS = "success";
 
    private OdeProperties odeProperties;
+   private OdeKafkaProperties odeKafkaProperties;
 
    private SerialId serialIdJ2735;
    private SerialId serialIdOde;
@@ -92,18 +94,19 @@ public class TimDepositController {
    }
 
    @Autowired
-   public TimDepositController(OdeProperties odeProperties) {
+   public TimDepositController(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
       super();
 
       this.odeProperties = odeProperties;
+      this.odeKafkaProperties = odeKafkaProperties;
 
       this.serialIdJ2735 = new SerialId();
       this.serialIdOde = new SerialId();
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
-      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
-            null, OdeTimSerializer.class.getName(), odeProperties.getKafkaTopicsDisabledSet());
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
+            odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+      this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(),
+            null, OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
 
       this.dataSigningEnabledSDW = System.getenv("DATA_SIGNING_ENABLED_SDW") != null && !System.getenv("DATA_SIGNING_ENABLED_SDW").isEmpty()
       ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
@@ -113,7 +116,7 @@ public class TimDepositController {
       boolean timIngestMonitoringEnabled = Boolean.parseBoolean(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
       if (timIngestMonitoringEnabled) {
          logger.info("TIM ingest monitoring enabled.");
-         
+
          ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
          // 3600 seconds, or one hour, was determined to be a sane default for the monitoring interval if monitoring is enabled
          // but there was no interval set in the .env file
@@ -124,7 +127,7 @@ public class TimDepositController {
          } catch (NumberFormatException e) {
             monitoringInterval = 3600;
          }
-         
+
          scheduledExecutorService.scheduleAtFixedRate(new TimIngestWatcher(monitoringInterval), monitoringInterval, monitoringInterval, java.util.concurrent.TimeUnit.SECONDS);
       } else {
          logger.info("TIM ingest monitoring disabled.");

@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -13,20 +15,18 @@ import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 
 public class TimReceiver extends AbstractUdpReceiverPublisher {
    private static Logger logger = LoggerFactory.getLogger(TimReceiver.class);
-   
+
    private StringPublisher timPublisher;
 
    @Autowired
-   public TimReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getTimReceiverPort(), odeProps.getTimBufferSize());
-
-      this.timPublisher = new StringPublisher(odeProps);
+   public TimReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
+      this(odeProps, odeKafkaProperties, odeProps.getTimReceiverPort(), odeProps.getTimBufferSize());
    }
 
-   public TimReceiver(OdeProperties odeProps, int port, int bufferSize) {
+   public TimReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
 
-      this.timPublisher = new StringPublisher(odeProps);
+      this.timPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
    }
 
    @Override

@@ -20,7 +20,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /home
 
-COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.properties /home
+COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
 COPY ./scripts/startup_jpoode.sh /home
