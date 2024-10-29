@@ -88,6 +88,9 @@
                 "ode": {
                     "$ref": "#/$defs/RequestOde"
                 },
+                "sdw": {
+                    "$ref": "#/$defs/RequestSdw"
+                },
                 "rsus": {
                     "type": "object",
                     "properties": {
@@ -102,12 +105,7 @@
                 "snmp": {
                     "$ref": "#/$defs/RequestSnmp"
                 }
-            },
-            "required": [
-                "ode",
-                "rsus",
-                "snmp"
-            ]
+            }
         },
         "RequestOde": {
             "type": "object",
@@ -122,6 +120,45 @@
             "required": [
                 "verb",
                 "version"
+            ]
+        },
+        "RequestSdw": {
+            "type": "object",
+            "properties": {
+                "serviceRegion": {
+                    "$ref": "#/$defs/OdeGeoRegion"
+                },
+                "ttl": {
+                    "type": "string",
+                    "enum": [
+                        "oneminute",
+                        "thirtyminutes",
+                        "oneday",
+                        "oneweek",
+                        "onemonth",
+                        "oneyear"
+                    ]
+                },
+                "groupID": {
+                    "type": "string"
+                },
+                "deliverystart": {
+                    "type": "string"
+                },
+                "deliverystop": {
+                    "type": "string"
+                },
+                "recordId": {
+                    "type": "string"
+                },
+                "estimatedRemovalDate": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "recordId",
+                "ttl",
+                "serviceRegion"
             ]
         },
         "RequestRsus": {
@@ -200,6 +237,21 @@
                 "msgid",
                 "interval",
                 "status"
+            ]
+        },
+        "OdeGeoRegion": {
+            "type": "object",
+            "properties": {
+                "nwCorner": {
+                    "$ref": "#/$defs/OdePosition3D"
+                },
+                "seCorner": {
+                    "$ref": "#/$defs/OdePosition3D"
+                }
+            },
+            "required": [
+                "nwCorner",
+                "seCorner"
             ]
         },
         "OdeRecordGeneratedBy": {
@@ -1088,6 +1140,27 @@
             "required": [
                 "lat",
                 "long"
+            ]
+        },
+        "OdePosition3D": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "string"
+                },
+                "elevation": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "latitude",
+                "longitude"
             ]
         },
         "J2735MUTCDCode": {
