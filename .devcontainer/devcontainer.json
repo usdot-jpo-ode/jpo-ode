@@ -25,6 +25,7 @@
 				"redhat.vscode-commons",
 				"ms-vscode.cpptools",
 				"ms-vscode.cmake-tools",
+				"ms-vscode.makefile-tools",
 				"ms-python.python"
 			]
 		}

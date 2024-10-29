@@ -292,6 +292,8 @@ git submodule deinit -f . && git submodule update --recursive --init
   - Make a copy of [sample.env](./sample.env) rename it as `.env` **_and_**;
   - Make a copy of [jpo-utils/sample.env](jpo-utils/sample.env), rename it as `.env` (keep this one in the `jpo-utils/` directory), and fill in the variables as described in the [jpo-utils README](jpo-utils/README.md)
   - **The .env files will contain private keys, do not add them to version control.**
+  - Log-based alerts are enabled by default in the `sample.env`. If you don't want log messages notifying you when no TIMs were ingested in a specific period of time, 
+  you will want to update your `.env` file to set `ODE_TIM_INGEST_MONITORING_ENABLED=false`. See [TimIngestWatcher](jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/traveler/TimIngestWatcher.java) to see the log-based monitoring provided.
 
 **Make:**
 
