@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -16,22 +18,17 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
 
     private static Logger logger = LoggerFactory.getLogger(GenericReceiver.class);
 
-    private StringPublisher publisher;
-
-
+    private final StringPublisher publisher;
 
     @Autowired
-    public GenericReceiver(OdeProperties odeProps) {
-        this(odeProps, odeProps.getGenericReceiverPort(), odeProps.getGenericBufferSize());
-
-        this.publisher = new StringPublisher(odeProps);
+    public GenericReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
+        this(odeProps, odeKafkaProperties, odeProps.getGenericReceiverPort(), odeProps.getGenericBufferSize());
     }
 
-    public GenericReceiver(OdeProperties odeProps, int port, int bufferSize) {
+    public GenericReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
 
-        this.publisher = new StringPublisher(odeProps);
-
+        this.publisher = new StringPublisher(odeProperties, odeKafkaProperties);
     }
 
     @Override

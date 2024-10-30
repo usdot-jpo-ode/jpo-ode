@@ -148,10 +148,11 @@ After preliminary testing is complete, project reference updates should be made 
 ### Steps
 #### Merging release branches, updating project references and creating releases
 
-1. Update version number in pom.xml for the following projects.
+1. Update version number in pom.xml for the following projects if not already done:
     - jpo-security-svcs
     - jpo-sdw-depositor
     - jpo-s3-deposit
+    - jpo-utils
 
 2. Merge ‘release_(year)-(quarter)’ branch into ‘master/main’ branch for the following projects:
     - asn1_codec
@@ -159,6 +160,7 @@ After preliminary testing is complete, project reference updates should be made 
     - jpo-security-svcs
     - jpo-sdw-depositor
     - jpo-s3-deposit
+    - jpo-utils
 
     2a. Create a release for the asn1_codec project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. asn1_codec-x.x.x)
 
@@ -170,7 +172,9 @@ After preliminary testing is complete, project reference updates should be made 
     
     2e. Create a release for the jpo-s3-deposit project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-s3-deposit-x.x.x)
 
-3. Update version number in pom.xml files for the 'jpo-ode' project.
+    2f. Create a release for the jpo-utils project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
+
+3. Update version number in pom.xml files for the 'jpo-ode' project if not already done.
 
     3a. Open the jpo-ode project in an IDE
     
@@ -190,7 +194,7 @@ After preliminary testing is complete, project reference updates should be made 
     
     4e. Navigate to the jpo-sdw-depositor directory and run `git checkout tags/jpo-sdw-depositor-x.x.x` to update the submodule reference.
     
-    4f. Navigate to the jpo-s3-deposit directory and run `git checkout tags/jpo-s3-deposit-x.x.x` to update the submodule reference. 
+    4f. Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference. 
     
     4g. Commit these changes to the `release_(year)-(quarter)` branch & push the changes to the remote repository.
     
@@ -198,7 +202,7 @@ After preliminary testing is complete, project reference updates should be made 
 
 5. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
 
-6. Update version number in pom.xml file for the `jpo-geojsonconverter` project.
+6. Update version number in pom.xml file for the `jpo-geojsonconverter` project if not already done.
 
 7. Update git submodule references for the ‘jpo-geojsonconverter’ project to point to the tagged commit in jpo-ode master/main branch.
 
@@ -214,7 +218,7 @@ After preliminary testing is complete, project reference updates should be made 
 
 8. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-geojsonconverter project, and create a release with the version number of the release. (e.g. jpo-geojsonconverter-x.x.x)
 
-9. Update version number in pom.xml file for the `jpo-conflictmonitor` project.
+9. Update version number in pom.xml file for the `jpo-conflictmonitor` project if not already done.
 
 10. Update git submodule references for the `jpo-conflictmonitor` project to point to the tagged commit in jpo-geojsonconverter master/main branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the conflictmonitor project. This change will be necessary in the jpo-conflictmonitor/pom.xml, jpo-deduplicator/pom.xml and message-sender/pom.xml files.
 
@@ -230,7 +234,7 @@ After preliminary testing is complete, project reference updates should be made 
 
 11. Merge `release_(year)-(quarter)` branch into `master/main` branch for the jpo-conflictmonitor project, and create a release with the version number of the release. (e.g. jpo-conflictmonitor-x.x.x)
 
-12. Update version number in pom.xml file for the `jpo-conflictvisualizer` project. The pom.xml can be found in the `api/jpo-conflictvisualizer-api` directory.
+12. Update version number in pom.xml file for the `jpo-conflictvisualizer` project if not already done. The pom.xml can be found in the `api/jpo-conflictvisualizer-api` directory.
 
 13. Update git submodule references for the `jpo-conflictvisualizer` project to point to the tagged commit in jpo-conflictmonitor master/main branch. Also update the corresponding version number for the jpo-conflictmonitor dependency in the pom.xml file of the conflictvisualizer project.
 

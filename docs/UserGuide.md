@@ -353,10 +353,11 @@ and deploying the JPO-ODE services.
 
 #### 6.6.4 - ODE Application Properties
 
+[//]: # (&#40;TODO&#40;@mcook42&#41;: Once the application.yaml file is updated with the correct properties at the end of the OdeProperties refactor effort, update the following list with the correct instructions&#41;)
 JPO ODE configuration can be modified in a number of ways.
 
 1. You can specify the configuration parameters in a file named
-   _application.properties_ located in the same directory from which
+   _application.yaml_ located in the same directory from which
    the application is launched.
 
 2. You may specify properties as command line options in the form of

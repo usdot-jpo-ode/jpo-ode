@@ -15,16 +15,16 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import java.io.BufferedInputStream;
-import java.nio.file.Path;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+
+import java.io.BufferedInputStream;
+import java.nio.file.Path;
 
 public class FileAsn1CodecPublisher {
 
@@ -43,9 +43,9 @@ public class FileAsn1CodecPublisher {
    private LogFileToAsn1CodecPublisher codecPublisher;
    
    @Autowired
-   public FileAsn1CodecPublisher(OdeProperties odeProperties) {
+   public FileAsn1CodecPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
 
-      StringPublisher messagePub = new StringPublisher(odeProperties);
+      StringPublisher messagePub = new StringPublisher(odeProperties, odeKafkaProperties);
 
       this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub);
    }

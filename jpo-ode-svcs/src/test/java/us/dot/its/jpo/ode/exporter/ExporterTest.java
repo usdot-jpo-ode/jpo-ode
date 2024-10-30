@@ -18,22 +18,18 @@ package us.dot.its.jpo.ode.exporter;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-//import mockit.integration.junit4.JMockit;
 
 import static org.junit.Assert.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-//@RunWith(JMockit.class)
-public class ExporterTest {
+class ExporterTest {
 
-    
     @Test
-    public void shouldRun(@Mocked OdeProperties mockOdeProperties,
+    void shouldRun(@Mocked OdeKafkaProperties odeKafkaProperties,
             @Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
             @Mocked final MessageConsumer<String, byte[]> mockByteArrayConsumer,
             @Mocked final MessageConsumer<String, String> mockStringConsumer) {
@@ -42,10 +38,7 @@ public class ExporterTest {
 
         new Expectations() {
             {
-                mockOdeProperties.getKafkaBrokers();
-                result = anyString;
-
-                mockOdeProperties.getHostId();
+                odeKafkaProperties.getBrokers();
                 result = anyString;
 
                 mockStringConsumer.close();
@@ -53,9 +46,9 @@ public class ExporterTest {
         };
 
         try {
-            Exporter odeBsmExporter = new StompStringExporter(
-                mockOdeProperties, testTopic, mockSimpMessagingTemplate,
-                "odeTopic");
+            Exporter odeBsmExporter = new StompStringExporter(odeKafkaProperties,
+                    testTopic,
+                    mockSimpMessagingTemplate, "odeTopic");
             odeBsmExporter.setConsumer(mockStringConsumer);
             odeBsmExporter.run();
             
