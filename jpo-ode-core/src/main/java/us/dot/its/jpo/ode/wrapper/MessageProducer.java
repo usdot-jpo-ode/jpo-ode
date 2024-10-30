@@ -90,7 +90,8 @@ public class MessageProducer<K, V> {
         props.put("value.serializer", valueSerializerFQN);
 
         String lingerMsEnv = System.getenv("KAFKA_LINGER_MS");
-        if(lingerMsEnv != null){
+        if (lingerMsEnv != null && !lingerMsEnv.isEmpty()) {
+
             int lingerMs = Integer.parseInt(lingerMsEnv);
             props.put("linger.ms", lingerMs); 
         }
