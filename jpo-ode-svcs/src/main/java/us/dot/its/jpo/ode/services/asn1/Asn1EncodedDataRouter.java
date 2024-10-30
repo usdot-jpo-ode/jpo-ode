@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -67,15 +68,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    private boolean dataSigningEnabledRSU;
    private boolean dataSigningEnabledSDW;
 
-   public Asn1EncodedDataRouter(OdeProperties odeProperties) {
+   public Asn1EncodedDataRouter(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
       super();
 
       this.odeProperties = odeProperties;
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), this.odeProperties.getKafkaTopicsDisabledSet());
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
+              odeKafkaProperties.getProducerType(),
+              odeKafkaProperties.getDisabledTopics());
 
-      this.asn1CommandManager = new Asn1CommandManager(odeProperties);
+      this.asn1CommandManager = new Asn1CommandManager(odeProperties, odeKafkaProperties);
 
       this.dataSigningEnabledRSU = System.getenv("DATA_SIGNING_ENABLED_RSU") != null && !System.getenv("DATA_SIGNING_ENABLED_RSU").isEmpty()
             ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_RSU"))
@@ -86,7 +88,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
       // Initialize and start the OdeTimJsonTopology if it is not already running
       if (odeTimJsonTopology == null) {
-         odeTimJsonTopology = new OdeTimJsonTopology(odeProperties);
+         odeTimJsonTopology = new OdeTimJsonTopology(odeProperties, odeKafkaProperties);
          if (!odeTimJsonTopology.isRunning()) {
             odeTimJsonTopology.start();
          }

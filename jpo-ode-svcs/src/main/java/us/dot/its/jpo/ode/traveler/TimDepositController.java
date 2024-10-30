@@ -19,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.ConfigEnvironmentVariables;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
@@ -63,12 +67,14 @@ import java.util.UUID;
 public class TimDepositController {
 
    private static final Logger logger = LoggerFactory.getLogger(TimDepositController.class);
+   private static final TimIngestTracker INGEST_MONITOR = TimIngestTracker.getInstance();
 
    private static final String ERRSTR = "error";
    private static final String WARNING = "warning";
    private static final String SUCCESS = "success";
 
    private OdeProperties odeProperties;
+   private OdeKafkaProperties odeKafkaProperties;
 
    private SerialId serialIdJ2735;
    private SerialId serialIdOde;
@@ -89,23 +95,44 @@ public class TimDepositController {
    }
 
    @Autowired
-   public TimDepositController(OdeProperties odeProperties) {
+   public TimDepositController(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
       super();
 
       this.odeProperties = odeProperties;
+      this.odeKafkaProperties = odeKafkaProperties;
 
       this.serialIdJ2735 = new SerialId();
       this.serialIdOde = new SerialId();
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
-      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
-            null, OdeTimSerializer.class.getName(), odeProperties.getKafkaTopicsDisabledSet());
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
+            odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+      this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(),
+            null, OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
 
       this.dataSigningEnabledSDW = System.getenv("DATA_SIGNING_ENABLED_SDW") != null && !System.getenv("DATA_SIGNING_ENABLED_SDW").isEmpty()
       ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
       : true;
 
+      // start the TIM ingest monitoring service if enabled
+      boolean timIngestMonitoringEnabled = Boolean.parseBoolean(odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_ENABLED));
+      if (timIngestMonitoringEnabled) {
+         logger.info("TIM ingest monitoring enabled.");
+
+         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+         // 3600 seconds, or one hour, was determined to be a sane default for the monitoring interval if monitoring is enabled
+         // but there was no interval set in the .env file
+         String interval = odeProperties.getProperty(ConfigEnvironmentVariables.ODE_TIM_INGEST_MONITORING_INTERVAL);
+         long monitoringInterval;
+         try {
+            monitoringInterval = Long.parseLong(interval);
+         } catch (NumberFormatException e) {
+            monitoringInterval = 3600;
+         }
+
+         scheduledExecutorService.scheduleAtFixedRate(new TimIngestWatcher(monitoringInterval), monitoringInterval, monitoringInterval, java.util.concurrent.TimeUnit.SECONDS);
+      } else {
+         logger.info("TIM ingest monitoring disabled.");
+      }
    }
 
    /**
@@ -262,6 +289,8 @@ public class TimDepositController {
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
+
+      INGEST_MONITOR.incrementTotalMessagesReceived();
 
       return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(SUCCESS, "true"));
    }

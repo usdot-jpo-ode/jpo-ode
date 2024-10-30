@@ -1,0 +1,15 @@
+spring:
+  http:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
+ode:
+  host-ip: ${DOCKER_HOST_IP}
+  kafka:
+    brokers: ${DOCKER_HOST_IP}:9092
+    producer-type: sync
+    disabled-topics:
+      - "topic.OdeBsmRxPojo"
+      - "topic.OdeBsmTxPojo"
+      - "topic.OdeBsmDuringEventPojo"
+      - "topic.OdeTimBroadcastPojo"

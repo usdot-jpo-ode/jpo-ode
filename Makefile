@@ -4,9 +4,11 @@ default:
 	$(info `make build` to build the ODE)
 	$(info `make stop` to stop the ODE)
 	$(info `make delete` to stop the ODE and remove the volumes)
+	$(info `make restart` to stop and then start the ODE)
 	$(info `make rebuild` to stop, delete, and then rebuild the containers)
 	$(info `make clean-build` to rebuild the containers without using the cache)
 
+.PHONY: start
 start:
 ifeq ("$(wildcard .env)", "")
 	$(error "ERROR: jpo-ode Environment file `.env` not found in ${PWD}")
@@ -25,14 +27,22 @@ ifeq ("$(wildcard ./jpo-utils/.env)", "")
 endif
 	docker compose build
 
+.PHONY: stop
 stop:
 	docker compose down
 
+.PHONY: delete
 delete:
 	docker compose down -v
 
+.PHONY: restart
+restart:
+	$(MAKE) stop start
+
+.PHONY: rebuild
 rebuild:
 	$(MAKE) stop delete build start
 
+.PHONY: clean-build
 clean-build:
 	docker compose build --no-cache

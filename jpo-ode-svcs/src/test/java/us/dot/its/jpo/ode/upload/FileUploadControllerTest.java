@@ -18,8 +18,6 @@ package us.dot.its.jpo.ode.upload;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
@@ -46,6 +45,9 @@ public class FileUploadControllerTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+
+   @Injectable
+   OdeKafkaProperties injectableOdeKafkaProperties;
 
    @Injectable
    SimpMessagingTemplate injectableSimpMessagingTemplate;
@@ -79,8 +81,8 @@ public class FileUploadControllerTest {
             times = 11;
          }
       };
-      testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,
-            injectableSimpMessagingTemplate);
+      testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties, injectableOdeKafkaProperties,
+              injectableSimpMessagingTemplate);
    }
 
    @Test

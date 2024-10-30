@@ -1,43 +1,31 @@
 package us.dot.its.jpo.ode.udp.spat;
 
 import java.net.DatagramPacket;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.uper.UperUtil;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
 
-    private StringPublisher spatPublisher;
+    private final StringPublisher spatPublisher;
 
     @Autowired
-    public SpatReceiver(OdeProperties odeProps) {
-        this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
-
-        this.spatPublisher = new StringPublisher(odeProps);
+    public SpatReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
+        this(odeProps, odeKafkaProperties, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
     }
 
-    public SpatReceiver(OdeProperties odeProps, int port, int bufferSize) {
+    public SpatReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
 
-        this.spatPublisher = new StringPublisher(odeProps);
+        this.spatPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
     }
 
     @Override
@@ -54,34 +42,17 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                 logger.debug("Waiting for UDP SPaT packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    senderIp = packet.getAddress().getHostAddress();
-                    senderPort = packet.getPort();
-                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-                    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-                    OdeAsn1Payload spatPayload = super.getPayloadHexString(packet, UperUtil.SupportedMessageTypes.SPAT);
-                    if (spatPayload == null)
-                        continue;
-                    OdeSpatMetadata spatMetadata = new OdeSpatMetadata(spatPayload);
-
-                    // Add header data for the decoding process
-                    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-                    String timestamp = utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                    spatMetadata.setOdeReceivedAt(timestamp);
-
-                    spatMetadata.setOriginIp(senderIp);
-                    spatMetadata.setSpatSource(SpatSource.RSU);
-                    spatMetadata.setRecordType(RecordType.spatTx);
-                    spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
-                    spatMetadata.setSecurityResultCode(SecurityResultCode.success);
-
-                    // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    spatPublisher.publish(JsonUtils.toJson(new OdeAsn1Data(spatMetadata, spatPayload), false),
-                        spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
+                    if(spatJson != null){
+                        spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
+
+
+    
 }

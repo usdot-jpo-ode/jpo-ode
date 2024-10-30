@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+
 
 public class OdeTimJsonTopology {
     
@@ -21,13 +23,15 @@ public class OdeTimJsonTopology {
 
     private final Properties streamsProperties = new Properties();
     private OdeProperties odeProperties = new OdeProperties();
+    private OdeKafkaProperties odeKafkaProps = new OdeKafkaProperties();
     static KafkaStreams streams;
 
-    public OdeTimJsonTopology(OdeProperties odeProps) {
+    public OdeTimJsonTopology(OdeProperties odeProps, OdeKafkaProperties odeKafkaProps) {
         this.odeProperties = odeProps;
-        if (this.odeProperties.getKafkaBrokers() != null) {
+        this.odeKafkaProps = odeKafkaProps;
+        if (this.odeKafkaProps.getBrokers() != null) {
             this.streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "KeyedOdeTimJson");
-            this.streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, odeProperties.getKafkaBrokers());
+            this.streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.odeKafkaProps.getBrokers());
             this.streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
             this.streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
     

@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.coder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
@@ -28,12 +29,12 @@ public class OdeDataPublisher extends MessagePublisher {
    private static final Logger logger = LoggerFactory.getLogger(OdeDataPublisher.class);
    protected MessageProducer<String, OdeObject> objectProducer;
 
-   public OdeDataPublisher(OdeProperties odeProps, String serializer) {
-      super(odeProps);
-      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), 
-            odeProperties.getKafkaProducerType(),
+   public OdeDataPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties, String serializer) {
+      super(odeProperties, odeKafkaProperties);
+      this.objectProducer = new MessageProducer<>(this.odeKafkaProperties.getBrokers(),
+            this.odeKafkaProperties.getProducerType(),
             null, serializer, 
-            odeProperties.getKafkaTopicsDisabledSet());
+            this.odeKafkaProperties.getDisabledTopics());
    }
 
    public void publish(OdeData msg, String topic) {
