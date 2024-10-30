@@ -17,6 +17,11 @@ import java.util.Properties;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
 
+/**
+ * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology
+ * for processing TIM (Traveler Information Message) JSON data from the OdeTimJson Kafka topic.
+ * This class creates a K-Table that houses TMC-generated TIMs which can be queried by UUID.
+ **/
 public class OdeTimJsonTopology {
     
     private static final Logger logger = LoggerFactory.getLogger(OdeTimJsonTopology.class);
