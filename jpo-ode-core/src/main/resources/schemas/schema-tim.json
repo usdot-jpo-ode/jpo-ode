@@ -355,18 +355,26 @@
                     "type": "string"
                 },
                 "dataFrames": {
-                    "oneOf": [
-                        {
-                            "type": "array",
-                            "prefixItems": [
+                    "type": "object",
+                    "properties": {
+                        "TravelerDataFrame": {
+                            "oneOf": [
                                 {
-                                    "$ref": "#/$defs/J2735DateFrame"
+                                    "type": "array",
+                                    "prefixItems": [
+                                        {
+                                            "$ref": "#/$defs/J2735TravelerDataFrame"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$ref": "#/$defs/J2735TravelerDataFrame"
                                 }
                             ]
-                        },
-                        {
-                            "$ref": "#/$defs/J2735DateFrame"
                         }
+                    },
+                    "required": [
+                        "TravelerDataFrame"
                     ]
                 },
                 "msgCnt": {
@@ -378,96 +386,96 @@
                 "msgCnt"
             ]
         },
-        "J2735DateFrame": {
+        "J2735TravelerDataFrame": {
             "type": "object",
             "properties": {
-                "TravelerDataFrame": {
-                    "type": "object",
-                    "properties": {
-                        "notUsed": {
-                            "type": "string"
-                        },
-                        "frameType": {
-                            "$ref": "#/$defs/J2735DF_FrameType"
-                        },
-                        "msgId": {
-                            "oneOf": [
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "furtherInfoID": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "furtherInfoID"
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/J2735DF_MsgId_RoadSignId"
+                "notUsed": {
+                    "type": "string"
+                },
+                "frameType": {
+                    "$ref": "#/$defs/J2735DF_FrameType"
+                },
+                "msgId": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "furtherInfoID": {
+                                    "type": "string"
                                 }
+                            },
+                            "required": [
+                                "furtherInfoID"
                             ]
                         },
-                        "startYear": {
-                            "type": "string"
-                        },
-                        "startTime": {
-                            "type": "string"
-                        },
-                        "durationTime": {
-                            "type": "string"
-                        },
-                        "priority": {
-                            "type": "string"
-                        },
-                        "notUsed1": {
-                            "type": "string"
-                        },
-                        "regions": {
+                        {
+                            "$ref": "#/$defs/J2735DF_MsgId_RoadSignId"
+                        }
+                    ]
+                },
+                "startYear": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "durationTime": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "string"
+                },
+                "notUsed1": {
+                    "type": "string"
+                },
+                "regions": {
+                    "type": "object",
+                    "properties": {
+                        "GeographicalPath": {
                             "oneOf": [
                                 {
                                     "type": "array",
                                     "prefixItems": [
                                         {
-                                            "$ref": "#/$defs/J2735DF_Regions"
+                                            "$ref": "#/$defs/J2735DF_GeographicalPath"
                                         }
                                     ]
                                 },
                                 {
-                                    "$ref": "#/$defs/J2735DF_Regions"
+                                    "$ref": "#/$defs/J2735DF_GeographicalPath"
                                 }
                             ]
-                        },
-                        "notUsed2": {
-                            "type": "string"
-                        },
-                        "notUsed3": {
-                            "type": "string"
-                        },
-                        "content": {
-                            "$ref": "#/$defs/J2735DF_Content"
-                        },
-                        "url": {
-                            "type": "string"
                         }
                     },
                     "required": [
-                        "notUsed",
-                        "frameType",
-                        "msgId",
-                        "startTime",
-                        "durationTime",
-                        "priority",
-                        "notUsed1",
-                        "regions",
-                        "notUsed2",
-                        "notUsed3",
-                        "content"
+                        "GeographicalPath"
                     ]
+                },
+                "notUsed2": {
+                    "type": "string"
+                },
+                "notUsed3": {
+                    "type": "string"
+                },
+                "content": {
+                    "$ref": "#/$defs/J2735DF_Content"
+                },
+                "url": {
+                    "type": "string"
                 }
             },
             "required": [
-                "TravelerDataFrame"
+                "notUsed",
+                "frameType",
+                "msgId",
+                "startTime",
+                "durationTime",
+                "priority",
+                "notUsed1",
+                "regions",
+                "notUsed2",
+                "notUsed3",
+                "content"
             ]
         },
         "J2735DF_FrameType": {
@@ -544,44 +552,36 @@
                 "roadSignID"
             ]
         },
-        "J2735DF_Regions": {
+        "J2735DF_GeographicalPath": {
             "type": "object",
             "properties": {
-                "GeographicalPath": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "$ref": "#/$defs/J2735RoadSegmentReferenceID"
-                        },
-                        "anchor": {
-                            "$ref": "#/$defs/J2735Position3D"
-                        },
-                        "laneWidth": {
-                            "type": "string"
-                        },
-                        "directionality": {
-                            "$ref": "#/$defs/J2735DirectionOfUse"
-                        },
-                        "closedPath": {
-                            "$ref": "#/$defs/BooleanObject"
-                        },
-                        "direction": {
-                            "type": "string"
-                        },
-                        "description": {
-                            "$ref": "#/$defs/J2735DF_Regions_Description"
-                        }
-                    },
-                    "required": [
-                        "description"
-                    ]
+                "name": {
+                    "type": "string"
+                },
+                "id": {
+                    "$ref": "#/$defs/J2735RoadSegmentReferenceID"
+                },
+                "anchor": {
+                    "$ref": "#/$defs/J2735Position3D"
+                },
+                "laneWidth": {
+                    "type": "string"
+                },
+                "directionality": {
+                    "$ref": "#/$defs/J2735DirectionOfUse"
+                },
+                "closedPath": {
+                    "$ref": "#/$defs/BooleanObject"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "description": {
+                    "$ref": "#/$defs/J2735DF_Regions_Description"
                 }
             },
             "required": [
-                "GeographicalPath"
+                "description"
             ]
         },
         "J2735DirectionOfUse": {
