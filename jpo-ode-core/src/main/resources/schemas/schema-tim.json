@@ -355,26 +355,18 @@
                     "type": "string"
                 },
                 "dataFrames": {
-                    "type": "object",
-                    "properties": {
-                        "TravelerDataFrame": {
-                            "oneOf": [
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "prefixItems": [
                                 {
-                                    "type": "array",
-                                    "prefixItems": [
-                                        {
-                                            "$ref": "#/$defs/J2735TravelerDataFrame"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/J2735TravelerDataFrame"
+                                    "$ref": "#/$defs/OdeTimDataFrame"
                                 }
                             ]
+                        },
+                        {
+                            "$ref": "#/$defs/OdeTimDataFrame"
                         }
-                    },
-                    "required": [
-                        "TravelerDataFrame"
                     ]
                 },
                 "msgCnt": {
@@ -384,6 +376,29 @@
             "required": [
                 "dataFrames",
                 "msgCnt"
+            ]
+        },
+        "OdeTimDataFrame": {
+            "type": "object",
+            "properties": {
+                "TravelerDataFrame": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/J2735TravelerDataFrame"
+                                }
+                            ]
+                        },
+                        {
+                            "$ref": "#/$defs/J2735TravelerDataFrame"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "TravelerDataFrame"
             ]
         },
         "J2735TravelerDataFrame": {
@@ -429,26 +444,18 @@
                     "type": "string"
                 },
                 "regions": {
-                    "type": "object",
-                    "properties": {
-                        "GeographicalPath": {
-                            "oneOf": [
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "prefixItems": [
                                 {
-                                    "type": "array",
-                                    "prefixItems": [
-                                        {
-                                            "$ref": "#/$defs/J2735DF_GeographicalPath"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/J2735DF_GeographicalPath"
+                                    "$ref": "#/$defs/J2735DF_Regions"
                                 }
                             ]
+                        },
+                        {
+                            "$ref": "#/$defs/J2735DF_Regions"
                         }
-                    },
-                    "required": [
-                        "GeographicalPath"
                     ]
                 },
                 "notUsed2": {
@@ -550,6 +557,29 @@
             },
             "required": [
                 "roadSignID"
+            ]
+        },
+        "J2735DF_Regions": {
+            "type": "object",
+            "properties": {
+                "GeographicalPath": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/J2735DF_GeographicalPath"
+                                }
+                            ]
+                        },
+                        {
+                            "$ref": "#/$defs/J2735DF_GeographicalPath"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "GeographicalPath"
             ]
         },
         "J2735DF_GeographicalPath": {
