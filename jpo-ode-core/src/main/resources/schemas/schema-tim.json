@@ -95,7 +95,19 @@
                     "type": "object",
                     "properties": {
                         "rsus": {
-                            "$ref": "#/$defs/RequestRsus"
+                            "oneOf": [
+                                {
+                                    "type": "array",
+                                    "prefixItems": [
+                                        {
+                                            "$ref": "#/$defs/RequestRsus"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$ref": "#/$defs/RequestRsus"
+                                }
+                            ]
                         }
                     },
                     "required": [
