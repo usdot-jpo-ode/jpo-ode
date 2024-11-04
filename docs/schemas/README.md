@@ -1,8 +1,9 @@
 # jpo-ode JSON Output Schemas
 
-The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The supported message types are currently BSM, MAP, SPaT, SRM and SSM. These are decoded into XML, deserialized into POJOs and finally serialized into JSON. This JSON output can be access from any of the corresponding message's JSON output Kafka topics:
+The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The supported message types are currently BSM, TIM, MAP, SPaT, SRM, SSM, and PSM. These are decoded into XML, deserialized into POJOs and finally serialized into JSON. This JSON output can be access from any of the corresponding message's JSON output Kafka topics:
 
 - [topic.OdeBsmJson](../../jpo-ode-core/src/main/resources/schemas/schema-bsm.json)
+- [topic.OdeTimJson](../../jpo-ode-core/src/main/resources/schemas/schema-tim.json)
 - [topic.OdeMapJson](../../jpo-ode-core/src/main/resources/schemas/schema-map.json)
 - [topic.OdeSpatJson](../../jpo-ode-core/src/main/resources/schemas/schema-spat.json)
 - [topic.OdeSrmJson](../../jpo-ode-core/src/main/resources/schemas/schema-srm.json)
