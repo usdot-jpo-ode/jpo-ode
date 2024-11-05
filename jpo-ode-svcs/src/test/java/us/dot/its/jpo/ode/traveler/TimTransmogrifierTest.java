@@ -282,6 +282,13 @@ public class TimTransmogrifierTest {
         assertEquals(expected,actualXML);
     }
 
+    /**
+     * It should be noted that the 'prepare' section of this test largely follows the
+     * logic in the TimDepositController.depositTim() method. This is because the
+     * TimTransmogrifier.convertToXml() method is called by the TimDepositController
+     * and the TimDepositController is responsible for preparing the data that is
+     * passed to the TimTransmogrifier.convertToXml() method.
+     */
     @Test
     public void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion() throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
         // prepare
