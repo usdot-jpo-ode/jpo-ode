@@ -288,33 +288,23 @@ public class TimTransmogrifierTest {
         String timRequestContainingCircleGeometry = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/timRequestContainingCircleGeometry.json")));
         OdeTravelerInputData odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(timRequestContainingCircleGeometry, OdeTravelerInputData.class, true);
         ServiceRequest request = odeTID.getRequest();
-        if (request.getOde() == null) {
-            request.setOde(new ServiceRequest.OdeInternal());
-        }
+        request.setOde(new ServiceRequest.OdeInternal());
         request.getOde().setVerb(ServiceRequest.OdeInternal.RequestVerb.PUT);
         OdeTravelerInformationMessage tim = odeTID.getTim();
         OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
         OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
         timMetadata.setOdePacketID(tim.getPacketID());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        if (null != tim.getDataframes() && tim.getDataframes().length > 0) {
-            int maxDurationTime = 0;
-            Date latestStartDateTime = null;
-            for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
-                maxDurationTime = maxDurationTime > dataFrameItem.getDurationTime() ? maxDurationTime
-                        : dataFrameItem.getDurationTime();
-                try {
-                    latestStartDateTime = (latestStartDateTime == null || (latestStartDateTime != null
-                            && latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())))
-                            ? dateFormat.parse(dataFrameItem.getStartDateTime())
-                            : latestStartDateTime);
-                } catch (ParseException e) {
-//                    logger.error("Invalid dateTime parse: " + e);
-                }
-            }
-            timMetadata.setMaxDurationTime(maxDurationTime);
-            timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
+        int maxDurationTime = 0;
+        Date latestStartDateTime = null;
+        for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
+            maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
+            latestStartDateTime = latestStartDateTime == null || latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
+                    ? dateFormat.parse(dataFrameItem.getStartDateTime())
+                    : latestStartDateTime;
         }
+        timMetadata.setMaxDurationTime(maxDurationTime);
+        timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
         SerialId serialId = new SerialId();
         serialId.setStreamId("testStreamId");
         timMetadata.setSerialId(serialId);
@@ -326,10 +316,9 @@ public class TimTransmogrifierTest {
 
         // execute
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialId);
-        // replace <odeReceivedAt> with a fixed value for comparison
-        actualXML = actualXML.replaceFirst("<odeReceivedAt>.*</odeReceivedAt>", "<odeReceivedAt>2024-11-05T16:51:14.473Z</odeReceivedAt>");
 
         // verify
+        actualXML = actualXML.replaceFirst("<odeReceivedAt>.*</odeReceivedAt>", "<odeReceivedAt>2024-11-05T16:51:14.473Z</odeReceivedAt>"); // replace <odeReceivedAt> with a fixed value for comparison
         String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")));
         Assertions.assertEquals(expectedXml, actualXML);
     }
