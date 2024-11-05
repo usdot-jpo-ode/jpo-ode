@@ -420,7 +420,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return toReturn;
    }
 
-   private Void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim, ServiceRequest request) {
+   private void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim, ServiceRequest request) {
       try {
          String generatedBy = metadataObj.getString("recordGeneratedBy");
          String streamId = metadataObj.getJSONObject("serialId").getString("streamId");
@@ -445,6 +445,5 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       } catch (Exception e) {
          logger.error("Error while fetching recordGeneratedBy field: {}", e.getMessage());
       }
-      return null;
    }
 }
