@@ -97,6 +97,7 @@ public class OdeProperties implements EnvironmentAware {
 
    // TIM
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
+   private String kafkaTopicOdeTimJsonTMCFiltered = "topic.OdeTimJsonTMCFiltered";
    private String kafkaTopicOdeDNMsgJson = "topic.OdeDNMsgJson";
    private String kafkaTopicOdeTimRxJson = "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo = "topic.OdeTimBroadcastPojo";

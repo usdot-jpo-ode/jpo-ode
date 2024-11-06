@@ -61,6 +61,7 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
+import java.util.UUID;
 
 @RestController
 public class TimDepositController {
@@ -278,7 +279,8 @@ public class TimDepositController {
          // publish Broadcast TIM to a J2735 compliant topic.
          stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
          // publish J2735 TIM also to general un-filtered TIM topic
-         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, obfuscatedj2735Tim);
+         // with streamID as key
+         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), serialIdJ2735.getStreamId(), obfuscatedj2735Tim);
 
          serialIdOde.increment();
          serialIdJ2735.increment();

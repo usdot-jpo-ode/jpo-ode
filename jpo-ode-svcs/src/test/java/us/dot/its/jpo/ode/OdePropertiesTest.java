@@ -78,6 +78,7 @@ class OdePropertiesTest {
             String testKafkaTopicAsn1EncoderOutput = "testKafkaTopicAsn1EncoderOutput";
             String testKafkaTopicOdeDNMsgJson = "testKafkaTopicOdeDNMsgJson";
             String testKafkaTopicOdeTimJson = "testKafkaTopicOdeTimJson";
+            String testKafkaTopicOdeTimJsonTMCFiltered = "testKafkaTopicOdeTimJsonTMCFiltered";
             String testKafkaTopicOdeBsmDuringEventPojo = "testKafkaTopicOdeBsmDuringEventPojo";
             String testKafkaTopicOdeBsmRxPojo = "testKafkaTopicOdeBsmRxPojo";
             String testKafkaTopicOdeBsmTxPojo = "testKafkaTopicOdeBsmTxPojo";
@@ -118,6 +119,7 @@ class OdePropertiesTest {
             testOdeProperties.setKafkaTopicAsn1EncoderOutput(testKafkaTopicAsn1EncoderOutput);
             testOdeProperties.setKafkaTopicOdeDNMsgJson(testKafkaTopicOdeDNMsgJson);
             testOdeProperties.setKafkaTopicOdeTimJson(testKafkaTopicOdeTimJson);
+            testOdeProperties.setKafkaTopicOdeTimJsonTMCFiltered(testKafkaTopicOdeTimJsonTMCFiltered);
             testOdeProperties.setKafkaTopicOdeBsmDuringEventPojo(testKafkaTopicOdeBsmDuringEventPojo);
             testOdeProperties.setKafkaTopicOdeBsmRxPojo(testKafkaTopicOdeBsmRxPojo);
             testOdeProperties.setKafkaTopicOdeBsmTxPojo(testKafkaTopicOdeBsmTxPojo);
@@ -173,6 +175,8 @@ class OdePropertiesTest {
                         testOdeProperties.getKafkaTopicOdeDNMsgJson());
             assertEquals("Incorrect testKafkaTopicOdeTimJson", testKafkaTopicOdeTimJson,
                         testOdeProperties.getKafkaTopicOdeTimJson());
+            assertEquals("Incorrect testKafkaTopicOdeTimJsonTMCFiltered", testKafkaTopicOdeTimJsonTMCFiltered,
+                        testOdeProperties.getKafkaTopicOdeTimJsonTMCFiltered());
             assertEquals("Incorrect testKafkaTopicOdeBsmDuringEventPojo", testKafkaTopicOdeBsmDuringEventPojo,
                         testOdeProperties.getKafkaTopicOdeBsmDuringEventPojo());
             assertEquals("Incorrect testKafkaTopicOdeBsmRxPojo", testKafkaTopicOdeBsmRxPojo,
