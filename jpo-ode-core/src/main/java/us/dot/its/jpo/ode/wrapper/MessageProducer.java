@@ -41,6 +41,7 @@ public class MessageProducer<K, V> {
     public static final int DEFAULT_PRODUCER_BATCH_SIZE_BYTES = 16384;
     public static final int DEFAULT_PRODUCER_RETRIES = 0;
     public static final String DEFAULT_PRODUCER_ACKS = "all";
+    public static final String COMPRESSION_TYPE = "zstd";
 
     private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
 
@@ -87,6 +88,13 @@ public class MessageProducer<K, V> {
 
         props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
         props.put("value.serializer", valueSerializerFQN);
+
+        String lingerMsEnv = System.getenv("KAFKA_LINGER_MS");
+        if (lingerMsEnv != null && !lingerMsEnv.isEmpty()) {
+
+            int lingerMs = Integer.parseInt(lingerMsEnv);
+            props.put("linger.ms", lingerMs); 
+        }
 
         if (partitionerClass != null) {
             props.put("partitioner.class", partitionerClass);
@@ -143,6 +151,8 @@ public class MessageProducer<K, V> {
         // available to the producer for
         // buffering.
         props.put("buffer.memory", DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES);
+
+        props.put("compression.type", COMPRESSION_TYPE);
         return props;
     }
 

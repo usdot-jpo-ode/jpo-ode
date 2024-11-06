@@ -70,6 +70,7 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
             odeProperties.getProperty("kafka.key.serializer", MessageProducer.SERIALIZATION_STRING_SERIALIZER));
       props.put("value.serializer",
             odeProperties.getProperty("kafka.value.serializer", MessageProducer.SERIALIZATION_BYTE_ARRAY_SERIALIZER));
+      props.put("compression.type", odeProperties.getProperty("kafka.producer.compression_type", MessageProducer.COMPRESSION_TYPE));
 
       return this;
    }
