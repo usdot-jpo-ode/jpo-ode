@@ -283,8 +283,6 @@ git submodule deinit -f . && git submodule update --recursive --init
 
 Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME directory.
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
-- Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
-- Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 - Copy jpo-utils/sample.env to jpo-utils/.env
   - Fill in the variables as described in the [README](jpo-utils/README.md)
 
