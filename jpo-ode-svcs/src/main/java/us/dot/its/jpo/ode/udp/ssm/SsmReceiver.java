@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -13,19 +15,17 @@ import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 public class SsmReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(SsmReceiver.class);
 
-    private StringPublisher ssmPublisher;
+    private final StringPublisher ssmPublisher;
 
     @Autowired
-    public SsmReceiver(OdeProperties odeProps) {
-        this(odeProps, odeProps.getSsmReceiverPort(), odeProps.getSsmBufferSize());
-
-        this.ssmPublisher = new StringPublisher(odeProps);
+    public SsmReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
+        this(odeProps, odeKafkaProperties, odeProps.getSsmReceiverPort(), odeProps.getSsmBufferSize());
     }
 
-    public SsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
+    public SsmReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
 
-        this.ssmPublisher = new StringPublisher(odeProps);
+        this.ssmPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
     }
 
     @Override

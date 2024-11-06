@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class FileSystemStorageService implements StorageService {
     private Path logFileLocation;
 
     @Autowired
-    public FileSystemStorageService(OdeProperties properties) {
+    public FileSystemStorageService(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties properties) {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
         this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), 

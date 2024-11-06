@@ -19,10 +19,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
+@Slf4j
 @Configuration
 public class AppContext {
    // CONSTANTS
@@ -90,7 +93,24 @@ public class AppContext {
    }
 
    public String getHostId() {
+      if (this.hostId == null || this.hostId.isEmpty()) {
+         initializeHostId();
+      }
       return hostId;
+   }
+
+   private void initializeHostId() {
+      String hostname;
+      try {
+         hostname = InetAddress.getLocalHost().getHostName();
+      } catch (UnknownHostException e) {
+         // Let's just use a random hostname
+         hostname = UUID.randomUUID().toString();
+         log.error("Unknown host error: {}, using random", e);
+      }
+      this.hostId = hostname;
+      log.info("Host ID: {}", hostId);
+      EventLogger.logger.info("Initializing services on host {}", hostId);
    }
 
    public String getParam(String key) {

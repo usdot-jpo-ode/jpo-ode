@@ -21,6 +21,7 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -32,6 +33,9 @@ public class OdeStringPublisherTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+
+   @Injectable
+   OdeKafkaProperties injectableOdeKafkaProperties;
 
    @Capturing
    MessageProducer<String, String> capturingMessageProducer;

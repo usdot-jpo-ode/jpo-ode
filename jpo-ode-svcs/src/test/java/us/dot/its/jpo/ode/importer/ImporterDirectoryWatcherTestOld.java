@@ -35,6 +35,7 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
@@ -45,6 +46,8 @@ public class ImporterDirectoryWatcherTestOld {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+   @Injectable
+   OdeKafkaProperties odeKafkaProperties;
    @Mocked
    Path mockDir;
    @Injectable
@@ -78,7 +81,7 @@ public class ImporterDirectoryWatcherTestOld {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
+      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, odeKafkaProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
       testImporterDirectoryWatcher.setWatching(false);
    }
    
@@ -94,7 +97,7 @@ public class ImporterDirectoryWatcherTestOld {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
+      new ImporterDirectoryWatcher(injectableOdeProperties, odeKafkaProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
    }
 
    @Test

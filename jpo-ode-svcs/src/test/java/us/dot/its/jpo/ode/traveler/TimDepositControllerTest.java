@@ -15,9 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.traveler;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.io.IOUtils;
+import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +27,7 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -38,6 +38,7 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
+
 public class TimDepositControllerTest {
 
    @Tested
@@ -45,6 +46,9 @@ public class TimDepositControllerTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+
+   @Injectable
+   OdeKafkaProperties injectableOdeKafkaProperties;
 
    @Capturing
    MessageProducer<?, ?> capturingMessageProducer;
@@ -165,6 +169,15 @@ public class TimDepositControllerTest {
       String timToSubmit = "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
       ResponseEntity<String> actualResponse = testTimDepositController.postTim(timToSubmit);
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+   }
+
+   @Test
+   public void testSuccessfulTimIngestIsTracked(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
+      String timToSubmit = "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
+      long priorIngestCount = TimIngestTracker.getInstance().getTotalMessagesReceived();
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(timToSubmit);
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+      assertEquals(priorIngestCount + 1, TimIngestTracker.getInstance().getTotalMessagesReceived());
    }
 
    @Test

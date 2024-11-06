@@ -15,23 +15,27 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 
 public abstract class MessagePublisher {
 
    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+   @Getter
+   protected OdeKafkaProperties odeKafkaProperties;
+   // TODO(Matt): remove once all kafka properties are migrated to ODEKafkaProperties and the delegates
+   @Getter
    protected OdeProperties odeProperties;
 
-   public MessagePublisher(OdeProperties odeProps) {
-      this.odeProperties = odeProps;
-      logger.info("Using Brokers: {} of Type: {}", odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+   public MessagePublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
+      this.odeProperties = odeProperties;
+      this.odeKafkaProperties = odeKafkaProperties;
+      logger.info("Using Brokers: {} of Type: {}", this.odeKafkaProperties.getBrokers(), this.odeKafkaProperties.getProducerType());
    }
 
-   public OdeProperties getOdeProperties() {
-      return odeProperties;
-   }   
 }

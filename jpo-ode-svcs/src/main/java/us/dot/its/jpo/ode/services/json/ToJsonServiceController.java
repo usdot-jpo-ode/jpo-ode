@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
@@ -32,24 +33,26 @@ public class ToJsonServiceController {
 
    private static final Logger logger = LoggerFactory.getLogger(ToJsonServiceController.class);
 
-   private OdeProperties odeProperties;
+   private OdeProperties odeProps;
+   private OdeKafkaProperties odeKafkaProperties;
 
    @Autowired
-   public ToJsonServiceController(OdeProperties odeProps) {
+   public ToJsonServiceController(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
       super();
 
-      this.odeProperties = odeProps;
+      this.odeKafkaProperties = odeKafkaProperties;
+      this.odeProps = odeProperties;
 
       // BSM POJO --> JSON converter
       launchConverter(odeProps.getKafkaTopicOdeBsmPojo(), OdeBsmDeserializer.class.getName(),
-            new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeBsmJson()));
+            new ToJsonConverter<>(odeProps, odeKafkaProperties, false, odeProps.getKafkaTopicOdeBsmJson()));
    }
 
    private <V> void launchConverter(String fromTopic, String serializerFQN, ToJsonConverter<V> jsonConverter) {
       logger.info("Starting JSON converter, converting records from topic {} and publishing to topic {} ", fromTopic,
             jsonConverter.getOutputTopic());
 
-      MessageConsumer<String, V> consumer = new MessageConsumer<>(odeProperties.getKafkaBrokers(),
+      MessageConsumer<String, V> consumer = new MessageConsumer<>(odeKafkaProperties.getBrokers(),
             this.getClass().getSimpleName(), jsonConverter, serializerFQN);
 
       consumer.setName(this.getClass().getName() + fromTopic + "Consumer");
