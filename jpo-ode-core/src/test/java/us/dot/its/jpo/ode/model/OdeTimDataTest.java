@@ -27,7 +27,7 @@ public class OdeTimDataTest {
     @Test
     public void shouldValidateJson() throws Exception {
         // Load json schema from resource
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
         final JsonSchema schema = factory.getSchema(getClass().getClassLoader().getResource("schemas/schema-tim.json").toURI());
         final JsonNode node = (JsonNode)JsonUtils.fromJson(json, JsonNode.class);
         Set<ValidationMessage> validationMessages = schema.validate(node);
