@@ -31,9 +31,15 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.core.io.UrlResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,33 +47,16 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
+@EnableConfigurationProperties(value = FileImporterProperties.class)
 public class FileSystemStorageServiceTest {
 
-    @Mocked
-    OdeProperties mockOdeProperties;
-
-    @BeforeEach
-    public void setupOdePropertiesExpectations() {
-        new Expectations() {
-            {
-                mockOdeProperties.getUploadLocationRoot();
-                result = anyString;
-                mockOdeProperties.getUploadLocationObuLog();
-                result = anyString;
-            }
-        };
-    }
-
-    @Test
-    public void shouldConstruct(@Mocked final Logger mockLogger, @Mocked LoggerFactory unused) {
-
-        FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
-
-        assertNotNull(testFileSystemStorageService.getRootLocation());
-
-    }
+    @Autowired
+    private FileImporterProperties fileImporterProperties;
 
     @Test @Disabled
     public void storeShouldThrowExceptionUnknownType(@Mocked MultipartFile mockMultipartFile) {
@@ -75,7 +64,7 @@ public class FileSystemStorageServiceTest {
         String unknownType = "test123";
 
         try {
-            new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, unknownType);
+            new FileSystemStorageService(fileImporterProperties).store(mockMultipartFile, unknownType);
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -105,7 +94,7 @@ public class FileSystemStorageServiceTest {
         };
 
         try {
-            new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, testType);
+            new FileSystemStorageService(fileImporterProperties).store(mockMultipartFile, testType);
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -134,7 +123,7 @@ public class FileSystemStorageServiceTest {
         };
 
         try {
-            new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, testType);
+            new FileSystemStorageService(fileImporterProperties).store(mockMultipartFile, testType);
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -174,7 +163,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, testType);
+            new FileSystemStorageService(fileImporterProperties).store(mockMultipartFile, testType);
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -218,7 +207,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, testType);
+            new FileSystemStorageService(fileImporterProperties).store(mockMultipartFile, testType);
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -248,7 +237,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            new FileSystemStorageService(mockOdeProperties).loadAll();
+            new FileSystemStorageService(fileImporterProperties).loadAll();
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
@@ -288,8 +277,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
-            testFileSystemStorageService.setRootLocation(mockRootPath);
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(fileImporterProperties);
             testFileSystemStorageService.loadAsResource("testFile");
             fail("Expected StorageFileNotFoundException");
         } catch (Exception e) {
@@ -325,8 +313,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
-            testFileSystemStorageService.setRootLocation(mockRootPath);
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(fileImporterProperties);
             testFileSystemStorageService.loadAsResource("testFile");
             fail("Expected StorageFileNotFoundException");
         } catch (Exception e) {
@@ -356,8 +343,8 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
-            testFileSystemStorageService.setRootLocation(mockRootPath);
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(fileImporterProperties);
+
             testFileSystemStorageService.loadAsResource("testFile");
             fail("Expected StorageFileNotFoundException");
         } catch (Exception e) {
@@ -392,8 +379,8 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
-            testFileSystemStorageService.setRootLocation(mockRootPath);
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(fileImporterProperties);
+
             assertEquals(UrlResource.class, testFileSystemStorageService.loadAsResource("testFile").getClass());
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -403,7 +390,7 @@ public class FileSystemStorageServiceTest {
     @Test @Disabled
     public void initShouldCreateDirectories(@Mocked final Files unused) {
 
-        new FileSystemStorageService(mockOdeProperties).init();
+        new FileSystemStorageService(fileImporterProperties).init();
 
         try {
             new Verifications() {
@@ -432,7 +419,7 @@ public class FileSystemStorageServiceTest {
         }
 
         try {
-            new FileSystemStorageService(mockOdeProperties).init();
+            new FileSystemStorageService(fileImporterProperties).init();
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown.", StorageException.class, e.getClass());
             assertTrue("Incorrect exception message",
@@ -449,7 +436,7 @@ public class FileSystemStorageServiceTest {
     @Test @Disabled
     public void deleteAllShouldDeleteRecursivelyAndLog(@Mocked final FileSystemUtils unused) {
 
-        new FileSystemStorageService(mockOdeProperties).deleteAll();
+        new FileSystemStorageService(fileImporterProperties).deleteAll();
 
         new Verifications() {
             {

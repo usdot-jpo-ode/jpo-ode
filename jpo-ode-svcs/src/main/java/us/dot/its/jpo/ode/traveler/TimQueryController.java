@@ -108,20 +108,20 @@ public class TimQueryController {
       }
 
       if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
-         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+         for (int i = 0; i < odeProperties.rsuProperties().getSrmSlots() - 50; i++) {
             pdu0.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
          }
 
-         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+         for (int i = 50; i < odeProperties.rsuProperties().getSrmSlots(); i++) {
             pdu1.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
          }
       }
       else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
-         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+         for (int i = 0; i < odeProperties.rsuProperties().getSrmSlots() - 50; i++) {
             pdu0.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
          }
 
-         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+         for (int i = 50; i < odeProperties.rsuProperties().getSrmSlots(); i++) {
             pdu1.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
          }
       }

@@ -15,30 +15,28 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class OdeStringPublisher extends MessagePublisher {
+import java.util.Set;
 
-   private static final Logger logger = LoggerFactory.getLogger(OdeDataPublisher.class);
+@Slf4j
+public class OdeStringPublisher implements MessagePublisher<OdeData> {
+
    protected MessageProducer<String, String> stringProducer;
 
-   public OdeStringPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
-      super(odeProperties, odeKafkaProperties);
+   public OdeStringPublisher(String brokers, String producerType, Set<String> disabledTopics) {
       this.stringProducer = MessageProducer.defaultStringMessageProducer(
-         this.odeKafkaProperties.getBrokers(),
-         this.odeKafkaProperties.getProducerType(),
-         this.odeKafkaProperties.getDisabledTopics());
+         brokers,
+         producerType,
+         disabledTopics);
 
    }
 
-   public void publish(OdeData msg, String topic) {
-      logger.debug("Publishing to {}: {}", topic, msg);
+   public void publish(String topic, OdeData msg) {
+      log.debug("Publishing to {}: {}", topic, msg);
       stringProducer.send(topic, null, msg.toJson());
    }
 }

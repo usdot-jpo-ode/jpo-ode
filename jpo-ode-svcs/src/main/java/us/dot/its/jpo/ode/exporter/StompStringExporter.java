@@ -17,7 +17,6 @@ package us.dot.its.jpo.ode.exporter;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
@@ -25,24 +24,24 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
  */
 public class StompStringExporter extends Exporter{
 
-    private OdeKafkaProperties odeKafkaProperties;
-    private SimpMessagingTemplate template;
-    private String odeTopic;
+    private final SimpMessagingTemplate template;
+    private final String odeTopic;
+    private final String brokers;
 
     public StompStringExporter(
-            OdeKafkaProperties odeKafkaProperties,
             String stompTopic,
             SimpMessagingTemplate template,
-            String odeTopic) {
+            String odeTopic,
+            String brokers) {
         super(stompTopic);
-        this.odeKafkaProperties = odeKafkaProperties;
+        this.brokers = brokers;
         this.template = template;
         this.odeTopic = odeTopic;
     }
 
     @Override
     protected void subscribe() {
-        setConsumer(MessageConsumer.defaultStringMessageConsumer(odeKafkaProperties.getBrokers(),
+        setConsumer(MessageConsumer.defaultStringMessageConsumer(this.brokers,
                 AppContext.getInstance().getHostId() + this.getClass().getSimpleName(),
                 new StompStringMessageDistributor(template, getTopic())));
 

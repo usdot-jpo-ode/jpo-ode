@@ -27,8 +27,11 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
+import us.dot.its.jpo.ode.kafka.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.PojoTopics;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
@@ -49,6 +52,18 @@ public class TimDepositControllerTest {
 
    @Injectable
    OdeKafkaProperties injectableOdeKafkaProperties;
+
+   @Injectable
+   Asn1CoderTopics injectableAsn1CoderTopics;
+
+   @Injectable
+   PojoTopics injectablePojoTopics;
+
+   @Injectable
+   JsonTopics injectableJsonTopics;
+
+   @Injectable
+   TimIngestTrackerProperties injectableTimIngestTrackerProperties;
 
    @Capturing
    MessageProducer<?, ?> capturingMessageProducer;

@@ -37,7 +37,9 @@ public class StompStringExporterTest {
    @Injectable
    SimpMessagingTemplate simpMessagingTemplate;
    @Injectable
-   String odeTopic;
+   String odeTopic = "testOdeTopic";
+   @Injectable
+   String brokers = "localhost:9093";
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test

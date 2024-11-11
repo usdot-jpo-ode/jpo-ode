@@ -223,11 +223,11 @@ public class TimTransmogrifier {
    public static void updateRsuCreds(RSU rsu, OdeProperties odeProperties) {
 
       if (rsu.getRsuUsername() == null || rsu.getRsuUsername().isEmpty()) {
-         rsu.setRsuUsername(odeProperties.getRsuUsername());
+         rsu.setRsuUsername(odeProperties.rsuProperties().getUsername());
       }
 
       if (rsu.getRsuPassword() == null || rsu.getRsuPassword().isEmpty()) {
-         rsu.setRsuPassword(odeProperties.getRsuPassword());
+         rsu.setRsuPassword(odeProperties.rsuProperties().getPassword());
       }
    }
 

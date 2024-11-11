@@ -5,35 +5,33 @@ import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
-
-public class OdeTimJsonTopologyTest {
+class OdeTimJsonTopologyTest {
 
     private OdeTimJsonTopology odeTimJsonTopology;
     private KafkaStreams mockStreams;
     private ReadOnlyKeyValueStore<String, String> mockStore;
-    private OdeProperties mockOdeProps;
     private OdeKafkaProperties mockOdeKafkaProps;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        mockOdeProps = mock(OdeProperties.class);
+    void setUp() throws SecurityException, IllegalArgumentException {
         mockOdeKafkaProps = mock(OdeKafkaProperties.class);
-        odeTimJsonTopology = new OdeTimJsonTopology(mockOdeProps, mockOdeKafkaProps);
+        odeTimJsonTopology = new OdeTimJsonTopology(mockOdeKafkaProps);
         mockStreams = mock(KafkaStreams.class);
         mockStore = mock(ReadOnlyKeyValueStore.class);
 
@@ -41,12 +39,12 @@ public class OdeTimJsonTopologyTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         OdeTimJsonTopology.streams = null;
     }
 
     @Test
-    public void testStart() {
+    void testStart() {
         when(mockStreams.state()).thenReturn(KafkaStreams.State.NOT_RUNNING);
         doNothing().when(mockStreams).start();
 
@@ -56,7 +54,7 @@ public class OdeTimJsonTopologyTest {
     }
 
     @Test
-    public void testStartWhenAlreadyRunning() {
+    void testStartWhenAlreadyRunning() {
         when(mockStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
@@ -67,7 +65,7 @@ public class OdeTimJsonTopologyTest {
     }
 
     @Test
-    public void testStop() {
+    void testStop() {
         doNothing().when(mockStreams).close();
 
         odeTimJsonTopology.stop();
@@ -76,27 +74,27 @@ public class OdeTimJsonTopologyTest {
     }
 
     @Test
-    public void testIsRunning() {
+    void testIsRunning() {
         when(mockStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
 
         assertTrue(odeTimJsonTopology.isRunning());
     }
 
     @Test
-    public void testIsNotRunning() {
+    void testIsNotRunning() {
         when(mockStreams.state()).thenReturn(KafkaStreams.State.NOT_RUNNING);
 
         assertFalse(odeTimJsonTopology.isRunning());
     }
 
     @Test
-    public void testBuildTopology() {
+    void testBuildTopology() {
         Topology topology = odeTimJsonTopology.buildTopology();
         assertNotNull(topology);
     }
 
     @Test
-    public void testQuery() {
+    void testQuery() {
         String uuid = "test-uuid";
         String expectedValue = "test-value";
 

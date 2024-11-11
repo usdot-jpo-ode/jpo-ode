@@ -52,6 +52,6 @@ public class ByteArrayPublisherTest {
          }
       };
 
-      testMessagePublisher.publish(mockOdeBsmData, "topic");
+      testMessagePublisher.publish("topic", mockOdeBsmData);
    }
 }

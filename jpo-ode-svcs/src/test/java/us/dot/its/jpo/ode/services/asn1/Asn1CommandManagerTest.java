@@ -27,6 +27,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.SDXDepositorTopics;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -42,6 +43,9 @@ public class Asn1CommandManagerTest {
 
    @Injectable
    OdeKafkaProperties injectableOdeKafkaProperties;
+
+   @Injectable
+   SDXDepositorTopics injectableSDXDepositorTopics;
 
    @Capturing
    MessageProducer<String, String> capturingMessageProducer;

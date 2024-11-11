@@ -15,27 +15,26 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class StringPublisher extends MessagePublisher {
+import java.util.Set;
 
-    private static final Logger logger = LoggerFactory.getLogger(StringPublisher.class);
+@Slf4j
+public class StringPublisher implements MessagePublisher<String> {
+
     protected MessageProducer<String, String> stringProducer;
 
-    public StringPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
-        super(odeProperties, odeKafkaProperties);
+    public StringPublisher(String broker, String producerType, Set<String> disabledTopics) {
         this.stringProducer = MessageProducer.defaultStringMessageProducer(
-                this.odeKafkaProperties.getBrokers(), this.odeKafkaProperties.getProducerType(),
-                this.odeKafkaProperties.getDisabledTopics());
-
+                broker,
+                producerType,
+                disabledTopics
+        );
     }
 
-    public void publish(String msg, String topic) {
-        logger.debug("Publishing String data to {}", topic);
+    public void publish(String topic, String msg) {
+        log.debug("Publishing String data to {}", topic);
         stringProducer.send(topic, null, msg);
     }
 }

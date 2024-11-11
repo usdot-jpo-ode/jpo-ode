@@ -1,37 +1,31 @@
 package us.dot.its.jpo.ode.udp.spat;
 
-import java.net.DatagramPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 
+import java.net.DatagramPacket;
+
+@Slf4j
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
-    private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
 
     private final StringPublisher spatPublisher;
+    private final String publishTopic;
 
-    @Autowired
-    public SpatReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
-        this(odeProps, odeKafkaProperties, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
-    }
+    public SpatReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties, OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+        super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
-    public SpatReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
-        super(odeProps, port, bufferSize);
-
-        this.spatPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
+        this.publishTopic = publishTopic;
+        this.spatPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
     public void run() {
 
-        logger.debug("SPaT UDP Receiver Service started.");
+        log.debug("SPaT UDP Receiver Service started.");
 
         byte[] buffer = new byte[bufferSize];
 
@@ -39,20 +33,19 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
         do {
             try {
-                logger.debug("Waiting for UDP SPaT packets...");
+                log.debug("Waiting for UDP SPaT packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
                     String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
-                    if(spatJson != null){
-                        spatPublisher.publish(spatJson,spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                    if (spatJson != null) {
+                        spatPublisher.publish(this.publishTopic, spatJson);
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error receiving packet", e);
+                log.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
 
 
-    
 }

@@ -1,15 +1,11 @@
 package us.dot.its.jpo.ode.services.asn1.message;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -17,12 +13,16 @@ import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeSpatMetadata;
 import us.dot.its.jpo.ode.uper.UperUtil;
 
+@Slf4j
 public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public Asn1DecodeSPATJSON(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
-		super(new StringPublisher(odeProperties, odeKafkaProperties), UperUtil.getSpatStartFlag());
+	public Asn1DecodeSPATJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+		super(
+				publishTopic,
+				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics()),
+				UperUtil.getSpatStartFlag()
+		);
 	}
 
 	@Override
@@ -39,10 +39,10 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 
 			String payloadHexString = ((JSONObject) ((JSONObject) rawSpatJsonObject.get("payload")).get("data"))
 					.getString("bytes");
-			payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payload_start_flag);
+			payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payloadStartFlag);
 
 			if (payloadHexString.equals("BAD DATA")) {
-				logger.error("NON-SPAT DATA ENCOUNTERED IN THE ASN1DECODESPATJSON CLASS");
+				log.error("NON-SPAT DATA ENCOUNTERED IN THE ASN1DECODESPATJSON CLASS");
 				return null;
 			}
 
@@ -51,7 +51,7 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 			messageToPublish = new OdeAsn1Data(metadata, payload);
 			publishEncodedMessageToAsn1Decoder(messageToPublish);
 		} catch (Exception e) {
-			logger.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
+			log.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
 		}
 		return messageToPublish;
 	}

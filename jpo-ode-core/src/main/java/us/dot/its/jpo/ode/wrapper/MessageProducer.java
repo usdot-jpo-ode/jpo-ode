@@ -64,7 +64,7 @@ public class MessageProducer<K, V> {
             String brokers,
             String type,
             Set<String> disabledTopics) {
-        return new MessageProducer<String, String>(
+        return new MessageProducer<>(
                 brokers,
                 type,
                 null,

@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,24 +34,25 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @Service
+@Slf4j
 public class FileSystemStorageService implements StorageService {
-    private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     private Path rootLocation;
     private Path logFileLocation;
 
     @Autowired
-    public FileSystemStorageService(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties properties) {
+    public FileSystemStorageService(FileImporterProperties properties) {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
         this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), 
-           properties.getUploadLocationObuLog());
+           properties.getObuLogUploadLocation());
 
-        logger.info("Upload location (root): {}", this.rootLocation);
-        logger.info("Upload location (OBU log file): {}", this.logFileLocation);
+        log.info("Upload location (root): {}", this.rootLocation);
+        log.info("Upload location (OBU log file): {}", this.logFileLocation);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class FileSystemStorageService implements StorageService {
 
         // Copy the file to the relevant directory
         try {
-            logger.debug("Copying file {} to {}", file.getOriginalFilename(), path);
+            log.debug("Copying file {} to {}", file.getOriginalFilename(), path);
             EventLogger.logger.info("Copying file {} to {}", file.getOriginalFilename(), path);
             Files.copy(file.getInputStream(), path);
         } catch (Exception e) {
@@ -136,13 +138,5 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.error("Failed to initialize storage service {}", this.rootLocation);
             throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
         }
-    }
-
-    public Path getRootLocation() {
-        return rootLocation;
-    }
-
-    public void setRootLocation(Path rootLocation) {
-        this.rootLocation = rootLocation;
     }
 }

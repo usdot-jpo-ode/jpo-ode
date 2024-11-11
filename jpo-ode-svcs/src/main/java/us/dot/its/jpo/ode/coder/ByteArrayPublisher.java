@@ -15,28 +15,24 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class ByteArrayPublisher extends MessagePublisher {
+@Slf4j
+public class ByteArrayPublisher implements MessagePublisher<byte[]> {
 
-   private static final Logger logger = LoggerFactory.getLogger(ByteArrayPublisher.class);
    protected MessageProducer<String, byte[]> bytesProducer;
 
-   public ByteArrayPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
-      super(odeProperties, odeKafkaProperties);
+   public ByteArrayPublisher(OdeKafkaProperties odeKafkaProperties) {
       this.bytesProducer = MessageProducer.defaultByteArrayMessageProducer(
-         this.odeKafkaProperties.getBrokers(), this.odeKafkaProperties.getProducerType(),
-         this.odeKafkaProperties.getDisabledTopics());
+         odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(),
+         odeKafkaProperties.getDisabledTopics());
 
    }
 
-   public void publish(byte[] msg, String topic) {
-    logger.debug("Publishing binary data to {}", topic);
+   public void publish(String topic, byte[] msg) {
+    log.debug("Publishing binary data to {}", topic);
     bytesProducer.send(topic, null, msg);
    }
 

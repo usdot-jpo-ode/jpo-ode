@@ -1,61 +1,52 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import java.net.DatagramPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 
+import java.net.DatagramPacket;
+
+@Slf4j
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
-   private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
+    private final StringPublisher bsmPublisher;
+    private final String publishTopic;
 
-   private final StringPublisher bsmPublisher;
+    public BsmReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties, OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+        super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
-   @Autowired
-   public BsmReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
-      this(odeProps, odeKafkaProperties, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
-   }
+        this.publishTopic = publishTopic;
+        this.bsmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+    }
 
-   public BsmReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
-      super(odeProps, port, bufferSize);
+    @Override
+    public void run() {
 
-      this.bsmPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
-   }
+        log.debug("BSM UDP Receiver Service started.");
 
-   @Override
-   public void run() {
+        byte[] buffer = new byte[bufferSize];
 
-      logger.debug("BSM UDP Receiver Service started.");
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-      byte[] buffer = new byte[bufferSize];
+        do {
+            try {
+                log.debug("Waiting for UDP BSM packets...");
+                this.socket.receive(packet);
+                if (packet.getLength() > 0) {
+                    String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
 
-      DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-      do {
-         try {
-            logger.debug("Waiting for UDP BSM packets...");
-            this.socket.receive(packet);
-            if (packet.getLength() > 0) {
-               String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
-
-               if(bsmJson != null){
-                  bsmPublisher.publish(bsmJson, bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
-               }
-               
-               
+                    if (bsmJson != null) {
+                        bsmPublisher.publish(publishTopic, bsmJson);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error receiving packet", e);
             }
-         } catch (Exception e) {
-            logger.error("Error receiving packet", e);
-         }
-      } while (!isStopped());
-   }
+        } while (!isStopped());
+    }
 
-   
+
 }

@@ -46,9 +46,9 @@ class ExporterTest {
         };
 
         try {
-            Exporter odeBsmExporter = new StompStringExporter(odeKafkaProperties,
+            Exporter odeBsmExporter = new StompStringExporter(
                     testTopic,
-                    mockSimpMessagingTemplate, "odeTopic");
+                    mockSimpMessagingTemplate, "odeTopic", odeKafkaProperties.getBrokers());
             odeBsmExporter.setConsumer(mockStringConsumer);
             odeBsmExporter.run();
             
