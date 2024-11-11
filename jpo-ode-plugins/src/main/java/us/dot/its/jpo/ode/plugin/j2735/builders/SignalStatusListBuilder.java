@@ -14,21 +14,21 @@ public class SignalStatusListBuilder {
 	public static J2735SignalStatusList genericSignalStatusList(JsonNode status) {
 		J2735SignalStatusList signalStatusList = new J2735SignalStatusList();
 
-		if (status.isArray()) {
-			Iterator<JsonNode> elements = status.elements();
-
-			while (elements.hasNext()) {
-				signalStatusList.getStatus()
-                    .add(SignalStatusBuilder.genericSignalStatus(elements.next()));
-			}
-		} else {
-			JsonNode signalStatus = status.get("SignalStatus");
-			if(signalStatus != null)
-			{
-				signalStatusList.getStatus()
-					.add(SignalStatusBuilder.genericSignalStatus(signalStatus));
-			}
-		}
+        JsonNode signalStatus = status.get("SignalStatus");
+        if(signalStatus != null)
+		{
+            if (signalStatus.isArray()) {
+                Iterator<JsonNode> elements = signalStatus.elements();
+    
+                while (elements.hasNext()) {
+                    signalStatusList.getStatus()
+                        .add(SignalStatusBuilder.genericSignalStatus(elements.next()));
+                }
+            } else {
+                signalStatusList.getStatus()
+                        .add(SignalStatusBuilder.genericSignalStatus(signalStatus));
+            }
+        }
 		
 		return signalStatusList;
 	}
