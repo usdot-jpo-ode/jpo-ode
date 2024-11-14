@@ -4,19 +4,30 @@ spring:
       max-file-size: 1MB
       max-request-size: 1MB
 ode:
-  host-ip: ${DOCKER_HOST_IP}
-  verbose-json: false
-  plugins-locations: "plugins"
   output-schema-version: 7
-  security-svcs-port: 8090
-  security-svcs-signature-endpoint: "sign"
+  security-services:
+    host-ip: ${DOCKER_HOST_IP}
+    port: 8090
+    signature-endpoint: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+    is-rsu-signing-enabled: ${DATA_SIGNING_ENABLED_RSU}
+    is-sdw-signing-enabled: ${DATA_SIGNING_ENABLED_SDW}
   rsu:
     srm-slots: 100
     username: ${RSU_USERNAME}
     password: ${RSU_PASSWORD}
   kafka:
     brokers: ${DOCKER_HOST_IP}:9092
-    producer-type: sync
+    producer:
+      type: "sync"
+      acks: ${KAFKA_ACKS}
+      retries: ${KAFKA_RETRIES}
+      batch-size: ${KAFKA_BATCH_SIZE}
+      linger-ms: ${KAFKA_LINGER_MS}
+      buffer-memory: ${KAFKA_BUFFER_MEMORY}
+      key-serializer: ${KAFKA_KEY_SERIALIZER}
+      value-serializer: ${KAFKA_VALUE_SERIALIZER}
+      partitioner-class: ${KAFKA_PARTITIONER_CLASS}
+      compression-type: ${KAFKA_COMPRESSION_TYPE}
     disabled-topics:
       - "topic.OdeBsmRxPojo"
       - "topic.OdeBsmTxPojo"

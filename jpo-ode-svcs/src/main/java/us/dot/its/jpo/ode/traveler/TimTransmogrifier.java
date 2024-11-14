@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
@@ -29,6 +28,7 @@ import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -220,14 +220,14 @@ public class TimTransmogrifier {
       return encodings;
    }
 
-   public static void updateRsuCreds(RSU rsu, OdeProperties odeProperties) {
+   public static void updateRsuCreds(RSU rsu, RsuProperties rsuProperties) {
 
       if (rsu.getRsuUsername() == null || rsu.getRsuUsername().isEmpty()) {
-         rsu.setRsuUsername(odeProperties.rsuProperties().getUsername());
+         rsu.setRsuUsername(rsuProperties.getUsername());
       }
 
       if (rsu.getRsuPassword() == null || rsu.getRsuPassword().isEmpty()) {
-         rsu.setRsuPassword(odeProperties.rsuProperties().getPassword());
+         rsu.setRsuPassword(rsuProperties.getPassword());
       }
    }
 

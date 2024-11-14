@@ -19,7 +19,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.ssmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.ssmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
@@ -28,25 +28,19 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
 
         byte[] buffer = new byte[bufferSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
                 log.debug("Waiting for UDP SSM packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-
                     String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
-
                     if (ssmJson != null) {
                         ssmPublisher.publish(this.publishTopic, ssmJson);
                     }
-
                 }
             } catch (Exception e) {
                 log.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
-
-
 }

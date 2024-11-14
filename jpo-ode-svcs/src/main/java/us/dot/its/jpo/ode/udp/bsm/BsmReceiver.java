@@ -19,25 +19,21 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.bsmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.bsmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
     public void run() {
-
         log.debug("BSM UDP Receiver Service started.");
 
         byte[] buffer = new byte[bufferSize];
-
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
                 log.debug("Waiting for UDP BSM packets...");
                 this.socket.receive(packet);
                 if (packet.getLength() > 0) {
                     String bsmJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
-
                     if (bsmJson != null) {
                         bsmPublisher.publish(publishTopic, bsmJson);
                     }
@@ -47,6 +43,4 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
             }
         } while (!isStopped());
     }
-
-
 }

@@ -51,27 +51,27 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
         this.pojoTopics = pojoTopics;
         this.jsonTopics = jsonTopics;
         this.bsmProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 null,
                 OdeBsmSerializer.class.getName(),
                 odeKafkaProperties.getDisabledTopics());
         this.timProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.spatProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.mapProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.ssmProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.srmProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.psmProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducerType(),
+                odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
     }
 

@@ -26,7 +26,7 @@ public class ByteArrayPublisher implements MessagePublisher<byte[]> {
 
    public ByteArrayPublisher(OdeKafkaProperties odeKafkaProperties) {
       this.bytesProducer = MessageProducer.defaultByteArrayMessageProducer(
-         odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(),
+         odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(),
          odeKafkaProperties.getDisabledTopics());
 
    }

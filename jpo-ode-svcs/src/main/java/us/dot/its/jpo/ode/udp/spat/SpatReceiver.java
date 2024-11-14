@@ -19,18 +19,15 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.spatPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.spatPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
     public void run() {
-
         log.debug("SPaT UDP Receiver Service started.");
 
         byte[] buffer = new byte[bufferSize];
-
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
                 log.debug("Waiting for UDP SPaT packets...");
@@ -46,6 +43,4 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
             }
         } while (!isStopped());
     }
-
-
 }

@@ -19,7 +19,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.psmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.psmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
@@ -28,7 +28,6 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
 
         byte[] buffer = new byte[bufferSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
                 log.debug("Waiting for UDP PSM packets...");
@@ -44,6 +43,4 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
             }
         } while (!isStopped());
     }
-
-
 }

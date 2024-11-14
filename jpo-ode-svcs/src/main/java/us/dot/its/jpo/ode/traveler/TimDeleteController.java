@@ -22,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.VariableBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpNTCIP1218Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -49,12 +46,12 @@ public class TimDeleteController {
 
    private static final String ERRSTR = "error";
 
-   private OdeProperties odeProperties;
+   private RsuProperties rsuProperties;
    
    @Autowired
-   public TimDeleteController(OdeProperties odeProperties) {
+   public TimDeleteController(RsuProperties rsuProperties) {
       super();
-      this.odeProperties = odeProperties;
+      this.rsuProperties = rsuProperties;
    }
 
    @CrossOrigin
@@ -68,7 +65,7 @@ public class TimDeleteController {
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-      TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
+      TimTransmogrifier.updateRsuCreds(queryTarget, rsuProperties);
 
       logger.info("TIM delete call, RSU info {}", queryTarget);
 

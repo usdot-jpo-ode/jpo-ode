@@ -30,12 +30,12 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.kafka.PojoTopics;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -46,9 +46,6 @@ public class TimDepositControllerTest {
 
    @Tested
    TimDepositController testTimDepositController;
-
-   @Injectable
-   OdeProperties injectableOdeProperties;
 
    @Injectable
    OdeKafkaProperties injectableOdeKafkaProperties;
@@ -64,6 +61,9 @@ public class TimDepositControllerTest {
 
    @Injectable
    TimIngestTrackerProperties injectableTimIngestTrackerProperties;
+
+   @Injectable
+   SecurityServicesProperties injectableSecurityServicesProperties;
 
    @Capturing
    MessageProducer<?, ?> capturingMessageProducer;

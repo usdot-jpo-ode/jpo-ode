@@ -4,19 +4,29 @@ spring:
       max-file-size: 1MB
       max-request-size: 1MB
 ode:
-  host-ip: "test-host"
-  verbose-json: false
-  plugins-locations: "plugins"
   output-schema-version: 7
-  security-svcs-port: 8090
-  security-svcs-signature-endpoint: "sign"
+  security-services:
+    host-ip: "test-host"
+    port: 1234
+    signature-endpoint: "http://localhost:8090/sign"
+    is-sdw-signing-enabled:
+    is-rsu-signing-enabled:
   rsu:
     srm-slots: 100
     username: "test-username"
     password: "test-password"
   kafka:
     brokers: "localhost:9092"
-    producer-type: sync
+    producer:
+      type: "async"
+      acks: "0"
+      retries: 1
+      batch-size: 1638
+      linger-ms: 2
+      buffer-memory: 33554433
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.ByteArraySerializer"
+      partitioner-class: "org.apache.kafka.clients.producer.internals.DefaultPartitioner"
     disabled-topics:
       - "topic.OdeBsmRxPojo"
       - "topic.OdeBsmTxPojo"

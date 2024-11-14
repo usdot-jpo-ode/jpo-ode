@@ -18,7 +18,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.mapPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.mapPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
@@ -27,24 +27,19 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
 
         byte[] buffer = new byte[bufferSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
                 log.debug("Waiting for UDP Map packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-
                     String mapJson = UdpHexDecoder.buildJsonMapFromPacket(packet);
                     if (mapJson != null) {
                         mapPublisher.publish(this.publishTopic, mapJson);
                     }
-
                 }
             } catch (Exception e) {
                 log.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
-
-
 }

@@ -20,7 +20,7 @@ public class Asn1DecodePSMJSON extends AbstractAsn1DecodeMessageJSON {
 	public Asn1DecodePSMJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
 		super(
 				publishTopic,
-				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics()),
+				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
 				UperUtil.getPsmStartFlag()
 		);}
 

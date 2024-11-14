@@ -16,24 +16,27 @@
 package us.dot.its.jpo.ode.util;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DateTimeUtils {
 
+   private static Clock clock = Clock.systemUTC();
+
    private DateTimeUtils() {
    }
+
+    public static void setClock(Clock clock) {
+        DateTimeUtils.clock = clock;
+    }
 
    public static String now() {
       return nowZDT().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
    }
 
    public static ZonedDateTime nowZDT() {
-      return ZonedDateTime.now(ZoneId.of("UTC"));
+      return ZonedDateTime.now(clock.withZone(ZoneId.of("UTC")));
    }
 
    public static String isoDateTime(ZonedDateTime zonedDateTime) {
@@ -45,7 +48,7 @@ public class DateTimeUtils {
       return ZonedDateTime.of(year, month, dayOfMonth, hourOfDay, minute, second, millisec * 1000000, ZoneOffset.UTC);
    }
 
-   public static ZonedDateTime isoDateTime(String s) throws ParseException {
+   public static ZonedDateTime isoDateTime(String s) {
       return ZonedDateTime.parse(s);
    }
 
@@ -53,8 +56,8 @@ public class DateTimeUtils {
       return ZonedDateTime.from(date.toInstant().atZone(ZoneId.of("UTC")));
    }
 
-   public static ZonedDateTime isoDateTime(long epockMillis) {
-      return ZonedDateTime.ofInstant(Instant.ofEpochMilli(epockMillis), ZoneId.of("UTC"));
+   public static ZonedDateTime isoDateTime(long epochMillis) {
+      return ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.of("UTC"));
    }
 
    public static boolean

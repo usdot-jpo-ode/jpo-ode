@@ -206,13 +206,13 @@ git config --global core.autocrlf false
 
 The ODE software system consists of the following modules hosted in separate Github repositories:
 
-|Name|Visibility|Description|
-|----|----------|-----------|
-|[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
-|[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
-|[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
-|[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
-|[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable|
+| Name                                                                    | Visibility | Description                                                                                            |
+|-------------------------------------------------------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)                     | public     | Contains the public components of the application code.                                                |
+| [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)                   | public     | Privacy Protection Module                                                                              |
+| [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)               | public     | ASN.1 Encoder/Decoder module                                                                           |
+| [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs) | public     | Provides cryptographic services.                                                                       |
+| [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor) | public     | SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable |
 
 You may download the stable, default branch for ALL of these dependencies by using the following recursive git clone command:
 
@@ -402,17 +402,14 @@ The only requirement for deploying `asn1_codec` module on Docker is the setup of
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
 
-[//]: # (&#40;TODO&#40;@mcook42&#41;: Once the application.yaml file is updated with the correct properties at the end of the OdeProperties refactor effort, update the following list with the correct instructions&#41;)
- - ODE properties for communications with PPM (set in application.yaml)
-	 - ode.kafkaTopicOdeBsmJson  (default = topic.OdeBsmJson)
-	 - ode.kafkaTopicFilteredOdeBsmJson (default = topic.FilteredOdeBsmJson)
+ - ODE properties for communications with PPM (set in [application.yaml](jpo-ode-svcs/src/main/resources/application.yaml))
+	 - ode.kafka.topics.json.bsm  (default = topic.OdeBsmJson)
+	 - ode.kafka.topics.json.bsm-filtered (default = topic.FilteredOdeBsmJson)
  - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
 
 Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service.
-
-During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
 
 After a successful build, use the following commands to configure and run the PPM
 
@@ -547,7 +544,7 @@ Install the IDE of your choice:
 
 ### Dev Container Environment
 
-The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
+The project can be reopened inside a dev container in VSCode. This environment should have all the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
 [Back to top](#table-of-contents)
 

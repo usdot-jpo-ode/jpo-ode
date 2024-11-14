@@ -9,7 +9,7 @@
 /SNMP_Error.log
 /Events.log
 /uploads
-*.iml
+**/*.iml
 *.DS_Store
 SNMP_Error.log
 Events.log

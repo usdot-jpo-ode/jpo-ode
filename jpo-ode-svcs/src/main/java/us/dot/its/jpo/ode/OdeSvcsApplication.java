@@ -41,7 +41,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@EnableConfigurationProperties(OdeProperties.class)
+@EnableConfigurationProperties
 public class OdeSvcsApplication {
 
    static final int DEFAULT_NO_THREADS = 10;

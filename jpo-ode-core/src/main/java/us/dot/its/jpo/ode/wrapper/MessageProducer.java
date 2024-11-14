@@ -15,23 +15,23 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.wrapper;
 
-import java.util.Properties;
-import java.util.Set;
-import org.apache.kafka.clients.producer.Callback;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
+import java.util.Set;
 
 /**
- * @author 572682
- *         This class encapsulates a message produce function.
- *
  * @param <K> Message Key type
  * @param <V> Message Value type
+ * @author 572682
+ * This class encapsulates a message produce function.
  */
+@Slf4j
 public class MessageProducer<K, V> {
 
     public static final String SERIALIZATION_STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
@@ -43,10 +43,9 @@ public class MessageProducer<K, V> {
     public static final String DEFAULT_PRODUCER_ACKS = "all";
     public static final String COMPRESSION_TYPE = "zstd";
 
-    private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
-
-    private Producer<K, V> producer;
-    private Set<String> disabledTopicsSet;
+    @Getter
+    private final Producer<K, V> producer;
+    private final Set<String> disabledTopicsSet;
 
     public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(
             String brokers,
@@ -74,7 +73,7 @@ public class MessageProducer<K, V> {
 
     public MessageProducer(
             String brokers,
-            String type,
+            String kafkaType,
             String partitionerClass,
             String valueSerializerFQN,
             Set<String> disabledTopics) {
@@ -83,7 +82,7 @@ public class MessageProducer<K, V> {
         if (brokers != null) {
             props.put("bootstrap.servers", brokers);
         } else {
-            logger.error("Bootstrap servers setting is null");
+            log.error("Bootstrap servers setting is null");
         }
 
         props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
@@ -100,21 +99,20 @@ public class MessageProducer<K, V> {
             props.put("partitioner.class", partitionerClass);
         }
 
-        String kafkaType = System.getenv("KAFKA_TYPE");
         if (kafkaType != null && kafkaType.equals("CONFLUENT")) {
             addConfluentProperties(props);
         }
-        
+
         producer = new KafkaProducer<>(props);
 
         this.disabledTopicsSet = disabledTopics;
 
-        logger.info("Producer Created with default properties");
+        log.info("Producer Created with default properties");
     }
 
     public MessageProducer(
             String brokers,
-            String type,
+            String kafkaType,
             String partitionerClass,
             Properties props,
             Set<String> enabledTopics) {
@@ -123,17 +121,16 @@ public class MessageProducer<K, V> {
         if (partitionerClass != null) {
             props.put("partitioner.class", partitionerClass);
         }
-        
-        String kafkaType = System.getenv("KAFKA_TYPE");
+
         if (kafkaType != null && kafkaType.equals("CONFLUENT")) {
             addConfluentProperties(props);
         }
-        
+
         producer = new KafkaProducer<>(props);
 
         this.disabledTopicsSet = enabledTopics;
 
-        logger.info("Producer Created");
+        log.info("Producer Created");
     }
 
     private Properties setDefaultProperties() {
@@ -156,7 +153,7 @@ public class MessageProducer<K, V> {
         return props;
     }
 
-    private Properties addConfluentProperties(Properties props) {
+    private void addConfluentProperties(Properties props) {
         props.put("ssl.endpoint.identification.algorithm", "https");
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.mechanism", "PLAIN");
@@ -166,15 +163,13 @@ public class MessageProducer<K, V> {
 
         if (username != null && password != null) {
             String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-                "username=\"" + username + "\" " +
-                "password=\"" + password + "\";";
+                    "username=\"" + username + "\" " +
+                    "password=\"" + password + "\";";
             props.put("sasl.jaas.config", auth);
-        }
-        else {
-            logger.error("Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
+        } else {
+            log.error("Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
         }
 
-        return props;
     }
 
     public void send(String topic, K key, V value) {
@@ -187,18 +182,15 @@ public class MessageProducer<K, V> {
 
             producer.send(
                     data,
-                    new Callback() {
-                        @Override
-                        public void onCompletion(RecordMetadata returnMetadata, Exception e) {
-                            if (null != e) {
-                                logger.error("Error sending record.", e);
-                            } else {
-                                logger.debug(
-                                        "Completed publish to topic: {}, offset: {}, partition: {}",
-                                        returnMetadata.topic(),
-                                        returnMetadata.offset(),
-                                        returnMetadata.partition());
-                            }
+                    (returnMetadata, e) -> {
+                        if (null != e) {
+                            log.error("Error sending record.", e);
+                        } else {
+                            log.debug(
+                                    "Completed publish to topic: {}, offset: {}, partition: {}",
+                                    returnMetadata.topic(),
+                                    returnMetadata.offset(),
+                                    returnMetadata.partition());
                         }
                     });
         }
@@ -206,29 +198,17 @@ public class MessageProducer<K, V> {
 
     public void close() {
         producer.close();
-        logger.info("Producer Closed");
-    }
-
-    public Producer<K, V> getProducer() {
-        return producer;
-    }
-
-    public MessageProducer<K, V> setProducer(Producer<K, V> producer) {
-        this.producer = producer;
-        return this;
+        log.info("Producer Closed");
     }
 
     public void send(ProducerRecord<K, V> producerRecord) {
         producer.send(
                 producerRecord,
-                new Callback() {
-                    @Override
-                    public void onCompletion(RecordMetadata returnMetadata, Exception e) {
-                        if (null != e) {
-                            logger.error("Error sending record.", e);
-                        } else {
-                            logger.debug("Record metadata: {}", returnMetadata);
-                        }
+                (returnMetadata, e) -> {
+                    if (null != e) {
+                        log.error("Error sending record.", e);
+                    } else {
+                        log.debug("Record metadata: {}", returnMetadata);
                     }
                 });
     }

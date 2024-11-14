@@ -75,7 +75,6 @@ public class MessageProducerTest {
             new MessageProducer<String, String>("testBrokers", null,
             "testPartitioner", mockProps, Collections.singleton("testTopic"));
 
-      testMessageProducer.setProducer(mockProducer);
       testMessageProducer.send("testTopic", "testKey", "testValue");
    }
 

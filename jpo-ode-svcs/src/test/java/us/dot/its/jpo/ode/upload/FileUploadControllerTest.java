@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.kafka.FileTopics;
@@ -45,9 +44,6 @@ class FileUploadControllerTest {
 
     @Mocked
     StorageService mockStorageService;
-
-    @Injectable
-    OdeProperties injectableOdeProperties;
 
     @Injectable
     OdeKafkaProperties injectableOdeKafkaProperties;
@@ -73,9 +69,6 @@ class FileUploadControllerTest {
     ImporterDirectoryWatcher capturingImporterDirectoryWatcher;
     @Mocked
     ExecutorService mockExecutorService;
-
-    @Mocked
-    OdeProperties mockOdeProperties;
 
     @Mocked
     MultipartFile mockMultipartFile;

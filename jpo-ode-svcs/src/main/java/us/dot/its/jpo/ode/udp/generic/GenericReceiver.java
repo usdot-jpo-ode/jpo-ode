@@ -21,7 +21,7 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
     public GenericReceiver(UDPReceiverProperties.ReceiverProperties props, OdeKafkaProperties odeKafkaProperties, RawEncodedJsonTopics rawEncodedJsonTopics) {
         super(props.getReceiverPort(), props.getBufferSize());
 
-        this.publisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducerType(), odeKafkaProperties.getDisabledTopics());
+        this.publisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
         this.rawEncodedJsonTopics = rawEncodedJsonTopics;
     }
 

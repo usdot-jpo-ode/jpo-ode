@@ -23,7 +23,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -37,7 +36,9 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.rsu.RsuDepositor;
+import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -75,14 +76,14 @@ public class Asn1CommandManager {
     private String depositTopic;
     private RsuDepositor rsuDepositor;
 
-    public Asn1CommandManager(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties, SDXDepositorTopics sdxDepositorTopics) {
-        this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
+    public Asn1CommandManager(OdeKafkaProperties odeKafkaProperties, SDXDepositorTopics sdxDepositorTopics, RsuProperties rsuProperties, SecurityServicesProperties securityServicesProperties) {
+        this.signatureUri = securityServicesProperties.getSignatureEndpoint();
 
         try {
-            this.rsuDepositor = new RsuDepositor(odeProperties);
+            this.rsuDepositor = new RsuDepositor(rsuProperties, securityServicesProperties.getIsRsuSigningEnabled());
             this.rsuDepositor.start();
             this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                    odeKafkaProperties.getProducerType(),
+                    odeKafkaProperties.getProducer().getType(),
                     odeKafkaProperties.getDisabledTopics());
             this.depositTopic = sdxDepositorTopics.getInput();
         } catch (Exception e) {
@@ -129,11 +130,11 @@ public class Asn1CommandManager {
 
         SDW sdw = request.getSdw();
         SNMP snmp = request.getSnmp();
-        DdsAdvisorySituationData asd = null;
+        DdsAdvisorySituationData asd;
 
         byte sendToRsu = request.getRsus() != null ? DdsAdvisorySituationData.RSU : DdsAdvisorySituationData.NONE;
         byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
-        //
+
         String outputXml = null;
         try {
             if (null != snmp) {
@@ -149,7 +150,7 @@ public class Asn1CommandManager {
                         .setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId());
             }
 
-            OdeMsgPayload payload = null;
+            OdeMsgPayload payload;
 
             ObjectNode dataBodyObj = JsonUtils.newNode();
             ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());

@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.udp;
 
 import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.ode.OdeProperties;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -22,8 +21,7 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
     protected String senderIp;
     protected int senderPort;
 
-    protected OdeProperties odeProperties;
-    protected int port;
+     protected int port;
     protected int bufferSize;
 
     private boolean stopped = false;
