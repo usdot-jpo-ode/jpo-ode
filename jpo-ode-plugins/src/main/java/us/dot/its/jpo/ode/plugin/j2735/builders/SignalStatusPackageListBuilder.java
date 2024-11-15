@@ -15,23 +15,21 @@ public class SignalStatusPackageListBuilder {
         J2735SignalStatusPackageList signalStatusPackageList = new J2735SignalStatusPackageList();
 
         JsonNode signalStatusPackage = sigStatus.get("SignalStatusPackage");
-        if(signalStatusPackage != null)
-        {
-            if (signalStatusPackage.isArray()) {
-                Iterator<JsonNode> elements = signalStatusPackage.elements();
-    
-                while (elements.hasNext()) {
-                    signalStatusPackageList.getSigStatus()
-                        .add(SignalStatusPackageBuilder.genericSignalStatusPackage(elements.next()));
-                }
-            } else {
-                signalStatusPackageList.getSigStatus()
-                        .add(SignalStatusPackageBuilder.genericSignalStatusPackage(signalStatusPackage));
-    
-            }
-        }
-        else {
+        if(signalStatusPackage == null) {
             return null;
+        }
+
+        if (signalStatusPackage.isArray()) {
+            Iterator<JsonNode> elements = signalStatusPackage.elements();
+
+            while (elements.hasNext()) {
+                signalStatusPackageList.getSigStatus()
+                    .add(SignalStatusPackageBuilder.genericSignalStatusPackage(elements.next()));
+            }
+        } else {
+            signalStatusPackageList.getSigStatus()
+                    .add(SignalStatusPackageBuilder.genericSignalStatusPackage(signalStatusPackage));
+
         }
 
         return signalStatusPackageList;

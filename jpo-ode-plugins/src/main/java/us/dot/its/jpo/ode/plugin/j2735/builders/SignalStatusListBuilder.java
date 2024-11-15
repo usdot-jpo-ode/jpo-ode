@@ -15,21 +15,22 @@ public class SignalStatusListBuilder {
 		J2735SignalStatusList signalStatusList = new J2735SignalStatusList();
 
         JsonNode signalStatus = status.get("SignalStatus");
-        if(signalStatus != null)
-		{
-            if (signalStatus.isArray()) {
-                Iterator<JsonNode> elements = signalStatus.elements();
-    
-                while (elements.hasNext()) {
-                    signalStatusList.getStatus()
-                        .add(SignalStatusBuilder.genericSignalStatus(elements.next()));
-                }
-            } else {
-                signalStatusList.getStatus()
-                        .add(SignalStatusBuilder.genericSignalStatus(signalStatus));
-            }
+        if(signalStatus == null) {
+            return null;
         }
-		
+
+        if (signalStatus.isArray()) {
+            Iterator<JsonNode> elements = signalStatus.elements();
+
+            while (elements.hasNext()) {
+                signalStatusList.getStatus()
+                    .add(SignalStatusBuilder.genericSignalStatus(elements.next()));
+            }
+        } else {
+            signalStatusList.getStatus()
+                    .add(SignalStatusBuilder.genericSignalStatus(signalStatus));
+        }
+
 		return signalStatusList;
 	}
 }
