@@ -11,46 +11,46 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeMapMetadata;
+import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
 
 @Slf4j
 public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
-	private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public Asn1DecodeMAPJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
-		super(
-				publishTopic,
-				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
-				UperUtil.getMapStartFlag()
-		);}
+    public Asn1DecodeMAPJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+        super(
+                publishTopic,
+                new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
+                SupportedMessageType.MAP.getStartFlag()
+        );
+    }
 
-	@Override
-	protected OdeAsn1Data process(String consumedData) {
-		OdeAsn1Data messageToPublish = null;
-		try {
-			JSONObject rawMapJsonObject = new JSONObject(consumedData);
+    @Override
+    protected OdeAsn1Data process(String consumedData) {
+        OdeAsn1Data messageToPublish = null;
+        try {
+            JSONObject rawMapJsonObject = new JSONObject(consumedData);
 
-			String jsonStringMetadata = rawMapJsonObject.get("metadata").toString();
-			OdeMapMetadata metadata = objectMapper.readValue(jsonStringMetadata, OdeMapMetadata.class);
+            String jsonStringMetadata = rawMapJsonObject.get("metadata").toString();
+            OdeMapMetadata metadata = objectMapper.readValue(jsonStringMetadata, OdeMapMetadata.class);
 
-			Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
-			metadata.addEncoding(unsecuredDataEncoding);
+            Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
+            metadata.addEncoding(unsecuredDataEncoding);
 
-			String payloadHexString = ((JSONObject)((JSONObject) rawMapJsonObject.get("payload")).get("data")).getString("bytes");
-			payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payloadStartFlag);
+            String payloadHexString = ((JSONObject) ((JSONObject) rawMapJsonObject.get("payload")).get("data")).getString("bytes");
+            payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payloadStartFlag);
 
-			if (payloadHexString.equals("BAD DATA")) {
-				log.error("NON-MAP DATA ENCOUNTERED IN THE ASN1DECODEMAPJSON CLASS");
-				return null;
-			}
+            OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
 
-			OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
-
-			messageToPublish = new OdeAsn1Data(metadata, payload);
-			publishEncodedMessageToAsn1Decoder(messageToPublish);
-		} catch (Exception e) {
-			log.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
-		}
-		return messageToPublish;
-	}
+            messageToPublish = new OdeAsn1Data(metadata, payload);
+            publishEncodedMessageToAsn1Decoder(messageToPublish);
+        } catch (StartFlagNotFoundException e) {
+            log.error("Unexpected data type encountered.", e);
+        } catch (Exception e) {
+            log.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
+        }
+        return messageToPublish;
+    }
 }

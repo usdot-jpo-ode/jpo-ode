@@ -22,7 +22,7 @@ class OdeKafkaPropertiesTest {
 
     @Test
     void testGetBrokers() {
-        assertEquals("localhost:9092", odeKafkaProperties.getBrokers());
+        assertEquals("localhost:4242", odeKafkaProperties.getBrokers());
     }
 
     @Test

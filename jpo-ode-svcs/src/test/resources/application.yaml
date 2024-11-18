@@ -3,6 +3,20 @@ spring:
     multipart:
       max-file-size: 1MB
       max-request-size: 1MB
+  embedded:
+    kafka:
+      brokers:
+        property: localhost:9092
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: test-group
+      auto-offset-reset: earliest
 ode:
   output-schema-version: 7
   security-services:
@@ -16,7 +30,7 @@ ode:
     username: "test-username"
     password: "test-password"
   kafka:
-    brokers: "localhost:9092"
+    brokers: "localhost:4242"
     producer:
       type: "async"
       acks: "0"

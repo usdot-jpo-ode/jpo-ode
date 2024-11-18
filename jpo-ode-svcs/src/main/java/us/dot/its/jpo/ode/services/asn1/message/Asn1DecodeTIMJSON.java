@@ -11,6 +11,8 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
+import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
 
 @Slf4j
@@ -21,7 +23,7 @@ public class Asn1DecodeTIMJSON extends AbstractAsn1DecodeMessageJSON {
         super(
                 publishTopic,
                 new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
-                UperUtil.getTimStartFlag()
+                SupportedMessageType.TIM.getStartFlag()
         );}
 
     @Override
@@ -39,15 +41,12 @@ public class Asn1DecodeTIMJSON extends AbstractAsn1DecodeMessageJSON {
             String payloadHexString = ((JSONObject) ((JSONObject) rawTimJsonObject.get("payload")).get("data")).getString("bytes");
             payloadHexString = UperUtil.stripDot2Header(payloadHexString, super.payloadStartFlag);
 
-			if (payloadHexString.equals("BAD DATA")) {
-				log.error("NON-TIM DATA ENCOUNTERED IN THE ASN1DECODETIMJSON CLASS");
-				return null;
-			}
-
             OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
 
             messageToPublish = new OdeAsn1Data(metadata, payload);
 			publishEncodedMessageToAsn1Decoder(messageToPublish);
+        } catch (StartFlagNotFoundException e) {
+            log.error("Unexpected data type encountered.", e);
         } catch (Exception e) {
             log.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
         }

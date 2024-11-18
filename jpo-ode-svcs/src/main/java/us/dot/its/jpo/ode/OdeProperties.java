@@ -31,7 +31,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 @Slf4j
 public class OdeProperties {
 
-    private int outputSchemaVersion;
+    private int outputSchemaVersion = 7;
     private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
     @Autowired

@@ -6,6 +6,7 @@ import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.uper.UperUtil;
@@ -100,6 +101,8 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
                     }
                     default -> log.debug("Unknown Message Type");
                 }
+            } catch (InvalidPayloadException e) {
+                log.error("Error decoding packet", e);
             } catch (Exception e) {
                 log.error("Error receiving packet", e);
             }
