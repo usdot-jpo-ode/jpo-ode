@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,44 +15,45 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import mockit.Expectations;
 import mockit.Injectable;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.kafka.*;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
+import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-public class AsnCodecRouterServiceControllerTest {
+import static org.junit.Assert.assertNotNull;
 
-//   @Capturing
-//   MessageConsumer<?, ?> capturingMessageConsumer;
-//
-//   @Capturing
-//   Asn1DecodedDataRouter capturingAsn1DecodedDataRouter;
-//   
-//   @Capturing 
-//   Asn1EncodedDataRouter capturingAsn1EncodedDataRouter;
+class AsnCodecRouterServiceControllerTest {
 
-   @Injectable
-   OdeProperties injectableOdeProperties;
-   @Injectable
-   OdeKafkaProperties odeKafkaProperties;
+    @Injectable
+    OdeKafkaProperties odeKafkaProperties;
+    @Injectable
+    JsonTopics jsonTopics;
+    @Injectable
+    PojoTopics pojoTopics;
+    @Injectable
+    Asn1CoderTopics asn1CoderTopics;
+    @Injectable
+    SDXDepositorTopics sdxDepositorTopics;
+    @Injectable
+    RsuProperties rsuProperties;
+    @Injectable
+    SecurityServicesProperties securityServicesProperties;
 
-   @Test @Disabled
-   public void shouldStartTwoConsumers() {
+    @Test
+    @Disabled
+    void shouldStartTwoConsumers() {
 
-      new Expectations() {
-         {
-            MessageConsumer.defaultStringMessageConsumer(anyString, anyString, (Asn1DecodedDataRouter) any);
-            times = 2;
-         }
-      };
+        new Expectations() {
+            {
+                MessageConsumer.defaultStringMessageConsumer(anyString, anyString, (Asn1DecodedDataRouter) any);
+                times = 2;
+            }
+        };
 
-      assertNotNull(new AsnCodecRouterServiceController(injectableOdeProperties, odeKafkaProperties));
-   }
-
+        assertNotNull(new AsnCodecRouterServiceController(odeKafkaProperties, jsonTopics, pojoTopics, asn1CoderTopics, sdxDepositorTopics, rsuProperties, securityServicesProperties));
+    }
 }

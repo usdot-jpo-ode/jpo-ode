@@ -15,51 +15,63 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
-import org.apache.kafka.common.serialization.Serdes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
+import us.dot.its.jpo.ode.kafka.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.PojoTopics;
+import us.dot.its.jpo.ode.kafka.SDXDepositorTopics;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
+import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
  * Launches ToJsonConverter service
  */
 @Controller
+@Slf4j
 public class AsnCodecRouterServiceController {
 
-   private static final Logger logger = LoggerFactory.getLogger(AsnCodecRouterServiceController.class);
-    Serdes bas;
+    @Autowired
+    public AsnCodecRouterServiceController(OdeKafkaProperties odeKafkaProperties,
+                                           JsonTopics jsonTopics,
+                                           PojoTopics pojoTopics,
+                                           Asn1CoderTopics asn1CoderTopics,
+                                           SDXDepositorTopics sdxDepositorTopics,
+                                           RsuProperties rsuProperties,
+                                           SecurityServicesProperties securityServicesProperties) {
+        super();
 
-   @Autowired
-   public AsnCodecRouterServiceController(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
-      super();
+        log.info("Starting {}", this.getClass().getSimpleName());
 
-      logger.info("Starting {}", this.getClass().getSimpleName());
+        // asn1_codec Decoder Routing
+        log.info("Routing DECODED data received ASN.1 Decoder");
 
-      // asn1_codec Decoder Routing
-      logger.info("Routing DECODED data received ASN.1 Decoder");
+        Asn1DecodedDataRouter decoderRouter = new Asn1DecodedDataRouter(odeKafkaProperties, pojoTopics, jsonTopics);
 
-       Asn1DecodedDataRouter decoderRouter = new Asn1DecodedDataRouter(odeProps, odeKafkaProperties);
+        MessageConsumer<String, String> asn1DecoderConsumer = MessageConsumer.defaultStringMessageConsumer(
+                odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), decoderRouter);
 
-      MessageConsumer<String, String> asn1DecoderConsumer = MessageConsumer.defaultStringMessageConsumer(
-              odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), decoderRouter);
+        asn1DecoderConsumer.setName("Asn1DecoderConsumer");
+        decoderRouter.start(asn1DecoderConsumer, asn1CoderTopics.getDecoderOutput());
 
-      asn1DecoderConsumer.setName("Asn1DecoderConsumer");
-      decoderRouter.start(asn1DecoderConsumer, odeProps.getKafkaTopicAsn1DecoderOutput());
+        // asn1_codec Encoder Routing
+        log.info("Routing ENCODED data received ASN.1 Encoder");
 
-      // asn1_codec Encoder Routing
-      logger.info("Routing ENCODED data received ASN.1 Encoder");
+        Asn1EncodedDataRouter encoderRouter = new Asn1EncodedDataRouter(
+                odeKafkaProperties,
+                asn1CoderTopics,
+                jsonTopics,
+                sdxDepositorTopics,
+                rsuProperties,
+                securityServicesProperties);
 
-       Asn1EncodedDataRouter encoderRouter = new Asn1EncodedDataRouter(odeProps, odeKafkaProperties);
+        MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
+                odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), encoderRouter);
 
-      MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
-              odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), encoderRouter);
-
-      encoderConsumer.setName("Asn1EncoderConsumer");
-      encoderRouter.start(encoderConsumer, odeProps.getKafkaTopicAsn1EncoderOutput());
-   }
+        encoderConsumer.setName("Asn1EncoderConsumer");
+        encoderRouter.start(encoderConsumer, asn1CoderTopics.getEncoderOutput());
+    }
 }

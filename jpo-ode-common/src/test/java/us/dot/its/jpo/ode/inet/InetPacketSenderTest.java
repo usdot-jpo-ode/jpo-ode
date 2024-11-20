@@ -15,12 +15,11 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.inet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -31,17 +30,15 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import us.dot.its.jpo.ode.eventlog.EventLogger;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import mockit.Capturing;
-import us.dot.its.jpo.ode.util.CodecUtils;
-
+@Slf4j
 public class InetPacketSenderTest {
-   
 
    static final private boolean isDebugOutput = false;
 
@@ -191,15 +188,15 @@ public class InetPacketSenderTest {
                socket.receive(datagramPacket);
                validatePacket(datagramPacket);
             } catch (SocketTimeoutException ex) {
-               EventLogger.logger.error(
+               log.error(
                      String.format("Caught socket timeout exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);
             } catch (SocketException ex) {
-               EventLogger.logger.error(String.format("Caught socket exception while recieving message on port %d. Max size is %d",
+               log.error(String.format("Caught socket exception while recieving message on port %d. Max size is %d",
                      listenPort, DEFAULT_MAX_PACKET_SIZE), ex);
             } catch (IOException ex) {
-               EventLogger.logger.error(
+               log.error(
                      String.format("Caught IO exception exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);

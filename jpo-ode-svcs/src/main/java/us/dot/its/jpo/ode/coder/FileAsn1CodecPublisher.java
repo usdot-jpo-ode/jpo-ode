@@ -15,20 +15,20 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import us.dot.its.jpo.ode.OdeProperties;
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.kafka.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.RawEncodedJsonTopics;
 
 import java.io.BufferedInputStream;
 import java.nio.file.Path;
 
+@Slf4j
 public class FileAsn1CodecPublisher {
 
-   public class FileAsn1CodecPublisherException extends Exception {
+   public static class FileAsn1CodecPublisherException extends Exception {
 
       private static final long serialVersionUID = 1L;
 
@@ -38,26 +38,24 @@ public class FileAsn1CodecPublisher {
 
    }
 
-   private static final Logger logger = LoggerFactory.getLogger(FileAsn1CodecPublisher.class);
+   private final LogFileToAsn1CodecPublisher codecPublisher;
 
-   private LogFileToAsn1CodecPublisher codecPublisher;
-   
-   @Autowired
-   public FileAsn1CodecPublisher(OdeProperties odeProperties, OdeKafkaProperties odeKafkaProperties) {
+   public FileAsn1CodecPublisher(OdeKafkaProperties odeKafkaProperties, JsonTopics jsonTopics, RawEncodedJsonTopics rawEncodedJsonTopics) {
+      StringPublisher messagePub = new StringPublisher(odeKafkaProperties.getBrokers(),
+              odeKafkaProperties.getProducer().getType(),
+              odeKafkaProperties.getDisabledTopics());
 
-      StringPublisher messagePub = new StringPublisher(odeProperties, odeKafkaProperties);
-
-      this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub);
+      this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub, jsonTopics, rawEncodedJsonTopics);
    }
 
    public void publishFile(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType) 
          throws FileAsn1CodecPublisherException {
       String fileName = filePath.toFile().getName();
 
-      logger.info("Publishing file {}", fileName);
+      log.info("Publishing file {}", fileName);
       
       try {
-         logger.info("Publishing data from {} to asn1_codec.", filePath);
+         log.info("Publishing data from {} to asn1_codec.", filePath);
          codecPublisher.publish(fileInputStream, fileName, fileType);
       } catch (Exception e) {
          throw new FileAsn1CodecPublisherException("Failed to publish file.", e);

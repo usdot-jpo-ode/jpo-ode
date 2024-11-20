@@ -20,12 +20,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 /**
  * Sender/Forwarder helper class for use by Forwarder, Transport, and Data Sink
  * that need to send packets around
  */
+@Slf4j
 public class InetPacketSender {
 
 	private static final String INVALID_PARAMETERS_MSG = "Invalid Parameters. Parameters destination point and payload can not be null";
@@ -62,7 +64,7 @@ public class InetPacketSender {
 	 */
 	public void forward(DatagramPacket packet) throws InetPacketException {
 		if (packet == null) {
-			EventLogger.logger.warn("Ignoring forward request for null packet");
+			log.warn("Ignoring forward request for null packet");
 			return;
 		}
 		if (frwdPoint == null)
@@ -78,7 +80,7 @@ public class InetPacketSender {
 	 */
 	public void send(DatagramPacket packet) throws InetPacketException {
 		if (packet == null) {
-			EventLogger.logger.warn("Ignoring send request for null packet");
+			log.warn("Ignoring send request for null packet");
 			return;
 		}
 		InetPacket p = new InetPacket(packet);
@@ -101,11 +103,11 @@ public class InetPacketSender {
 		if (dstPoint == null || payload == null)
 			throw new InetPacketException(INVALID_PARAMETERS_MSG);
 		if (frwdPoint == null)
-			EventLogger.logger.warn("Couldn't forward packet. Reason: Forwarding destination is not defined.");
+			log.warn("Couldn't forward packet. Reason: Forwarding destination is not defined.");
 		if (frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll())) {
 			send(frwdPoint, new InetPacket(dstPoint, payload).getBundle());
 		} else {
-			EventLogger.logger.debug("Using direct send instead of forwarding");
+			log.debug("Using direct send instead of forwarding");
 			send(dstPoint, payload);
 		}
 	}
@@ -125,7 +127,7 @@ public class InetPacketSender {
 		if (frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll() || fromForwarder)) {
 			send(frwdPoint, new InetPacket(dstPoint, payload).getBundle());
 		} else {
-			EventLogger.logger.debug("Using direct send instead of forwarding");
+			log.debug("Using direct send instead of forwarding");
 			send(dstPoint, payload);
 		}
 	}

@@ -29,13 +29,10 @@ import java.util.Iterator;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class ImporterProcessorTest {
@@ -43,8 +40,6 @@ public class ImporterProcessorTest {
    @Tested
    ImporterProcessor testImporterProcessor;
 
-   @Injectable
-   OdeProperties injectableOdeProperties;
    @Injectable
    ImporterFileType injectableImporterDirType = ImporterFileType.LOG_FILE;
 

@@ -211,8 +211,6 @@ public class SnmpSessionTest {
 		SNMP testParams = new SNMP(rsuSRMPsid, 0, 0, rsuSRMTxChannel, rsuSRMTxInterval, "2017-12-02T17:47:11-05:00",
 				"2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-		System.setProperty("DATA_SIGNING_ENABLED_RSU", "false");
-
 		boolean rsuDataSigningEnabled = false;
 
 		// execute

@@ -25,11 +25,6 @@
     <module>jpo-ode-svcs</module>
   </modules>
 
-  <repositories>
-    <!-- <repository> <id>cnsi-ode-repo</id> <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url> 
-      </repository> -->
-  </repositories>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -97,6 +92,16 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.30</version>
+      <scope>annotationProcessor</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
       <scope>annotationProcessor</scope>
     </dependency>
   </dependencies>

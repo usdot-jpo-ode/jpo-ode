@@ -4,12 +4,118 @@ spring:
       max-file-size: 1MB
       max-request-size: 1MB
 ode:
-  host-ip: ${DOCKER_HOST_IP}
+  output-schema-version: 7
+  security-services:
+    host-ip: ${DOCKER_HOST_IP}
+    port: 8090
+    signature-endpoint: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+    is-rsu-signing-enabled: ${DATA_SIGNING_ENABLED_RSU}
+    is-sdw-signing-enabled: ${DATA_SIGNING_ENABLED_SDW}
+  rsu:
+    srm-slots: 100
+    username: ${RSU_USERNAME}
+    password: ${RSU_PASSWORD}
   kafka:
     brokers: ${DOCKER_HOST_IP}:9092
-    producer-type: sync
+    producer:
+      type: "sync"
+      acks: ${KAFKA_ACKS}
+      retries: ${KAFKA_RETRIES}
+      batch-size: ${KAFKA_BATCH_SIZE}
+      linger-ms: ${KAFKA_LINGER_MS}
+      buffer-memory: ${KAFKA_BUFFER_MEMORY}
+      key-serializer: ${KAFKA_KEY_SERIALIZER}
+      value-serializer: ${KAFKA_VALUE_SERIALIZER}
+      partitioner-class: ${KAFKA_PARTITIONER_CLASS}
+      compression-type: ${KAFKA_COMPRESSION_TYPE}
     disabled-topics:
       - "topic.OdeBsmRxPojo"
       - "topic.OdeBsmTxPojo"
       - "topic.OdeBsmDuringEventPojo"
       - "topic.OdeTimBroadcastPojo"
+    topics:
+      asn1:
+        decoder-input: "topic.Asn1DecoderInput"
+        decoder-output: "topic.Asn1DecoderOutput"
+        encoder-input: "topic.Asn1EncoderInput"
+        encoder-output: "topic.Asn1EncoderOutput"
+      json:
+        bsm: "topic.OdeBsmJson"
+        map: "topic.OdeMapJson"
+        psm: "topic.OdePsmJson"
+        spat: "topic.OdeSpatJson"
+        srm: "topic.OdeSrmJson"
+        ssm: "topic.OdeSsmJson"
+        tim: "topic.OdeTimJson"
+        driver-alert: "topic.OdeDriverAlertJson"
+        tim-broadcast: "topic.OdeTimBroadcastJson"
+        bsm-filtered: "topic.FilteredOdeBsmJson"
+        spat-filtered: "topic.FilteredOdeSpatJson"
+        tim-filtered: "topic.FilteredOdeTimJson"
+        tim-tmc-filtered: "topic.OdeTimJsonTMCFiltered"
+        tim-cert-expiration: "topic.OdeTIMCertExpirationTimeJson"
+        dn-message: "topic.OdeDNMsgJson"
+        rx-tim: "topic.OdeTimRxJson"
+        rx-spat: "topic.OdeSpatRxJson"
+        j2735-tim-broadcast: "topic.J2735TimBroadcastJson"
+      pojo:
+        bsm: "topic.OdeBsmPojo"
+        spat: "topic.OdeSpatPojo"
+        ssm: "topic.OdeSsmPojo"
+        tim-broadcast: "topic.OdeTimBroadcastPojo"
+        bsm-during-event: "topic.OdeBsmDuringEventPojo"
+        rx-bsm: "topic.OdeBsmRxPojo"
+        rx-spat: "topic.OdeSpatRxPojo"
+        tx-bsm: "topic.OdeBsmTxPojo"
+        tx-map: "topic.OdeMapTxPojo"
+        tx-psm: "topic.OdePsmTxPojo"
+        tx-spat: "topic.OdeSpatTxPojo"
+        tx-srm: "topic.OdeSrmTxPojo"
+      raw-encoded-json:
+        bsm: "topic.OdeRawEncodedBSMJson"
+        map: "topic.OdeRawEncodedMAPJson"
+        psm: "topic.OdeRawEncodedPSMJson"
+        spat: "topic.OdeRawEncodedSPATJson"
+        srm: "topic.OdeRawEncodedSRMJson"
+        ssm: "topic.OdeRawEncodedSSMJson"
+        tim: "topic.OdeRawEncodedTIMJson"
+      sdx-depositor:
+        input: "topic.SDWDepositorInput"
+      file:
+        filtered-output: "/topic/filtered_messages"
+        unfiltered-output: "/topic/unfiltered_messages"
+  receivers:
+    generic:
+      buffer-size: 2000
+      receiver-port: 44990
+    bsm:
+      buffer-size: 500
+      receiver-port: 46800
+    map:
+      buffer-size: 2048
+      receiver-port: 44920
+    psm:
+      buffer-size: 500
+      receiver-port: 44940
+    spat:
+      buffer-size: 500
+      receiver-port: 44910
+    srm:
+      buffer-size: 500
+      receiver-port: 44930
+    ssm:
+      buffer-size: 500
+      receiver-port: 44900
+    tim:
+      buffer-size: 500
+      receiver-port: 47900
+  file-importer:
+    buffer-size: 500
+    backup-dir: "backup"
+    failed-dir: "failed"
+    time-period: 5
+    upload-location-root: "uploads"
+    obu-log-upload-location: "bsmlog"
+  tim-ingest-monitoring:
+    tracking-enabled: ${ODE_TIM_INGEST_MONITORING_ENABLED}
+    interval: ${ODE_TIM_INGEST_MONITORING_INTERVAL}

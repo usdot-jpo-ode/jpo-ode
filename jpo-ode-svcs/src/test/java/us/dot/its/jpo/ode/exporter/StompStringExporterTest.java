@@ -19,7 +19,6 @@ import mockit.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
@@ -29,15 +28,15 @@ public class StompStringExporterTest {
    StompStringExporter testStompExporter;
 
    @Injectable
-   OdeProperties injectableOdeProperties;
-   @Injectable
    OdeKafkaProperties injectableOdeKafkaProperties;
    @Injectable
    String stompTopic = "testTopic";
    @Injectable
    SimpMessagingTemplate simpMessagingTemplate;
    @Injectable
-   String odeTopic;
+   String odeTopic = "testOdeTopic";
+   @Injectable
+   String brokers = "localhost:9093";
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test

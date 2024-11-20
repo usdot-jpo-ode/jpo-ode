@@ -1,58 +1,49 @@
 package us.dot.its.jpo.ode.udp.srm;
 
-import java.net.DatagramPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 
+import java.net.DatagramPacket;
+
+@Slf4j
 public class SrmReceiver extends AbstractUdpReceiverPublisher {
-    private static Logger logger = LoggerFactory.getLogger(SrmReceiver.class);
 
     private final StringPublisher srmPublisher;
+    private final String publishTopic;
 
-    @Autowired
-    public SrmReceiver(@Qualifier("ode-us.dot.its.jpo.ode.OdeProperties") OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties) {
-        this(odeProps, odeKafkaProperties, odeProps.getSrmReceiverPort(), odeProps.getSrmBufferSize());
-    }
+    public SrmReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties, OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+        super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
-    public SrmReceiver(OdeProperties odeProps, OdeKafkaProperties odeKafkaProperties, int port, int bufferSize) {
-        super(odeProps, port, bufferSize);
-
-        this.srmPublisher = new StringPublisher(odeProperties, odeKafkaProperties);
+        this.publishTopic = publishTopic;
+        this.srmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
     public void run() {
-
-        logger.debug("SRM UDP Receiver Service started.");
+        log.debug("SRM UDP Receiver Service started.");
 
         byte[] buffer = new byte[bufferSize];
-
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
         do {
             try {
-                logger.debug("Waiting for UDP SRM packets...");
+                log.debug("Waiting for UDP SRM packets...");
                 socket.receive(packet);
                 if (packet.getLength() > 0) {
-                    
                     String srmJson = UdpHexDecoder.buildJsonSrmFromPacket(packet);
-                    if(srmJson != null){
-                        srmPublisher.publish(srmJson, srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+                    if (srmJson != null) {
+                        srmPublisher.publish(publishTopic, srmJson);
                     }
                 }
+            } catch (InvalidPayloadException e) {
+                log.error("Error decoding packet", e);
             } catch (Exception e) {
-                logger.error("Error receiving packet", e);
+                log.error("Error receiving packet", e);
             }
         } while (!isStopped());
     }
-
-    
 }

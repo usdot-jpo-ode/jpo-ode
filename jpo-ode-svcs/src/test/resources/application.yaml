@@ -1,10 +1,134 @@
-ode:
-  host-ip: test-host
+spring:
+  http:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
+  embedded:
+    kafka:
+      brokers:
+        property: localhost:9092
   kafka:
-    brokers: localhost:9092
-    producer-type: sync
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: test-group
+      auto-offset-reset: earliest
+ode:
+  output-schema-version: 7
+  security-services:
+    host-ip: "test-host"
+    port: 1234
+    signature-endpoint: "http://localhost:8090/sign"
+    is-sdw-signing-enabled:
+    is-rsu-signing-enabled:
+  rsu:
+    srm-slots: 100
+    username: "test-username"
+    password: "test-password"
+  kafka:
+    brokers: "localhost:4242"
+    producer:
+      type: "async"
+      acks: "0"
+      retries: 1
+      batch-size: 1638
+      linger-ms: 2
+      buffer-memory: 33554433
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.ByteArraySerializer"
+      partitioner-class: "org.apache.kafka.clients.producer.internals.DefaultPartitioner"
     disabled-topics:
       - "topic.OdeBsmRxPojo"
       - "topic.OdeBsmTxPojo"
       - "topic.OdeBsmDuringEventPojo"
       - "topic.OdeTimBroadcastPojo"
+    topics:
+      asn1:
+        decoder-input: "topic.Asn1DecoderInput"
+        decoder-output: "topic.Asn1DecoderOutput"
+        encoder-input: "topic.Asn1EncoderInput"
+        encoder-output: "topic.Asn1EncoderOutput"
+      json:
+        bsm: "topic.OdeBsmJson"
+        map: "topic.OdeMapJson"
+        psm: "topic.OdePsmJson"
+        spat: "topic.OdeSpatJson"
+        srm: "topic.OdeSrmJson"
+        ssm: "topic.OdeSsmJson"
+        tim: "topic.OdeTimJson"
+        driver-alert: "topic.OdeDriverAlertJson"
+        tim-broadcast: "topic.OdeTimBroadcastJson"
+        bsm-filtered: "topic.FilteredOdeBsmJson"
+        spat-filtered: "topic.FilteredOdeSpatJson"
+        tim-filtered: "topic.FilteredOdeTimJson"
+        tim-tmc-filtered: "topic.OdeTimJsonTMCFiltered"
+        tim-cert-expiration: "topic.OdeTIMCertExpirationTimeJson"
+        dn-message: "topic.OdeDNMsgJson"
+        rx-tim: "topic.OdeTimRxJson"
+        rx-spat: "topic.OdeSpatRxJson"
+        j2735-tim-broadcast: "topic.J2735TimBroadcastJson"
+      pojo:
+        bsm: "topic.OdeBsmPojo"
+        spat: "topic.OdeSpatPojo"
+        ssm: "topic.OdeSsmPojo"
+        tim-broadcast: "topic.OdeTimBroadcastPojo"
+        bsm-during-event: "topic.OdeBsmDuringEventPojo"
+        rx-bsm: "topic.OdeBsmRxPojo"
+        rx-spat: "topic.OdeSpatRxPojo"
+        tx-bsm: "topic.OdeBsmTxPojo"
+        tx-map: "topic.OdeMapTxPojo"
+        tx-psm: "topic.OdePsmTxPojo"
+        tx-spat: "topic.OdeSpatTxPojo"
+        tx-srm: "topic.OdeSrmTxPojo"
+      raw-encoded-json:
+        bsm: "topic.OdeRawEncodedBSMJson"
+        map: "topic.OdeRawEncodedMAPJson"
+        psm: "topic.OdeRawEncodedPSMJson"
+        spat: "topic.OdeRawEncodedSPATJson"
+        srm: "topic.OdeRawEncodedSRMJson"
+        ssm: "topic.OdeRawEncodedSSMJson"
+        tim: "topic.OdeRawEncodedTIMJson"
+      sdx-depositor:
+        input: "topic.SDWDepositorInput"
+      file:
+        filtered-output: "/topic/filtered_messages"
+        unfiltered-output: "/topic/unfiltered_messages"
+  receivers:
+    generic:
+      buffer-size: 2000
+      receiver-port: 44990
+    bsm:
+      buffer-size: 500
+      receiver-port: 46800
+    map:
+      buffer-size: 2048
+      receiver-port: 44920
+    psm:
+      buffer-size: 500
+      receiver-port: 44940
+    spat:
+      buffer-size: 500
+      receiver-port: 44910
+    srm:
+      buffer-size: 500
+      receiver-port: 44930
+    ssm:
+      buffer-size: 500
+      receiver-port: 44900
+    tim:
+      buffer-size: 500
+      receiver-port: 47900
+  file-importer:
+    buffer-size: 500
+    backup-dir: "backup"
+    failed-dir: "failed"
+    time-period: 1
+    upload-location-root: "uploads"
+    obu-log-upload-location: "bsmlog"
+  tim-ingest-monitoring:
+    tracking-enabled: true
+    interval: 1

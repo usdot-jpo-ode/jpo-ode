@@ -26,10 +26,10 @@ public abstract class SerializableObjectPool<T> implements Serializable {
 
    private Hashtable<T, Long> locked, unlocked;
 
-   public SerializableObjectPool() {
+   protected SerializableObjectPool() {
       expirationTime = 30000; // 30 seconds
-      locked = new Hashtable<T, Long>();
-      unlocked = new Hashtable<T, Long>();
+      locked = new Hashtable<>();
+      unlocked = new Hashtable<>();
    }
 
    protected abstract T create();
@@ -41,7 +41,7 @@ public abstract class SerializableObjectPool<T> implements Serializable {
    public synchronized T checkOut() {
       long now = System.currentTimeMillis();
       T t;
-      if (unlocked.size() > 0) {
+      if (!unlocked.isEmpty()) {
          Enumeration<T> e = unlocked.keys();
          while (e.hasMoreElements()) {
             t = e.nextElement();
