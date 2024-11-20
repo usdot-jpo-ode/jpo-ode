@@ -262,7 +262,7 @@ class TimTransmogrifierTest {
      * passed to the TimTransmogrifier.convertToXml() method.
      */
     @Test
-    public void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion() throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
+    void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion() throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
         // prepare
         String timRequestContainingCircleGeometry = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/timRequestContainingCircleGeometry.json")));
         OdeTravelerInputData odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(timRequestContainingCircleGeometry, OdeTravelerInputData.class, true);
@@ -293,11 +293,13 @@ class TimTransmogrifierTest {
         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
         timMetadata.setSchemaVersion(7);
 
+        // Set the clock to a fixed instant for value comparison
+        DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-05T16:51:14.473Z"), ZoneId.of("UTC")));
+        
         // execute
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialId);
 
         // verify
-        actualXML = actualXML.replaceFirst("<odeReceivedAt>.*</odeReceivedAt>", "<odeReceivedAt>2024-11-05T16:51:14.473Z</odeReceivedAt>"); // replace <odeReceivedAt> with a fixed value for comparison
         String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")));
         Assertions.assertEquals(expectedXml, actualXML);
     }
