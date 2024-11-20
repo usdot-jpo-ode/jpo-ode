@@ -98,17 +98,21 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static final String ITEM = "item";
    private static final String START_DATE_TIME = "startDateTime";
    private static final String DURATON_TIME_MISSPELLED = "duratonTime"; // J2735 2016 Misspelling 
-   private static final String DURATION_TIME = "durationTime"; // used in J2735 2020
+   private static final String DURATION_TIME = "durationTime"; // used in J2735 2020/2024
    private static final String SSP_TIM_RIGHTS = "sspTimRights"; // used in J2735 2016
    private static final String NOT_USED = "notUsed"; // used in J2735 2020
+   private static final String DO_NOT_USE_1 = "doNotUse1"; // used in J2735 2024
    private static final String SSP_LOCATION_RIGHTS = "sspLocationRights"; // used in J2735 2016
    private static final String NOT_USED_1 = "notUsed1"; // used in J2735 2020
+   private static final String DO_NOT_USE_2 = "doNotUse2"; // used in J2735 2024
    private static final String SSP_MSG_TYPES = "sspMsgTypes"; // used previously
    private static final String SSP_MSG_RIGHTS_1 = "sspMsgRights1"; // used in J2735 2016
    private static final String NOT_USED_2 = "notUsed2"; // used in J2735 2020
+   private static final String DO_NOT_USE_3 = "doNotUse3"; // used in J2735 2024
    private static final String SSP_MSG_CONTENT = "sspMsgContent"; // used previously
    private static final String SSP_MSG_RIGHTS_2 = "sspMsgRights2"; // used in J2735 2016
    private static final String NOT_USED_3 = "notUsed3"; // used in J2735 2020
+   private static final String DO_NOT_USE_4 = "doNotUse4"; // used in J2735 2024
    private static final String DATAFRAMES = "dataframes";
    private static final String TIME_STAMP = "timeStamp";
    public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
@@ -214,34 +218,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </TravelerDataFrame>
       // </dataFrames>
 
-      // replace sspTimRights with notUsed=0 (to conform with J2735 2020)
-      dataFrame.put(NOT_USED, 0);
-      dataFrame.remove(SSP_TIM_RIGHTS);
-
-      // replace sspLocationRights with notUsed1=0 (to conform with J2735 2020)
-      dataFrame.put(NOT_USED_1, 0);
-      dataFrame.remove(SSP_LOCATION_RIGHTS);
-
       // set frameType value
       dataFrame.set("frameType", JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
 
-      // replace sspMsgContent/sspMsgRights1 with notUsed2=0 (to conform with J2735 2020)
-      dataFrame.put(NOT_USED_2, 0);
-      dataFrame.remove(SSP_MSG_CONTENT);
-      dataFrame.remove(SSP_MSG_RIGHTS_1);
-
-      // replace sspMsgTypes/sspMsgRights2 with notUsed3=0 (to conform with J2735 2020)
-      dataFrame.put(NOT_USED_3, 0);
-      dataFrame.remove(SSP_MSG_TYPES);
-      dataFrame.remove(SSP_MSG_RIGHTS_2);
+      ensureComplianceWithJ2735Revision2024(dataFrame);
 
       // priority does not need replacement
-
-      // replace duratonTime with durationTime=[value of duratonTime] (to conform with J2735 2020)
-      if (dataFrame.get(DURATON_TIME_MISSPELLED) != null) {
-         dataFrame.set(DURATION_TIME, dataFrame.get(DURATON_TIME_MISSPELLED));
-         dataFrame.remove(DURATON_TIME_MISSPELLED);
-      }
 
       // url does not need replacement
 
@@ -1113,6 +1095,41 @@ public class TravelerMessageFromHumanToAsnConverter {
       } else {
          throw new IllegalArgumentException("Invalid node X/Y offset: " + transformedX + "/" + transformedY
                + ". Values must be between a range of -327.68/+327.67 meters.");
+      }
+   }
+
+   /**
+    * Ensures compliance with the J2735 2024 by modifying the given data frame.
+    *
+    * @param dataFrame the JSON object representing the data frame to be modified
+    */
+   private static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) {
+      // Remove fields from before J2735 2016
+      dataFrame.remove(SSP_MSG_CONTENT); // renamed to sspMsgRights1
+      dataFrame.remove(SSP_MSG_TYPES); // renamed to sspMsgRights2
+
+      // Remove J2735 2016 fields
+      dataFrame.remove(SSP_TIM_RIGHTS); // renamed to notUsed in J2735 2020
+      dataFrame.remove(SSP_LOCATION_RIGHTS); // renamed to notUsed1 in J2735 2020
+      dataFrame.remove(SSP_MSG_RIGHTS_1); // renamed to notUsed2 in J2735 2020
+      dataFrame.remove(SSP_MSG_RIGHTS_2); // renamed to notUsed3 in J2735 2020
+
+      // Remove J2735 2020 fields
+      dataFrame.remove(NOT_USED); // renamed to doNotUse1 in J2735 2024
+      dataFrame.remove(NOT_USED_1); // renamed to doNotUse2 in J2735 2024
+      dataFrame.remove(NOT_USED_2); // renamed to doNotUse3 in J2735 2024
+      dataFrame.remove(NOT_USED_3); // renamed to doNotUse4 in J2735 2024
+
+      // Add J2735 2024 fields with values of 0
+      dataFrame.put(DO_NOT_USE_1, 0);
+      dataFrame.put(DO_NOT_USE_2, 0);
+      dataFrame.put(DO_NOT_USE_3, 0);
+      dataFrame.put(DO_NOT_USE_4, 0);
+
+      // Replace misspelled durationTime field from J2735 2016 with the correct one
+      if (dataFrame.get(DURATON_TIME_MISSPELLED) != null) {
+         dataFrame.set(DURATION_TIME, dataFrame.get(DURATON_TIME_MISSPELLED));
+         dataFrame.remove(DURATON_TIME_MISSPELLED);
       }
    }
 
