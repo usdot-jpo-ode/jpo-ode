@@ -13,26 +13,41 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.plugin.j2735;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735Tim;
-import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
+import java.math.BigDecimal;
 
-public class OdeTimPayload extends OdeMsgPayload {
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-    private static final long serialVersionUID = 7061315628111448390L;
+public class J2735Node_LL extends Asn1Object {
+	private static final long serialVersionUID = 1L;
+	
+	private BigDecimal lon;
+	private BigDecimal lat;
+	
+	public J2735Node_LL() {
+		super();
+	}
 
-    public OdeTimPayload() {
-        this(new OdeTravelerInformationMessage());
-    }
+	public J2735Node_LL(BigDecimal lon, BigDecimal lat) {
+		super();
+		this.lon = lon;
+		this.lat = lat;
+	}
 
-    public OdeTimPayload(OdeTravelerInformationMessage tim) {
-        super(tim);
-        this.setData(tim);
-    }
+	public BigDecimal getLon() {
+		return lon;
+	}
 
-    public OdeTimPayload(J2735Tim tim) {
-        super(tim);
-        this.setData(tim);
-    }
+	public void setLon(BigDecimal lon) {
+		this.lon = lon;
+	}
+
+	public BigDecimal getLat() {
+		return lat;
+	}
+
+	public void setLat(BigDecimal lat) {
+		this.lat = lat;
+	}
 }

@@ -21,17 +21,22 @@ import org.junit.jupiter.api.Test;
 
 public class J2735DirectionOfUseTest {
    @Test
+   public void checkUnavailable() {
+      assertNotNull(J2735DirectionOfUse.unavailable);
+   }
+
+   @Test
    public void checkForward() {
-      assertNotNull(J2735DirectionOfUse.FORWARD);
+      assertNotNull(J2735DirectionOfUse.forward);
    }
 
    @Test
    public void checkReverse() {
-      assertNotNull(J2735DirectionOfUse.REVERSE);
+      assertNotNull(J2735DirectionOfUse.reverse);
    }
 
    @Test
    public void checkBoth() {
-      assertNotNull(J2735DirectionOfUse.BOTH);
+      assertNotNull(J2735DirectionOfUse.both);
    }
 }

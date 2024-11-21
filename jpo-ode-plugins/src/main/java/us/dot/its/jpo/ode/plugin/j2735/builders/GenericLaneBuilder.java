@@ -106,7 +106,7 @@ public class GenericLaneBuilder {
 
 		JsonNode nodeList = laneSetNode.get("nodeList");
 		if (nodeList != null) {
-			genericLane.setNodeList(NodeListBuilder.genericNodeList(nodeList));
+			genericLane.setNodeList(NodeListXYBuilder.genericNodeListXY(nodeList));
 		}
 
 		JsonNode connectsTo = laneSetNode.get("connectsTo");

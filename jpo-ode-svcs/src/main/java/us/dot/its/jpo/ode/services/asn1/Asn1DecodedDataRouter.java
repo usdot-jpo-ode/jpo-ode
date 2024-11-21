@@ -91,7 +91,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 
             switch (messageId) {
                 case BasicSafetyMessage -> routeBSM(consumedData, recordType);
-                case TravelerInformation -> routeTIM(consumed, recordType);
+                case TravelerInformation -> routeTIM(consumedData, recordType);
                 case SPATMessage -> routeSPAT(consumedData, recordType);
                 case MAPMessage -> routeMAP(consumedData, recordType);
                 case SSMMessage -> routeSSM(consumedData, recordType);
@@ -158,8 +158,8 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
         log.debug("Submitted to SPAT Pojo topic {}", jsonTopics.getSpat());
     }
 
-    private void routeTIM(JSONObject consumed, RecordType recordType) {
-        String odeTimData = TimTransmogrifier.createOdeTimData(consumed).toString();
+    private void routeTIM(String consumedData, RecordType recordType) throws XmlUtils.XmlUtilsException {
+        String odeTimData = OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString();
         switch (recordType) {
             case dnMsg -> timProducer.send(jsonTopics.getDnMessage(), getRecord().key(), odeTimData);
             case rxMsg -> timProducer.send(jsonTopics.getRxTim(), getRecord().key(), odeTimData);

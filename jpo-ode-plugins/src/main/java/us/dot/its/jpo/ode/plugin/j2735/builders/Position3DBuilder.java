@@ -36,7 +36,10 @@ public class Position3DBuilder {
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
       Long latitude = pos.get("lat").asLong();
       Long longitude = pos.get("long").asLong();
-      Long elevation = pos.get(ELEVATION).asLong();
+      Long elevation = null;
+      if (pos.get(ELEVATION) != null) {
+         elevation = pos.get(ELEVATION).asLong();
+      }
 
       return new DsrcPosition3D(latitude, longitude, elevation);
 
