@@ -17,12 +17,12 @@ package us.dot.its.jpo.ode.traveler;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import us.dot.its.jpo.ode.context.AppContext;
+
+import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
 import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -44,7 +44,6 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
-import java.util.UUID;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -87,11 +86,11 @@ public class TimDepositController {
 
     @Autowired
     public TimDepositController(OdeKafkaProperties odeKafkaProperties,
-                                Asn1CoderTopics asn1CoderTopics,
-                                PojoTopics pojoTopics,
-                                JsonTopics jsonTopics,
-                                TimIngestTrackerProperties ingestTrackerProperties,
-                                SecurityServicesProperties securityServicesProperties) {
+            Asn1CoderTopics asn1CoderTopics,
+            PojoTopics pojoTopics,
+            JsonTopics jsonTopics,
+            TimIngestTrackerProperties ingestTrackerProperties,
+            SecurityServicesProperties securityServicesProperties) {
         super();
 
         this.asn1CoderTopics = asn1CoderTopics;
@@ -102,7 +101,8 @@ public class TimDepositController {
 
         this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
                 odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
-        this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(),
+        this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(),
+                odeKafkaProperties.getProducer().getType(),
                 null, OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
 
         this.dataSigningEnabledSDW = securityServicesProperties.getIsSdwSigningEnabled();
@@ -188,8 +188,8 @@ public class TimDepositController {
                 try {
                     latestStartDateTime = (latestStartDateTime == null || (latestStartDateTime != null
                             && latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())))
-                            ? dateFormat.parse(dataFrameItem.getStartDateTime())
-                            : latestStartDateTime);
+                                    ? dateFormat.parse(dataFrameItem.getStartDateTime())
+                                    : latestStartDateTime);
                 } catch (ParseException e) {
                     log.error("Invalid dateTime parse: ", e);
                 }
@@ -217,7 +217,8 @@ public class TimDepositController {
         String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
         stringMsgProducer.send(jsonTopics.getTimBroadcast(), null, obfuscatedTimData);
 
-        // Now that the message has been published to OdeBroadcastTim topic, it should be
+        // Now that the message has been published to OdeBroadcastTim topic, it should
+        // be
         // changed to J2735BroadcastTim serialId
         timMetadata.setSerialId(serialIdJ2735);
 
@@ -252,21 +253,22 @@ public class TimDepositController {
                 asd = TimTransmogrifier.buildASD(odeTID.getRequest());
             }
             xmlMsg = TimTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
-            log.debug("XML representation: {}", xmlMsg);
 
-            JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
+            if (xmlMsg != null) {
+                log.debug("XML representation: {}", xmlMsg);
+                stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
 
-            String j2735Tim = TimTransmogrifier.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA))
-                    .toString();
+                // Convert XML into ODE TIM JSON object and obfuscate RSU password
+                OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(xmlMsg, timMetadata);
+                String j2735Tim = odeTimObj.toString();
+                String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
 
-            stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
+                // publish Broadcast TIM to a J2735 compliant topic.
+                stringMsgProducer.send(jsonTopics.getJ2735TimBroadcast(), null, obfuscatedJ2735Tim);
 
-            String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
-            // publish Broadcast TIM to a J2735 compliant topic.
-            stringMsgProducer.send(jsonTopics.getJ2735TimBroadcast(), null, obfuscatedJ2735Tim);
-            // publish J2735 TIM also to general un-filtered TIM topic
-            // with streamID as key
-         stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+                // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
+                stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+            }
 
             serialIdOde.increment();
             serialIdJ2735.increment();

@@ -5,20 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeographicalPath;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MsgId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerDataFrame;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInfoType;
-import us.dot.its.jpo.ode.plugin.j2735.timstorage.Content;
 
 public class TravelerDataFrameBuilder {
     private TravelerDataFrameBuilder() {
         throw new UnsupportedOperationException();
     }
-
-    private final static ObjectMapper mapper = new ObjectMapper();
 
     public static J2735TravelerDataFrame genericTravelerDataFrame(JsonNode travelerDataFrame) {
         J2735TravelerDataFrame genericTravelerDataFrame = new J2735TravelerDataFrame();
@@ -108,7 +104,7 @@ public class TravelerDataFrameBuilder {
 
         JsonNode content = travelerDataFrame.get("content");
         if (content != null) {
-            genericTravelerDataFrame.setContent(mapper.convertValue(content, Content.class));
+            genericTravelerDataFrame.setContent(ContentBuilder.genericContent(content));
         }
 
         // The decoder makes a null URL a literal string value of "null" when it is not specified

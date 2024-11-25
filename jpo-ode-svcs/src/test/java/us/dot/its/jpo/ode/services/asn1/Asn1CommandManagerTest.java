@@ -27,7 +27,6 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.SDXDepositorTopics;
-import us.dot.its.jpo.ode.kafka.SDXDepositorTopics;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.security.SecurityServicesProperties;

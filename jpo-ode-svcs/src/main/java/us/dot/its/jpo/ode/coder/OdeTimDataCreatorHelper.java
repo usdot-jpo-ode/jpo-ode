@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
@@ -23,7 +24,7 @@ public class OdeTimDataCreatorHelper {
     public OdeTimDataCreatorHelper() {
 	}
 
-	public static OdeTimData createOdeTimData(String consumedData) throws XmlUtilsException {
+	public static OdeTimData createOdeTimDataFromDecoded(String consumedData) throws XmlUtilsException {
 		ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
 		JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
@@ -53,6 +54,12 @@ public class OdeTimDataCreatorHelper {
 			metadata.setReceivedMessageDetails(null);
 		}
 
+		OdeTimPayload payload = new OdeTimPayload(TIMBuilder.genericTim(consumed.findValue("TravelerInformation")));
+		return new OdeTimData(metadata, payload);
+	}
+
+	public static OdeTimData createOdeTimDataFromCreator(String consumedData, OdeMsgMetadata metadata) throws XmlUtilsException {
+		ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 		OdeTimPayload payload = new OdeTimPayload(TIMBuilder.genericTim(consumed.findValue("TravelerInformation")));
 		return new OdeTimData(metadata, payload);
 	}

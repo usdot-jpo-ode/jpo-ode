@@ -26,7 +26,6 @@ import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
-import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -159,7 +158,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
     }
 
     private void routeTIM(String consumedData, RecordType recordType) throws XmlUtils.XmlUtilsException {
-        String odeTimData = OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString();
+        String odeTimData = OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(consumedData).toString();
         switch (recordType) {
             case dnMsg -> timProducer.send(jsonTopics.getDnMessage(), getRecord().key(), odeTimData);
             case rxMsg -> timProducer.send(jsonTopics.getRxTim(), getRecord().key(), odeTimData);

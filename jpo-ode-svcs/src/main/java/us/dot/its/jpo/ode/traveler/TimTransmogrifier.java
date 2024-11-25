@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.traveler;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -235,16 +233,4 @@ public class TimTransmogrifier {
       Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
       return JsonUtils.toObjectNode(mfEnc.toJson());
    }
-
-   public static JSONObject createOdeTimData(JSONObject timData) {
-
-      JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
-      metadata.put("payloadType", OdeTimPayload.class.getName());
-      metadata.remove(AppContext.ENCODINGS_STRING);
-
-      JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
-      payload.put(AppContext.DATA_TYPE_STRING, TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION);
-      return timData;
-   }
-
 }
