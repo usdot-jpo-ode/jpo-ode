@@ -256,7 +256,6 @@ public class TimDepositController {
 
             if (xmlMsg != null) {
                 log.debug("XML representation: {}", xmlMsg);
-                stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
 
                 // Convert XML into ODE TIM JSON object and obfuscate RSU password
                 OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(xmlMsg, timMetadata);
@@ -268,6 +267,10 @@ public class TimDepositController {
 
                 // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
                 stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+
+                // Write XML to the encoder input topic at the end to ensure the correct order of operations to pair 
+                // each message to an OdeTimJson streamId key
+                stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
             }
 
             serialIdOde.increment();

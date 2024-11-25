@@ -273,6 +273,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     public void processEncodedTimUnsecured(ServiceRequest request, JSONObject consumedObj) {
         // Send TIMs and record results
         HashMap<String, String> responseList = new HashMap<>();
+        JSONObject metadataObj = consumedObj.getJSONObject(AppContext.METADATA_STRING);
 
         JSONObject dataObj = consumedObj
                 .getJSONObject(AppContext.PAYLOAD_STRING)
@@ -311,6 +312,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         if (dataObj.has(MESSAGE_FRAME)) {
             JSONObject mfObj = dataObj.getJSONObject(MESSAGE_FRAME);
             String encodedTim = mfObj.getString(BYTES);
+
+            // Deposit encoded TIM to TMC-filtered topic if TMC-generated
+            depositToFilteredTopic(metadataObj, encodedTim);
 
             // if header is present, strip it
             if (isHeaderPresent(encodedTim)) {
