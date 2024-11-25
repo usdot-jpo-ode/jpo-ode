@@ -1,4 +1,4 @@
-{
+﻿{
     "$schema": "http://json-schema.org/draft-04/schema#",
     "properties": {
         "metadata": {
@@ -791,185 +791,177 @@
                                                                         "nodeList": {
                                                                             "properties": {
                                                                                 "nodes": {
-                                                                                    "properties": {
-                                                                                        "NodeXY": {
-                                                                                            "items": [
-                                                                                                {
+                                                                                    "type": "array",
+                                                                                    "items": [
+                                                                                        {
+                                                                                            "properties": {
+                                                                                                "attributes": {
                                                                                                     "properties": {
-                                                                                                        "attributes": {
+                                                                                                        "dElevation": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "dWidth": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "data": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "disabled": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "enabled": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "localNode": {
+                                                                                                            "type": "null"
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "required": [
+                                                                                                        "dElevation"
+                                                                                                    ],
+                                                                                                    "type": [
+                                                                                                        "object",
+                                                                                                        "null"
+                                                                                                    ]
+                                                                                                },
+                                                                                                "delta": {
+                                                                                                    "properties": {
+                                                                                                        "nodeLatLon": {
                                                                                                             "properties": {
-                                                                                                                "dElevation": {
+                                                                                                                "lat": {
                                                                                                                     "type": "number"
                                                                                                                 },
-                                                                                                                "dWidth": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "data": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "disabled": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "enabled": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "localNode": {
-                                                                                                                    "type": "null"
+                                                                                                                "lon": {
+                                                                                                                    "type": "number"
                                                                                                                 }
                                                                                                             },
                                                                                                             "required": [
-                                                                                                                "dElevation"
+                                                                                                                "lon",
+                                                                                                                "lat"
                                                                                                             ],
                                                                                                             "type": [
                                                                                                                 "object",
                                                                                                                 "null"
                                                                                                             ]
                                                                                                         },
-                                                                                                        "delta": {
+                                                                                                        "nodeXY1": {
                                                                                                             "properties": {
-                                                                                                                "nodeLatLon": {
-                                                                                                                    "properties": {
-                                                                                                                        "lat": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "lon": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "lon",
-                                                                                                                        "lat"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
                                                                                                                 },
-                                                                                                                "nodeXY1": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY2": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY3": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY4": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY5": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY6": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
                                                                                                                 }
                                                                                                             },
-                                                                                                            "type": "object"
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY2": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY3": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY4": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY5": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY6": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
                                                                                                         }
                                                                                                     },
-                                                                                                    "required": [
-                                                                                                        "delta"
-                                                                                                    ],
                                                                                                     "type": "object"
                                                                                                 }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "delta"
                                                                                             ],
-                                                                                            "type": "array"
+                                                                                            "type": "object"
                                                                                         }
-                                                                                    },
-                                                                                    "required": [
-                                                                                        "NodeXY"
-                                                                                    ],
-                                                                                    "type": "object"
+                                                                                    ]
                                                                                 }
                                                                             },
                                                                             "required": [
@@ -1821,185 +1813,177 @@
                                                                         "nodeList": {
                                                                             "properties": {
                                                                                 "nodes": {
-                                                                                    "properties": {
-                                                                                        "NodeXY": {
-                                                                                            "items": [
-                                                                                                {
+                                                                                    "type": "array",
+                                                                                    "items": [
+                                                                                        {
+                                                                                            "properties": {
+                                                                                                "attributes": {
                                                                                                     "properties": {
-                                                                                                        "attributes": {
+                                                                                                        "dElevation": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "dWidth": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "data": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "disabled": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "enabled": {
+                                                                                                            "type": "null"
+                                                                                                        },
+                                                                                                        "localNode": {
+                                                                                                            "type": "null"
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "required": [
+                                                                                                        "dElevation"
+                                                                                                    ],
+                                                                                                    "type": [
+                                                                                                        "object",
+                                                                                                        "null"
+                                                                                                    ]
+                                                                                                },
+                                                                                                "delta": {
+                                                                                                    "properties": {
+                                                                                                        "nodeLatLon": {
                                                                                                             "properties": {
-                                                                                                                "dElevation": {
+                                                                                                                "lat": {
                                                                                                                     "type": "number"
                                                                                                                 },
-                                                                                                                "dWidth": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "data": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "disabled": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "enabled": {
-                                                                                                                    "type": "null"
-                                                                                                                },
-                                                                                                                "localNode": {
-                                                                                                                    "type": "null"
+                                                                                                                "lon": {
+                                                                                                                    "type": "number"
                                                                                                                 }
                                                                                                             },
                                                                                                             "required": [
-                                                                                                                "dElevation"
+                                                                                                                "lon",
+                                                                                                                "lat"
                                                                                                             ],
                                                                                                             "type": [
                                                                                                                 "object",
                                                                                                                 "null"
                                                                                                             ]
                                                                                                         },
-                                                                                                        "delta": {
+                                                                                                        "nodeXY1": {
                                                                                                             "properties": {
-                                                                                                                "nodeLatLon": {
-                                                                                                                    "properties": {
-                                                                                                                        "lat": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "lon": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "lon",
-                                                                                                                        "lat"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
                                                                                                                 },
-                                                                                                                "nodeXY1": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY2": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY3": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY4": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY5": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
-                                                                                                                },
-                                                                                                                "nodeXY6": {
-                                                                                                                    "properties": {
-                                                                                                                        "x": {
-                                                                                                                            "type": "number"
-                                                                                                                        },
-                                                                                                                        "y": {
-                                                                                                                            "type": "number"
-                                                                                                                        }
-                                                                                                                    },
-                                                                                                                    "required": [
-                                                                                                                        "x",
-                                                                                                                        "y"
-                                                                                                                    ],
-                                                                                                                    "type": [
-                                                                                                                        "object",
-                                                                                                                        "null"
-                                                                                                                    ]
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
                                                                                                                 }
                                                                                                             },
-                                                                                                            "type": "object"
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY2": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY3": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY4": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY5": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "nodeXY6": {
+                                                                                                            "properties": {
+                                                                                                                "x": {
+                                                                                                                    "type": "number"
+                                                                                                                },
+                                                                                                                "y": {
+                                                                                                                    "type": "number"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "x",
+                                                                                                                "y"
+                                                                                                            ],
+                                                                                                            "type": [
+                                                                                                                "object",
+                                                                                                                "null"
+                                                                                                            ]
                                                                                                         }
                                                                                                     },
-                                                                                                    "required": [
-                                                                                                        "delta"
-                                                                                                    ],
                                                                                                     "type": "object"
                                                                                                 }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "delta"
                                                                                             ],
-                                                                                            "type": "array"
+                                                                                            "type": "object"
                                                                                         }
-                                                                                    },
-                                                                                    "required": [
-                                                                                        "NodeXY"
-                                                                                    ],
-                                                                                    "type": "object"
+                                                                                    ]
                                                                                 }
                                                                             },
                                                                             "required": [
