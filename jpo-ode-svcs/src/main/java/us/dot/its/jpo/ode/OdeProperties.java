@@ -18,31 +18,30 @@ package us.dot.its.jpo.ode;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.annotation.Configuration;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
 
 
-@Configuration
-@ConfigurationProperties(prefix = "ode")
+@Component
 @Data
 @Slf4j
+@Import(BuildProperties.class)
 public class OdeProperties {
 
-    private int outputSchemaVersion = 7;
     private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
-    @Autowired
-    BuildProperties buildProperties;
+    final BuildProperties buildProperties;
+
+    public OdeProperties(BuildProperties buildProperties) {
+        this.buildProperties = buildProperties;
+    }
 
     @PostConstruct
     void initialize() {
         log.info("groupId: {}", buildProperties.getGroup());
         log.info("artifactId: {}", buildProperties.getArtifact());
         log.info("version: {}", buildProperties.getVersion());
-        OdeMsgMetadata.setStaticSchemaVersion(this.outputSchemaVersion);
     }
 
     public String getVersion() {
