@@ -450,16 +450,16 @@ public class OdeTravelerInformationMessage extends OdeObject {
    public static class DataFrame extends OdeObject {
 
       private static final long serialVersionUID = 537503046055742396L;
-      private short notUsed;// Start Header Information
+      private short doNotUse1;// Start Header Information
       private FrameType.TravelerInfoType frameType;
       private MsgId msgId;
       private String startDateTime;
       private int durationTime;
       private int priority;// End header Information
-      private short notUsed1;// Start Region Information
+      private short doNotUse2;// Start Region Information
       private Region[] regions;
-      private short notUsed2;// Start content Information
-      private short notUsed3;
+      private short doNotUse3;// Start content Information
+      private short doNotUse4;
       private String content;
       private String[] items;
       private String url;// End content Information
@@ -990,36 +990,36 @@ public class OdeTravelerInformationMessage extends OdeObject {
          this.frameType = frameType;
       }
 
-      public short getNotUsed() {
-         return notUsed;
+      public short getDoNotUse1() {
+         return doNotUse1;
       }
 
-      public void setNotUsed(short sspTimRights) {
-         this.notUsed = sspTimRights;
+      public void setDoNotUse1(short doNotUse1) {
+         this.doNotUse1 = doNotUse1;
       }
 
-      public short getNotUsed1() {
-         return notUsed1;
+      public short getDoNotUse2() {
+         return doNotUse2;
       }
 
-      public void setNotUsed1(short sspLocationRights) {
-         this.notUsed1 = sspLocationRights;
+      public void setDoNotUse2(short doNotUse2) {
+         this.doNotUse2 = doNotUse2;
       }
 
-      public short getNotUsed2() {
-         return notUsed2;
+      public short getDoNotUse3() {
+         return doNotUse3;
       }
 
-      public void setNotUsed2(short sspMsgTypes) {
-         this.notUsed2 = sspMsgTypes;
+      public void setDoNotUse3(short doNotUse3) {
+         this.doNotUse3 = doNotUse3;
       }
 
-      public short getNotUsed3() {
-         return notUsed3;
+      public short getDoNotUse4() {
+         return doNotUse4;
       }
 
-      public void setNotUsed3(short sspMsgContent) {
-         this.notUsed3 = sspMsgContent;
+      public void setDoNotUse4(short doNotUse4) {
+         this.doNotUse4 = doNotUse4;
       }
 
    }

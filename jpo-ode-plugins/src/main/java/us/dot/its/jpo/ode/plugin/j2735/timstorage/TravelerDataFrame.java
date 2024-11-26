@@ -21,12 +21,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-@JsonPropertyOrder({ "notUsed", "frameType", "msgId", "startYear", "startTime", "durationTime", "priority",
-      "notUsed1", "regions", "notUsed2", "notUsed3", "tcontent", "url" })
+@JsonPropertyOrder({ "doNotUse1", "frameType", "msgId", "startYear", "startTime", "durationTime", "priority",
+      "doNotUse2", "regions", "doNotUse3", "doNotUse4", "tcontent", "url" })
 public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   private String notUsed;
+   private String doNotUse1;
 
    private FrameType frameType;
 
@@ -40,25 +40,25 @@ public class TravelerDataFrame extends Asn1Object {
 
    private String priority;
 
-   private String notUsed1;
+   private String doNotUse2;
 
    private Regions regions;
 
-   private String notUsed2;
+   private String doNotUse3;
 
-   private String notUsed3;
+   private String doNotUse4;
 
    @JsonProperty("tcontent")
    private Content tcontent;
 
    private String url;
 
-   public String getNotUsed1() {
-      return notUsed1;
+   public String getDoNotUse2() {
+      return doNotUse2;
    }
 
-   public void setNotUsed1(String sspLocationRights) {
-      this.notUsed1 = sspLocationRights;
+   public void setDoNotUse2(String doNotUse2) {
+      this.doNotUse2 = doNotUse2;
    }
 
 
@@ -143,27 +143,27 @@ public class TravelerDataFrame extends Asn1Object {
       this.msgId = msgId;
    }
 
-   public String getNotUsed3() {
-      return notUsed3;
+   public String getDoNotUse4() {
+      return doNotUse4;
    }
 
-   public void setNotUsed3(String sspMsgRights2) {
-      this.notUsed3 = sspMsgRights2;
+   public void setDoNotUse4(String doNotUse4) {
+      this.doNotUse4 = doNotUse4;
    }
 
-   public String getNotUsed() {
-      return notUsed;
+   public String getDoNotUse1() {
+      return doNotUse1;
    }
 
-   public void setNotUsed(String sspTimRights) {
-      this.notUsed = sspTimRights;
+   public void setDoNotUse1(String doNotUse1) {
+      this.doNotUse1 = doNotUse1;
    }
 
-   public String getNotUsed2() {
-      return notUsed2;
+   public String getDoNotUse3() {
+      return doNotUse3;
    }
 
-   public void setNotUsed2(String sspMsgRights1) {
-      this.notUsed2 = sspMsgRights1;
+   public void setDoNotUse3(String doNotUse3) {
+      this.doNotUse3 = doNotUse3;
    }
 }
