@@ -108,8 +108,8 @@
             "direction": "0000000000001010"
           }
         ],
-        "sspMsgTypes": "2",
-        "sspMsgContent": "3",
+        "doNotUse4": "2",
+        "doNotUse3": "3",
         "content": "Advisory",
         "items": [
           "513"

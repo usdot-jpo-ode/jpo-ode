@@ -115,8 +115,8 @@
             "direction": "1111111111111111"
           }
         ],
-        "sspMsgTypes": "1",
-        "sspMsgContent": "1",
+        "doNotUse4": "1",
+        "doNotUse3": "1",
         "content": "Advisory",
         "items": ["125","some text", "250", "'98765"],
         "url": "null"

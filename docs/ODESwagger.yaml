@@ -391,9 +391,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Region'
-      sspMsgTypes:
+      doNotUse4:
         type: integer
-      sspMsgContent:
+      doNotUse3:
         type: integer
       content:
         type: string

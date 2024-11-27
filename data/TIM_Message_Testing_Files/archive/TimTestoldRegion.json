@@ -86,8 +86,8 @@
             }
           }
         ],
-        "sspMsgTypes": "0",
-        "sspMsgContent": "0",
+        "doNotUse4": "0",
+        "doNotUse3": "0",
         "content": "speedLimit",
         "items": [
           "12579"
