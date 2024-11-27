@@ -16,6 +16,8 @@ public class OdeKafkaProperties {
     private String brokers;
     private Set<String> disabledTopics;
     private Producer producer;
+    private String kafkaType = "";
+    private ConfluentProperties confluent;
 
     @Data
     public static class Producer {

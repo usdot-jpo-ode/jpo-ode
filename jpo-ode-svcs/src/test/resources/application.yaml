@@ -3,20 +3,18 @@ spring:
     multipart:
       max-file-size: 1MB
       max-request-size: 1MB
-  embedded:
-    kafka:
-      brokers:
-        property: localhost:9092
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:4242
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      client-id: "ode-svcs-producer"
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: test-group
       auto-offset-reset: earliest
+      client-id: "ode-svcs-consumer"
 ode:
   output-schema-version: 7
   security-services:
@@ -131,4 +129,4 @@ ode:
     obu-log-upload-location: "bsmlog"
   tim-ingest-monitoring:
     tracking-enabled: true
-    interval: 1
+    interval: 10

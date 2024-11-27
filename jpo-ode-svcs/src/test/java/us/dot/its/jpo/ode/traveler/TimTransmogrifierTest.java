@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.traveler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +11,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier.TimTransmogrifierException;
@@ -27,12 +29,18 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -244,6 +252,56 @@ class TimTransmogrifierTest {
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTID, staticOdeMsgMetadata, staticSerialId);
         var expected = String.format("<OdeAsn1Data><metadata><payloadType>us.dot.its.jpo.ode.model.OdeTimPayload</payloadType><serialId><streamId>6c33f802-418d-4b67-89d1-326b4fc8b1e3</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>%s</odeReceivedAt><schemaVersion>%s</schemaVersion><maxDurationTime>0</maxDurationTime><sanitized>false</sanitized><request><sdw><serviceRegion><nwCorner><latitude>42.537903</latitude><longitude>-83.477903</longitude></nwCorner><seCorner><latitude>42.305753</latitude><longitude>-82.842753</longitude></seCorner></serviceRegion><ttl>thirtyminutes</ttl><deliverystart>2017-06-01T17:47:11-05:00</deliverystart><deliverystop>2018-03-01T17:47:11-05:15</deliverystop></sdw><rsus/></request><encodings><encodings><elementName>MessageFrame</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings></metadata><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageId>31</messageId><value><TravelerInformation/></value></MessageFrame></data></payload></OdeAsn1Data>", DateTimeUtils.now(), schemaVersion);
         assertEquals(expected, actualXML);
+    }
+
+    /**
+     * It should be noted that the 'prepare' section of this test largely follows the
+     * logic in the TimDepositController.depositTim() method. This is because the
+     * TimTransmogrifier.convertToXml() method is called by the TimDepositController
+     * and the TimDepositController is responsible for preparing the data that is
+     * passed to the TimTransmogrifier.convertToXml() method.
+     */
+    @Test
+    void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion() throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
+        // prepare
+        String timRequestContainingCircleGeometry = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/timRequestContainingCircleGeometry.json")));
+        OdeTravelerInputData odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(timRequestContainingCircleGeometry, OdeTravelerInputData.class, true);
+        ServiceRequest request = odeTID.getRequest();
+        request.setOde(new ServiceRequest.OdeInternal());
+        request.getOde().setVerb(ServiceRequest.OdeInternal.RequestVerb.PUT);
+        OdeTravelerInformationMessage tim = odeTID.getTim();
+        OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
+        OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
+        timMetadata.setOdePacketID(tim.getPacketID());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        int maxDurationTime = 0;
+        Date latestStartDateTime = null;
+        for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
+            maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
+            latestStartDateTime = latestStartDateTime == null || latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
+                    ? dateFormat.parse(dataFrameItem.getStartDateTime())
+                    : latestStartDateTime;
+        }
+        timMetadata.setMaxDurationTime(maxDurationTime);
+        timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
+        SerialId serialId = new SerialId();
+        serialId.setStreamId("testStreamId");
+        timMetadata.setSerialId(serialId);
+        timMetadata.setRecordGeneratedBy(OdeMsgMetadata.GeneratedBy.TMC);
+        timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+        ObjectNode encodableTid = JsonUtils.toObjectNode(odeTID.toJson());
+        TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
+        timMetadata.setSchemaVersion(7);
+
+        // Set the clock to a fixed instant for value comparison
+        DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-05T16:51:14.473Z"), ZoneId.of("UTC")));
+        
+        // execute
+        String actualXML = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialId);
+
+        // verify
+        String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")));
+        Assertions.assertEquals(expectedXml, actualXML);
     }
 
     @Test

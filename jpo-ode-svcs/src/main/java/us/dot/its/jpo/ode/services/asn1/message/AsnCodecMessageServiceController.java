@@ -3,9 +3,9 @@ package us.dot.its.jpo.ode.services.asn1.message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
+import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /***
@@ -60,13 +60,6 @@ public class AsnCodecMessageServiceController {
 				odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), asn1DecodeTIMJSON);
 		asn1RawTIMJSONConsumer.setName("asn1DecodeTIMJSON");
 		asn1DecodeTIMJSON.start(asn1RawTIMJSONConsumer, rawEncodedJsonTopics.getTim());
-
-		log.info("Send encoded MAP to ASN.1 Decoder");
-		Asn1DecodeMAPJSON asn1DecodeMAPSON = new Asn1DecodeMAPJSON(odeKafkaProperties, asn1CoderTopics.getDecoderInput());
-		MessageConsumer<String, String> asn1RawMAPJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
-				odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), asn1DecodeMAPSON);
-		asn1RawMAPJSONConsumer.setName("asn1DecodeMAPJSON");				      
-		asn1DecodeMAPSON.start(asn1RawMAPJSONConsumer, rawEncodedJsonTopics.getMap());
 
 		log.info("Send encoded PSM to ASN.1 Decoder");
 		Asn1DecodePSMJSON asn1DecodePSMSON = new Asn1DecodePSMJSON(odeKafkaProperties, asn1CoderTopics.getDecoderInput());

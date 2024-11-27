@@ -22,48 +22,39 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "center", "radius", "units" })
 public class Circle extends Asn1Object {
-   private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-   private Position center;
+    @JsonProperty("center")
+    private Position center;
 
-   @JsonProperty("radius")
-   private String radius;
+    @JsonProperty("radius")
+    private String radius;
 
-   @JsonProperty("units")
-   private DistanceUnits units;
+    @JsonProperty("units")
+    private DistanceUnits units;
 
-   @JsonProperty("position")
-   public Position getPosition() {
-      return center;
-   }
+    public Position getCenter() {
+        return center;
+    }
 
-   @JsonProperty("center")
-   public void setPosition(Position position) {
-      this.center = position;
-   }
+    public void setCenter(Position center) {
+        this.center = center;
+    }
 
-   public String getRadius() {
-      return radius;
-   }
+    public String getRadius() {
+        return radius;
+    }
 
-   public void setRadius(String radius) {
-      this.radius = radius;
-   }
+    public void setRadius(String radius) {
+        this.radius = radius;
+    }
 
-  public Position getCenter() {
-    return center;
-  }
+    public DistanceUnits getUnits() {
+        return units;
+    }
 
-  public void setCenter(Position center) {
-    this.center = center;
-  }
-
-  public DistanceUnits getUnits() {
-    return units;
-  }
-
-  public void setUnits(DistanceUnits units) {
-    this.units = units;
-  }
+    public void setUnits(DistanceUnits units) {
+        this.units = units;
+    }
 
 }

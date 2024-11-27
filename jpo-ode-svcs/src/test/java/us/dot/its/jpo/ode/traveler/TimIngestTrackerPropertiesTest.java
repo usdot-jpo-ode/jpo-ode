@@ -25,6 +25,6 @@ class TimIngestTrackerPropertiesTest {
 
     @Test
     void getMonitoringInterval() {
-        assertEquals(1, timIngestTrackerProperties.getInterval());
+        assertEquals(10, timIngestTrackerProperties.getInterval());
     }
 }
