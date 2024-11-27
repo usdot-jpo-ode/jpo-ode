@@ -416,7 +416,7 @@
         "J2735TravelerDataFrame": {
             "type": "object",
             "properties": {
-                "notUsed": {
+                "doNotUse1": {
                     "type": "string"
                 },
                 "frameType": {
@@ -452,7 +452,7 @@
                 "priority": {
                     "type": "string"
                 },
-                "notUsed1": {
+                "doNotUse2": {
                     "type": "string"
                 },
                 "regions": {
@@ -470,10 +470,10 @@
                         }
                     ]
                 },
-                "notUsed2": {
+                "doNotUse3": {
                     "type": "string"
                 },
-                "notUsed3": {
+                "doNotUse4": {
                     "type": "string"
                 },
                 "content": {
@@ -484,16 +484,16 @@
                 }
             },
             "required": [
-                "notUsed",
+                "doNotUse1",
                 "frameType",
                 "msgId",
                 "startTime",
                 "durationTime",
                 "priority",
-                "notUsed1",
+                "doNotUse2",
                 "regions",
-                "notUsed2",
-                "notUsed3",
+                "doNotUse3",
+                "doNotUse4",
                 "content"
             ]
         },
