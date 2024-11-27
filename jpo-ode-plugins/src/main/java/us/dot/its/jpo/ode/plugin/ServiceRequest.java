@@ -17,6 +17,8 @@ package us.dot.its.jpo.ode.plugin;
 
 import java.util.Arrays;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 

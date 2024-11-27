@@ -2,10 +2,20 @@ package us.dot.its.jpo.ode.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit;
+import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 import java.io.IOException;
@@ -15,6 +25,10 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OdeTravelerInputDataTest {
+
+    // create an OdeTravelerInputData object using:
+    // {"request":{"rsus":[{"rsuTarget":"127.0.0.2","rsuUsername":"v3user","rsuPassword":"password","rsuRetries":1,"rsuTimeout":1000,"rsuIndex":10,"snmpProtocol":"NTCIP1218"}],"snmp":{"rsuid":"00000083","msgid":31,"mode":1,"channel":178,"interval":2,"deliverystart":"2017-06-01T17:47:11-05:00","deliverystop":"2018-01-01T17:47:11-05:15","enable":1,"status":4}},"tim":{"msgCnt":1,"timeStamp":"2017-08-03T22:25:36.297Z","packetID":"EC9C236B0000000000","urlB":"null","dataframes":[{"doNotUse1":0,"frameType":"advisory","msgId":{"roadSignID":{"position":{"latitude":41.678473,"longitude":-108.782775,"elevation":917.1432},"viewAngle":"1010101010101010","mutcdCode":"warning","crc":"0000"}},"startDateTime":"2017-08-02T22:25:00.000Z","durationTime":1,"priority":0,"doNotUse2":0,"regions":[{"name":"Testing TIM","regulatorID":0,"segmentID":33,"anchorPosition":{"latitude":41.2500807,"longitude":-111.0093847,"elevation":2020.6969900289998},"laneWidth":7,"directionality":"3","closedPath":false,"direction":"0000000000001010","description":"path","path":{"scale":0,"type":"ll","nodes":[{"delta":"node-LL","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LL1","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL2","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL3","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL4","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL5","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL6","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LatLon","nodeLat":41.2500807,"nodeLong":-111.0093847}]}}],"doNotUse3":3,"doNotUse4":2,"content":"Advisory","items":["125","some text","250","'98765"],"url":"null"}]}}
+    OdeTravelerInputData exp = new OdeTravelerInputData();
 
     /**
      * Test method for converting pre-J2735-2016 ASN.1 to J2735-2024 ASN.1
@@ -31,12 +45,143 @@ class OdeTravelerInputDataTest {
         String timRequestPreJ2735_2016 = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_pre-J2735-2016.json")));
         ObjectMapper mapper = new ObjectMapper();
 
-        // execute
-        val inputTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
+        // create an OdeTravelerInputData object using:
+        // {"request":{"rsus":[{"rsuTarget":"127.0.0.2","rsuUsername":"v3user","rsuPassword":"password","rsuRetries":1,"rsuTimeout":1000,"rsuIndex":10,"snmpProtocol":"NTCIP1218"}],"snmp":{"rsuid":"00000083","msgid":31,"mode":1,"channel":178,"interval":2,"deliverystart":"2017-06-01T17:47:11-05:00","deliverystop":"2018-01-01T17:47:11-05:15","enable":1,"status":4}},"tim":{"msgCnt":1,"timeStamp":"2017-08-03T22:25:36.297Z","packetID":"EC9C236B0000000000","urlB":"null","dataframes":[{"doNotUse1":0,"frameType":"advisory","msgId":{"roadSignID":{"position":{"latitude":41.678473,"longitude":-108.782775,"elevation":917.1432},"viewAngle":"1010101010101010","mutcdCode":"warning","crc":"0000"}},"startDateTime":"2017-08-02T22:25:00.000Z","durationTime":1,"priority":0,"doNotUse2":0,"regions":[{"name":"Testing TIM","regulatorID":0,"segmentID":33,"anchorPosition":{"latitude":41.2500807,"longitude":-111.0093847,"elevation":2020.6969900289998},"laneWidth":7,"directionality":"3","closedPath":false,"direction":"0000000000001010","description":"path","path":{"scale":0,"type":"ll","nodes":[{"delta":"node-LL","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LL1","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL2","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL3","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL4","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL5","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL6","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LatLon","nodeLat":41.2500807,"nodeLong":-111.0093847}]}}],"doNotUse3":3,"doNotUse4":2,"content":"Advisory","items":["125","some text","250","'98765"],"url":"null"}]}}
+        OdeTravelerInputData expected = new OdeTravelerInputData();
+        var req = new ServiceRequest();
+        var rsu = new RoadSideUnit.RSU();
+        rsu.setRsuTarget("127.0.0.2");
+        rsu.setRsuUsername("v3user");
+        rsu.setRsuPassword("password");
+        rsu.setRsuRetries(1);
+        rsu.setRsuTimeout(1000);
+        rsu.setRsuIndex(10);
+        rsu.setSnmpProtocol(SnmpProtocol.valueOf("NTCIP1218"));
+        req.setRsus(new RoadSideUnit.RSU[]{rsu});
+        var snmp = new SNMP();
+        snmp.setRsuid("00000083");
+        snmp.setMsgid(31);
+        snmp.setMode(1);
+        snmp.setChannel(178);
+        snmp.setInterval(2);
+        snmp.setDeliverystart("2017-06-01T17:47:11-05:00");
+        snmp.setDeliverystop("2018-01-01T17:47:11-05:15");
+        snmp.setEnable(1);
+        snmp.setStatus(4);
+        req.setSnmp(snmp);
+        expected.setRequest(req);
+        var tim = new OdeTravelerInformationMessage();
+        tim.setMsgCnt(1);
+        tim.setTimeStamp("2017-08-03T22:25:36.297Z");
+        tim.setPacketID("EC9C236B0000000000");
+        tim.setUrlB("null");
+        var dataframes = new OdeTravelerInformationMessage.DataFrame[1];
+        var df = new OdeTravelerInformationMessage.DataFrame();
+        df.setDoNotUse1((short)0);
+        df.setFrameType(FrameType.TravelerInfoType.valueOf("advisory"));
+        var msgId = new OdeTravelerInformationMessage.DataFrame.MsgId();
+        var roadSignID = new OdeTravelerInformationMessage.DataFrame.RoadSignID();
+        var position = new OdePosition3D();
+        position.setLatitude(new BigDecimal("41.678473"));
+        position.setLongitude(new BigDecimal("-108.782775"));
+        position.setElevation(new BigDecimal("917.1432"));
+        roadSignID.setPosition(position);
+        roadSignID.setViewAngle("1010101010101010");
+        roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.valueOf("warning"));
+        roadSignID.setCrc("0000");
+        msgId.setRoadSignID(roadSignID);
+        df.setMsgId(msgId);
+        df.setStartDateTime("2017-08-02T22:25:00.000Z");
+        df.setDurationTime(1);
+        df.setPriority(0);
+        df.setDoNotUse2((short)0);
+        var region = new OdeTravelerInformationMessage.DataFrame.Region();
+        region.setName("Testing TIM");
+        region.setRegulatorID(0);
+        region.setSegmentID(33);
+        var anchorPosition = new OdePosition3D();
+        anchorPosition.setLatitude(new BigDecimal("41.2500807"));
+        anchorPosition.setLongitude(new BigDecimal("-111.0093847"));
+        anchorPosition.setElevation(new BigDecimal("2020.6969900289998"));
+        region.setAnchorPosition(anchorPosition);
+        region.setLaneWidth(BigDecimal.valueOf(7));
+        region.setDirectionality("3");
+        region.setClosedPath(false);
+        region.setDirection("0000000000001010");
+        region.setDescription("path");
+        var path = new OdeTravelerInformationMessage.DataFrame.Region.Path();
+        path.setScale(0);
+        path.setType("ll");
+        var nodes = new OdeTravelerInformationMessage.NodeXY[13];
+        nodes[0] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[0].setDelta("node-LL");
+        nodes[0].setNodeLat(BigDecimal.valueOf(-0.0002048));
+        nodes[0].setNodeLong(BigDecimal.valueOf(0.0002047));
+        nodes[1] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[1].setDelta("node-LL");
+        nodes[1].setNodeLat(BigDecimal.valueOf(-0.0008192));
+        nodes[1].setNodeLong(BigDecimal.valueOf(0.0008191));
+        nodes[2] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[2].setDelta("node-LL");
+        nodes[2].setNodeLat(BigDecimal.valueOf(-0.0032768));
+        nodes[2].setNodeLong(BigDecimal.valueOf(0.0032767));
+        nodes[3] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[3].setDelta("node-LL");
+        nodes[3].setNodeLat(BigDecimal.valueOf(-0.0131072));
+        nodes[3].setNodeLong(BigDecimal.valueOf(0.0131071));
+        nodes[4] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[4].setDelta("node-LL");
+        nodes[4].setNodeLat(BigDecimal.valueOf(-0.2097152));
+        nodes[4].setNodeLong(BigDecimal.valueOf(0.2097151));
+        nodes[5] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[5].setDelta("node-LL");
+        nodes[5].setNodeLat(BigDecimal.valueOf(-0.8388608));
+        nodes[5].setNodeLong(BigDecimal.valueOf(0.8388607));
+        nodes[6] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[6].setDelta("node-LL1");
+        nodes[6].setNodeLat(BigDecimal.valueOf(-0.0002048));
+        nodes[6].setNodeLong(BigDecimal.valueOf(0.0002047));
+        nodes[7] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[7].setDelta("node-LL2");
+        nodes[7].setNodeLat(BigDecimal.valueOf(-0.0008192));
+        nodes[7].setNodeLong(BigDecimal.valueOf(0.0008191));
+        nodes[8] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[8].setDelta("node-LL3");
+        nodes[8].setNodeLat(BigDecimal.valueOf(-0.0032768));
+        nodes[8].setNodeLong(BigDecimal.valueOf(0.0032767));
+        nodes[9] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[9].setDelta("node-LL4");
+        nodes[9].setNodeLat(BigDecimal.valueOf(-0.0131072));
+        nodes[9].setNodeLong(BigDecimal.valueOf(0.0131071));
+        nodes[10] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[10].setDelta("node-LL5");
+        nodes[10].setNodeLat(BigDecimal.valueOf(-0.2097152));
+        nodes[10].setNodeLong(BigDecimal.valueOf(0.2097151));
+        nodes[11] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[11].setDelta("node-LL6");
+        nodes[11].setNodeLat(BigDecimal.valueOf(-0.8388608));
+        nodes[11].setNodeLong(BigDecimal.valueOf(0.8388607));
+        nodes[12] = new OdeTravelerInformationMessage.NodeXY();
+        nodes[12].setDelta("node-LatLon");
+        nodes[12].setNodeLat(BigDecimal.valueOf(41.2500807));
+        nodes[12].setNodeLong(BigDecimal.valueOf(-111.0093847));
+        path.setNodes(nodes);
+        region.setPath(path);
+        df.setRegions(new OdeTravelerInformationMessage.DataFrame.Region[]{region});
+        df.setDoNotUse3((short)3);
+        df.setDoNotUse4((short)2);
+        df.setContent("Advisory");
+        df.setItems(new String[]{"125", "some text", "250", "'98765"});
+        df.setUrl("null");
+        dataframes[0] = df;
+        tim.setDataframes(dataframes);
+        expected.setTim(tim);
 
-        // verify
-        String expectedTID = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_pre-J2735-2016_ConvertedToJ2735-2024.json")));
-        Assertions.assertEquals(expectedTID, inputTID.toString());
+        // execute
+        val deserializedTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
+
+        // verify (compare inputTID to an expected OdeTravelerInputData object)
+        Assertions.assertEquals(expected, deserializedTID);
     }
 
 }

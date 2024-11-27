@@ -15,11 +15,11 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Objects;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.Region.Circle;
@@ -90,6 +90,60 @@ public class OdeTravelerInformationMessage extends OdeObject {
       this.asnDataFrames = stringDataFrames;
    }
 
+   public boolean equals(final Object o) {
+      if (o == this) {
+         return true;
+      }
+      if (!(o instanceof OdeTravelerInformationMessage)) {
+         return false;
+      }
+      final OdeTravelerInformationMessage other = (OdeTravelerInformationMessage) o;
+      if (!other.canEqual((Object) this)) {
+         return false;
+      }
+      if (this.getMsgCnt() != other.getMsgCnt()) {
+         return false;
+      }
+      final Object this$timeStamp = this.getTimeStamp();
+      final Object other$timeStamp = other.getTimeStamp();
+      if (this$timeStamp == null ? other$timeStamp != null :
+          !this$timeStamp.equals(other$timeStamp)) {
+         return false;
+      }
+      final Object this$packetID = this.getPacketID();
+      final Object other$packetID = other.getPacketID();
+      if (this$packetID == null ? other$packetID != null : !this$packetID.equals(other$packetID)) {
+         return false;
+      }
+      final Object this$urlB = this.getUrlB();
+      final Object other$urlB = other.getUrlB();
+      if (this$urlB == null ? other$urlB != null : !this$urlB.equals(other$urlB)) {
+         return false;
+      }
+      if (!java.util.Arrays.deepEquals(this.getDataframes(), other.getDataframes())) {
+         return false;
+      }
+      return true;
+   }
+
+   protected boolean canEqual(final Object other) {
+      return other instanceof OdeTravelerInformationMessage;
+   }
+
+   public int hashCode() {
+      final int PRIME = 59;
+      int result = 1;
+      result = result * PRIME + this.getMsgCnt();
+      final Object $timeStamp = this.getTimeStamp();
+      result = result * PRIME + ($timeStamp == null ? 43 : $timeStamp.hashCode());
+      final Object $packetID = this.getPacketID();
+      result = result * PRIME + ($packetID == null ? 43 : $packetID.hashCode());
+      final Object $urlB = this.getUrlB();
+      result = result * PRIME + ($urlB == null ? 43 : $urlB.hashCode());
+      result = result * PRIME + java.util.Arrays.deepHashCode(this.getDataframes());
+      return result;
+   }
+
    public static class NodeListXY extends OdeObject {
       private static final long serialVersionUID = 1L;
       private ComputedLane computedLane;
@@ -143,6 +197,21 @@ public class OdeTravelerInformationMessage extends OdeObject {
          this.regionPoint = regionPoint;
       }
 
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         Area area = (Area) o;
+         return Objects.equals(shapepoint, area.shapepoint) &&
+             Objects.equals(circle, area.circle) &&
+             Objects.equals(regionPoint, area.regionPoint);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(shapepoint, circle, regionPoint);
+      }
    }
 
    public static class ComputedLane extends OdeObject {
@@ -203,6 +272,25 @@ public class OdeTravelerInformationMessage extends OdeObject {
          this.scaleYaxis = scaleYaxis;
       }
 
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         ComputedLane that = (ComputedLane) o;
+         return referenceLaneId == that.referenceLaneId &&
+             Objects.equals(offsetXaxis, that.offsetXaxis) &&
+             Objects.equals(offsetYaxis, that.offsetYaxis) &&
+             Objects.equals(rotateXY, that.rotateXY) &&
+             Objects.equals(scaleXaxis, that.scaleXaxis) &&
+             Objects.equals(scaleYaxis, that.scaleYaxis);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(referenceLaneId, offsetXaxis, offsetYaxis, rotateXY, scaleXaxis,
+             scaleYaxis);
+      }
    }
 
    public static class NodeXY extends OdeObject {
@@ -263,6 +351,23 @@ public class OdeTravelerInformationMessage extends OdeObject {
          this.attributes = attributes;
       }
 
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         NodeXY nodeXY = (NodeXY) o;
+         return Objects.equals(delta, nodeXY.delta) &&
+             Objects.equals(nodeLat, nodeXY.nodeLat) &&
+             Objects.equals(nodeLong, nodeXY.nodeLong) &&
+             Objects.equals(x, nodeXY.x) && Objects.equals(y, nodeXY.y) &&
+             Objects.equals(attributes, nodeXY.attributes);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(delta, nodeLat, nodeLong, x, y, attributes);
+      }
    }
 
    public static class LocalNode extends OdeObject {
@@ -276,6 +381,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
       public void setType(long type) {
          this.type = type;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         LocalNode localNode = (LocalNode) o;
+         return type == localNode.type;
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hashCode(type);
       }
    }
 
@@ -291,6 +410,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
       public void setType(long type) {
          this.type = type;
       }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         DisabledList that = (DisabledList) o;
+         return type == that.type;
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hashCode(type);
+      }
    }
 
    public static class EnabledList extends OdeObject {
@@ -304,6 +437,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
       public void setType(long type) {
          this.type = type;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         EnabledList that = (EnabledList) o;
+         return type == that.type;
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hashCode(type);
       }
    }
 
@@ -327,6 +474,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
       public void setVelocity(BigDecimal velocity) {
          this.velocity = velocity;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         SpeedLimits that = (SpeedLimits) o;
+         return type == that.type && Objects.equals(velocity, that.velocity);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(type, velocity);
       }
    }
 
@@ -387,6 +548,27 @@ public class OdeTravelerInformationMessage extends OdeObject {
       public void setSpeedLimits(SpeedLimits[] speedLimits) {
          this.speedLimits = speedLimits;
       }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         DataList dataList = (DataList) o;
+         return pathEndpointAngle == dataList.pathEndpointAngle &&
+             Objects.equals(laneCrownCenter, dataList.laneCrownCenter) &&
+             Objects.equals(laneCrownLeft, dataList.laneCrownLeft) &&
+             Objects.equals(laneCrownRight, dataList.laneCrownRight) &&
+             Objects.equals(laneAngle, dataList.laneAngle) &&
+             Objects.deepEquals(speedLimits, dataList.speedLimits);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(pathEndpointAngle, laneCrownCenter, laneCrownLeft, laneCrownRight,
+             laneAngle,
+             Arrays.hashCode(speedLimits));
+      }
    }
 
    public static class Attributes extends OdeObject {
@@ -446,6 +628,26 @@ public class OdeTravelerInformationMessage extends OdeObject {
       public void setdElevation(BigDecimal dElevation) {
          this.dElevation = dElevation;
       }
+
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         Attributes that = (Attributes) o;
+         return Objects.deepEquals(localNodes, that.localNodes) &&
+             Objects.deepEquals(disabledLists, that.disabledLists) &&
+             Objects.deepEquals(enabledLists, that.enabledLists) &&
+             Objects.deepEquals(dataLists, that.dataLists) &&
+             Objects.equals(dWidth, that.dWidth) &&
+             Objects.equals(dElevation, that.dElevation);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(Arrays.hashCode(localNodes), Arrays.hashCode(disabledLists),
+             Arrays.hashCode(enabledLists), Arrays.hashCode(dataLists), dWidth, dElevation);
+      }
    }
 
    public static class DataFrame extends OdeObject {
@@ -470,6 +672,30 @@ public class OdeTravelerInformationMessage extends OdeObject {
       private String[] items;
       private String url;// End content Information
 
+      @Override
+      public boolean equals(Object o) {
+         if (o == null || getClass() != o.getClass()) {
+            return false;
+         }
+         DataFrame dataFrame = (DataFrame) o;
+         return doNotUse1 == dataFrame.doNotUse1 && durationTime == dataFrame.durationTime &&
+             priority == dataFrame.priority && doNotUse2 == dataFrame.doNotUse2 &&
+             doNotUse3 == dataFrame.doNotUse3 && doNotUse4 == dataFrame.doNotUse4 &&
+             frameType == dataFrame.frameType && Objects.equals(msgId, dataFrame.msgId) &&
+             Objects.equals(startDateTime, dataFrame.startDateTime) &&
+             Objects.deepEquals(regions, dataFrame.regions) &&
+             Objects.equals(content, dataFrame.content) &&
+             Objects.deepEquals(items, dataFrame.items) &&
+             Objects.equals(url, dataFrame.url);
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(doNotUse1, frameType, msgId, startDateTime, durationTime, priority,
+             doNotUse2,
+             Arrays.hashCode(regions), doNotUse3, doNotUse4, content, Arrays.hashCode(items), url);
+      }
+
       public static class Region extends OdeObject {
 
          private static final long serialVersionUID = 8011973280114768008L;
@@ -486,12 +712,53 @@ public class OdeTravelerInformationMessage extends OdeObject {
          private Geometry geometry;
          private OldRegion oldRegion;
 
+         @Override
+         public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) {
+               return false;
+            }
+            Region region = (Region) o;
+            return regulatorID == region.regulatorID && segmentID == region.segmentID &&
+                closedPath == region.closedPath && Objects.equals(name, region.name) &&
+                Objects.equals(anchorPosition, region.anchorPosition) &&
+                Objects.equals(laneWidth, region.laneWidth) &&
+                Objects.equals(directionality, region.directionality) &&
+                Objects.equals(direction, region.direction) &&
+                Objects.equals(description, region.description) &&
+                Objects.equals(path, region.path) &&
+                Objects.equals(geometry, region.geometry) &&
+                Objects.equals(oldRegion, region.oldRegion);
+         }
+
+         @Override
+         public int hashCode() {
+            return Objects.hash(name, regulatorID, segmentID, anchorPosition, laneWidth,
+                directionality,
+                closedPath, direction, description, path, geometry, oldRegion);
+         }
+
          public static class OldRegion extends OdeObject {
 
             private static final long serialVersionUID = 1L;
             private String direction;
             private String extent;
             private Area area;
+
+            @Override
+            public boolean equals(Object o) {
+               if (o == null || getClass() != o.getClass()) {
+                  return false;
+               }
+               OldRegion oldRegion = (OldRegion) o;
+               return Objects.equals(direction, oldRegion.direction) &&
+                   Objects.equals(extent, oldRegion.extent) &&
+                   Objects.equals(area, oldRegion.area);
+            }
+
+            @Override
+            public int hashCode() {
+               return Objects.hash(direction, extent, area);
+            }
 
             public static class ShapePointSet extends OdeObject {
 
@@ -537,6 +804,22 @@ public class OdeTravelerInformationMessage extends OdeObject {
                   this.nodeList = nodeList;
                }
 
+               @Override
+               public boolean equals(Object o) {
+                  if (o == null || getClass() != o.getClass()) {
+                     return false;
+                  }
+                  ShapePointSet that = (ShapePointSet) o;
+                  return directionality == that.directionality &&
+                      Objects.equals(anchor, that.anchor) &&
+                      Objects.equals(laneWidth, that.laneWidth) &&
+                      Objects.equals(nodeList, that.nodeList);
+               }
+
+               @Override
+               public int hashCode() {
+                  return Objects.hash(anchor, laneWidth, directionality, nodeList);
+               }
             }
 
             public static class RegionPointSet extends OdeObject {
@@ -545,6 +828,21 @@ public class OdeTravelerInformationMessage extends OdeObject {
                private OdePosition3D position;
                private int scale;
                private RegionList[] regionList;
+
+               @Override
+               public boolean equals(Object o) {
+                  if (o == null || getClass() != o.getClass()) {
+                     return false;
+                  }
+                  RegionPointSet that = (RegionPointSet) o;
+                  return scale == that.scale && Objects.equals(position, that.position) &&
+                      Objects.deepEquals(regionList, that.regionList);
+               }
+
+               @Override
+               public int hashCode() {
+                  return Objects.hash(position, scale, Arrays.hashCode(regionList));
+               }
 
                public static class RegionList extends OdeObject {
 
@@ -575,6 +873,22 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
                   public void setxOffset(BigDecimal xOffset) {
                      this.xOffset = xOffset;
+                  }
+
+                  @Override
+                  public boolean equals(Object o) {
+                     if (o == null || getClass() != o.getClass()) {
+                        return false;
+                     }
+                     RegionList that = (RegionList) o;
+                     return Objects.equals(xOffset, that.xOffset) &&
+                         Objects.equals(yOffset, that.yOffset) &&
+                         Objects.equals(zOffset, that.zOffset);
+                  }
+
+                  @Override
+                  public int hashCode() {
+                     return Objects.hash(xOffset, yOffset, zOffset);
                   }
                }
 
@@ -716,6 +1030,22 @@ public class OdeTravelerInformationMessage extends OdeObject {
             public void setCenter(OdePosition3D center) {
                this.center = center;
             }
+
+            @Override
+            public boolean equals(Object o) {
+               if (o == null || getClass() != o.getClass()) {
+                  return false;
+               }
+               Circle circle = (Circle) o;
+               return radius == circle.radius && Objects.equals(position, circle.position) &&
+                   Objects.equals(center, circle.center) &&
+                   Objects.equals(units, circle.units);
+            }
+
+            @Override
+            public int hashCode() {
+               return Objects.hash(position, center, radius, units);
+            }
          }
 
          public static class Path extends OdeObject {
@@ -758,6 +1088,21 @@ public class OdeTravelerInformationMessage extends OdeObject {
                this.scale = scale;
             }
 
+            @Override
+            public boolean equals(Object o) {
+               if (o == null || getClass() != o.getClass()) {
+                  return false;
+               }
+               Path path = (Path) o;
+               return scale == path.scale && Objects.equals(type, path.type) &&
+                   Objects.deepEquals(nodes, path.nodes) &&
+                   Objects.equals(computedLane, path.computedLane);
+            }
+
+            @Override
+            public int hashCode() {
+               return Objects.hash(scale, type, Arrays.hashCode(nodes), computedLane);
+            }
          }
 
          public OldRegion getOldRegion() {
@@ -899,6 +1244,21 @@ public class OdeTravelerInformationMessage extends OdeObject {
             this.crc = crc;
          }
 
+         @Override
+         public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) {
+               return false;
+            }
+            RoadSignID that = (RoadSignID) o;
+            return Objects.equals(position, that.position) &&
+                Objects.equals(viewAngle, that.viewAngle) && mutcdCode == that.mutcdCode &&
+                Objects.equals(crc, that.crc);
+         }
+
+         @Override
+         public int hashCode() {
+            return Objects.hash(position, viewAngle, mutcdCode, crc);
+         }
       }
 
       public static class MsgId extends Asn1Object {
@@ -921,6 +1281,21 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
          public void setFurtherInfoID(String furtherInfoID) {
             this.furtherInfoID = furtherInfoID;
+         }
+
+         @Override
+         public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) {
+               return false;
+            }
+            MsgId msgId = (MsgId) o;
+            return Objects.equals(roadSignID, msgId.roadSignID) &&
+                Objects.equals(furtherInfoID, msgId.furtherInfoID);
+         }
+
+         @Override
+         public int hashCode() {
+            return Objects.hash(roadSignID, furtherInfoID);
          }
       }
 
