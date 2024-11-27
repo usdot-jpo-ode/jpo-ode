@@ -546,6 +546,21 @@ Install the IDE of your choice:
 
 The project can be reopened inside a dev container in VSCode. This environment should have all the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
+
+### Checkstyle configuration
+
+This project uses [Checkstyle](https://github.com/checkstyle/checkstyle) with a modified version 
+of Google's Java Style guide to weakly enforce style standards. To configure Checkstyle with your 
+chosen IDE follow one of the following guides. This repo's checkstyle configuration file can be found 
+[here](checkstyle.xml). For a quick guide to Checkstyle, check out this short [article](https://www.baeldung.com/checkstyle-java).
+
+- [Intellij](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)
+- [VSCode](https://code.visualstudio.com/docs/java/java-linting#_checkstyle)
+- [Eclipse](https://checkstyle.org/eclipse-cs/#!/project-setup)
+
+If you prefer the command line for your checkstyle output. You can run `mvn checkstyle:check` to
+check the whole project. See [Checkstyle's Github](https://github.com/checkstyle/checkstyle) for more info.
+
 [Back to top](#table-of-contents)
 
 
