@@ -48,7 +48,7 @@
         "startDateTime": "2018-06-11T10:00-06:00",
         "durationTime": 2000,
         "frameType": "advisory",
-        "notUsed": "0",
+        "doNotUse1": "0",
         "msgId": {
           "roadSignID": {
             "mutcdCode": "warning",
@@ -60,7 +60,7 @@
           }
         },
         "priority": "5",
-        "notUsed1": "0",
+        "doNotUse2": "0",
         "regions": [
           {
             "name": "southbound_Timberline_20_30_RSU-192.168.0.100",

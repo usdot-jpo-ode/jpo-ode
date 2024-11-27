@@ -47,7 +47,7 @@
       {
         "startDateTime": "2017-08-02T22:25:00.000Z",
         "durationTime": 1,
-        "notUsed": "0",
+        "doNotUse1": "0",
         "frameType": "advisory",
         "msgId": {
           "roadSignID": {
@@ -62,7 +62,7 @@
           }
         },
         "priority": "0",
-        "notUsed1": "0",
+        "doNotUse2": "0",
         "regions": [
           {
             "name": "Testing TIM",
