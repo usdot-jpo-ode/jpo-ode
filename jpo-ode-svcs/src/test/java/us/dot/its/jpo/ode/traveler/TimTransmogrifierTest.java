@@ -265,37 +265,17 @@ class TimTransmogrifierTest {
     void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion() throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
         // prepare
         String timRequestContainingCircleGeometry = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/timRequestContainingCircleGeometry.json")));
-        OdeTravelerInputData odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(timRequestContainingCircleGeometry, OdeTravelerInputData.class, true);
-        ServiceRequest request = odeTID.getRequest();
-        request.setOde(new ServiceRequest.OdeInternal());
-        request.getOde().setVerb(ServiceRequest.OdeInternal.RequestVerb.PUT);
-        OdeTravelerInformationMessage tim = odeTID.getTim();
-        OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
-        OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
-        timMetadata.setOdePacketID(tim.getPacketID());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        int maxDurationTime = 0;
-        Date latestStartDateTime = null;
-        for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
-            maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
-            latestStartDateTime = latestStartDateTime == null || latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
-                    ? dateFormat.parse(dataFrameItem.getStartDateTime())
-                    : latestStartDateTime;
-        }
-        timMetadata.setMaxDurationTime(maxDurationTime);
-        timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
-        SerialId serialId = new SerialId();
-        serialId.setStreamId("testStreamId");
-        timMetadata.setSerialId(serialId);
-        timMetadata.setRecordGeneratedBy(OdeMsgMetadata.GeneratedBy.TMC);
-        timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+
+        SerialId serialId = prepareSerialId();
+        OdeTravelerInputData odeTID = prepareOdeTID(timRequestContainingCircleGeometry);
+        OdeRequestMsgMetadata timMetadata = prepareMetadata(odeTID, serialId);
+
         ObjectNode encodableTid = JsonUtils.toObjectNode(odeTID.toJson());
         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
-        timMetadata.setSchemaVersion(7);
 
         // Set the clock to a fixed instant for value comparison
         DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-05T16:51:14.473Z"), ZoneId.of("UTC")));
-        
+
         // execute
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialId);
 
@@ -324,6 +304,60 @@ class TimTransmogrifierTest {
         constructor.setAccessible(true);
 
         assertThrows(InvocationTargetException.class, constructor::newInstance);
+    }
+
+    /**
+     * Helper method to prepare a SerialId object for testing
+     * @return a SerialId object
+     */
+    private SerialId prepareSerialId() {
+        SerialId serialId = new SerialId();
+        serialId.setStreamId("testStreamId");
+        return serialId;
+    }
+
+    /**
+     * Helper method to prepare an OdeTravelerInputData object for testing
+     * @param timRequestContainingCircleGeometry a JSON string containing a TIM request with a circle geometry
+     * @return an OdeTravelerInputData object
+     * @throws JsonUtilsException if there is an issue parsing the JSON string
+     */
+    private OdeTravelerInputData prepareOdeTID(String timRequestContainingCircleGeometry) throws JsonUtilsException {
+        return (OdeTravelerInputData) JsonUtils.jacksonFromJson(timRequestContainingCircleGeometry, OdeTravelerInputData.class, true);
+    }
+
+    /**
+     * Helper method to prepare an OdeRequestMsgMetadata object for testing
+     * @param odeTID an OdeTravelerInputData object
+     * @param serialId a SerialId object
+     * @return an OdeRequestMsgMetadata object
+     * @throws ParseException if there is an issue parsing the date
+     */
+    private OdeRequestMsgMetadata prepareMetadata(OdeTravelerInputData odeTID, SerialId serialId) throws ParseException {
+        ServiceRequest request = odeTID.getRequest();
+        request.setOde(new ServiceRequest.OdeInternal());
+        request.getOde().setVerb(ServiceRequest.OdeInternal.RequestVerb.PUT);
+        OdeTravelerInformationMessage tim = odeTID.getTim();
+        OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
+        OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
+        timMetadata.setOdePacketID(tim.getPacketID());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        int maxDurationTime = 0;
+        Date latestStartDateTime = null;
+        for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
+            maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
+            latestStartDateTime = latestStartDateTime == null || latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
+                    ? dateFormat.parse(dataFrameItem.getStartDateTime())
+                    : latestStartDateTime;
+        }
+        timMetadata.setMaxDurationTime(maxDurationTime);
+        timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
+
+        timMetadata.setSerialId(serialId);
+        timMetadata.setRecordGeneratedBy(OdeMsgMetadata.GeneratedBy.TMC);
+        timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+        timMetadata.setSchemaVersion(7);
+        return timMetadata;
     }
 
 }
