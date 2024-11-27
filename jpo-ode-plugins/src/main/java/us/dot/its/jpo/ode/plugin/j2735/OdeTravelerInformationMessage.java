@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.model.OdeObject;
@@ -450,15 +451,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
    public static class DataFrame extends OdeObject {
 
       private static final long serialVersionUID = 537503046055742396L;
+      @JsonAlias("sspTimRights")
       private short doNotUse1;// Start Header Information
       private FrameType.TravelerInfoType frameType;
       private MsgId msgId;
       private String startDateTime;
+      @JsonAlias("duratonTime")
       private int durationTime;
       private int priority;// End header Information
+      @JsonAlias("sspLocationRights")
       private short doNotUse2;// Start Region Information
       private Region[] regions;
+      @JsonAlias("sspMsgContent")
       private short doNotUse3;// Start content Information
+      @JsonAlias("sspMsgTypes")
       private short doNotUse4;
       private String content;
       private String[] items;

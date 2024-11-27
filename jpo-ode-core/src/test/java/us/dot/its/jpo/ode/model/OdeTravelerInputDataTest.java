@@ -30,10 +30,9 @@ class OdeTravelerInputDataTest {
         // prepare
         String timRequestPreJ2735_2016 = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_pre-J2735-2016.json")));
         ObjectMapper mapper = new ObjectMapper();
-        val inputTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
 
         // execute
-//        TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(inputTID);
+        val inputTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
 
         // verify
         String expectedTID = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_pre-J2735-2016_ConvertedToJ2735-2024.json")));
