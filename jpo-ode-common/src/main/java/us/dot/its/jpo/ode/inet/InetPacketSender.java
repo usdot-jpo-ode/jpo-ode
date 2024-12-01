@@ -59,7 +59,7 @@ public class InetPacketSender {
 	/**
 	 * Forward packet. Intended client is the forwarder that received a packet
 	 * 
-	 * @param inbound UDP packet
+	 * @param packet UDP packet
 	 * @throws InetPacketException
 	 */
 	public void forward(DatagramPacket packet) throws InetPacketException {
