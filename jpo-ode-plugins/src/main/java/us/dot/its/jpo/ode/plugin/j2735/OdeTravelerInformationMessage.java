@@ -653,7 +653,7 @@ public class OdeTravelerInformationMessage extends OdeObject {
    public static class DataFrame extends OdeObject {
 
       private static final long serialVersionUID = 537503046055742396L;
-      @JsonAlias("sspTimRights")
+      @JsonAlias({"sspTimRights", "notUsed"})
       private short doNotUse1;// Start Header Information
       private FrameType.TravelerInfoType frameType;
       private MsgId msgId;
@@ -661,12 +661,12 @@ public class OdeTravelerInformationMessage extends OdeObject {
       @JsonAlias("duratonTime")
       private int durationTime;
       private int priority;// End header Information
-      @JsonAlias("sspLocationRights")
+      @JsonAlias({"sspLocationRights", "notUsed1"})
       private short doNotUse2;// Start Region Information
       private Region[] regions;
-      @JsonAlias("sspMsgContent")
+      @JsonAlias({"sspMsgContent", "sspMsgRights1", "notUsed2"})
       private short doNotUse3;// Start content Information
-      @JsonAlias("sspMsgTypes")
+      @JsonAlias({"sspMsgTypes", "sspMsgRights2", "notUsed3"})
       private short doNotUse4;
       private String content;
       private String[] items;

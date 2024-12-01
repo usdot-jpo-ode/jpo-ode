@@ -26,10 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OdeTravelerInputDataTest {
 
-    // create an OdeTravelerInputData object using:
-    // {"request":{"rsus":[{"rsuTarget":"127.0.0.2","rsuUsername":"v3user","rsuPassword":"password","rsuRetries":1,"rsuTimeout":1000,"rsuIndex":10,"snmpProtocol":"NTCIP1218"}],"snmp":{"rsuid":"00000083","msgid":31,"mode":1,"channel":178,"interval":2,"deliverystart":"2017-06-01T17:47:11-05:00","deliverystop":"2018-01-01T17:47:11-05:15","enable":1,"status":4}},"tim":{"msgCnt":1,"timeStamp":"2017-08-03T22:25:36.297Z","packetID":"EC9C236B0000000000","urlB":"null","dataframes":[{"doNotUse1":0,"frameType":"advisory","msgId":{"roadSignID":{"position":{"latitude":41.678473,"longitude":-108.782775,"elevation":917.1432},"viewAngle":"1010101010101010","mutcdCode":"warning","crc":"0000"}},"startDateTime":"2017-08-02T22:25:00.000Z","durationTime":1,"priority":0,"doNotUse2":0,"regions":[{"name":"Testing TIM","regulatorID":0,"segmentID":33,"anchorPosition":{"latitude":41.2500807,"longitude":-111.0093847,"elevation":2020.6969900289998},"laneWidth":7,"directionality":"3","closedPath":false,"direction":"0000000000001010","description":"path","path":{"scale":0,"type":"ll","nodes":[{"delta":"node-LL","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LL1","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL2","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL3","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL4","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL5","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL6","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LatLon","nodeLat":41.2500807,"nodeLong":-111.0093847}]}}],"doNotUse3":3,"doNotUse4":2,"content":"Advisory","items":["125","some text","250","'98765"],"url":"null"}]}}
-    OdeTravelerInputData exp = new OdeTravelerInputData();
-
     /**
      * Test method for converting pre-J2735-2016 ASN.1 to J2735-2024 ASN.1
      * Prior to J2735 2016, the following fields had different names:
@@ -40,11 +36,65 @@ class OdeTravelerInputDataTest {
      * - 'durationTime' was 'duratonTime'
      */
     @Test
-    void testConvertPreJ2735_2016ToJ2735_2024() throws IOException, JsonUtils.JsonUtilsException {
+    void testConvertPreJ2735_2016ToJ2735_2024() throws IOException {
         // prepare
         String timRequestPreJ2735_2016 = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_pre-J2735-2016.json")));
         ObjectMapper mapper = new ObjectMapper();
+        OdeTravelerInputData expectedTID = getExpectedDeserializedObject();
 
+        // execute
+        val deserializedTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
+
+        // verify (compare inputTID to an expected OdeTravelerInputData object)
+        Assertions.assertEquals(expectedTID, deserializedTID);
+    }
+
+    /**
+     * Test method for converting J2735-2016 ASN.1 to J2735-2024 ASN.1
+     * In J2735 2016, the following fields had different names:
+     * - 'doNotUse1' was 'sspTimRights'
+     * - 'doNotUse2' was 'sspLocationRights'
+     * - 'doNotUse3' was 'sspMsgRights1'
+     * - 'doNotUse4' was 'sspMsgRights2'
+     * - 'durationTime' was 'duratonTime'
+     */
+    @Test
+    void testConvertJ2735_2016ToJ2735_2024() throws IOException {
+        // prepare
+        String timRequestJ2735_2016 = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_J2735-2016.json")));
+        ObjectMapper mapper = new ObjectMapper();
+        OdeTravelerInputData expectedTID = getExpectedDeserializedObject();
+
+        // execute
+        val deserializedTID = mapper.readValue(timRequestJ2735_2016, OdeTravelerInputData.class);
+
+        // verify (compare inputTID to an expected OdeTravelerInputData object)
+        Assertions.assertEquals(expectedTID, deserializedTID);
+    }
+
+    /**
+     * Test method for converting J2735-2020 ASN.1 to J2735-2024 ASN.1
+     * In J2735 2020, the following fields had different names:
+     * - 'doNotUse1' was 'notUsed'
+     * - 'doNotUse2' was 'notUsed1'
+     * - 'doNotUse3' was 'notUsed2'
+     * - 'doNotUse4' was 'notUsed3'
+     */
+    @Test
+    void testConvertJ2735_2020ToJ2735_2024() throws IOException {
+        // prepare
+        String timRequestJ2735_2020 = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/model/timRequest_J2735-2020.json")));
+        ObjectMapper mapper = new ObjectMapper();
+        OdeTravelerInputData expectedTID = getExpectedDeserializedObject();
+
+        // execute
+        val deserializedTID = mapper.readValue(timRequestJ2735_2020, OdeTravelerInputData.class);
+
+        // verify (compare inputTID to an expected OdeTravelerInputData object)
+        Assertions.assertEquals(expectedTID, deserializedTID);
+    }
+
+    private static OdeTravelerInputData getExpectedDeserializedObject() {
         // create an OdeTravelerInputData object using:
         // {"request":{"rsus":[{"rsuTarget":"127.0.0.2","rsuUsername":"v3user","rsuPassword":"password","rsuRetries":1,"rsuTimeout":1000,"rsuIndex":10,"snmpProtocol":"NTCIP1218"}],"snmp":{"rsuid":"00000083","msgid":31,"mode":1,"channel":178,"interval":2,"deliverystart":"2017-06-01T17:47:11-05:00","deliverystop":"2018-01-01T17:47:11-05:15","enable":1,"status":4}},"tim":{"msgCnt":1,"timeStamp":"2017-08-03T22:25:36.297Z","packetID":"EC9C236B0000000000","urlB":"null","dataframes":[{"doNotUse1":0,"frameType":"advisory","msgId":{"roadSignID":{"position":{"latitude":41.678473,"longitude":-108.782775,"elevation":917.1432},"viewAngle":"1010101010101010","mutcdCode":"warning","crc":"0000"}},"startDateTime":"2017-08-02T22:25:00.000Z","durationTime":1,"priority":0,"doNotUse2":0,"regions":[{"name":"Testing TIM","regulatorID":0,"segmentID":33,"anchorPosition":{"latitude":41.2500807,"longitude":-111.0093847,"elevation":2020.6969900289998},"laneWidth":7,"directionality":"3","closedPath":false,"direction":"0000000000001010","description":"path","path":{"scale":0,"type":"ll","nodes":[{"delta":"node-LL","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LL1","nodeLat":-0.0002048,"nodeLong":0.0002047},{"delta":"node-LL2","nodeLat":-0.0008192,"nodeLong":0.0008191},{"delta":"node-LL3","nodeLat":-0.0032768,"nodeLong":0.0032767},{"delta":"node-LL4","nodeLat":-0.0131072,"nodeLong":0.0131071},{"delta":"node-LL5","nodeLat":-0.2097152,"nodeLong":0.2097151},{"delta":"node-LL6","nodeLat":-0.8388608,"nodeLong":0.8388607},{"delta":"node-LatLon","nodeLat":41.2500807,"nodeLong":-111.0093847}]}}],"doNotUse3":3,"doNotUse4":2,"content":"Advisory","items":["125","some text","250","'98765"],"url":"null"}]}}
         OdeTravelerInputData expected = new OdeTravelerInputData();
@@ -176,12 +226,7 @@ class OdeTravelerInputDataTest {
         dataframes[0] = df;
         tim.setDataframes(dataframes);
         expected.setTim(tim);
-
-        // execute
-        val deserializedTID = mapper.readValue(timRequestPreJ2735_2016, OdeTravelerInputData.class);
-
-        // verify (compare inputTID to an expected OdeTravelerInputData object)
-        Assertions.assertEquals(expected, deserializedTID);
+        return expected;
     }
 
 }
