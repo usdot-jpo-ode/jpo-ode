@@ -16,11 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.val;
 import org.json.JSONObject;
 import org.json.XML;
 import org.junit.jupiter.api.Assertions;

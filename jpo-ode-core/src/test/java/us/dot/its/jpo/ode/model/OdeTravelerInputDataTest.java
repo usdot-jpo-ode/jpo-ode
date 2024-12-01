@@ -1,9 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,16 +11,12 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
-import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
-import us.dot.its.jpo.ode.util.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class OdeTravelerInputDataTest {
 
