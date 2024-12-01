@@ -133,6 +133,11 @@ public class TravelerMessageFromHumanToAsnConverter {
       super();
    }
 
+   /**
+    * Converts a TravelerInputData object to a TIM object
+    * @param tid TravelerInputData object serialized as a JsonNode
+    * @throws JsonUtilsException if there is an issue converting the JsonNode
+    */
    public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
       // msgCnt MsgCount,
       // timeStamp MinuteOfTheYear OPTIONAL
@@ -1099,37 +1104,20 @@ public class TravelerMessageFromHumanToAsnConverter {
    }
 
    /**
-    * Ensures compliance with the J2735 2024 by modifying the given data frame.
+    * Ensures compliance with the J2735 2024 standard by checking for old fields in the given data frame.
     *
-    * @param dataFrame the JSON object representing the data frame to be modified
+    * @param dataFrame the JSON object representing the data frame to be checked
+    * @throws IllegalArgumentException if any old fields are found
     */
-   private static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) {
-      // Remove fields from before J2735 2016
-      dataFrame.remove(SSP_MSG_CONTENT); // renamed to sspMsgRights1
-      dataFrame.remove(SSP_MSG_TYPES); // renamed to sspMsgRights2
-
-      // Remove J2735 2016 fields
-      dataFrame.remove(SSP_TIM_RIGHTS); // renamed to notUsed in J2735 2020
-      dataFrame.remove(SSP_LOCATION_RIGHTS); // renamed to notUsed1 in J2735 2020
-      dataFrame.remove(SSP_MSG_RIGHTS_1); // renamed to notUsed2 in J2735 2020
-      dataFrame.remove(SSP_MSG_RIGHTS_2); // renamed to notUsed3 in J2735 2020
-
-      // Remove J2735 2020 fields
-      dataFrame.remove(NOT_USED); // renamed to doNotUse1 in J2735 2024
-      dataFrame.remove(NOT_USED_1); // renamed to doNotUse2 in J2735 2024
-      dataFrame.remove(NOT_USED_2); // renamed to doNotUse3 in J2735 2024
-      dataFrame.remove(NOT_USED_3); // renamed to doNotUse4 in J2735 2024
-
-      // Add J2735 2024 fields with values of 0
-      dataFrame.put(DO_NOT_USE_1, 0);
-      dataFrame.put(DO_NOT_USE_2, 0);
-      dataFrame.put(DO_NOT_USE_3, 0);
-      dataFrame.put(DO_NOT_USE_4, 0);
-
-      // Replace misspelled durationTime field from J2735 2016 with the correct one
-      if (dataFrame.get(DURATON_TIME_MISSPELLED) != null) {
-         dataFrame.set(DURATION_TIME, dataFrame.get(DURATON_TIME_MISSPELLED));
-         dataFrame.remove(DURATON_TIME_MISSPELLED);
+   public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) {
+      // Check and throw exception if old fields are found
+      if (dataFrame.has(SSP_MSG_CONTENT) || dataFrame.has(SSP_MSG_TYPES) ||
+          dataFrame.has(SSP_TIM_RIGHTS) || dataFrame.has(SSP_LOCATION_RIGHTS) ||
+          dataFrame.has(SSP_MSG_RIGHTS_1) || dataFrame.has(SSP_MSG_RIGHTS_2) ||
+          dataFrame.has(NOT_USED) || dataFrame.has(NOT_USED_1) ||
+          dataFrame.has(NOT_USED_2) || dataFrame.has(NOT_USED_3) ||
+          dataFrame.has(DURATON_TIME_MISSPELLED)) {
+         throw new IllegalArgumentException("Data frame contains old fields that are not compliant with J2735 2024. Deserialization should prevent this.");
       }
    }
 

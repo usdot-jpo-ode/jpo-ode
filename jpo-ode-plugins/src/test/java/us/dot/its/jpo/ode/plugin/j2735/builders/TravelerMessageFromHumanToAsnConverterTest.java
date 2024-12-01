@@ -15,6 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -327,6 +330,134 @@ class TravelerMessageFromHumanToAsnConverterTest {
         timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
                 JsonUtils.toJSONObject(inputTID.toString()));
         Assertions.assertNotNull(XML.toString(timObject));
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_noOldFields() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("doNotUse1", 0);
+        dataFrame.put("doNotUse2", 0);
+        dataFrame.put("doNotUse3", 0);
+        dataFrame.put("doNotUse4", 0);
+        TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspMsgContent() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspMsgContent", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspMsgTypes() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspMsgTypes", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspTimRights() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspTimRights", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspLocationRights() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspLocationRights", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspMsgRights1() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspMsgRights1", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_sspMsgRights2() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspMsgRights2", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_notUsed() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("notUsed", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_notUsed1() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("notUsed1", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_notUsed2() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("notUsed2", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_notUsed3() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("notUsed3", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsOldField_duratonTime() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("duratonTime", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
+    }
+
+    @Test
+    void ensureComplianceWithJ2735Revision2024_containsMultipleOldFields() {
+        ObjectNode dataFrame = JsonNodeFactory.instance.objectNode();
+        dataFrame.put("sspMsgContent", 1);
+        dataFrame.put("sspMsgTypes", 1);
+        dataFrame.put("sspTimRights", 1);
+        dataFrame.put("sspLocationRights", 1);
+        dataFrame.put("sspMsgRights1", 1);
+        dataFrame.put("sspMsgRights2", 1);
+        dataFrame.put("notUsed", 1);
+        dataFrame.put("notUsed1", 1);
+        dataFrame.put("notUsed2", 1);
+        dataFrame.put("notUsed3", 1);
+        dataFrame.put("duratonTime", 1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            TravelerMessageFromHumanToAsnConverter.ensureComplianceWithJ2735Revision2024(dataFrame);
+        });
     }
 
 }
