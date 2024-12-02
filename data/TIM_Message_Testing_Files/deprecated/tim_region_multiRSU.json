@@ -58,7 +58,7 @@
     "urlB": "null",
     "dataframes": [
       {
-        "doNotUse1": "0",
+        "notUsed": "0",
         "frameType": "advisory",
         "msgId": {
           "roadSignID": {
@@ -75,7 +75,7 @@
         "startDateTime": "2017-12-01T17:47:11-05:00",
         "durationTime": "22",
         "priority": "0",
-        "doNotUse2": "0",
+        "notUsed1": "0",
         "regions": [
           {
             "name": "bob",
@@ -107,8 +107,8 @@
             }
           }
         ],
-        "doNotUse4": "2",
-        "doNotUse3": "3",
+        "sspMsgTypes": "2",
+        "sspMsgContent": "3",
         "content": "Advisory",
         "items": [
           "250"

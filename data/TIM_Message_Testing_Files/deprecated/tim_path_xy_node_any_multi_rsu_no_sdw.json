@@ -48,7 +48,7 @@
         "startDateTime": "2018-06-11T10:00-06:00",
         "durationTime": 2000,
         "frameType": "advisory",
-        "doNotUse1": "0",
+        "notUsed": "0",
         "msgId": {
           "roadSignID": {
             "mutcdCode": "warning",
@@ -60,7 +60,7 @@
           }
         },
         "priority": "5",
-        "doNotUse2": "0",
+        "notUsed1": "0",
         "regions": [
           {
             "name": "southbound_Timberline_20_30_RSU-192.168.0.100",
@@ -115,8 +115,8 @@
             "direction": "1111111111111111"
           }
         ],
-        "doNotUse4": "1",
-        "doNotUse3": "1",
+        "sspMsgTypes": "1",
+        "sspMsgContent": "1",
         "content": "Advisory",
         "items": ["125","some text", "250", "'98765"],
         "url": "null"
