@@ -11,18 +11,17 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.Stores;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-
 import java.util.Properties;
-
 
 /**
  * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology
- * for processing TIM (Traveler Information Message) JSON data from the OdeTimJson Kafka topic.
- * This class creates a K-Table that houses TMC-generated TIMs which can be queried by UUID.
+ * for processing TIM (Traveler Information Message) JSON data from the
+ * OdeTimJson Kafka topic.
+ * This class creates a K-Table that houses TMC-generated TIMs which can be
+ * queried by UUID.
  **/
 @Slf4j
 public class OdeTimJsonTopology {
-
 
     private final Properties streamsProperties = new Properties();
     static KafkaStreams streams;
@@ -33,12 +32,12 @@ public class OdeTimJsonTopology {
             this.streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, odeKafkaProps.getBrokers());
             this.streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
             this.streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-    
+
             String kafkaType = System.getenv("KAFKA_TYPE");
             if (kafkaType != null && kafkaType.equals("CONFLUENT")) {
                 addConfluentProperties(this.streamsProperties);
-            }  
-        }  else {
+            }
+        } else {
             log.error("Kafka Brokers not set in OdeProperties");
         }
     }
@@ -68,12 +67,17 @@ public class OdeTimJsonTopology {
 
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
-        builder.table("topic.OdeTimJson", Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
+        builder.table("topic.OdeTimJson",
+                Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
         return builder.build();
     }
 
     public String query(String uuid) {
-        return (String) streams.store(StoreQueryParameters.fromNameAndType("timjson-store", QueryableStoreTypes.keyValueStore())).get(uuid);
+        return (String) streams.store(
+            StoreQueryParameters.fromNameAndType(
+                "timjson-store",
+                QueryableStoreTypes.keyValueStore()))
+            .get(uuid);
     }
 
     private void addConfluentProperties(Properties properties) {
@@ -82,12 +86,12 @@ public class OdeTimJsonTopology {
 
         if (username != null && password != null) {
             String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-                "username=\"" + username + "\" " +
-                "password=\"" + password + "\";";
+                    "username=\"" + username + "\" " +
+                    "password=\"" + password + "\";";
             this.streamsProperties.put("sasl.jaas.config", auth);
-        }
-        else {
-            log.error("Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
+        } else {
+            log.error(
+                    "Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
         }
     }
 }

@@ -8,7 +8,7 @@ public class J2735NodeListXY extends Asn1Object {
 	 */
 	private static final long serialVersionUID = 1L;
 	private J2735NodeXY[] nodes;
-	private J2735ComputedLane[] computed;
+	private J2735ComputedLane computed;
 
 	public J2735NodeXY[] getNodes() {
 		return nodes;
@@ -18,11 +18,11 @@ public class J2735NodeListXY extends Asn1Object {
 		this.nodes = nodes;
 	}
 
-	public J2735ComputedLane[] getComputed() {
+	public J2735ComputedLane getComputed() {
 		return computed;
 	}
 
-	public void setComputed(J2735ComputedLane[] computed) {
+	public void setComputed(J2735ComputedLane computed) {
 		this.computed = computed;
 	}
 }
