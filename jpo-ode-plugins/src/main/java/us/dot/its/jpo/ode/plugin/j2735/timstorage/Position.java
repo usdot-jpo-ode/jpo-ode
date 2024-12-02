@@ -19,10 +19,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "lat", "llong", "elevation" })
+@EqualsAndHashCode(callSuper = false)
 public class Position extends Asn1Object {
    private static final long serialVersionUID = 1L;
 

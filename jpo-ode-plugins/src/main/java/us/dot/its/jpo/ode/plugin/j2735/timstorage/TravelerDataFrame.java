@@ -15,42 +15,37 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "doNotUse1", "frameType", "msgId", "startYear", "startTime", "durationTime", "priority",
       "doNotUse2", "regions", "doNotUse3", "doNotUse4", "tcontent", "url" })
+@EqualsAndHashCode(callSuper = false)
 public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
-
+   @JsonAlias({"sspTimRights", "notUsed"})
    private String doNotUse1;
-
    private FrameType frameType;
-
    private MsgId msgId;
-
    private String startYear;
-
    private String startTime;
-
+   @JsonAlias("duratonTime")
    private String durationTime;
-
    private String priority;
-
+   @JsonAlias({"sspLocationRights", "notUsed1"})
    private String doNotUse2;
-
    private Regions regions;
-
+   @JsonAlias({"sspMsgContent", "sspMsgRights1", "notUsed2"})
    private String doNotUse3;
-
+   @JsonAlias({"sspMsgTypes", "sspMsgRights2", "notUsed3"})
    private String doNotUse4;
-
    @JsonProperty("tcontent")
    private Content tcontent;
-
    private String url;
 
    public String getDoNotUse2() {

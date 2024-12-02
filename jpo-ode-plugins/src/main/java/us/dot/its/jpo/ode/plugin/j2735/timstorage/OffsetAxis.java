@@ -15,8 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@EqualsAndHashCode(callSuper = false)
 public class OffsetAxis extends Asn1Object {
    private static final long serialVersionUID = 7703530986729802700L;
 

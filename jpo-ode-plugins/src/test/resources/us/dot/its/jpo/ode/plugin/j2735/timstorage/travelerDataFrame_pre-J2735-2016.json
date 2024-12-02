@@ -1,0 +1,15 @@
+{
+  "startYear": "2024",
+  "startTime": "12:00",
+  "duratonTime": "30",
+  "sspTimRights": "value1",
+  "frameType": {},
+  "msgId": {},
+  "priority": "high",
+  "sspLocationRights": "value2",
+  "regions": {},
+  "sspMsgContent": "value3",
+  "sspMsgTypes": "value4",
+  "tcontent": {},
+  "url": "http://example.com"
+}

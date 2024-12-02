@@ -18,9 +18,11 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "name", "id", "anchor", "laneWidth", "directionality", "closedPath", "direction", "description" })
+@EqualsAndHashCode(callSuper = false)
 public class GeographicalPath extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
@@ -112,71 +114,4 @@ public class GeographicalPath extends Asn1Object {
    public void setAnchor(Anchor anchor) {
       this.anchor = anchor;
    }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((anchor == null) ? 0 : anchor.hashCode());
-    result = prime * result + ((closedPath == null) ? 0 : closedPath.hashCode());
-    result = prime * result + ((description == null) ? 0 : description.hashCode());
-    result = prime * result + ((direction == null) ? 0 : direction.hashCode());
-    result = prime * result + ((directionality == null) ? 0 : directionality.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((laneWidth == null) ? 0 : laneWidth.hashCode());
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    GeographicalPath other = (GeographicalPath) obj;
-    if (anchor == null) {
-      if (other.anchor != null)
-        return false;
-    } else if (!anchor.equals(other.anchor))
-      return false;
-    if (closedPath == null) {
-      if (other.closedPath != null)
-        return false;
-    } else if (!closedPath.equals(other.closedPath))
-      return false;
-    if (description == null) {
-      if (other.description != null)
-        return false;
-    } else if (!description.equals(other.description))
-      return false;
-    if (direction == null) {
-      if (other.direction != null)
-        return false;
-    } else if (!direction.equals(other.direction))
-      return false;
-    if (directionality == null) {
-      if (other.directionality != null)
-        return false;
-    } else if (!directionality.equals(other.directionality))
-      return false;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
-    if (laneWidth == null) {
-      if (other.laneWidth != null)
-        return false;
-    } else if (!laneWidth.equals(other.laneWidth))
-      return false;
-    if (name == null) {
-      if (other.name != null)
-        return false;
-    } else if (!name.equals(other.name))
-      return false;
-    return true;
-  }
 }
