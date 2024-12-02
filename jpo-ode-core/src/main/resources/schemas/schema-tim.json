@@ -417,7 +417,7 @@
             "type": "object",
             "properties": {
                 "doNotUse1": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "frameType": {
                     "$ref": "#/$defs/J2735DF_FrameType"
@@ -453,7 +453,7 @@
                     "type": "string"
                 },
                 "doNotUse2": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "regions": {
                     "oneOf": [
@@ -471,10 +471,10 @@
                     ]
                 },
                 "doNotUse3": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "doNotUse4": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "content": {
                     "$ref": "#/$defs/J2735DF_Content"
