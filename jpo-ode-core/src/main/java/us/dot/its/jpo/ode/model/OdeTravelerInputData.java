@@ -16,50 +16,14 @@
 package us.dot.its.jpo.ode.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class OdeTravelerInputData extends OdeObject {
   private static final long serialVersionUID = 8769107278440796699L;
   private ServiceRequest request;
   private OdeTravelerInformationMessage tim;
-
-  public boolean equals(final Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof OdeTravelerInputData)) {
-      return false;
-    }
-    final OdeTravelerInputData other = (OdeTravelerInputData) o;
-    if (!other.canEqual((Object) this)) {
-      return false;
-    }
-    final Object this$request = this.getRequest();
-    final Object other$request = other.getRequest();
-    if (this$request == null ? other$request != null : !this$request.equals(other$request)) {
-      return false;
-    }
-    final Object this$tim = this.getTim();
-    final Object other$tim = other.getTim();
-    if (this$tim == null ? other$tim != null : !this$tim.equals(other$tim)) {
-      return false;
-    }
-    return true;
-  }
-
-  protected boolean canEqual(final Object other) {
-    return other instanceof OdeTravelerInputData;
-  }
-
-  public int hashCode() {
-    final int PRIME = 59;
-    int result = 1;
-    final Object $request = this.getRequest();
-    result = result * PRIME + ($request == null ? 43 : $request.hashCode());
-    final Object $tim = this.getTim();
-    result = result * PRIME + ($tim == null ? 43 : $tim.hashCode());
-    return result;
-  }
 }
