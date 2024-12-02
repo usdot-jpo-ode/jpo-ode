@@ -129,9 +129,10 @@ public class TravelerMessageFromHumanToAsnConverter {
    }
 
    /**
-    * Converts a TravelerInputData object to a TIM object
+    * Converts a JsonNode representing an OdeTravelerInputData object to a format that can be encoded by the asn1_codec submodule.
     * @param tid TravelerInputData object serialized as a JsonNode
     * @throws JsonUtilsException if there is an issue converting the JsonNode
+    * @throws IllegalArgumentException if the JsonNode contains old fields that are no longer used
     */
    public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
       // msgCnt MsgCount,
