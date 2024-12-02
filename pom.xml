@@ -11,12 +11,12 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>jpo-ode-${project.ode.version}</tag>
+    <tag>jpo-ode-4.0.0-SNAPSHOT</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
-  <version>${project.ode.version}</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>jpo-ode-common</module>
@@ -31,7 +31,6 @@
     <java.version>21</java.version>
 
     <!-- Generic properties -->
-    <project.ode.version>4.0.0-SNAPSHOT</project.ode.version>
     <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
