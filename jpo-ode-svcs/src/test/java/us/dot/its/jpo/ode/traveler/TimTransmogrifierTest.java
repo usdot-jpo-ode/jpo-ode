@@ -280,7 +280,9 @@ class TimTransmogrifierTest {
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialId);
 
         // verify
-        String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")));
+        String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")))
+            .replaceAll("\\s", "") // remove all whitespace
+            .replaceAll("<false/>", "<false />"); // add space before closing tag
         Assertions.assertEquals(expectedXml, actualXML);
     }
 
