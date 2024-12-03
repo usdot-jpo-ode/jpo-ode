@@ -26,6 +26,9 @@ public class KafkaProducerConfig {
     public ProducerFactory<String, String> producerFactory() {
         var producerProps = kafkaProperties.buildProducerProperties();
         if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
+            producerProps.put("ssl.endpoint.identification.algorithm", "https");
+            producerProps.put("security.protocol", "SASL_SSL");
+            producerProps.put("sasl.mechanism", "PLAIN");
             producerProps.put("sasl.jaas.config", odeKafkaProperties.getConfluent().getSaslJaasConfig());
         }
         return new DefaultKafkaProducerFactory<>(producerProps);
@@ -40,6 +43,9 @@ public class KafkaProducerConfig {
     public ProducerFactory<String, OdeObject> odeDataProducerFactory() {
         var producerProps = kafkaProperties.buildProducerProperties();
         if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
+            producerProps.put("ssl.endpoint.identification.algorithm", "https");
+            producerProps.put("security.protocol", "SASL_SSL");
+            producerProps.put("sasl.mechanism", "PLAIN");
             producerProps.put("sasl.jaas.config", odeKafkaProperties.getConfluent().getSaslJaasConfig());
         }
         return new DefaultKafkaProducerFactory<>(producerProps,

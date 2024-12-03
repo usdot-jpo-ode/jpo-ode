@@ -38,6 +38,9 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, String> consumerFactory() {
         var consumerProps = kafkaProperties.buildConsumerProperties();
         if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
+            consumerProps.put("ssl.endpoint.identification.algorithm", "https");
+            consumerProps.put("security.protocol", "SASL_SSL");
+            consumerProps.put("sasl.mechanism", "PLAIN");
             consumerProps.put("sasl.jaas.config", odeKafkaProperties.getConfluent().getSaslJaasConfig());
         }
         return new DefaultKafkaConsumerFactory<>(consumerProps);
@@ -54,6 +57,9 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, OdeMapData> odeMapDataConsumerFactory() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
         if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
+            props.put("ssl.endpoint.identification.algorithm", "https");
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.mechanism", "PLAIN");
             props.put("sasl.jaas.config", odeKafkaProperties.getConfluent().getSaslJaasConfig());
         }
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(OdeMapData.class));
