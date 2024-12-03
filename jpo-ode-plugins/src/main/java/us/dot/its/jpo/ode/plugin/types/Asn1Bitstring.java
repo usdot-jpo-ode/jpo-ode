@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.BitSet;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static us.dot.its.jpo.ode.plugin.utils.BitUtils.reverseBits;
 
