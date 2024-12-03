@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import us.dot.its.jpo.ode.plugin.serialization.BitstringSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -11,9 +12,16 @@ import static us.dot.its.jpo.ode.plugin.utils.BitUtils.reverseBits;
 @JsonSerialize(using = BitstringSerializer.class)
 public abstract class Asn1Bitstring implements Asn1Type {
 
+    @JsonIgnore
     final BitSet bits;
+
+    @JsonIgnore
     final int size;
+
+    @JsonIgnore
     final boolean hasExtensionMarker;
+
+    @JsonIgnore
     final String[] names;
 
     public Asn1Bitstring(int size, boolean hasExtensionMarker, String[] names) {
