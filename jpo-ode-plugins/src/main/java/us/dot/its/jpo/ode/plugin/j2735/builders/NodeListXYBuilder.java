@@ -36,21 +36,9 @@ public class NodeListXYBuilder {
                 nodeList.setNodes(nxyList.toArray(new J2735NodeXY[0]));
             }
 		} else if (nodeListNode.get("computed") != null) {
-            JsonNode computedLane = nodeListNode.get("computed").get("ComputedLane");
+            JsonNode computedLane = nodeListNode.get("computed");
             if (computedLane != null) {
-                List<J2735ComputedLane> clList = new ArrayList<>();
-
-                if (computedLane.isArray()) {
-                    Iterator<JsonNode> elements = computedLane.elements();
-    
-                    while (elements.hasNext()) {
-                        clList.add(ComputedLaneBuilder.genericComputedLane(elements.next()));
-                    }
-                } else {
-                    clList.add(ComputedLaneBuilder.genericComputedLane(computedLane));
-                }
-
-                nodeList.setComputed(clList.toArray(new J2735ComputedLane[0]));
+                nodeList.setComputed(ComputedLaneBuilder.genericComputedLane(computedLane));
             }
 		}
 

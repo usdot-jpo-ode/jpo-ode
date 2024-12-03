@@ -15,8 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735Tim;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.DSRC.TravelerInformation;
 
 public class OdeTimPayload extends OdeMsgPayload {
 
@@ -31,7 +31,7 @@ public class OdeTimPayload extends OdeMsgPayload {
         this.setData(tim);
     }
 
-    public OdeTimPayload(J2735Tim tim) {
+    public OdeTimPayload(TravelerInformation tim) {
         super(tim);
         this.setData(tim);
     }

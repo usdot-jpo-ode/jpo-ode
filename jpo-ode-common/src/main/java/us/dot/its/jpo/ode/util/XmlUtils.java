@@ -104,6 +104,31 @@ public class XmlUtils {
       return childNode;
    }
 
+   public static String findXmlContentString(String xml, String tagName) {
+		// Construct the start and end tag strings
+		String startTag = "<" + tagName + ">";
+		String endTag = "</" + tagName + ">";
+
+		// Find the start index of the start tag
+		int startIndex = xml.indexOf(startTag);
+		if (startIndex == -1) {
+				// Tag not found
+				return null;
+		}
+
+		// Find the end index of the end tag, after the start tag
+		int endIndex = xml.indexOf(endTag, startIndex);
+		if (endIndex == -1) {
+				// End tag not found
+				return null;
+		}
+
+		// Add the length of the end tag to get the complete end index
+		endIndex += endTag.length();
+
+		return xml.substring(startIndex, endIndex);
+   }
+
    public static String toXmlStatic(Object o) throws XmlUtilsException {
       String xml;
       try {
