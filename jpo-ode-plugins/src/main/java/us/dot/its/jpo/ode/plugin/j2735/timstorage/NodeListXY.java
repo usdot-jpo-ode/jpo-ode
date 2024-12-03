@@ -9,19 +9,22 @@ public class NodeListXY extends Asn1Object {
 
   private NodeSetXY nodes;
   private ComputedLane computed;
-  
+
   public NodeSetXY getNodes() {
     return nodes;
   }
+
   public void setNodes(NodeSetXY nodes) {
     this.nodes = nodes;
   }
+
   public ComputedLane getComputed() {
     return computed;
   }
+
   public void setComputed(ComputedLane computed) {
     this.computed = computed;
   }
-  
-  
+
+
 }

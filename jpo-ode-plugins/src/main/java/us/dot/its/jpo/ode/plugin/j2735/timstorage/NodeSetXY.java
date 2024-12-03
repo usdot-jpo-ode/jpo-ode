@@ -10,7 +10,7 @@ public class NodeSetXY extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
   private NodeXY[] NodeXY;
-  
+
   @JsonProperty("NodeXY")
   public NodeXY[] getNodeXY() {
     return NodeXY;
@@ -19,6 +19,6 @@ public class NodeSetXY extends Asn1Object {
   public void setNodeXY(NodeXY[] nodeXY) {
     this.NodeXY = nodeXY;
   }
-  
-  
+
+
 }

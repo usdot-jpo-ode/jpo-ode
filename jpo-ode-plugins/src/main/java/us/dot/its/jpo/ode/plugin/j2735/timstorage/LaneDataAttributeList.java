@@ -9,11 +9,11 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class LaneDataAttributeList extends Asn1Object {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
-  
-  @JsonProperty ("LaneDataAttribute")
+
+  @JsonProperty("LaneDataAttribute")
   private LaneDataAttribute LaneDataAttribute;
 
   public LaneDataAttribute getLaneDataAttribute() {

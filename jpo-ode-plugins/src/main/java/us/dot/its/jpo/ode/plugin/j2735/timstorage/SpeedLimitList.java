@@ -9,10 +9,10 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class SpeedLimitList extends Asn1Object {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
-  
+
   @JsonProperty("RegulatorySpeedLimit")
   private RegulatorySpeedLimit[] RegulatorySpeedLimit;
 

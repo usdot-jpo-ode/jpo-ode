@@ -6,7 +6,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 @EqualsAndHashCode(callSuper = false)
 public class RegionList extends Asn1Object {
   private static final long serialVersionUID = 1L;
-  
+
   private RegionOffsets[] nodeList;
 
   public RegionOffsets[] getNodeList() {
@@ -16,6 +16,6 @@ public class RegionList extends Asn1Object {
   public void setNodeList(RegionOffsets[] nodeList) {
     this.nodeList = nodeList;
   }
-  
-  
+
+
 }

@@ -7,10 +7,10 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class NodeAttributeSetXY extends Asn1Object {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
-  
+
 //  localNode NodeAttributeXYList OPTIONAL,
 //  -- Attribute states which pertain to this node point
 //  disabled SegmentAttributeXYList OPTIONAL,
@@ -33,7 +33,7 @@ public class NodeAttributeSetXY extends Asn1Object {
 //  -- at this node from this node onwards, in 10cm steps
 //  -- elevations between nodes are a linear taper between pts
 //  -- the value of zero shall not be sent here
-  
+
   private LaneDataAttributeList data;
 
   public LaneDataAttributeList getData() {
@@ -44,5 +44,5 @@ public class NodeAttributeSetXY extends Asn1Object {
     this.data = data;
   }
 
-  
+
 }
