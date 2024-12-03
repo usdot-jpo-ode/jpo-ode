@@ -5,14 +5,14 @@ spring:
     consumer:
       enable-auto-commit: true
       auto-commit-interval: 1000
-      bootstrap-servers: ${DOCKER_HOST_IP}:9092
+      bootstrap-servers: ${ODE_KAFKA_BROKERS}
     producer:
       acks: "all"
       retries: 0
       batch-size: 16384
       compression-type: "zstd"
       buffer-memory: 33554432
-      bootstrap-servers: ${DOCKER_HOST_IP}:9092
+      bootstrap-servers: ${ODE_KAFKA_BROKERS}
   http:
     multipart:
       max-file-size: 1MB
@@ -27,11 +27,14 @@ ode:
     is-sdw-signing-enabled: ${DATA_SIGNING_ENABLED_SDW}
   rsu:
     srm-slots: 100
-    username: ${RSU_USERNAME}
-    password: ${RSU_PASSWORD}
+    username: ${ODE_RSU_USERNAME}
+    password: ${ODE_RSU_PASSWORD}
   kafka:
-    brokers: ${DOCKER_HOST_IP}:9092
+    brokers: ${ODE_KAFKA_BROKERS}
     kafka-type: ${KAFKA_TYPE}
+    confluent:
+      password: ${CONFLUENT_SECRET}
+      username: ${CONFLUENT_KEY}
     producer:
       type: "sync"
       acks: ${KAFKA_ACKS}
