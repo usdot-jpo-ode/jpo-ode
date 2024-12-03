@@ -32,6 +32,9 @@ ode:
   kafka:
     brokers: ${DOCKER_HOST_IP}:9092
     kafka-type: ${KAFKA_TYPE}
+    confluent:
+      password: ${CONFLUENT_SECRET}
+      username: ${CONFLUENT_KEY}
     producer:
       type: "sync"
       acks: ${KAFKA_ACKS}
