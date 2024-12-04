@@ -49,6 +49,16 @@ public abstract class Asn1Bitstring implements Asn1Type {
         bits.set(bitIndex, value);
     }
 
+    public void set(String name, boolean value) {
+        for (int i = 0; i < size; i++) {
+            if (name(i).equals(name)) {
+                set(i, value);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown name " + name);
+    }
+
     public String binaryString() {
         char[] chars = new char[size];
         for (int i = 0; i < size; i++) {

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 
 /**
  * Serializer for ASN.1 Bitstring types to XER or JER
+ * <p>Note that this serializer writes ODE JSON, not standard JER.
  * @author Ivan Yourshaw
  */
 public class BitstringSerializer extends StdSerializer<Asn1Bitstring> {
