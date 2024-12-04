@@ -21,11 +21,17 @@ public class BitstringSerializer extends StdSerializer<Asn1Bitstring> {
     @Override
     public void serialize(Asn1Bitstring asn1Bitstring, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         if (serializerProvider instanceof XmlSerializerProvider) {
-            // XER serializes enums as binary
+            // XER serializes bitstrings as binary strings
             jsonGenerator.writeString(asn1Bitstring.binaryString());
         } else {
-            // JER serializes enums as hex
-            jsonGenerator.writeString(asn1Bitstring.hexString());
+            // ODE JSON dialect serializes bitstrings as verbose maps
+            jsonGenerator.writeStartObject();
+            for (int i = 0; i < asn1Bitstring.size(); i++) {
+                String name = asn1Bitstring.name(i);
+                boolean isSet = asn1Bitstring.get(i);
+                jsonGenerator.writeBooleanField(name, isSet);
+            }
+            jsonGenerator.writeEndObject();
         }
     }
 }
