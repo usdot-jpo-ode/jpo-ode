@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.plugin.types;
 
 import us.dot.its.jpo.ode.plugin.serialization.SerializationUtil;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,6 +11,7 @@ import java.util.Optional;
 
 public abstract class Asn1Choice implements Asn1Type {
 
+    @JsonIgnore
     final boolean hasExtensionMarker;
 
     public Asn1Choice(boolean hasExtensionMarker) {

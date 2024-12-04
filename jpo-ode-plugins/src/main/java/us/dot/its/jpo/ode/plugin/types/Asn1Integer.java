@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
@@ -12,7 +13,11 @@ import java.util.Objects;
 public class Asn1Integer implements Asn1Type, Comparable<Asn1Integer> {
 
     protected long value;
+
+    @JsonIgnore
     final long lowerBound;
+
+    @JsonIgnore
     final long upperBound;
 
     public Asn1Integer(long lowerBound, long upperBound) {
