@@ -1,36 +1,33 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
- * Unless required by applicable law or agreed to in writing, software
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
@@ -41,6 +38,10 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
+/**
+ * This class is used to convert a JsonNode representing an OdeTravelerInputData object to a format
+ * that can be encoded by the asn1_codec submodule.
+ */
 public class TravelerMessageFromHumanToAsnConverter {
 
   private static final String SPEED = "speed";
@@ -133,7 +134,8 @@ public class TravelerMessageFromHumanToAsnConverter {
   }
 
   /**
-   * Converts a JsonNode representing an OdeTravelerInputData object to a format that can be encoded by the asn1_codec submodule.
+   * Converts a JsonNode representing an OdeTravelerInputData object to a format
+   * that can be encoded by the asn1_codec submodule.
    *
    * @param tid TravelerInputData object serialized as a JsonNode
    * @throws JsonUtilsException       if there is an issue converting the JsonNode
@@ -164,6 +166,14 @@ public class TravelerMessageFromHumanToAsnConverter {
     timDataObjectNode.remove(DATAFRAMES);
   }
 
+  /**
+   * Transforms the dataFrames field.
+   *
+   * @param dataFrames JsonNode representing the dataFrames field
+   * @return ObjectNode representing the transformed dataFrames field
+   * @throws JsonUtilsException          if there is an issue converting the JsonNode
+   * @throws NoncompliantFieldsException if the JsonNode contains old fields that are no longer used
+   */
   public static ObjectNode transformDataFrames(JsonNode dataFrames)
       throws JsonUtilsException, NoncompliantFieldsException {
 
@@ -186,6 +196,13 @@ public class TravelerMessageFromHumanToAsnConverter {
     return JsonUtils.newObjectNode(TRAVELER_DATA_FRAME_STRING, replacedDataFrames);
   }
 
+  /**
+   * Replaces a data frame.
+   *
+   * @param dataFrame ObjectNode representing the data frame
+   * @throws JsonUtilsException          if there is an issue converting the JsonNode
+   * @throws NoncompliantFieldsException if the JsonNode contains old fields that are no longer used
+   */
   public static void replaceDataFrame(ObjectNode dataFrame)
       throws JsonUtilsException, NoncompliantFieldsException {
 
@@ -249,14 +266,21 @@ public class TravelerMessageFromHumanToAsnConverter {
     replaceMsgId(dataFrame);
   }
 
+  /**
+   * Translates ISO timestamp to minute of year.
+   *
+   * @param isoTime ISO timestamp
+   * @return minute of year
+   */
   public static long translateISOTimeStampToMinuteOfYear(String isoTime) {
     int startYear = 0;
     int startMinute = 527040;
     try {
-      ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(isoTime);
-      startYear = zDateTime.getYear();
+      ZonedDateTime zonedDateTime = DateTimeUtils.isoDateTime(isoTime);
+      startYear = zonedDateTime.getYear();
       startMinute =
-          (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
+          (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0,
+                  0, 0, 0), zonedDateTime)
               .toMinutes();
     } catch (Exception e) { // NOSONAR
       logger.error("Failed to parse datetime {}, defaulting to unknown value {}", isoTime,
@@ -266,6 +290,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     return startMinute;
   }
 
+  /**
+   * Replaces the data frame timestamp.
+   *
+   * @param dataFrame ObjectNode representing the data frame
+   */
   public static void replaceDataFrameTimestamp(ObjectNode dataFrame) {
 
     // EXPECTED INPUT:
@@ -281,11 +310,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     int startMinute = 527040;
     String startDateTime = dataFrame.get(START_DATE_TIME).asText();
     try {
-      ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(startDateTime);
-      startYear = zDateTime.getYear();
+      ZonedDateTime zonedDateTime = DateTimeUtils.isoDateTime(startDateTime);
+      startYear = zonedDateTime.getYear();
       startMinute =
           (int) ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0),
-              zDateTime);
+              zonedDateTime);
     } catch (Exception e) {
       logger.error("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime,
           startMinute);
@@ -296,6 +325,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     dataFrame.remove(START_DATE_TIME);
   }
 
+  /**
+   * Replaces content.
+   *
+   * @param dataFrame ObjectNode representing the data frame
+   */
   public static void replaceContent(ObjectNode dataFrame) {
 
     // EXPECTED OUTPUT:
@@ -347,6 +381,12 @@ public class TravelerMessageFromHumanToAsnConverter {
     dataFrame.remove("content");
   }
 
+  /**
+   * Builds an item.
+   *
+   * @param itemStr String representing the item
+   * @return JsonNode representing the item
+   */
   public static JsonNode buildItem(String itemStr) {
     JsonNode item = null;
     // check to see if it is a itis code or text
@@ -365,6 +405,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     return item;
   }
 
+  /**
+   * Replaces msg id.
+   *
+   * @param dataFrame ObjectNode representing the data frame
+   */
   public static void replaceMsgId(ObjectNode dataFrame) {
 
     // <msgId>
@@ -402,6 +447,13 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Transforms regions.
+   *
+   * @param regions JsonNode representing the regions
+   * @return ObjectNode representing the transformed regions
+   * @throws JsonUtilsException if there is an issue converting the JsonNode
+   */
   public static ObjectNode transformRegions(JsonNode regions) throws JsonUtilsException {
     ArrayNode replacedRegions = JsonUtils.newNode().arrayNode();
 
@@ -418,6 +470,12 @@ public class TravelerMessageFromHumanToAsnConverter {
     return JsonUtils.newObjectNode(GEOGRAPHICAL_PATH_STRING, replacedRegions);
   }
 
+  /**
+   * Replaces a region.
+   *
+   * @param region ObjectNode representing the region
+   * @throws JsonUtilsException if there is an issue converting the JsonNode
+   */
   public static void replaceRegion(ObjectNode region) throws JsonUtilsException {
 
     //// EXPECTED INPUT:
@@ -623,7 +681,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     Long transformedLong = null;
 
     ObjectNode innerNode = JsonUtils.newNode();
-    ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set(DELTA, innerNode);
     ObjectNode latLong = JsonUtils.newNode();
     String deltaText = delta.asText();
     if (deltaText.startsWith("node-LL")) {
@@ -639,7 +696,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
     innerNode.set(deltaText, latLong);
     latLong.put(LAT, transformedLat).put(LON, transformedLong);
-
+    ObjectNode deltaNode = JsonUtils.newNode().set(DELTA, innerNode);
     return deltaNode;
   }
 
@@ -654,38 +711,38 @@ public class TravelerMessageFromHumanToAsnConverter {
   private static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
     long transformedLatabs = Math.abs(transformedLat);
     long transformedLonabs = Math.abs(transformedLon);
-    if (((transformedLatabs & (-1 << 11)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 11)) == 0))
+    if (((transformedLatabs & (-1 << 11)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 11)) == 0))
         && (transformedLonabs & (-1 << 11)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 11)) == 0))) {
       // 11 bit value
       return "node-LL1";
-    } else if (((transformedLatabs & (-1 << 13)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 13)) == 0))
+    } else if (((transformedLatabs & (-1 << 13)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 13)) == 0))
         && (transformedLonabs & (-1 << 13)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 13)) == 0))) {
       // 13 bit value
       return "node-LL2";
-    } else if (((transformedLatabs & (-1 << 15)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 15)) == 0))
+    } else if (((transformedLatabs & (-1 << 15)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 15)) == 0))
         && (transformedLonabs & (-1 << 15)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 15)) == 0))) {
       // 15 bit value
       return "node-LL3";
-    } else if (((transformedLatabs & (-1 << 17)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 17)) == 0))
+    } else if (((transformedLatabs & (-1 << 17)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 17)) == 0))
         && (transformedLonabs & (-1 << 17)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 17)) == 0))) {
       // 17 bit value
       return "node-LL4";
-    } else if (((transformedLatabs & (-1 << 21)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 21)) == 0))
+    } else if (((transformedLatabs & (-1 << 21)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 21)) == 0))
         && (transformedLonabs & (-1 << 21)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 21)) == 0))) {
       // 21 bit value
       return "node-LL5";
-    } else if (((transformedLatabs & (-1 << 23)) == 0 ||
-        (transformedLat < 0 && (transformedLatabs ^ (1 << 23)) == 0))
+    } else if (((transformedLatabs & (-1 << 23)) == 0
+        || (transformedLat < 0 && (transformedLatabs ^ (1 << 23)) == 0))
         && (transformedLonabs & (-1 << 23)) == 0
         || (transformedLon < 0 && ((transformedLonabs ^ (1 << 23)) == 0))) {
       // 23 bit value
@@ -698,6 +755,11 @@ public class TravelerMessageFromHumanToAsnConverter {
 
   }
 
+  /**
+   * Replaces geometry.
+   *
+   * @param geometry ObjectNode representing the geometry
+   */
   public static void replaceGeometry(ObjectNode geometry) {
 
     // direction HeadingSlice
@@ -719,6 +781,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     replaceCircle(geometry.get(CIRCLE));
   }
 
+  /**
+   * Replaces old region.
+   *
+   * @param oldRegion ObjectNode representing the old region
+   */
   public static void replaceOldRegion(ObjectNode oldRegion) {
 
     // old region == ValidRegion
@@ -734,6 +801,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     replaceArea(oldRegion.get("area"));
   }
 
+  /**
+   * Replaces area.
+   *
+   * @param area JsonNode representing the area
+   */
   public static void replaceArea(JsonNode area) {
 
     // area contains one of:
@@ -774,6 +846,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     // regionList is good as is and does not need replacement (required)
   }
 
+  /**
+   * Replaces circle.
+   *
+   * @param circle JsonNode representing the circle
+   */
   public static void replaceCircle(JsonNode circle) {
 
     // Circle ::= SEQUENCE
@@ -808,6 +885,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Replaces shape point set.
+   *
+   * @param shapePointSet JsonNode representing the shape point set
+   */
   public static void replaceShapePointSet(JsonNode shapePointSet) {
     // shape point set contains:
     // anchor
@@ -853,6 +935,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Replaces computed lane.
+   *
+   * @param jsonNode JsonNode representing the computed lane
+   */
   public static void replaceComputedLane(JsonNode jsonNode) {
     ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -889,6 +976,12 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Replaces scale.
+   *
+   * @param updatedNode ObjectNode representing the updated node
+   * @param scale       String representing the scale
+   */
   public static void replaceScale(ObjectNode updatedNode, String scale) {
     if (updatedNode.has(scale)) {
       int scaleX = updatedNode.get(scale).asInt();
@@ -902,6 +995,12 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Transforms node set XY.
+   *
+   * @param inputNodeList JsonNode representing the input node list
+   * @return ArrayNode representing the transformed node list
+   */
   public static ArrayNode transformNodeSetXY(JsonNode inputNodeList) {
 
     //// EXPECTED INPUT:
@@ -929,6 +1028,12 @@ public class TravelerMessageFromHumanToAsnConverter {
     return outputNodeList;
   }
 
+  /**
+   * Transformed a NodeXY.
+   *
+   * @param oldNode JsonNode representing the old node
+   * @return ObjectNode representing the transformed node
+   */
   public static JsonNode transformNodeXY(JsonNode oldNode) {
 
     // nodexy contains:
@@ -990,6 +1095,11 @@ public class TravelerMessageFromHumanToAsnConverter {
     return updatedLaneDataAttributeList;
   }
 
+  /**
+   * Replaces lane data attribute.
+   *
+   * @param oldNode JsonNode representing the old node
+   */
   public static void replaceLaneDataAttribute(JsonNode oldNode) {
     // choice between 1 of the following:
     // pathEndPointAngle DeltaAngle
@@ -1054,6 +1164,12 @@ public class TravelerMessageFromHumanToAsnConverter {
 
   }
 
+  /**
+   * Transformed node offset point XY.
+   *
+   * @param oldNode JsonNode representing the old node
+   * @return ObjectNode representing the transformed node
+   */
   public static ObjectNode transformNodeOffsetPointXY(JsonNode oldNode) {
     //// EXPECTED INPUT:
     //
@@ -1078,10 +1194,10 @@ public class TravelerMessageFromHumanToAsnConverter {
     ObjectNode deltaNode = JsonUtils.newNode();
     String deltaText = delta.asText();
     if (deltaText.startsWith(NODE_XY)) {
-      BigDecimal xOffset = JsonUtils.decimalValue(oldNode.get(X));
-      BigDecimal yOffset = JsonUtils.decimalValue(oldNode.get(Y));
-      Long transformedX = OffsetXyBuilder.offsetXy(xOffset);
-      Long transformedY = OffsetXyBuilder.offsetXy(yOffset);
+      BigDecimal offsetX = JsonUtils.decimalValue(oldNode.get(X));
+      BigDecimal offsetY = JsonUtils.decimalValue(oldNode.get(Y));
+      Long transformedX = OffsetXyBuilder.offsetXy(offsetX);
+      Long transformedY = OffsetXyBuilder.offsetXy(offsetY);
       ObjectNode xy = JsonUtils.newNode().put(X, transformedX).put(Y, transformedY);
       if (deltaText.equals(NODE_XY)) {
         innerNode.set(nodeOffsetPointXY(transformedX, transformedY), xy);
@@ -1137,7 +1253,8 @@ public class TravelerMessageFromHumanToAsnConverter {
   }
 
   /**
-   * Ensures compliance with the J2735 2024 standard by checking for old fields in the given data frame.
+   * Ensures compliance with the J2735 2024 standard by checking
+   * for old fields in the given data frame.
    *
    * @param dataFrame the JSON object representing the data frame to be checked
    * @throws IllegalArgumentException if any old fields are found
@@ -1167,11 +1284,15 @@ public class TravelerMessageFromHumanToAsnConverter {
     if (!violations.isEmpty()) {
       throw new NoncompliantFieldsException(
           String.format(
-              "Data frame contains the following old fields that are not compliant with J2735 2024: [%s]. Deserialization should prevent this.",
+              "Data frame contains the following old fields that are not compliant with "
+                  + "J2735 2024: [%s]. Deserialization should prevent this.",
               violations));
     }
   }
 
+  /**
+   * Exception thrown when noncompliant fields are found in the data frame.
+   */
   public static class NoncompliantFieldsException extends Exception {
     public NoncompliantFieldsException(String message) {
       super(message);
