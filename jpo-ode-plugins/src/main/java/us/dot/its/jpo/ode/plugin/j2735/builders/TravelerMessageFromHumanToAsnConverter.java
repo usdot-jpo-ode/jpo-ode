@@ -20,8 +20,10 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Iterator;
 
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1140,14 +1142,30 @@ public class TravelerMessageFromHumanToAsnConverter {
    */
   public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) {
     // Check and throw exception if old fields are found
-    if (dataFrame.has(SSP_MSG_CONTENT) || dataFrame.has(SSP_MSG_TYPES) ||
-        dataFrame.has(SSP_TIM_RIGHTS) || dataFrame.has(SSP_LOCATION_RIGHTS) ||
-        dataFrame.has(SSP_MSG_RIGHTS_1) || dataFrame.has(SSP_MSG_RIGHTS_2) ||
-        dataFrame.has(NOT_USED) || dataFrame.has(NOT_USED_1) ||
-        dataFrame.has(NOT_USED_2) || dataFrame.has(NOT_USED_3) ||
-        dataFrame.has(DURATON_TIME_MISSPELLED)) {
+    Set<String> nonCompliantFields = Set.of(
+        SSP_MSG_CONTENT,
+        SSP_MSG_TYPES,
+        SSP_LOCATION_RIGHTS,
+        SSP_TIM_RIGHTS,
+        SSP_MSG_RIGHTS_1,
+        SSP_MSG_RIGHTS_2,
+        NOT_USED,
+        NOT_USED_1,
+        NOT_USED_2,
+        NOT_USED_3,
+        DURATON_TIME_MISSPELLED
+    );
+    ArrayList<String> violations = new ArrayList<>();
+    for (String violationName : nonCompliantFields) {
+      if (dataFrame.has(violationName)) {
+        violations.add(violationName);
+      }
+    }
+    if (!violations.isEmpty()) {
       throw new IllegalArgumentException(
-          "Data frame contains old fields that are not compliant with J2735 2024. Deserialization should prevent this.");
+          String.format(
+              "Data frame contains the following old fields that are not compliant with J2735 2024: [%s]. Deserialization should prevent this.",
+              violations));
     }
   }
 
