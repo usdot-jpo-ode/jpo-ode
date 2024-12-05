@@ -9,12 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 class TravelerDataFrameTest {
+  ObjectMapper mapper = new ObjectMapper();
 
   @Test
   void deserializePreJ2735_2016() throws IOException {
     String json = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/us/dot/its/jpo/ode/plugin/j2735/timstorage/travelerDataFrame_pre-J2735-2016.json")));
-    ObjectMapper mapper = new ObjectMapper();
     TravelerDataFrame expectedFrame = getExpectedTravelerDataFrame();
 
     TravelerDataFrame deserializedFrame = mapper.readValue(json, TravelerDataFrame.class);
@@ -26,7 +26,6 @@ class TravelerDataFrameTest {
   void deserializeJ2735_2016() throws IOException {
     String json = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/us/dot/its/jpo/ode/plugin/j2735/timstorage/travelerDataFrame_J2735-2016.json")));
-    ObjectMapper mapper = new ObjectMapper();
     TravelerDataFrame expectedFrame = getExpectedTravelerDataFrame();
 
     TravelerDataFrame deserializedFrame = mapper.readValue(json, TravelerDataFrame.class);
@@ -38,7 +37,6 @@ class TravelerDataFrameTest {
   void deserializeJ2735_2020() throws IOException {
     String json = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/us/dot/its/jpo/ode/plugin/j2735/timstorage/travelerDataFrame_J2735-2020.json")));
-    ObjectMapper mapper = new ObjectMapper();
     TravelerDataFrame expectedFrame = getExpectedTravelerDataFrame();
 
     TravelerDataFrame deserializedFrame = mapper.readValue(json, TravelerDataFrame.class);
