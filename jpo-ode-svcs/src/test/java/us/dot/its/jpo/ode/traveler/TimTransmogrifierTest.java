@@ -283,7 +283,8 @@ class TimTransmogrifierTest {
    */
   @Test
   void testConvertToXML_VerifyPositionElementNotInCircleElementAfterConversion()
-      throws IOException, JsonUtilsException, XmlUtilsException, ParseException {
+      throws IOException, JsonUtilsException, XmlUtilsException, ParseException,
+      TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
     // prepare
     String timRequestContainingCircleGeometry = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/us/dot/its/jpo/ode/traveler/timRequestContainingCircleGeometry.json")));

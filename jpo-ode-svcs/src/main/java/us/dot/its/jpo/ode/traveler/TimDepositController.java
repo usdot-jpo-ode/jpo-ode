@@ -240,9 +240,13 @@ public class TimDepositController {
             String errMsg = "Error converting to encodable TravelerInputData.";
             log.error(errMsg, e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+        } catch (TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException e) {
+            String errMsg = "Non-compliant fields in TIM: " + e.getMessage();
+            log.error(errMsg, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
         }
 
-        try {
+      try {
             String xmlMsg;
             DdsAdvisorySituationData asd = null;
             if (!this.dataSigningEnabledSDW) {

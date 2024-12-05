@@ -140,7 +140,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws IllegalArgumentException if the JsonNode contains old fields that are no longer used
    */
   public static void convertTravelerInputDataToEncodableTim(JsonNode tid)
-      throws JsonUtilsException {
+      throws JsonUtilsException, NoncompliantFieldsException {
     // msgCnt MsgCount,
     // timeStamp MinuteOfTheYear OPTIONAL
     // packetID UniqueMSGID OPTIONAL
@@ -164,7 +164,8 @@ public class TravelerMessageFromHumanToAsnConverter {
     timDataObjectNode.remove(DATAFRAMES);
   }
 
-  public static ObjectNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
+  public static ObjectNode transformDataFrames(JsonNode dataFrames)
+      throws JsonUtilsException, NoncompliantFieldsException {
 
     if (dataFrames == null) {
       return JsonUtils.newNode();
@@ -185,7 +186,8 @@ public class TravelerMessageFromHumanToAsnConverter {
     return JsonUtils.newObjectNode(TRAVELER_DATA_FRAME_STRING, replacedDataFrames);
   }
 
-  public static void replaceDataFrame(ObjectNode dataFrame) throws JsonUtilsException {
+  public static void replaceDataFrame(ObjectNode dataFrame)
+      throws JsonUtilsException, NoncompliantFieldsException {
 
     // INPUT
     //////
@@ -1140,7 +1142,8 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @param dataFrame the JSON object representing the data frame to be checked
    * @throws IllegalArgumentException if any old fields are found
    */
-  public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) {
+  public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame)
+      throws NoncompliantFieldsException {
     // Check and throw exception if old fields are found
     Set<String> nonCompliantFields = Set.of(
         SSP_MSG_CONTENT,
@@ -1162,10 +1165,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
     }
     if (!violations.isEmpty()) {
-      throw new IllegalArgumentException(
+      throw new NoncompliantFieldsException(
           String.format(
               "Data frame contains the following old fields that are not compliant with J2735 2024: [%s]. Deserialization should prevent this.",
               violations));
+    }
+  }
+
+  public static class NoncompliantFieldsException extends Exception {
+    public NoncompliantFieldsException(String message) {
+      super(message);
     }
   }
 
