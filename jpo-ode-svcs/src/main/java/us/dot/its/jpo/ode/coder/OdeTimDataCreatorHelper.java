@@ -21,9 +21,6 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class OdeTimDataCreatorHelper {
 
-    public OdeTimDataCreatorHelper() {
-	}
-
 	public static OdeTimData createOdeTimDataFromDecoded(String consumedData) throws XmlUtilsException {
 		ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
