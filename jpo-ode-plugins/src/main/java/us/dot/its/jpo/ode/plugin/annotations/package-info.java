@@ -1,4 +1,4 @@
 /**
- * Annotations needed for ASN.1 UPER encoding
+ * Annotations for ASN.1 types
  */
 package us.dot.its.jpo.ode.plugin.annotations;
