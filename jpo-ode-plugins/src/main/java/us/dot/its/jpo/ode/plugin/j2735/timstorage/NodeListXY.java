@@ -3,6 +3,9 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * A list of nodes in the XY plane.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class NodeListXY extends Asn1Object {
   private static final long serialVersionUID = 1L;

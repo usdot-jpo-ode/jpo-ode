@@ -3,10 +3,16 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * Extent.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class Extent extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Enumerated values for Extent.
+   */
   public enum ExtentEnum {
     useInstantlyOnly, // (0),
     useFor3meters, // (1),

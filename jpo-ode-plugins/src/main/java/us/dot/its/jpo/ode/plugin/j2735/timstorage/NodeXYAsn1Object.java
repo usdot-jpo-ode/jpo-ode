@@ -1,46 +1,52 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
- * Unless required by applicable law or agreed to in writing, software
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * Node_XY.
+ */
 @EqualsAndHashCode(callSuper = false)
-public class Node_XY extends Asn1Object {
+public class NodeXYAsn1Object extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
-  private String x;
+  @JsonProperty("x")
+  private String xpos;
 
-  private String y;
+  @JsonProperty("y")
+  private String ypos;
 
-  public String getX() {
-    return x;
+  public String getXpos() {
+    return xpos;
   }
 
-  public void setX(String x) {
-    this.x = x;
+  public void setXpos(String xpos) {
+    this.xpos = xpos;
   }
 
-  public String getY() {
-    return y;
+  public String getYpos() {
+    return ypos;
   }
 
-  public void setY(String y) {
-    this.y = y;
+  public void setYpos(String ypos) {
+    this.ypos = ypos;
   }
 
 }

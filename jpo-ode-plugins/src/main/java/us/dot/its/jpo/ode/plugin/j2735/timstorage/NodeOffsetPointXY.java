@@ -29,25 +29,25 @@ public class NodeOffsetPointXY extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
   @JsonProperty("node-XY")
-  private Node_XY nodeXY;
+  private NodeXYAsn1Object nodeXY;
 
   @JsonProperty("node-XY1")
-  private Node_XY nodeXY1;
+  private NodeXYAsn1Object nodeXY1;
 
   @JsonProperty("node-XY2")
-  private Node_XY nodeXY2;
+  private NodeXYAsn1Object nodeXY2;
 
   @JsonProperty("node-XY3")
-  private Node_XY nodeXY3;
+  private NodeXYAsn1Object nodeXY3;
 
   @JsonProperty("node-XY4")
-  private Node_XY nodeXY4;
+  private NodeXYAsn1Object nodeXY4;
 
   @JsonProperty("node-XY5")
-  private Node_XY nodeXY5;
+  private NodeXYAsn1Object nodeXY5;
 
   @JsonProperty("node-XY6")
-  private Node_XY nodeXY6;
+  private NodeXYAsn1Object nodeXY6;
 
   @JsonProperty("node-LL1")
   private Node_LatLon nodeLL1;
@@ -70,59 +70,59 @@ public class NodeOffsetPointXY extends Asn1Object {
   @JsonProperty("node-LatLon")
   private Node_LatLon nodeLatLon;
 
-  public Node_XY getNodeXY() {
+  public NodeXYAsn1Object getNodeXY() {
     return nodeXY;
   }
 
-  public void setNodeXY(Node_XY nodeXY) {
+  public void setNodeXY(NodeXYAsn1Object nodeXY) {
     this.nodeXY = nodeXY;
   }
 
-  public Node_XY getNodeXY1() {
+  public NodeXYAsn1Object getNodeXY1() {
     return nodeXY1;
   }
 
-  public void setNodeXY1(Node_XY nodeXY1) {
+  public void setNodeXY1(NodeXYAsn1Object nodeXY1) {
     this.nodeXY1 = nodeXY1;
   }
 
-  public Node_XY getNodeXY2() {
+  public NodeXYAsn1Object getNodeXY2() {
     return nodeXY2;
   }
 
-  public void setNodeXY2(Node_XY nodeXY2) {
+  public void setNodeXY2(NodeXYAsn1Object nodeXY2) {
     this.nodeXY2 = nodeXY2;
   }
 
-  public Node_XY getNodeXY3() {
+  public NodeXYAsn1Object getNodeXY3() {
     return nodeXY3;
   }
 
-  public void setNodeXY3(Node_XY nodeXY3) {
+  public void setNodeXY3(NodeXYAsn1Object nodeXY3) {
     this.nodeXY3 = nodeXY3;
   }
 
-  public Node_XY getNodeXY4() {
+  public NodeXYAsn1Object getNodeXY4() {
     return nodeXY4;
   }
 
-  public void setNodeXY4(Node_XY nodeXY4) {
+  public void setNodeXY4(NodeXYAsn1Object nodeXY4) {
     this.nodeXY4 = nodeXY4;
   }
 
-  public Node_XY getNodeXY5() {
+  public NodeXYAsn1Object getNodeXY5() {
     return nodeXY5;
   }
 
-  public void setNodeXY5(Node_XY nodeXY5) {
+  public void setNodeXY5(NodeXYAsn1Object nodeXY5) {
     this.nodeXY5 = nodeXY5;
   }
 
-  public Node_XY getNodeXY6() {
+  public NodeXYAsn1Object getNodeXY6() {
     return nodeXY6;
   }
 
-  public void setNodeXY6(Node_XY nodeXY6) {
+  public void setNodeXY6(NodeXYAsn1Object nodeXY6) {
     this.nodeXY6 = nodeXY6;
   }
 
