@@ -28,9 +28,6 @@ public abstract class IntegerDeserializer<T extends Asn1Integer> extends StdDese
         if (jsonParser instanceof FromXmlParser xmlParser) {
             result = construct();
             TreeNode node = xmlParser.getCodec().readTree(xmlParser);
-            System.out.printf("type: %s%n", thisClass.getName());
-            System.out.printf("node: %s%n", node);
-            System.out.printf("node type: %s%n", node.getClass().getName());
             if (node instanceof NumericNode numNode) {
                 result.setValue(numNode.longValue());
             } else if (node instanceof TextNode textNode) {

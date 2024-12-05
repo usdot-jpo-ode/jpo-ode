@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import us.dot.its.jpo.ode.plugin.serialization.BitstringSerializer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,6 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.BitSet;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static us.dot.its.jpo.ode.plugin.utils.BitUtils.reverseBits;
 
@@ -46,6 +49,16 @@ public abstract class Asn1Bitstring implements Asn1Type {
 
     public void set(int bitIndex, boolean value) {
         bits.set(bitIndex, value);
+    }
+
+    public void set(String name, boolean value) {
+        for (int i = 0; i < size; i++) {
+            if (name(i).equals(name)) {
+                set(i, value);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown name " + name);
     }
 
     public String binaryString() {

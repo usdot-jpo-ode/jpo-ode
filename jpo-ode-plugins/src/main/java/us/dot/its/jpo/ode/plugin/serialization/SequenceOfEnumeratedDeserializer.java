@@ -33,12 +33,11 @@ public abstract class SequenceOfEnumeratedDeserializer<S extends Enum<?> & Asn1E
             // Unwrapped enum items
             result = construct();
             TreeNode node = xmlParser.getCodec().readTree(xmlParser);
-            System.out.printf("type: %s%n", thisClass.getName());
-            System.out.printf("node: %s%n", node);
+
             var fieldNameIterator = node.fieldNames();
             while (fieldNameIterator.hasNext()) {
                 String name = fieldNameIterator.next();
-                System.out.printf("enum value: %s%n", name);
+
                 for (S enumValue : listEnumValues()) {
                     if (Objects.equals(enumValue.getName(), name)) {
                         result.add(enumValue);

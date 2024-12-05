@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.XmlSerializerProvider;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 /**
  * Serializer for ASN.1 Bitstring types to XER or JER
+ * <p>Note that this serializer writes ODE JSON, not standard JER.
  * @author Ivan Yourshaw
  */
 public class BitstringSerializer extends StdSerializer<Asn1Bitstring> {

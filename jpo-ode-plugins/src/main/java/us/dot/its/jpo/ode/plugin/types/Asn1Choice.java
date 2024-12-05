@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import us.dot.its.jpo.ode.plugin.serialization.SerializationUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
