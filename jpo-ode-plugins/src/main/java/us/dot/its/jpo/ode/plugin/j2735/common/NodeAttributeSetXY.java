@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import us.dot.its.jpo.ode.plugin.types.Asn1Sequence;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -13,6 +14,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
 /**
+ *
+ * EDITED: Add @JsonProperty annotations to dWidth and dElevation
  * 
  *******************************************************************************
  *
@@ -56,9 +59,11 @@ public class NodeAttributeSetXY extends Asn1Sequence {
 	private LaneDataAttributeList data;
 	@Asn1Property(tag = 4, optional = true)
 	@JsonDeserialize(using = Offset_B10.Offset_B10Deserializer.class)
+	@JsonProperty("dWidth")
 	private Offset_B10 dWidth;
 	@Asn1Property(tag = 5, optional = true)
 	@JsonDeserialize(using = Offset_B10.Offset_B10Deserializer.class)
+	@JsonProperty("dElevation")
 	private Offset_B10 dElevation;
 	@Asn1Property(tag = 6, optional = true)
 	private SequenceOfRegional regional;
