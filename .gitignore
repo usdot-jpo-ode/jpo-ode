@@ -22,6 +22,8 @@ settings.xml
 .metadata
 *.pyc
 /kafka/
+**/target/**
+**/.rewrite-cache/**
 
 ####################
 ### jpo-ode-svcs ###

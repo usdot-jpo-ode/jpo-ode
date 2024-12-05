@@ -1,8 +1,7 @@
 package us.dot.its.jpo.ode.udp.map;
 
 import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
@@ -12,14 +11,14 @@ import java.net.DatagramPacket;
 
 @Slf4j
 public class MapReceiver extends AbstractUdpReceiverPublisher {
-    private final StringPublisher mapPublisher;
+
+    KafkaTemplate<String, String> kafkaTemplate;
     private final String publishTopic;
 
-    public MapReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties, OdeKafkaProperties odeKafkaProperties, String publishTopic) {
+    public MapReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties, KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
-
+        this.kafkaTemplate = kafkaTemplate;
         this.publishTopic = publishTopic;
-        this.mapPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override
@@ -35,7 +34,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                 if (packet.getLength() > 0) {
                     String mapJson = UdpHexDecoder.buildJsonMapFromPacket(packet);
                     if (mapJson != null) {
-                        mapPublisher.publish(this.publishTopic, mapJson);
+                        kafkaTemplate.send(publishTopic, mapJson);
                     }
                 } else {
                     log.debug("Ignoring empty packet from {}", packet.getSocketAddress());

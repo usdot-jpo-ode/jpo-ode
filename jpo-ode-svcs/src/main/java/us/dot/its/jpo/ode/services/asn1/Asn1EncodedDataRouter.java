@@ -22,10 +22,10 @@ import org.json.JSONObject;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.kafka.Asn1CoderTopics;
-import us.dot.its.jpo.ode.kafka.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.SDXDepositorTopics;
+import us.dot.its.jpo.ode.kafka.topics.SDXDepositorTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.rsu.RsuProperties;
@@ -86,10 +86,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         this.dataSigningEnabledSDW = securityServicesProperties.getIsSdwSigningEnabled();
         this.dataSigningEnabledRSU = securityServicesProperties.getIsRsuSigningEnabled();
 
-        odeTimJsonTopology = new OdeTimJsonTopology(odeKafkaProperties);
-        if (!odeTimJsonTopology.isRunning()) {
-            odeTimJsonTopology.start();
-        }
+        odeTimJsonTopology = new OdeTimJsonTopology(odeKafkaProperties, jsonTopics.getTim());
     }
 
     @Override

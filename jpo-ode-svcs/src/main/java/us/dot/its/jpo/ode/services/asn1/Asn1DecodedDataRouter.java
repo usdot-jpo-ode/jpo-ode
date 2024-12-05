@@ -19,9 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import us.dot.its.jpo.ode.coder.*;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.kafka.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.PojoTopics;
+import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
@@ -39,7 +39,6 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
     private final MessageProducer<String, OdeBsmData> bsmProducer;
     private final MessageProducer<String, String> timProducer;
     private final MessageProducer<String, String> spatProducer;
-    private final MessageProducer<String, String> mapProducer;
     private final MessageProducer<String, String> ssmProducer;
     private final MessageProducer<String, String> srmProducer;
     private final MessageProducer<String, String> psmProducer;
@@ -58,9 +57,6 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
                 odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.spatProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducer().getType(),
-                odeKafkaProperties.getDisabledTopics());
-        this.mapProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
                 odeKafkaProperties.getProducer().getType(),
                 odeKafkaProperties.getDisabledTopics());
         this.ssmProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
@@ -92,7 +88,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
                 case BasicSafetyMessage -> routeBSM(consumedData, recordType);
                 case TravelerInformation -> routeTIM(consumedData, recordType);
                 case SPATMessage -> routeSPAT(consumedData, recordType);
-                case MAPMessage -> routeMAP(consumedData, recordType);
+                case MAPMessage -> log.debug("MAP data processing no longer supported in this router.");
                 case SSMMessage -> routeSSM(consumedData, recordType);
                 case SRMMessage -> routeSRM(consumedData, recordType);
                 case PersonalSafetyMessage -> routePSM(consumedData, recordType);
@@ -132,16 +128,6 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
         // Send all SSMs also to OdeSsmJson
         ssmProducer.send(jsonTopics.getSsm(), getRecord().key(), odeSsmData);
         log.debug("Submitted to SSM Pojo topic {}", jsonTopics.getSsm());
-    }
-
-    private void routeMAP(String consumedData, RecordType recordType) throws XmlUtils.XmlUtilsException {
-        String odeMapData = OdeMapDataCreatorHelper.createOdeMapData(consumedData).toString();
-        if (recordType == RecordType.mapTx) {
-            mapProducer.send(pojoTopics.getTxMap(), getRecord().key(), odeMapData);
-        }
-        // Send all Map also to OdeMapJson
-        mapProducer.send(jsonTopics.getMap(), getRecord().key(), odeMapData);
-        log.debug("Submitted to MAP Pojo topic {}", jsonTopics.getMap());
     }
 
     private void routeSPAT(String consumedData, RecordType recordType) throws XmlUtils.XmlUtilsException {

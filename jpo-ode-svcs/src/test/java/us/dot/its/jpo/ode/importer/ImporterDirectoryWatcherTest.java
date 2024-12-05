@@ -23,9 +23,9 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
-import us.dot.its.jpo.ode.kafka.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

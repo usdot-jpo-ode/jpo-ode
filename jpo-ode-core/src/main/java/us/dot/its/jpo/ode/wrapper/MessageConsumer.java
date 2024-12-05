@@ -120,6 +120,7 @@ public class MessageConsumer<K, V> {
     }
 
     private Properties addConfluentProperties(Properties props) {
+        logger.info("Adding Confluent properties");
         props.put("ssl.endpoint.identification.algorithm", "https");
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.mechanism", "PLAIN");

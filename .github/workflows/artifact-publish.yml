@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'temurin'
 
     - name: Remove snapshot from version
       run: mvn versions:set -DremoveSnapshot

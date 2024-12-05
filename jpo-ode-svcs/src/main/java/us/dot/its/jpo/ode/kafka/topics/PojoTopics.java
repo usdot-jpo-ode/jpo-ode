@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.kafka;
+package us.dot.its.jpo.ode.kafka.topics;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -7,6 +7,7 @@ import java.util.List;
 public class OdeKafkaPropertiesValidator implements Validator {
 
     private static final List<String> VALID_ACKS = List.of("all", "0", "1", "-1");
+    private static final List<String> VALID_KAFKA_TYPES = List.of("", "CONFLUENT");
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -26,6 +27,20 @@ public class OdeKafkaPropertiesValidator implements Validator {
         } else {
             if (!properties.getBrokers().contains(":")) {
                 errors.rejectValue("brokers", "broker must be in the format host:port");
+            }
+        }
+
+        if (!VALID_KAFKA_TYPES.contains(properties.getKafkaType())) {
+            errors.rejectValue("kafkaType", "type value must be one of: " + VALID_KAFKA_TYPES);
+        }
+
+        if ("CONFLUENT".equals(properties.getKafkaType())) {
+            ConfluentProperties confluent = properties.getConfluent();
+            if (confluent.getPassword() == null) {
+                errors.rejectValue("confluent.password", "when kafka-type is set to CONFLUENT the password must be set");
+            }
+            if (confluent.getUsername() == null) {
+                errors.rejectValue("confluent.username", "when kafka-type is set to CONFLUENT the username must be set");
             }
         }
     }
