@@ -3,14 +3,16 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * The type of speed limit.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class SpeedLimitType extends Asn1Object {
-
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Enumerated type for speed limit types.
+   */
   public enum SpeedLimitTypeEnum {
     unknown,                                    //-- Speed limit type not available
     maxSpeedInSchoolZone,                       //-- Only sent when the limit is active

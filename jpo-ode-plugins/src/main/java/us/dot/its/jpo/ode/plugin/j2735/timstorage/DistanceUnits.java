@@ -1,14 +1,19 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * The units of distance used in the message.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class DistanceUnits extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Enumeration of distance units.
+   */
   public enum DistanceUnitsEnum {
     centimeter, // (0),
     cm2_5,      // (1), -- Steps of 2.5 centimeters
@@ -22,7 +27,7 @@ public class DistanceUnits extends Asn1Object {
 
   private String centimeter;  // (0),
   @JsonProperty("cm2-5")
-  private String cm2_5;       // (1), -- Steps of 2.5 centimeters
+  private String cm2dot5;       // (1), -- Steps of 2.5 centimeters
   private String decimeter;   // (2),
   private String meter;       // (3),
   private String kilometer;   // (4),
@@ -38,12 +43,12 @@ public class DistanceUnits extends Asn1Object {
     this.centimeter = centimeter;
   }
 
-  public String getCm2_5() {
-    return cm2_5;
+  public String getCm2dot5() {
+    return cm2dot5;
   }
 
-  public void setCm2_5(String cm2_5) {
-    this.cm2_5 = cm2_5;
+  public void setCm2dot5(String cm2dot5) {
+    this.cm2dot5 = cm2dot5;
   }
 
   public String getDecimeter() {

@@ -1,38 +1,45 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * The offsets of a region.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class RegionOffsets extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
-  private int xOffset;
-  private int yOffset;
-  private int zOffset;
+  @JsonProperty("xOffset")
+  private int offsetX;
+  @JsonProperty("yOffset")
+  private int offsetY;
+  @JsonProperty("zOffset")
+  private int offsetZ;
 
-  public int getxOffset() {
-    return xOffset;
+  public int getOffsetX() {
+    return offsetX;
   }
 
-  public void setxOffset(int xOffset) {
-    this.xOffset = xOffset;
+  public void setOffsetX(int offsetX) {
+    this.offsetX = offsetX;
   }
 
-  public int getyOffset() {
-    return yOffset;
+  public int getOffsetY() {
+    return offsetY;
   }
 
-  public void setyOffset(int yOffset) {
-    this.yOffset = yOffset;
+  public void setOffsetY(int offsetY) {
+    this.offsetY = offsetY;
   }
 
-  public int getzOffset() {
-    return zOffset;
+  public int getOffsetZ() {
+    return offsetZ;
   }
 
-  public void setzOffset(int zOffset) {
-    this.zOffset = zOffset;
+  public void setOffsetZ(int offsetZ) {
+    this.offsetZ = offsetZ;
   }
 
 
