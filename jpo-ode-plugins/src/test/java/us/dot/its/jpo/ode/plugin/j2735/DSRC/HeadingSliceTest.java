@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.DSRC;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.plugin.j2735.common.HeadingSlice;
 
 import static org.junit.jupiter.api.Assertions.*;
 

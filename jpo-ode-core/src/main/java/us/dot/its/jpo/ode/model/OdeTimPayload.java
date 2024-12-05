@@ -16,7 +16,7 @@
 package us.dot.its.jpo.ode.model;
 
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
-import us.dot.its.jpo.ode.plugin.j2735.DSRC.TravelerInformation;
+import us.dot.its.jpo.ode.plugin.j2735.travelerinformation.TravelerInformation;
 
 public class OdeTimPayload extends OdeMsgPayload {
 
