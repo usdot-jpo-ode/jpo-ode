@@ -39,7 +39,7 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
         super();
         this.odeKafkaProperties = odeKafkaProperties;
         this.brokers = odeKafkaProperties.getBrokers();
-        this.type = odeKafkaProperties.getProducer().getType();
+        this.type = odeKafkaProperties.getKafkaType();
         this.partitionerClass = odeKafkaProperties.getProducer().getPartitionerClass();
         init();
     }
