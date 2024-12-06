@@ -305,8 +305,8 @@ class TimTransmogrifierTest {
 
     // verify
     String expectedXml = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")))
-        .replaceAll("\\s", "") // remove all whitespace
+        "src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml"))).replaceAll(
+            "\\s", "") // remove all whitespace
         .replaceAll("<false/>", "<false />"); // add space before closing tag
     Assertions.assertEquals(expectedXml, actualXML);
   }
@@ -314,8 +314,8 @@ class TimTransmogrifierTest {
   @Test
   void testCreateOdeTimData() throws JsonUtilsException {
 
-    JSONObject testObject = JsonUtils
-        .toJSONObject("{\"metadata\":{\"object\":\"value\"},\"payload\":{\"object\":\"value\"}}");
+    JSONObject testObject = JsonUtils.toJSONObject(
+        "{\"metadata\":{\"object\":\"value\"},\"payload\":{\"object\":\"value\"}}");
     JSONObject actualOdeTimData = TimTransmogrifier.createOdeTimData(testObject);
 
     assertEquals(
@@ -380,9 +380,8 @@ class TimTransmogrifierTest {
     for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
       maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
       latestStartDateTime = latestStartDateTime == null ||
-          latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
-          ? dateFormat.parse(dataFrameItem.getStartDateTime())
-          : latestStartDateTime;
+          latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())) ?
+          dateFormat.parse(dataFrameItem.getStartDateTime()) : latestStartDateTime;
     }
     timMetadata.setMaxDurationTime(maxDurationTime);
     timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));

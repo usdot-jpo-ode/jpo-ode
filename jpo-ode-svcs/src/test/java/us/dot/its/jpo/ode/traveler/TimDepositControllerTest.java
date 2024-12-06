@@ -100,25 +100,24 @@ public class TimDepositControllerTest {
 
   @Test
   public void invalidTimestampShouldReturnInvalidTimestampError() {
-    ResponseEntity<String> actualResponse = testTimDepositController
-        .postTim("{\"request\":{},\"tim\":{\"timeStamp\":\"201-03-13T01:07:11-05:00\"}}");
+    ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+        "{\"request\":{},\"tim\":{\"timeStamp\":\"201-03-13T01:07:11-05:00\"}}");
     assertEquals("{\"error\":\"Invalid timestamp in tim record: 201-03-13T01:07:11-05:00\"}",
         actualResponse.getBody());
   }
 
   @Test
   public void messageWithNoRSUsOrSDWShouldReturnWarning() {
-    ResponseEntity<String> actualResponse = testTimDepositController
-        .postTim("{\"request\":{},\"tim\":{\"timeStamp\":\"2018-03-13T01:07:11-05:00\"}}");
+    ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+        "{\"request\":{},\"tim\":{\"timeStamp\":\"2018-03-13T01:07:11-05:00\"}}");
     assertEquals(
         "{\"warning\":\"Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to broadcast streams.\"}",
         actualResponse.getBody());
   }
 
   @Test
-  public void failedObjectNodeConversionShouldReturnConvertingError(
-      @Capturing
-      TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
+  public void failedObjectNodeConversionShouldReturnConvertingError(@Capturing
+                                                                    TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
       throws JsonUtilsException,
       TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
 
@@ -145,8 +144,7 @@ public class TimDepositControllerTest {
     new Expectations() {
       {
         TimTransmogrifier.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any,
-            (OdeMsgMetadata) any,
-            (SerialId) any);
+            (OdeMsgMetadata) any, (SerialId) any);
         result = new XmlUtilsException("testException123", null);
       }
     };
@@ -168,12 +166,10 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfullSdwRequestMessageReturnsSuccessMessagePost()
-      throws Exception {
+  public void testSuccessfullSdwRequestMessageReturnsSuccessMessagePost() throws Exception {
     String file = "/sdwRequest.json";
-    String json = IOUtils.toString(
-        TimDepositControllerTest.class.getResourceAsStream(file),
-        "UTF-8");
+    String json =
+        IOUtils.toString(TimDepositControllerTest.class.getResourceAsStream(file), "UTF-8");
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(json);
     assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
   }

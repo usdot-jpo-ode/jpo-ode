@@ -101,12 +101,12 @@ public class TimDepositController {
 
   /**
    * Constructor.
-
-   * @param odeKafkaProperties odeKafkaProperties
-   * @param asn1CoderTopics asn1CoderTopics
-   * @param pojoTopics pojoTopics
-   * @param jsonTopics jsonTopics
-   * @param ingestTrackerProperties ingestTrackerProperties
+   *
+   * @param odeKafkaProperties         odeKafkaProperties
+   * @param asn1CoderTopics            asn1CoderTopics
+   * @param pojoTopics                 pojoTopics
+   * @param jsonTopics                 jsonTopics
+   * @param ingestTrackerProperties    ingestTrackerProperties
    * @param securityServicesProperties securityServicesProperties
    */
   @Autowired
@@ -154,7 +154,7 @@ public class TimDepositController {
    * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST.
    *
    * @param jsonString TIM in JSON
-   * @param verb ODE.PUT or ODE.POST
+   * @param verb       ODE.PUT or ODE.POST
    * @return list of success/failures
    */
   public synchronized ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
@@ -261,7 +261,7 @@ public class TimDepositController {
     if ((request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
       String warningMsg =
           "Warning: TIM contains no RSU, SNMP, or SDW fields."
-          + " Message only published to broadcast streams.";
+              + " Message only published to broadcast streams.";
       log.warn(warningMsg);
       return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
     }

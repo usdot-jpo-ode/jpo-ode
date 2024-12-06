@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
- * Unless required by applicable law or agreed to in writing, software
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.inet;
@@ -20,12 +20,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sender/Forwarder helper class for use by Forwarder, Transport, and Data Sink
- * that need to send packets around
+ * that need to send packets around.
  */
 @Slf4j
 public class InetPacketSender {
@@ -34,7 +33,7 @@ public class InetPacketSender {
       "Invalid Parameters. Parameters destination point and payload can not be null";
 
   /**
-   * Inet address and port to forward packets to
+   * Inet address and port to forward packets to.
    */
   private InetPoint frwdPoint;
 
@@ -61,38 +60,18 @@ public class InetPacketSender {
    * Forward packet. Intended client is the forwarder that received a packet
    *
    * @param packet UDP packet
-   * @throws InetPacketException
+   * @throws InetPacketException if the packet is null or the destination is not defined
    */
   public void forward(DatagramPacket packet) throws InetPacketException {
     if (packet == null) {
       log.warn("Ignoring forward request for null packet");
       return;
     }
-	  if (frwdPoint == null) {
-		  throw new InetPacketException(
-				  "Couldn't forward packet. Reason: Forwarding destination is not defined.");
-	  }
-    send(frwdPoint, new InetPacket(packet).getBundle());
-  }
-
-  /**
-   * Send packet. Intended client is the forwarder that sends outbound packet
-   *
-   * @param packet outbound packet that contains destination+payload bundle
-   * @throws InetPacketException
-   */
-  public void send(DatagramPacket packet) throws InetPacketException {
-    if (packet == null) {
-      log.warn("Ignoring send request for null packet");
-      return;
+    if (frwdPoint == null) {
+      throw new InetPacketException(
+          "Couldn't forward packet. Reason: Forwarding destination is not defined.");
     }
-    InetPacket p = new InetPacket(packet);
-    InetPoint point = p.getPoint();
-	  if (point == null) {
-		  throw new InetPacketException(
-				  "Couldn't send packet. Reason: Destination is not defined in the packet (not a bundle?)");
-	  }
-    send(point, p.getPayload());
+    send(frwdPoint, new InetPacket(packet).getBundle());
   }
 
   /**
@@ -101,15 +80,15 @@ public class InetPacketSender {
    *
    * @param dstPoint destination address and port for forwarder to forward to
    * @param payload  data to forward
-   * @throws InetPacketException
+   * @throws InetPacketException if the packet is null or the destination is not defined
    */
   public void forward(InetPoint dstPoint, byte[] payload) throws InetPacketException {
-	  if (dstPoint == null || payload == null) {
-		  throw new InetPacketException(INVALID_PARAMETERS_MSG);
-	  }
-	  if (frwdPoint == null) {
-		  log.warn("Couldn't forward packet. Reason: Forwarding destination is not defined.");
-	  }
+    if (dstPoint == null || payload == null) {
+      throw new InetPacketException(INVALID_PARAMETERS_MSG);
+    }
+    if (frwdPoint == null) {
+      log.warn("Couldn't forward packet. Reason: Forwarding destination is not defined.");
+    }
     if (frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll())) {
       send(frwdPoint, new InetPacket(dstPoint, payload).getBundle());
     } else {
@@ -125,13 +104,13 @@ public class InetPacketSender {
    * @param dstPoint      destination address and port of the final destination
    * @param payload       data to forward or send
    * @param fromForwarder whether the original request came through a forwarder
-   * @throws InetPacketException
+   * @throws InetPacketException if the packet is null or the destination is not defined
    */
   public void forward(InetPoint dstPoint, byte[] payload, boolean fromForwarder)
       throws InetPacketException {
-	  if (dstPoint == null || payload == null) {
-		  throw new InetPacketException(INVALID_PARAMETERS_MSG);
-	  }
+    if (dstPoint == null || payload == null) {
+      throw new InetPacketException(INVALID_PARAMETERS_MSG);
+    }
     if (frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll() || fromForwarder)) {
       send(frwdPoint, new InetPacket(dstPoint, payload).getBundle());
     } else {
@@ -141,17 +120,37 @@ public class InetPacketSender {
   }
 
   /**
+   * Send packet. Intended client is the forwarder that sends outbound packet
+   *
+   * @param packet outbound packet that contains destination+payload bundle
+   * @throws InetPacketException if the packet is null or the destination is not defined
+   */
+  public void send(DatagramPacket packet) throws InetPacketException {
+    if (packet == null) {
+      log.warn("Ignoring send request for null packet");
+      return;
+    }
+    InetPacket p = new InetPacket(packet);
+    InetPoint point = p.getPoint();
+    if (point == null) {
+      throw new InetPacketException(
+          "Couldn't send packet. Reason: Destination is not defined in the packet (not a bundle?)");
+    }
+    send(point, p.getPayload());
+  }
+
+  /**
    * Send payload to the destination specified. Intended clients are Transport or
    * Data Sink sending directly to the client
    *
    * @param dstPoint destination address and port to send to
    * @param payload  data to send
-   * @throws InetPacketException
+   * @throws InetPacketException if the packet is null or the destination is not defined
    */
   public void send(InetPoint dstPoint, byte[] payload) throws InetPacketException {
-	  if (dstPoint == null || payload == null) {
-		  throw new InetPacketException(INVALID_PARAMETERS_MSG);
-	  }
+    if (dstPoint == null || payload == null) {
+      throw new InetPacketException(INVALID_PARAMETERS_MSG);
+    }
     try (DatagramSocket sock = new DatagramSocket()) {
       DatagramPacket packet = new DatagramPacket(payload, payload.length, dstPoint.getInetAddress(),
           dstPoint.port);
@@ -164,7 +163,7 @@ public class InetPacketSender {
   }
 
   /**
-   * Reports whether outbound IPv4 messages should be send directly or forwarded.
+   * Reports whether outbound IPv4 messages should be sent directly or forwarded.
    *
    * @return true if IPv4 packets are forwarded in addition to IPv6 packets
    */
@@ -173,6 +172,8 @@ public class InetPacketSender {
   }
 
   /**
+   * Sets whether outbound IPv4 messages should be sent directly or forwarded.
+   *
    * @param forwardAll Directs how to handle IPv4 messages.
    *                   Specify true to force forwarding IPv4 messages, and false
    *                   to always send them directly.

@@ -1,22 +1,23 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
- * Unless required by applicable law or agreed to in writing, software
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import lombok.EqualsAndHashCode;
@@ -31,6 +32,9 @@ import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent.ExtentEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 
+/**
+ * OdeTravelerInformationMessage.
+ */
 @EqualsAndHashCode(callSuper = false)
 public class OdeTravelerInformationMessage extends OdeObject {
 
@@ -91,6 +95,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     this.asnDataFrames = stringDataFrames;
   }
 
+  /**
+   * NodeListXY.
+   */
   public static class NodeListXY extends OdeObject {
     private static final long serialVersionUID = 1L;
     private ComputedLane computedLane;
@@ -113,6 +120,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * Area.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class Area extends OdeObject {
     private static final long serialVersionUID = 1L;
@@ -146,6 +156,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * ComputedLane.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class ComputedLane extends OdeObject {
 
@@ -206,6 +219,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * NodeXY.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class NodeXY extends OdeObject {
 
@@ -213,8 +229,10 @@ public class OdeTravelerInformationMessage extends OdeObject {
     private String delta;
     private BigDecimal nodeLat;
     private BigDecimal nodeLong;
-    private BigDecimal x;
-    private BigDecimal y;
+    @JsonProperty("x")
+    private BigDecimal xpos;
+    @JsonProperty("y")
+    private BigDecimal ypos;
     private Attributes attributes;
 
     public String getDelta() {
@@ -241,20 +259,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
       this.nodeLong = nodeLong;
     }
 
-    public BigDecimal getX() {
-      return x;
+    public BigDecimal getXpos() {
+      return xpos;
     }
 
-    public void setX(BigDecimal x) {
-      this.x = x;
+    public void setXpos(BigDecimal xpos) {
+      this.xpos = xpos;
     }
 
-    public BigDecimal getY() {
-      return y;
+    public BigDecimal getYpos() {
+      return ypos;
     }
 
-    public void setY(BigDecimal y) {
-      this.y = y;
+    public void setYpos(BigDecimal ypos) {
+      this.ypos = ypos;
     }
 
     public Attributes getAttributes() {
@@ -266,6 +284,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * LocalNode.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class LocalNode extends OdeObject {
 
@@ -281,6 +302,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * DisabledList.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class DisabledList extends OdeObject {
 
@@ -296,6 +320,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * EnabledList.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class EnabledList extends OdeObject {
 
@@ -311,6 +338,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * SpeedLimits.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class SpeedLimits extends OdeObject {
 
@@ -335,6 +365,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * DataList.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class DataList extends OdeObject {
 
@@ -395,6 +428,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
     }
   }
 
+  /**
+   * Attributes.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class Attributes extends OdeObject {
 
@@ -403,8 +439,10 @@ public class OdeTravelerInformationMessage extends OdeObject {
     private DisabledList[] disabledLists;
     private EnabledList[] enabledLists;
     private DataList[] dataLists;
-    private BigDecimal dWidth;
-    private BigDecimal dElevation;
+    @JsonProperty("dWidth")
+    private BigDecimal dwidth;
+    @JsonProperty("dElevation")
+    private BigDecimal delevation;
 
     public LocalNode[] getLocalNodes() {
       return localNodes;
@@ -438,46 +476,52 @@ public class OdeTravelerInformationMessage extends OdeObject {
       this.dataLists = dataLists;
     }
 
-    public BigDecimal getdWidth() {
-      return dWidth;
+    public BigDecimal getDwidth() {
+      return dwidth;
     }
 
-    public void setdWidth(BigDecimal dWidth) {
-      this.dWidth = dWidth;
+    public void setDwidth(BigDecimal dwidth) {
+      this.dwidth = dwidth;
     }
 
-    public BigDecimal getdElevation() {
-      return dElevation;
+    public BigDecimal getDelevation() {
+      return delevation;
     }
 
-    public void setdElevation(BigDecimal dElevation) {
-      this.dElevation = dElevation;
+    public void setDelevation(BigDecimal delevation) {
+      this.delevation = delevation;
     }
   }
 
+  /**
+   * DataFrame.
+   */
   @EqualsAndHashCode(callSuper = false)
   public static class DataFrame extends OdeObject {
 
     private static final long serialVersionUID = 537503046055742396L;
     @JsonAlias({"sspTimRights", "notUsed"})
-    private short doNotUse1;// Start Header Information
+    private short doNotUse1; // Start Header Information
     private FrameType.TravelerInfoType frameType;
     private MsgId msgId;
     private String startDateTime;
     @JsonAlias("duratonTime")
     private int durationTime;
-    private int priority;// End header Information
+    private int priority; // End header Information
     @JsonAlias({"sspLocationRights", "notUsed1"})
-    private short doNotUse2;// Start Region Information
+    private short doNotUse2; // Start Region Information
     private Region[] regions;
     @JsonAlias({"sspMsgContent", "sspMsgRights1", "notUsed2"})
-    private short doNotUse3;// Start content Information
+    private short doNotUse3; // Start content Information
     @JsonAlias({"sspMsgTypes", "sspMsgRights2", "notUsed3"})
     private short doNotUse4;
     private String content;
     private String[] items;
-    private String url;// End content Information
+    private String url; // End content Information
 
+    /**
+     * Region.
+     */
     @EqualsAndHashCode(callSuper = false)
     public static class Region extends OdeObject {
 
@@ -495,6 +539,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
       private Geometry geometry;
       private OldRegion oldRegion;
 
+      /**
+       * OldRegion.
+       */
       @EqualsAndHashCode(callSuper = false)
       public static class OldRegion extends OdeObject {
 
@@ -503,6 +550,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
         private String extent;
         private Area area;
 
+        /**
+         * ShapePointSet.
+         */
         @EqualsAndHashCode(callSuper = false)
         public static class ShapePointSet extends OdeObject {
 
@@ -549,6 +599,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
           }
         }
 
+        /**
+         * RegionPointSet.
+         */
         @EqualsAndHashCode(callSuper = false)
         public static class RegionPointSet extends OdeObject {
 
@@ -557,36 +610,42 @@ public class OdeTravelerInformationMessage extends OdeObject {
           private int scale;
           private RegionList[] regionList;
 
+          /**
+           * RegionList.
+           */
           @EqualsAndHashCode(callSuper = false)
           public static class RegionList extends OdeObject {
 
             private static final long serialVersionUID = -5307620155601900634L;
-            private BigDecimal xOffset;
-            private BigDecimal yOffset;
-            private BigDecimal zOffset;
+            @JsonProperty("xOffset")
+            private BigDecimal offsetX;
+            @JsonProperty("yOffset")
+            private BigDecimal offsetY;
+            @JsonProperty("zOffset")
+            private BigDecimal offsetZ;
 
-            public BigDecimal getzOffset() {
-              return zOffset;
+            public BigDecimal getOffsetZ() {
+              return offsetZ;
             }
 
-            public void setzOffset(BigDecimal zOffset) {
-              this.zOffset = zOffset;
+            public void setOffsetZ(BigDecimal offsetZ) {
+              this.offsetZ = offsetZ;
             }
 
-            public BigDecimal getyOffset() {
-              return yOffset;
+            public BigDecimal getOffsetY() {
+              return offsetY;
             }
 
-            public void setyOffset(BigDecimal yOffset) {
-              this.yOffset = yOffset;
+            public void setOffsetY(BigDecimal offsetY) {
+              this.offsetY = offsetY;
             }
 
-            public BigDecimal getxOffset() {
-              return xOffset;
+            public BigDecimal getOffsetX() {
+              return offsetX;
             }
 
-            public void setxOffset(BigDecimal xOffset) {
-              this.xOffset = xOffset;
+            public void setOffsetX(BigDecimal offsetX) {
+              this.offsetX = offsetX;
             }
           }
 
@@ -644,6 +703,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
         }
       }
 
+      /**
+       * Geometry.
+       */
       public static class Geometry extends OdeObject {
 
         private static final long serialVersionUID = -7664796173893464468L;
@@ -685,6 +747,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
         }
       }
 
+      /**
+       * Circle.
+       */
       @EqualsAndHashCode(callSuper = false)
       public static class Circle extends OdeObject {
 
@@ -731,6 +796,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
         }
       }
 
+      /**
+       * Path.
+       */
       @EqualsAndHashCode(callSuper = false)
       public static class Path extends OdeObject {
 
@@ -871,6 +939,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
     }
 
+    /**
+     * RoadSignID.
+     */
     @EqualsAndHashCode(callSuper = false)
     public static class RoadSignID extends OdeObject {
 
@@ -914,6 +985,9 @@ public class OdeTravelerInformationMessage extends OdeObject {
       }
     }
 
+    /**
+     * MsgId.
+     */
     @EqualsAndHashCode(callSuper = false)
     public static class MsgId extends Asn1Object {
       private static final long serialVersionUID = 1L;
