@@ -1,7 +1,25 @@
 package us.dot.its.jpo.ode.traveler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Date;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +29,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import us.dot.its.jpo.ode.model.*;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeRequestMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeTravelerInputData;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
@@ -28,21 +50,6 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
@@ -334,7 +341,7 @@ class TimTransmogrifierTest {
   }
 
   /**
-   * Helper method to prepare a SerialId object for testing
+   * Helper method to prepare a SerialId object for testing.
    *
    * @return a SerialId object
    */
@@ -345,7 +352,7 @@ class TimTransmogrifierTest {
   }
 
   /**
-   * Helper method to prepare an OdeTravelerInputData object for testing
+   * Helper method to prepare an OdeTravelerInputData object for testing.
    *
    * @param timRequestContainingCircleGeometry a JSON string containing a TIM request with a circle geometry
    * @return an OdeTravelerInputData object
@@ -358,7 +365,7 @@ class TimTransmogrifierTest {
   }
 
   /**
-   * Helper method to prepare an OdeRequestMsgMetadata object for testing
+   * Helper method to prepare an OdeRequestMsgMetadata object for testing.
    *
    * @param odeTID   an OdeTravelerInputData object
    * @param serialId a SerialId object
@@ -379,9 +386,9 @@ class TimTransmogrifierTest {
     Date latestStartDateTime = null;
     for (OdeTravelerInformationMessage.DataFrame dataFrameItem : tim.getDataframes()) {
       maxDurationTime = Math.max(maxDurationTime, dataFrameItem.getDurationTime());
-      latestStartDateTime = latestStartDateTime == null ||
-          latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())) ?
-          dateFormat.parse(dataFrameItem.getStartDateTime()) : latestStartDateTime;
+      latestStartDateTime = latestStartDateTime == null
+          || latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime()))
+          ? dateFormat.parse(dataFrameItem.getStartDateTime()) : latestStartDateTime;
     }
     timMetadata.setMaxDurationTime(maxDurationTime);
     timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));

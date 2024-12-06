@@ -1,38 +1,35 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
- * Unless required by applicable law or agreed to in writing, software
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.traveler;
 
-import org.apache.commons.io.IOUtils;
-
 import static org.junit.Assert.assertEquals;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -45,7 +42,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 
-public class TimDepositControllerTest {
+class TimDepositControllerTest {
 
   @Tested
   TimDepositController testTimDepositController;
@@ -72,26 +69,26 @@ public class TimDepositControllerTest {
   MessageProducer<?, ?> capturingMessageProducer;
 
   @Test
-  public void nullRequestShouldReturnEmptyError() {
+  void nullRequestShouldReturnEmptyError() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(null);
     assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
   }
 
   @Test
-  public void emptyRequestShouldReturnEmptyError() {
+  void emptyRequestShouldReturnEmptyError() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim("");
     assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
   }
 
   @Test
-  public void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
+  void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"in\"va}}}on\"}}");
     assertEquals("{\"error\":\"Malformed or non-compliant JSON syntax.\"}",
         actualResponse.getBody());
   }
 
   @Test
-  public void missingRequestElementShouldReturnMissingRequestError() {
+  void missingRequestElementShouldReturnMissingRequestError() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"tim\":{}}");
     assertEquals(
         "{\"error\":\"Missing or invalid argument: Request element is required as of version 3.\"}",
@@ -99,7 +96,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void invalidTimestampShouldReturnInvalidTimestampError() {
+  void invalidTimestampShouldReturnInvalidTimestampError() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(
         "{\"request\":{},\"tim\":{\"timeStamp\":\"201-03-13T01:07:11-05:00\"}}");
     assertEquals("{\"error\":\"Invalid timestamp in tim record: 201-03-13T01:07:11-05:00\"}",
@@ -107,7 +104,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void messageWithNoRSUsOrSDWShouldReturnWarning() {
+  void messageWithNoRSUsOrSDWShouldReturnWarning() {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(
         "{\"request\":{},\"tim\":{\"timeStamp\":\"2018-03-13T01:07:11-05:00\"}}");
     assertEquals(
@@ -116,8 +113,8 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void failedObjectNodeConversionShouldReturnConvertingError(@Capturing
-                                                                    TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
+  void failedObjectNodeConversionShouldReturnConvertingError(@Capturing
+                                                             TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
       throws JsonUtilsException,
       TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
 
@@ -137,7 +134,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void failedXmlConversionShouldReturnConversionError(
+  void failedXmlConversionShouldReturnConversionError(
       @Capturing TimTransmogrifier capturingTimTransmogrifier)
       throws XmlUtilsException, JsonUtilsException {
 
@@ -157,7 +154,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfulMessageReturnsSuccessMessagePost(
+  void testSuccessfulMessageReturnsSuccessMessagePost(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(
@@ -166,7 +163,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfullSdwRequestMessageReturnsSuccessMessagePost() throws Exception {
+  void testSuccessfullSdwRequestMessageReturnsSuccessMessagePost() throws Exception {
     String file = "/sdwRequest.json";
     String json =
         IOUtils.toString(TimDepositControllerTest.class.getResourceAsStream(file), "UTF-8");
@@ -175,7 +172,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfulMessageReturnsSuccessMessagePostWithOde(
+  void testSuccessfulMessageReturnsSuccessMessagePostWithOde(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     ResponseEntity<String> actualResponse = testTimDepositController.postTim(
@@ -184,7 +181,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfulMessageReturnsSuccessMessagePut(
+  void testSuccessfulMessageReturnsSuccessMessagePut(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     ResponseEntity<String> actualResponse = testTimDepositController.putTim(
@@ -193,7 +190,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testDepositingTimWithExtraProperties(
+  void testDepositingTimWithExtraProperties(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     String timToSubmit =
@@ -203,7 +200,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfulTimIngestIsTracked(
+  void testSuccessfulTimIngestIsTracked(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     String timToSubmit =
@@ -215,7 +212,7 @@ public class TimDepositControllerTest {
   }
 
   @Test
-  public void testSuccessfulRsuMessageReturnsSuccessMessagePost(
+  void testSuccessfulRsuMessageReturnsSuccessMessagePost(
       @Capturing TimTransmogrifier capturingTimTransmogrifier,
       @Capturing XmlUtils capturingXmlUtils) {
     String timToSubmit =
