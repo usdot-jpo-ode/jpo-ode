@@ -20,7 +20,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
         super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
         this.publishTopic = publishTopic;
-        this.ssmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics());
+        this.ssmPublisher = new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getKafkaType(), odeKafkaProperties.getDisabledTopics());
     }
 
     @Override

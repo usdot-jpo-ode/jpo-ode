@@ -153,6 +153,7 @@ public class MessageProducer<K, V> {
     }
 
     private void addConfluentProperties(Properties props) {
+        log.info("Adding Confluent properties");
         props.put("ssl.endpoint.identification.algorithm", "https");
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.mechanism", "PLAIN");
