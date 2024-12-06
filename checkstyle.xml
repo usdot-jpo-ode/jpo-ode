@@ -27,6 +27,15 @@
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
+  <!-- Excludes all auto-generated J2735 class files              -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" 
+      value=".*[\\/]src[\\/]main[\\/]java[\\/]us[\\/]dot[\\/]its[\\/]jpo[\\/]ode[\\/]plugin[\\/]j2735[\\/].*$"/>
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" 
+      value=".*[\\/]src[\\/]main[\\/]java[\\/]us[\\/]dot[\\/]its[\\/]jpo[\\/]ode[\\/]plugin[\\/]asn1[\\/].*$"/>
+  </module>
   <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
   <module name="SuppressionFilter">
     <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
