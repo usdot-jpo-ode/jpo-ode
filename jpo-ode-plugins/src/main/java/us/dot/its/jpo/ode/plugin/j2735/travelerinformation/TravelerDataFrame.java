@@ -23,7 +23,7 @@ import us.dot.its.jpo.ode.plugin.serialization.NestedSequenceOfSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /*
- * EDITED -> notUsed, notUsed1, notUsed2, notUsed3 fields.
+ * EDITED -> notUsed, notUsed1, notUsed2, notUsed3, durationTime fields.
  */
 
 /**
@@ -71,7 +71,7 @@ public class TravelerDataFrame extends Asn1Sequence {
 	private MinuteOfTheYear startTime;
 	@Asn1Property(tag = 5)
 	@JsonDeserialize(using = MinutesDuration.MinutesDurationDeserializer.class)
-	private MinutesDuration duratonTime;
+	private MinutesDuration durationTime;
 	@Asn1Property(tag = 6)
 	@JsonDeserialize(using = SignPrority.SignProrityDeserializer.class)
 	private SignPrority priority;

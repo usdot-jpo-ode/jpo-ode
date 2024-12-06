@@ -35,10 +35,5 @@ public class HeadingSliceTest {
   }
 
   private static final String EXPECTED_JSON = """
-      {"from000-0to022-5degrees":true,"from022-5to045-0degrees":true,"from045-0to067-5degrees":true,
-      "from067-5to090-0degrees":true,"from090-0to112-5degrees":true,"from112-5to135-0degrees":true,
-      "from135-0to157-5degrees":true,"from157-5to180-0degrees":true,"from180-0to202-5degrees":true,
-      "from202-5to225-0degrees":true,"from225-0to247-5degrees":true,"from247-5to270-0degrees":true,
-      "from270-0to292-5degrees":true,"from292-5to315-0degrees":true,"from315-0to337-5degrees":true,
-      "from337-5to360-0degrees":true}""";
+      {"from000-0to022-5degrees":true,"from022-5to045-0degrees":true,"from045-0to067-5degrees":true,"from067-5to090-0degrees":true,"from090-0to112-5degrees":true,"from112-5to135-0degrees":true,"from135-0to157-5degrees":true,"from157-5to180-0degrees":true,"from180-0to202-5degrees":true,"from202-5to225-0degrees":true,"from225-0to247-5degrees":true,"from247-5to270-0degrees":true,"from270-0to292-5degrees":true,"from292-5to315-0degrees":true,"from315-0to337-5degrees":true,"from337-5to360-0degrees":true}""";
 }

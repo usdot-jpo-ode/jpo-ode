@@ -46,21 +46,7 @@ public class MAPBuilderTest {
     }
     J2735MAP actualMap = MAPBuilder.genericMAP(jsonMap.findValue("MapData"));
     String expected = """
-        {\"msgIssueRevision\":4,\"layerType\":\"mixedContent\",\"layerID\":12,\"intersections\":
-        {\"intersectionGeometry\":[{\"id\":{\"id\":156},\"revision\":1,\"refPoint\":
-        {\"latitude\":38.9284111,\"longitude\":-77.2410713},\"laneSet\":{\"GenericLane\":[
-        {\"laneID\":1,\"laneAttributes\":{\"directionalUse\":{\"ingressPath\":false,
-        \"egressPath\":false},\"shareWith\":{\"busVehicleTraffic\":false,\"trackedVehicl
-        eTraffic\":false,\"individualMotorizedVehicleTraffic\":false,\"taxiVehicleTraffic\":false,
-        \"overlappingLaneDescriptionProvided\":false,\"cyclistVehicleTraffic\":false,
-        \"otherNonMotorizedTrafficTypes\":false,\"multipleLanesTreatedAsOneLane\":false,
-        \"pedestrianTraffic\":false,\"pedestriansTraffic\":false},\"laneType\":{\"vehicle\":
-        {\"isVehicleRevocableLane\":false,\"isVehicleFlyOverLane\":false,\"permissionOnRequest\":
-        false,\"hasIRbeaconCoverage\":false,\"restrictedToBusUse\":false,\"restrictedToTaxiUse\":
-        false,\"restrictedFromPublicUse\":false,\"hovLaneUseOnly\":false}}},\"nodeList\":
-        {\"nodes\":[{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}},{\"delta\":{\"nodeXY2\":
-        {\"x\":43,\"y\":24}}}]}}]}}]}}
-        """;
+    {\"msgIssueRevision\":4,\"layerType\":\"mixedContent\",\"layerID\":12,\"intersections\":{\"intersectionGeometry\":[{\"id\":{\"id\":156},\"revision\":1,\"refPoint\":{\"latitude\":38.9284111,\"longitude\":-77.2410713},\"laneSet\":{\"GenericLane\":[{\"laneID\":1,\"laneAttributes\":{\"directionalUse\":{\"ingressPath\":false,\"egressPath\":false},\"shareWith\":{\"busVehicleTraffic\":false,\"trackedVehicleTraffic\":false,\"individualMotorizedVehicleTraffic\":false,\"taxiVehicleTraffic\":false,\"overlappingLaneDescriptionProvided\":false,\"cyclistVehicleTraffic\":false,\"otherNonMotorizedTrafficTypes\":false,\"multipleLanesTreatedAsOneLane\":false,\"pedestrianTraffic\":false,\"pedestriansTraffic\":false},\"laneType\":{\"vehicle\":{\"isVehicleRevocableLane\":false,\"isVehicleFlyOverLane\":false,\"permissionOnRequest\":false,\"hasIRbeaconCoverage\":false,\"restrictedToBusUse\":false,\"restrictedToTaxiUse\":false,\"restrictedFromPublicUse\":false,\"hovLaneUseOnly\":false}}},\"nodeList\":{\"nodes\":[{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}},{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}}]}}]}}]}}""";
     assertEquals(expected, actualMap.toJson());
   }
 }
