@@ -1,12 +1,10 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import java.io.IOException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeTimData;
@@ -19,48 +17,69 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
+/**
+ * Helper class for deserializing TIM messages in XML/XER format into POJOs.
+ */
 public class OdeTimDataCreatorHelper {
 
-	public static OdeTimData createOdeTimDataFromDecoded(String consumedData) throws XmlUtilsException {
-		ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
+  /**
+   * Deserializes XML/XER from the UDP decoded pipeline.
+   *
+   * @param consumedData The XML/XER as a String.
+   */
+  public static OdeTimData createOdeTimDataFromDecoded(String consumedData) 
+      throws XmlUtilsException {
+    ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-		JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
-		if (metadataNode instanceof ObjectNode) {
-			ObjectNode object = (ObjectNode) metadataNode;
-			object.remove(AppContext.ENCODINGS_STRING);
+    JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+    if (metadataNode instanceof ObjectNode) {
+      ObjectNode object = (ObjectNode) metadataNode;
+      object.remove(AppContext.ENCODINGS_STRING);
 
-			// Map header file does not have a location and use predefined set required
-			// RxSource
-			ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-			receivedMessageDetails.setRxSource(RxSource.NA);
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode;
-			try {
-				jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-				object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+      // Map header file does not have a location and use predefined set required
+      // RxSource
+      ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+      receivedMessageDetails.setRxSource(RxSource.NA);
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode;
+      try {
+        jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
+        object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
 
-		OdeTimMetadata metadata = (OdeTimMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeTimMetadata.class);
+    OdeTimMetadata metadata = (OdeTimMetadata) JsonUtils.fromJson(metadataNode.toString(), 
+        OdeTimMetadata.class);
 
-		if (metadata.getSchemaVersion() <= 4) {
-			metadata.setReceivedMessageDetails(null);
-		}
+    if (metadata.getSchemaVersion() <= 4) {
+      metadata.setReceivedMessageDetails(null);
+    }
 
-		String travelerInformationXml = XmlUtils.findXmlContentString(consumedData, "TravelerInformation");
-		TravelerInformation timObject = (TravelerInformation)XmlUtils.fromXmlS(travelerInformationXml, TravelerInformation.class);
-		OdeTimPayload payload = new OdeTimPayload(timObject);
-		return new OdeTimData(metadata, payload);
-	}
+    String travelerInformationXml = XmlUtils.findXmlContentString(consumedData, 
+        "TravelerInformation");
+    TravelerInformation timObject = (TravelerInformation) XmlUtils.fromXmlS(travelerInformationXml,
+        TravelerInformation.class);
+    OdeTimPayload payload = new OdeTimPayload(timObject);
+    return new OdeTimData(metadata, payload);
+  }
 
-	public static OdeTimData createOdeTimDataFromCreator(String consumedData, OdeMsgMetadata metadata) throws XmlUtilsException {
-		String travelerInformationXml = XmlUtils.findXmlContentString(consumedData, "TravelerInformation");
-		TravelerInformation timObject = (TravelerInformation)XmlUtils.fromXmlS(travelerInformationXml, TravelerInformation.class);
-		OdeTimPayload payload = new OdeTimPayload(timObject);
-		return new OdeTimData(metadata, payload);
-	}
+  /**
+   * Deserializes XML/XER from the TIM creator endpoint.
+   *
+   * @param consumedData The XML/XER as a String.
+   * @param metadata The pre-built ODE metadata object with unique TIM creator data.
+   */
+  public static OdeTimData createOdeTimDataFromCreator(String consumedData, OdeMsgMetadata metadata)
+      throws XmlUtilsException {
+    String travelerInformationXml = XmlUtils.findXmlContentString(consumedData, 
+        "TravelerInformation");
+    TravelerInformation timObject = (TravelerInformation) XmlUtils.fromXmlS(travelerInformationXml,
+        TravelerInformation.class);
+    OdeTimPayload payload = new OdeTimPayload(timObject);
+    return new OdeTimData(metadata, payload);
+  }
 }

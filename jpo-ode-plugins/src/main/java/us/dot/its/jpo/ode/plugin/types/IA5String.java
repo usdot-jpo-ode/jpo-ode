@@ -6,10 +6,8 @@ package us.dot.its.jpo.ode.plugin.types;
  */
 public class IA5String extends Asn1CharacterString {
 
-
-    public IA5String(int minLength, int maxLength) {
-        super(minLength, maxLength);
-    }
-
+  public IA5String(int minLength, int maxLength) {
+    super(minLength, maxLength);
+  }
 
 }
