@@ -22,7 +22,7 @@ public class Asn1DecodeSSMJSON extends AbstractAsn1DecodeMessageJSON {
 	public Asn1DecodeSSMJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
 		super(
 				publishTopic,
-				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
+				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getKafkaType(), odeKafkaProperties.getDisabledTopics()),
 				SupportedMessageType.SSM.getStartFlag()
 		);}
 

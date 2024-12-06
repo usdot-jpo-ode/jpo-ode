@@ -30,7 +30,7 @@ public class ToJsonConverter<V> extends AbstractSubPubTransformer<String, V, Str
     public ToJsonConverter(OdeKafkaProperties odeKafkaProperties, boolean verbose, String outTopic) {
         super(MessageProducer.defaultStringMessageProducer(
            odeKafkaProperties.getBrokers(),
-           odeKafkaProperties.getProducer().getType(),
+           odeKafkaProperties.getKafkaType(),
            odeKafkaProperties.getDisabledTopics()), outTopic);
         this.verbose = verbose;
     }

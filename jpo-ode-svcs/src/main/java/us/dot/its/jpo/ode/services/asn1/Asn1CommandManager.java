@@ -83,7 +83,7 @@ public class Asn1CommandManager {
             this.rsuDepositor = new RsuDepositor(rsuProperties, securityServicesProperties.getIsRsuSigningEnabled());
             this.rsuDepositor.start();
             this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                    odeKafkaProperties.getProducer().getType(),
+                    odeKafkaProperties.getKafkaType(),
                     odeKafkaProperties.getDisabledTopics());
             this.depositTopic = sdxDepositorTopics.getInput();
         } catch (Exception e) {

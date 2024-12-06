@@ -22,7 +22,7 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 	public Asn1DecodeSPATJSON(OdeKafkaProperties odeKafkaProperties, String publishTopic) {
 		super(
 				publishTopic,
-				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getProducer().getType(), odeKafkaProperties.getDisabledTopics()),
+				new StringPublisher(odeKafkaProperties.getBrokers(), odeKafkaProperties.getKafkaType(), odeKafkaProperties.getDisabledTopics()),
 				SupportedMessageType.SPAT.getStartFlag()
 		);
 	}

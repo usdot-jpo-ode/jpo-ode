@@ -42,7 +42,7 @@ public class FileAsn1CodecPublisher {
 
    public FileAsn1CodecPublisher(OdeKafkaProperties odeKafkaProperties, JsonTopics jsonTopics, RawEncodedJsonTopics rawEncodedJsonTopics) {
       StringPublisher messagePub = new StringPublisher(odeKafkaProperties.getBrokers(),
-              odeKafkaProperties.getProducer().getType(),
+              odeKafkaProperties.getKafkaType(),
               odeKafkaProperties.getDisabledTopics());
 
       this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub, jsonTopics, rawEncodedJsonTopics);

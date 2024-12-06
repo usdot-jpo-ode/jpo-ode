@@ -79,7 +79,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         this.jsonTopics = jsonTopics;
 
         this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-                odeKafkaProperties.getProducer().getType(),
+                odeKafkaProperties.getKafkaType(),
                 odeKafkaProperties.getDisabledTopics());
 
         this.asn1CommandManager = new Asn1CommandManager(odeKafkaProperties, sdxDepositorTopics, rsuProperties, securityServicesProperties);
