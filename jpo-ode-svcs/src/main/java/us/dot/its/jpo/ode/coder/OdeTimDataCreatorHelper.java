@@ -1,10 +1,11 @@
 package us.dot.its.jpo.ode.coder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.IOException;
+
+import lombok.extern.slf4j.Slf4j;
+
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeTimData;
@@ -20,6 +21,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 /**
  * Helper class for deserializing TIM messages in XML/XER format into POJOs.
  */
+@Slf4j
 public class OdeTimDataCreatorHelper {
 
   /**
@@ -45,17 +47,15 @@ public class OdeTimDataCreatorHelper {
       try {
         jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
         object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (Exception e) {
+        log.error("Failed to read JSON node: {}", e.getMessage());
       }
     }
 
     OdeTimMetadata metadata = (OdeTimMetadata) JsonUtils.fromJson(metadataNode.toString(), 
         OdeTimMetadata.class);
 
-    if (metadata.getSchemaVersion() <= 4) {
+    if (metadata != null && metadata.getSchemaVersion() <= 4) {
       metadata.setReceivedMessageDetails(null);
     }
 
