@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
