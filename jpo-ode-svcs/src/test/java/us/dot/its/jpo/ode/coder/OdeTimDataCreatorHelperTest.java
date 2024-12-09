@@ -36,6 +36,7 @@ public class OdeTimDataCreatorHelperTest {
     OdeTimData timData;
     try {
       timData = OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(xmlString);
+      System.out.println(timData.toString());
       assertEquals(expectedJsonString, timData.toString());
     } catch (XmlUtilsException e) {
       e.printStackTrace();
