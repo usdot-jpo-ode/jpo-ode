@@ -29,11 +29,9 @@ public abstract class IntegerDeserializer<T extends Asn1Integer> extends StdDese
   }
 
   @Override
-  public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-      throws IOException, JacksonException {
-    T result = null;
+  public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+    T result = construct();
     if (jsonParser instanceof FromXmlParser xmlParser) {
-      result = construct();
       TreeNode node = xmlParser.getCodec().readTree(xmlParser);
       if (node instanceof NumericNode numNode) {
         result.setValue(numNode.longValue());
@@ -44,7 +42,7 @@ public abstract class IntegerDeserializer<T extends Asn1Integer> extends StdDese
         result.setValue(value);
       }
     } else {
-      result = jsonParser.getCodec().readValue(jsonParser, thisClass);
+      result.setValue(jsonParser.readValueAs(Long.class));
     }
     return result;
   }
