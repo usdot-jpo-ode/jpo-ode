@@ -13,6 +13,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.Stores;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
+
 /**
  * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology
  * for processing TIM (Traveler Information Message) JSON data from the
@@ -26,11 +27,13 @@ public class OdeTimJsonTopology {
   private final KafkaStreams streams;
 
   /**
-   * Constructs a new OdeTimJsonTopology.
+   * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka Streams
+   * topology for processing TIM JSON data.
    *
-   * @param odeKafkaProps The Apache Kafka properties that will be used by the topology with Kafka.
-   * @param topic The Apache Kafka topic name.
-   **/
+   * @param odeKafkaProps the properties containing Kafka configuration, including brokers
+   *                      and optional Confluent-specific configuration for authentication.
+   * @param topic the Kafka topic from which TIM JSON data is consumed to build the topology.
+   */
   public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic) {
 
     Properties streamsProperties = new Properties();
@@ -40,11 +43,12 @@ public class OdeTimJsonTopology {
     streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
 
     if ("CONFLUENT".equals(odeKafkaProps.getKafkaType())) {
-      streamsProperties.put("sasl.jaas.config", odeKafkaProps.getConfluent().getSaslJaasConfig());
+      streamsProperties.putAll(odeKafkaProps.getConfluent().buildConfluentProperties());
     }
     streams = new KafkaStreams(buildTopology(topic), streamsProperties);
-    streams.setStateListener((newState, oldState) -> 
-        log.info("Transitioning from {} to {}", oldState, newState));
+    streams.setStateListener((newState, oldState) ->
+        log.info("Transitioning from {} to {}", oldState, newState)
+    );
     streams.start();
   }
 
@@ -58,14 +62,16 @@ public class OdeTimJsonTopology {
   }
 
   /**
-   * Build the topology with a provided topic name.
+   * Builds a Kafka Streams topology for processing TIM JSON data.
    *
-   * @param topic The topic name.
-   **/
+   * @param topic the Kafka topic from which TIM JSON data is consumed and used
+   *              to build the topology.
+   * @return the constructed Kafka Streams topology.
+   */
   public Topology buildTopology(String topic) {
     StreamsBuilder builder = new StreamsBuilder();
-    builder.table(topic, Materialized.<String, String>as(
-        Stores.inMemoryKeyValueStore("timjson-store")));
+    builder.table(topic,
+        Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
     return builder.build();
   }
 
@@ -76,9 +82,7 @@ public class OdeTimJsonTopology {
    **/
   public String query(String uuid) {
     return (String) streams.store(
-        StoreQueryParameters.fromNameAndType(
-            "timjson-store",
-            QueryableStoreTypes.keyValueStore()))
+            StoreQueryParameters.fromNameAndType("timjson-store", QueryableStoreTypes.keyValueStore()))
         .get(uuid);
   }
 }
