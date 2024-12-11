@@ -125,7 +125,7 @@ ode:
       buffer-size: 500
       receiver-port: 44900
     tim:
-      buffer-size: 500
+      buffer-size: 2048
       receiver-port: 47900
   file-importer:
     buffer-size: 500

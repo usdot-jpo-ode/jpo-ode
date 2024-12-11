@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.traveler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -250,7 +249,7 @@ class TimTransmogrifierTest {
         staticOdeMsgMetadata.setSchemaVersion(Integer.parseInt(schemaVersion));
 
         String actualXML = TimTransmogrifier.convertToXml(null, encodableTID, staticOdeMsgMetadata, staticSerialId);
-        var expected = String.format("<OdeAsn1Data><metadata><payloadType>us.dot.its.jpo.ode.model.OdeTimPayload</payloadType><serialId><streamId>6c33f802-418d-4b67-89d1-326b4fc8b1e3</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>%s</odeReceivedAt><schemaVersion>%s</schemaVersion><maxDurationTime>0</maxDurationTime><sanitized>false</sanitized><request><sdw><serviceRegion><nwCorner><latitude>42.537903</latitude><longitude>-83.477903</longitude></nwCorner><seCorner><latitude>42.305753</latitude><longitude>-82.842753</longitude></seCorner></serviceRegion><ttl>thirtyminutes</ttl><deliverystart>2017-06-01T17:47:11-05:00</deliverystart><deliverystop>2018-03-01T17:47:11-05:15</deliverystop></sdw><rsus/></request><encodings><encodings><elementName>MessageFrame</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings></metadata><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageId>31</messageId><value><TravelerInformation/></value></MessageFrame></data></payload></OdeAsn1Data>", DateTimeUtils.now(), schemaVersion);
+        var expected = String.format("<OdeAsn1Data><metadata><payloadType>us.dot.its.jpo.ode.model.OdeTimPayload</payloadType><serialId><streamId>6c33f802-418d-4b67-89d1-326b4fc8b1e3</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>%s</odeReceivedAt><schemaVersion>%s</schemaVersion><maxDurationTime>0</maxDurationTime><sanitized>false</sanitized><request><sdw><serviceRegion><nwCorner><latitude>42.537903</latitude><longitude>-83.477903</longitude></nwCorner><seCorner><latitude>42.305753</latitude><longitude>-82.842753</longitude></seCorner></serviceRegion><ttl>thirtyminutes</ttl><deliverystart>2017-06-01T17:47:11-05:00</deliverystart><deliverystop>2018-03-01T17:47:11-05:15</deliverystop></sdw><rsus/></request><encodings><encodings><elementName>MessageFrame</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings></metadata><payload><data><MessageFrame><messageId>31</messageId><value><TravelerInformation/></value></MessageFrame></data><dataType>MessageFrame</dataType></payload></OdeAsn1Data>", DateTimeUtils.now(), schemaVersion);
         assertEquals(expected, actualXML);
     }
 
@@ -302,18 +301,6 @@ class TimTransmogrifierTest {
         // verify
         String expectedXml = new String(Files.readAllBytes(Paths.get("src/test/resources/us/dot/its/jpo/ode/traveler/aemInputContainingCircleGeometry.xml")));
         Assertions.assertEquals(expectedXml, actualXML);
-    }
-
-    @Test
-    void testCreateOdeTimData() throws JsonUtilsException {
-
-        JSONObject testObject = JsonUtils
-                .toJSONObject("{\"metadata\":{\"object\":\"value\"},\"payload\":{\"object\":\"value\"}}");
-        JSONObject actualOdeTimData = TimTransmogrifier.createOdeTimData(testObject);
-
-        assertEquals(
-                "{\"metadata\":{\"payloadType\":\"us.dot.its.jpo.ode.model.OdeTimPayload\",\"object\":\"value\"},\"payload\":{\"dataType\":\"TravelerInformation\",\"object\":\"value\"}}",
-                actualOdeTimData.toString());
     }
 
     @Test

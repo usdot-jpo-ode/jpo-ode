@@ -22,7 +22,7 @@
                     "type": "string"
                 },
                 "maxDurationTime": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "odePacketID": {
                     "type": "string"
@@ -40,7 +40,12 @@
                     "type": "string"
                 },
                 "receivedMessageDetails": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "rxSource": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "recordGeneratedAt": {
                     "type": "string"
@@ -52,10 +57,10 @@
                     "type": "string"
                 },
                 "sanitized": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "schemaVersion": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "securityResultCode": {
                     "type": "string"
@@ -255,10 +260,10 @@
             "type": "object",
             "properties": {
                 "nwCorner": {
-                    "$ref": "#/$defs/OdePosition3D"
+                    "$ref": "#/$defs/Position3D"
                 },
                 "seCorner": {
-                    "$ref": "#/$defs/OdePosition3D"
+                    "$ref": "#/$defs/Position3D"
                 }
             },
             "required": [
@@ -285,16 +290,16 @@
             "type": "object",
             "properties": {
                 "bundleId": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "bundleSize": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "recordId": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "serialNumber": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "streamId": {
                     "type": "string"
@@ -312,15 +317,7 @@
             "type": "object",
             "properties": {
                 "data": {
-                    "type": "object",
-                    "properties": {
-                        "MessageFrame": {
-                            "$ref": "#/$defs/OdeTimMessageFrame"
-                        }
-                    },
-                    "required": [
-                        "MessageFrame"
-                    ]
+                    "$ref": "#/$defs/TravelerInformation"
                 },
                 "dataType": {
                     "type": "string"
@@ -331,34 +328,11 @@
                 "dataType"
             ]
         },
-        "OdeTimMessageFrame": {
-            "type": "object",
-            "properties": {
-                "messageId": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "object",
-                    "properties": {
-                        "TravelerInformation": {
-                            "$ref": "#/$defs/J2735Tim"
-                        }
-                    },
-                    "required": [
-                        "TravelerInformation"
-                    ]
-                }
-            },
-            "required": [
-                "messageId",
-                "value"
-            ]
-        },
-        "J2735Tim": {
+        "TravelerInformation": {
             "type": "object",
             "properties": {
                 "timeStamp": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "packetID": {
                     "type": "string"
@@ -367,22 +341,15 @@
                     "type": "string"
                 },
                 "dataFrames": {
-                    "oneOf": [
+                    "type": "array",
+                    "prefixItems": [
                         {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/OdeTimDataFrame"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/$defs/OdeTimDataFrame"
+                            "$ref": "#/$defs/TravelerDataFrame"
                         }
                     ]
                 },
                 "msgCnt": {
-                    "type": "string"
+                    "type": "number"
                 }
             },
             "required": [
@@ -390,37 +357,19 @@
                 "msgCnt"
             ]
         },
-        "OdeTimDataFrame": {
-            "type": "object",
-            "properties": {
-                "TravelerDataFrame": {
-                    "oneOf": [
-                        {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/J2735TravelerDataFrame"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/$defs/J2735TravelerDataFrame"
-                        }
-                    ]
-                }
-            },
-            "required": [
-                "TravelerDataFrame"
-            ]
-        },
-        "J2735TravelerDataFrame": {
+        "TravelerDataFrame": {
             "type": "object",
             "properties": {
                 "notUsed": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "frameType": {
-                    "$ref": "#/$defs/J2735DF_FrameType"
+                    "enum": [
+                        "unknown",
+                        "advisory",
+                        "roadSignage",
+                        "commercialSignage"
+                    ]
                 },
                 "msgId": {
                     "oneOf": [
@@ -436,48 +385,49 @@
                             ]
                         },
                         {
-                            "$ref": "#/$defs/J2735DF_MsgId_RoadSignId"
+                            "type": "object",
+                            "properties": {
+                                "roadSignID": {
+                                    "$ref": "#/$defs/RoadSignID"
+                                }
+                            },
+                            "required": [
+                                "roadSignID"
+                            ]
                         }
                     ]
                 },
                 "startYear": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "startTime": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "durationTime": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "priority": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "notUsed1": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "regions": {
-                    "oneOf": [
+                    "type": "array",
+                    "prefixItems": [
                         {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/J2735DF_Regions"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/$defs/J2735DF_Regions"
+                            "$ref": "#/$defs/GeographicalPath"
                         }
                     ]
                 },
                 "notUsed2": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "notUsed3": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "content": {
-                    "$ref": "#/$defs/J2735DF_Content"
+                    "$ref": "#/$defs/ContentChoice"
                 },
                 "url": {
                     "type": "string"
@@ -497,202 +447,153 @@
                 "content"
             ]
         },
-        "J2735DF_FrameType": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "unknown": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "unknown"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "advisory": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "advisory"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "roadSignage": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "roadSignage"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "commercialSignage": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "commercialSignage"
-                    ]
-                }
-            ]
-        },
-        "J2735DF_MsgId_RoadSignId": {
+        "RoadSignID": {
             "type": "object",
             "properties": {
-                "roadSignID": {
-                    "type": "object",
-                    "properties": {
-                        "position": {
-                            "$ref": "#/$defs/J2735Position3D"
-                        },
-                        "viewAngle": {
-                            "type": "string"
-                        },
-                        "mutcdCode": {
-                            "$ref": "#/$defs/J2735MUTCDCode"
-                        }
-                    },
-                    "required": [
-                        "position",
-                        "viewAngle"
+                "position": {
+                    "$ref": "#/$defs/Position3D"
+                },
+                "viewAngle": {
+                    "$ref": "#/$defs/HeadingSlice"
+                },
+                "mutcdCode": {
+                    "enum": [
+                        "none",
+                        "regulatory",
+                        "warning",
+                        "maintenance",
+                        "motoristService",
+                        "guide",
+                        "rec"
                     ]
+                },
+                "crc": {
+                    "type": "string"
                 }
             },
             "required": [
-                "roadSignID"
+                "position",
+                "viewAngle"
             ]
         },
-        "J2735DF_Regions": {
+        "HeadingSlice": {
             "type": "object",
             "properties": {
-                "GeographicalPath": {
-                    "oneOf": [
-                        {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/J2735DF_GeographicalPath"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/$defs/J2735DF_GeographicalPath"
-                        }
-                    ]
+                "from000-0to022-5degrees": {
+                    "type": "boolean"
+                },
+                "from022-5to045-0degrees": {
+                    "type": "boolean"
+                },
+                "from045-0to067-5degrees": {
+                    "type": "boolean"
+                },
+                "from067-5to090-0degrees": {
+                    "type": "boolean"
+                },
+                "from090-0to112-5degrees": {
+                    "type": "boolean"
+                },
+                "from112-5to135-0degrees": {
+                    "type": "boolean"
+                },
+                "from135-0to157-5degrees": {
+                    "type": "boolean"
+                },
+                "from157-5to180-0degrees": {
+                    "type": "boolean"
+                },
+                "from180-0to202-5degrees": {
+                    "type": "boolean"
+                },
+                "from202-5to225-0degrees": {
+                    "type": "boolean"
+                },
+                "from225-0to247-5degrees": {
+                    "type": "boolean"
+                },
+                "from247-5to270-0degrees": {
+                    "type": "boolean"
+                },
+                "from270-0to292-5degrees": {
+                    "type": "boolean"
+                },
+                "from292-5to315-0degrees": {
+                    "type": "boolean"
+                },
+                "from315-0to337-5degrees": {
+                    "type": "boolean"
+                },
+                "from337-5to360-0degrees": {
+                    "type": "boolean"
                 }
             },
             "required": [
-                "GeographicalPath"
+                "from000-0to022-5degrees",
+                "from022-5to045-0degrees",
+                "from045-0to067-5degrees",
+                "from067-5to090-0degrees",
+                "from090-0to112-5degrees",
+                "from112-5to135-0degrees",
+                "from135-0to157-5degrees",
+                "from157-5to180-0degrees",
+                "from180-0to202-5degrees",
+                "from202-5to225-0degrees",
+                "from225-0to247-5degrees",
+                "from247-5to270-0degrees",
+                "from270-0to292-5degrees",
+                "from292-5to315-0degrees",
+                "from315-0to337-5degrees",
+                "from337-5to360-0degrees"
             ]
         },
-        "J2735DF_GeographicalPath": {
+        "GeographicalPath": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/$defs/J2735RoadSegmentReferenceID"
+                    "$ref": "#/$defs/RoadSegmentReferenceID"
                 },
                 "anchor": {
-                    "$ref": "#/$defs/J2735Position3D"
+                    "$ref": "#/$defs/Position3D"
                 },
                 "laneWidth": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "directionality": {
-                    "$ref": "#/$defs/J2735DirectionOfUse"
+                    "$ref": "#/$defs/DirectionOfUse"
                 },
                 "closedPath": {
-                    "$ref": "#/$defs/BooleanObject"
+                    "type": "boolean"
                 },
                 "direction": {
-                    "type": "string"
+                    "$ref": "#/$defs/HeadingSlice"
                 },
                 "description": {
-                    "$ref": "#/$defs/J2735DF_Regions_Description"
+                    "$ref": "#/$defs/DescriptionChoice"
                 }
             },
             "required": [
                 "description"
             ]
         },
-        "J2735DirectionOfUse": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "unavailable": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "unavailable"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "forward": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "forward"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "reverse": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "reverse"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "both": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "both"
-                    ]
-                }
+        "DirectionOfUse": {
+            "enum": [
+                "unavailable",
+                "forward",
+                "reverse",
+                "both"
             ]
         },
-        "J2735DF_Regions_Description": {
+        "DescriptionChoice": {
             "oneOf": [
                 {
                     "type": "object",
                     "properties": {
                         "path": {
-                            "oneOf": [
-                                {
-                                    "type": "array",
-                                    "prefixItems": [
-                                        {
-                                            "$ref": "#/$defs/J2735OffsetSystem"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/J2735OffsetSystem"
-                                }
-                            ]
+                            "$ref": "#/$defs/OffsetSystem"
                         }
                     },
                     "required": [
@@ -703,81 +604,106 @@
                     "type": "object",
                     "properties": {
                         "geometry": {
-                            "oneOf": [
-                                {
-                                    "type": "array",
-                                    "prefixItems": [
-                                        {
-                                            "$ref": "#/$defs/J2735GeometricProjection"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/J2735GeometricProjection"
-                                }
-                            ]
+                            "$ref": "#/$defs/GeometricProjection"
                         }
                     },
                     "required": [
                         "geometry"
                     ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "oldRegion": {
+                            "$ref": "#/$defs/ValidRegion"
+                        }
+                    },
+                    "required": [
+                        "oldRegion"
+                    ]
                 }
             ]
         },
-        "J2735OffsetSystem": {
+        "OffsetSystem": {
             "type": "object",
             "properties": {
                 "scale": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "offset": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "xy": {
-                                    "$ref": "#/$defs/J2735NodeListXY"
-                                }
-                            },
-                            "required": [
-                                "xy"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "ll": {
-                                    "$ref": "#/$defs/J2735NodeListLL"
-                                }
-                            },
-                            "required": [
-                                "ll"
-                            ]
-                        }
-                    ]
+                    "$ref": "#/$defs/OffsetChoice"
                 }
             },
             "required": [
                 "offset"
             ]
         },
-        "J2735NodeListXY": {
-            "type": "object",
-            "properties": {
-                "nodes": {
+        "OffsetChoice": {
+            "oneOf": [
+                {
                     "type": "object",
                     "properties": {
-                        "NodeXY": {
+                        "xy": {
+                            "$ref": "#/$defs/NodeListXY"
+                        }
+                    },
+                    "required": [
+                        "xy"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "ll": {
+                            "$ref": "#/$defs/NodeListLL"
+                        }
+                    },
+                    "required": [
+                        "ll"
+                    ]
+                }
+            ]
+        },
+        "NodeListXY": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodes": {
                             "type": "array",
                             "prefixItems": [
                                 {
-                                    "$ref": "#/$defs/J2735NodeXY"
+                                    "$ref": "#/$defs/NodeXY"
                                 }
                             ]
                         }
                     },
                     "required": [
-                        "NodeXY"
+                        "nodes"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "computed": {
+                            "$ref": "#/$defs/ComputedLane"
+                        }
+                    },
+                    "required": [
+                        "computed"
+                    ]
+                }
+            ]
+        },
+        "NodeListLL": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/NodeLL"
+                        }
                     ]
                 }
             },
@@ -785,216 +711,370 @@
                 "nodes"
             ]
         },
-        "J2735NodeListLL": {
+        "NodeXY": {
             "type": "object",
             "properties": {
-                "nodes": {
+                "delta": {
+                    "$ref": "#/$defs/NodeOffsetPointXY"
+                },
+                "attributes": {
+                    "$ref": "#/$defs/NodeAttributeSet"
+                }
+            },
+            "required": [
+                "delta"
+            ]
+        },
+        "NodeOffsetPointXY": {
+            "oneOf": [
+                {
                     "type": "object",
                     "properties": {
-                        "NodeLL": {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/J2735NodeLL"
-                                }
-                            ]
+                        "nodeXY1": {
+                            "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "NodeLL"
+                        "nodeXY1"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeXY2": {
+                            "$ref": "#/$defs/NodeXYPoint"
+                        }
+                    },
+                    "required": [
+                        "nodeXY2"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeXY3": {
+                            "$ref": "#/$defs/NodeXYPoint"
+                        }
+                    },
+                    "required": [
+                        "nodeXY3"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeXY4": {
+                            "$ref": "#/$defs/NodeXYPoint"
+                        }
+                    },
+                    "required": [
+                        "nodeXY4"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeXY5": {
+                            "$ref": "#/$defs/NodeXYPoint"
+                        }
+                    },
+                    "required": [
+                        "nodeXY5"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeXY6": {
+                            "$ref": "#/$defs/NodeXYPoint"
+                        }
+                    },
+                    "required": [
+                        "nodeXY6"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLatLon": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLatLon"
+                    ]
+                }
+            ]
+        },
+        "NodeAttributeSet": {
+            "type": "object",
+            "properties": {
+                "localNode": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/NodeAttributeXY"
+                        }
+                    ]
+                },
+                "disabled": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/SegmentAttributeXY"
+                        }
+                    ]
+                },
+                "enabled": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/SegmentAttributeXY"
+                        }
+                    ]
+                },
+                "data": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/LaneDataAttribute"
+                        }
+                    ]
+                },
+                "dWidth": {
+                    "type": "number"
+                },
+                "dElevation": {
+                    "type": "number"
+                }
+            }
+        },
+        "NodeAttributeXY": {
+            "enum": [
+                "reserved",
+                "stopLine",
+                "roundedCapStyleA",
+                "roundedCapStyleB",
+                "mergePoint",
+                "divergePoint",
+                "downstreamStopLine",
+                "downstreamStartNode",
+                "closedToTraffic",
+                "safeIsland",
+                "curbPresentAtStepOff",
+                "hydrantPresent"
+            ]
+        },
+        "SegmentAttributeXY": {
+            "enum": [
+                "reserved",
+                "doNotBlock",
+                "whiteLine",
+                "mergingLaneLeft",
+                "mergingLaneRight",
+                "curbOnLeft",
+                "curbOnRight",
+                "loadingzoneOnLeft",
+                "loadingzoneOnRight",
+                "turnOutPointOnLeft",
+                "turnOutPointOnRight",
+                "adjacentParkingOnLeft",
+                "adjacentParkingOnRight",
+                "adjacentBikeLaneOnLeft",
+                "adjacentBikeLaneOnRight",
+                "sharedBikeLane",
+                "bikeBoxInFront",
+                "transitStopOnLeft",
+                "transitStopOnRight",
+                "transitStopInLane",
+                "sharedWithTrackedVehicle",
+                "safeIsland",
+                "lowCurbsPresent",
+                "rumbleStripPresent",
+                "audibleSignalingPresent",
+                "adaptiveTimingPresent",
+                "rfSignalRequestPresent",
+                "partialCurbIntrusion",
+                "taperToLeft",
+                "taperToRight",
+                "taperToCenterLine",
+                "parallelParking",
+                "headInParking",
+                "freeParking",
+                "timeRestrictionsOnParking",
+                "costToPark",
+                "midBlockCurbPresent",
+                "unEvenPavementPresent"
+            ]
+        },
+        "LaneDataAttribute": {
+            "type": "object",
+            "properties": {
+                "pathEndPointAngle": {
+                    "type": "number"
+                },
+                "laneCrownPointCenter": {
+                    "type": "number"
+                },
+                "laneCrownPointLeft": {
+                    "type": "number"
+                },
+                "laneCrownPointRight": {
+                    "type": "number"
+                },
+                "laneAngle": {
+                    "type": "number"
+                },
+                "speedLimits": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/RegulatorySpeedLimit"
+                        }
                     ]
                 }
             },
             "required": [
-                "nodes"
+                "pathEndPointAngle",
+                "laneCrownPointCenter",
+                "laneCrownPointLeft",
+                "laneCrownPointRight",
+                "laneAngle",
+                "speedLimits"
             ]
         },
-        "J2735NodeXY": {
+        "RegulatorySpeedLimit": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "unknown",
+                        "maxSpeedInSchoolZone",
+                        "maxSpeedInSchoolZoneWhenChildrenArePresent",
+                        "maxSpeedInConstructionZone",
+                        "vehicleMinSpeed",
+                        "vehicleMaxSpeed",
+                        "vehicleNightMaxSpeed",
+                        "truckMinSpeed",
+                        "truckMaxSpeed",
+                        "truckNightMaxSpeed",
+                        "vehiclesWithTrailersMinSpeed",
+                        "vehiclesWithTrailersMaxSpeed",
+                        "vehiclesWithTrailersNightMaxSpeed"
+                    ]
+                },
+                "speed": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "type",
+                "speed"
+            ]
+        },
+        "NodeLL": {
             "type": "object",
             "properties": {
                 "delta": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY1": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY1"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY2": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY2"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY3": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY3"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY4": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY4"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY5": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY5"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-XY6": {
-                                    "$ref": "#/$defs/J2735NodeXYDelta"
-                                }
-                            },
-                            "required": [
-                                "node-XY6"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LatLon": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LatLon"
-                            ]
-                        }
-                    ]
+                    "$ref": "#/$defs/NodeOffsetPointLL"
+                },
+                "attributes": {
+                    "$ref": "#/$defs/NodeAttributeSet"
                 }
             },
             "required": [
                 "delta"
             ]
         },
-        "J2735NodeLL": {
-            "type": "object",
-            "properties": {
-                "delta": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL1": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL1"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL2": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL2"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL3": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL3"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL4": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL4"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL5": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL5"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LL6": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LL6"
-                            ]
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "node-LatLon": {
-                                    "$ref": "#/$defs/J2735NodeLLDelta"
-                                }
-                            },
-                            "required": [
-                                "node-LatLon"
-                            ]
+        "NodeOffsetPointLL": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL1": {
+                            "$ref": "#/$defs/NodeLLmD"
                         }
+                    },
+                    "required": [
+                        "nodeLL1"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL2": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLL2"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL3": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLL3"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL4": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLL4"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL5": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLL5"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLL6": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLL6"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "nodeLatLon": {
+                            "$ref": "#/$defs/NodeLLmD"
+                        }
+                    },
+                    "required": [
+                        "nodeLatLon"
                     ]
                 }
-            },
-            "required": [
-                "delta"
             ]
         },
-        "J2735NodeXYDelta": {
+        "NodeXYPoint": {
             "type": "object",
             "properties": {
                 "x": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "y": {
-                    "type": "string"
+                    "type": "number"
                 }
             },
             "required": [
@@ -1002,14 +1082,14 @@
                 "y"
             ]
         },
-        "J2735NodeLLDelta": {
+        "NodeLLmD": {
             "type": "object",
             "properties": {
                 "lat": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "lon": {
-                    "type": "string"
+                    "type": "number"
                 }
             },
             "required": [
@@ -1017,36 +1097,100 @@
                 "lat"
             ]
         },
-        "J2735GeometricProjection": {
+        "ComputedLane": {
             "type": "object",
             "properties": {
-                "direction": {
-                    "type": "string"
+                "referenceLaneId": {
+                    "type": "number"
                 },
-                "extent": {
-                    "type": "string"
+                "offsetXaxis": {
+                    "$ref": "#/$defs/OffsetXaxisChoice"
                 },
-                "laneWidth": {
-                    "type": "string"
+                "offsetYaxis": {
+                    "$ref": "#/$defs/OffsetYaxisChoice"
                 },
-                "circle": {
+                "rotateXY": {
+                    "type": "number"
+                },
+                "scaleXaxis": {
+                    "type": "number"
+                },
+                "scaleYaxis": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "referenceLaneId",
+                "offsetXaxis",
+                "offsetYaxis"
+            ]
+        },
+        "OffsetXaxisChoice": {
+            "oneOf": [
+                {
                     "type": "object",
                     "properties": {
-                        "center": {
-                            "$ref": "#/$defs/J2735Position3D"
-                        },
-                        "radius": {
-                            "type": "string"
-                        },
-                        "units": {
-                            "$ref": "#/$defs/J2735DistanceUnits"
+                        "small": {
+                            "type": "number"
                         }
                     },
                     "required": [
-                        "center",
-                        "radius",
-                        "units"
+                        "small"
                     ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "large": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "large"
+                    ]
+                }
+            ]
+        },
+        "OffsetYaxisChoice": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "small": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "small"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "large": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "large"
+                    ]
+                }
+            ]
+        },
+        "GeometricProjection": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/$defs/HeadingSlice"
+                },
+                "extent": {
+                    "$ref": "#/$defs/Extent"
+                },
+                "laneWidth": {
+                    "type": "number"
+                },
+                "circle": {
+                    "$ref": "#/$defs/Circle"
                 }
             },
             "required": [
@@ -1054,13 +1198,168 @@
                 "circle"
             ]
         },
-        "J2735DF_Content": {
+        "Circle": {
+            "type": "object",
+            "properties": {
+                "center": {
+                    "$ref": "#/$defs/Position3D"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "units": {
+                    "$ref": "#/$defs/DistanceUnits"
+                }
+            },
+            "required": [
+                "center",
+                "radius",
+                "units"
+            ]
+        },
+        "ValidRegion": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/$defs/HeadingSlice"
+                },
+                "extent": {
+                    "$ref": "#/$defs/Extent"
+                },
+                "area": {
+                    "$ref": "#/$defs/AreaChoice"
+                }
+            },
+            "required": [
+                "direction",
+                "extent",
+                "area"
+            ]
+        },
+        "Extent": {
+            "enum": [
+                "useInstantlyOnly",
+                "useFor3meters",
+                "useFor10meters",
+                "useFor50meters",
+                "useFor100meters",
+                "useFor500meters",
+                "useFor1000meters",
+                "useFor5000meters",
+                "useFor10000meters",
+                "useFor50000meters",
+                "useFor100000meters",
+                "useFor500000meters",
+                "useFor1000000meters",
+                "useFor5000000meters",
+                "useFor10000000meters",
+                "forever"
+            ]
+        },
+        "AreaChoice": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "shapePointSet": {
+                            "$ref": "#/$defs/ShapePointSet"
+                        }
+                    },
+                    "required": [
+                        "shapePointSet"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "circle": {
+                            "$ref": "#/$defs/Circle"
+                        }
+                    },
+                    "required": [
+                        "circle"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "regionPointSet": {
+                            "$ref": "#/$defs/RegionPointSet"
+                        }
+                    },
+                    "required": [
+                        "regionPointSet"
+                    ]
+                }
+            ]
+        },
+        "ShapePointSet": {
+            "type": "object",
+            "properties": {
+                "anchor": {
+                    "$ref": "#/$defs/Position3D"
+                },
+                "laneWidth": {
+                    "type": "number"
+                },
+                "directionality": {
+                    "$ref": "#/$defs/DirectionOfUse"
+                },
+                "nodeList": {
+                    "$ref": "#/$defs/NodeListXY"
+                }
+            },
+            "required": [
+                "nodeList"
+            ]
+        },
+        "RegionPointSet": {
+            "type": "object",
+            "properties": {
+                "anchor": {
+                    "$ref": "#/$defs/Position3D"
+                },
+                "scale": {
+                    "type": "number"
+                },
+                "nodeList": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/RegionList"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "nodeList"
+            ]
+        },
+        "RegionList": {
+            "type": "object",
+            "properties": {
+                "xOffset": {
+                    "type": "number"
+                },
+                "yOffset": {
+                    "type": "number"
+                },
+                "zOffset": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "xOffset",
+                "yOffset"
+            ]
+        },
+        "ContentChoice": {
             "oneOf": [
                 {
                     "type": "object",
                     "properties": {
                         "advisory": {
-                            "$ref": "#/$defs/J2735DF_ContentSequence"
+                            "$ref": "#/$defs/ContentSequence"
                         }
                     },
                     "required": [
@@ -1071,7 +1370,7 @@
                     "type": "object",
                     "properties": {
                         "workZone": {
-                            "$ref": "#/$defs/J2735DF_ContentSequence"
+                            "$ref": "#/$defs/ContentSequence"
                         }
                     },
                     "required": [
@@ -1082,7 +1381,7 @@
                     "type": "object",
                     "properties": {
                         "genericSign": {
-                            "$ref": "#/$defs/J2735DF_ContentSequence"
+                            "$ref": "#/$defs/ContentSequence"
                         }
                     },
                     "required": [
@@ -1093,7 +1392,7 @@
                     "type": "object",
                     "properties": {
                         "speedLimit": {
-                            "$ref": "#/$defs/J2735DF_ContentSequence"
+                            "$ref": "#/$defs/ContentSequence"
                         }
                     },
                     "required": [
@@ -1104,7 +1403,7 @@
                     "type": "object",
                     "properties": {
                         "exitService": {
-                            "$ref": "#/$defs/J2735DF_ContentSequence"
+                            "$ref": "#/$defs/ContentSequence"
                         }
                     },
                     "required": [
@@ -1113,45 +1412,22 @@
                 }
             ]
         },
-        "J2735DF_ContentSequence": {
-            "oneOf": [
+        "ContentSequence": {
+            "type": "array",
+            "prefixItems": [
                 {
-                    "type": "object",
-                    "properties": {
-                        "SEQUENCE": {
-                            "type": "array",
-                            "prefixItems": [
-                                {
-                                    "$ref": "#/$defs/J2735DF_ContentSequenceItem"
-                                }
-                            ]
-                        }
-                    },
-                    "required": [
-                        "SEQUENCE"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "SEQUENCE": {
-                            "$ref": "#/$defs/J2735DF_ContentSequenceItem"
-                        }
-                    },
-                    "required": [
-                        "SEQUENCE"
-                    ]
+                    "$ref": "#/$defs/ContentSequenceItem"
                 }
             ]
         },
-        "J2735DF_ContentSequenceItem": {
+        "ContentSequenceItem": {
             "type": "object",
             "properties": {
                 "item": {
                     "type": "object",
                     "properties": {
                         "itis": {
-                            "type": "string"
+                            "type": ["string", "number"]
                         }
                     },
                     "required": [
@@ -1162,21 +1438,19 @@
             "required": [
                 "item"
             ]
+
         },
-        "J2735Position3D": {
+        "Position3D": {
             "type": "object",
             "properties": {
                 "lat": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "long": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "elevation": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "number"
                 }
             },
             "required": [
@@ -1184,238 +1458,30 @@
                 "long"
             ]
         },
-        "OdePosition3D": {
-            "type": "object",
-            "properties": {
-                "latitude": {
-                    "type": "string"
-                },
-                "longitude": {
-                    "type": "string"
-                },
-                "elevation": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                }
-            },
-            "required": [
-                "latitude",
-                "longitude"
-            ]
-        },
-        "J2735MUTCDCode": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "none": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "none"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "regulatory": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "regulatory"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "warning": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "warning"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "maintenance": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "maintenance"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "motoristService": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "motoristService"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "guide": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "guide"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "rec": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "rec"
-                    ]
-                }
-            ]
-        },
-        "J2735RoadSegmentReferenceID": {
+        "RoadSegmentReferenceID": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "region": {
-                    "type": "string"
+                    "type": "number"
                 }
             },
             "required": [
                 "id"
             ]
         },
-        "J2735DistanceUnits": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "centimeter": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "centimeter"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "cm2-5": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "cm2-5"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "decimeter": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "decimeter"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "meter": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "meter"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "kilometer": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "kilometer"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "foot": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "foot"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "yard": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "yard"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "mile": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "mile"
-                    ]
-                }
-            ]
-        },
-        "BooleanObject": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "true": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "true"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "false": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "false"
-                    ]
-                }
+        "DistanceUnits": {
+            "enum": [
+                "centimeter",
+                "cm2-5",
+                "decimeter",
+                "meter",
+                "kilometer",
+                "foot",
+                "yard",
+                "mile"
             ]
         }
     }
