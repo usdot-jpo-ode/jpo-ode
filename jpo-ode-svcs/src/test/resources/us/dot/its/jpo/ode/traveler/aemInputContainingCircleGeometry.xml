@@ -53,7 +53,6 @@
         </encodings>
     </metadata>
     <payload>
-        <dataType>MessageFrame</dataType>
         <data>
             <MessageFrame>
                 <messageId>31</messageId>
@@ -101,7 +100,7 @@
                                             <both></both>
                                         </directionality>
                                         <closedPath>
-                                            <false/>
+                                            <false />
                                         </closedPath>
                                         <direction>1111000011110000</direction>
                                         <description>
@@ -141,5 +140,6 @@
                 </value>
             </MessageFrame>
         </data>
+        <dataType>MessageFrame</dataType>
     </payload>
 </OdeAsn1Data>

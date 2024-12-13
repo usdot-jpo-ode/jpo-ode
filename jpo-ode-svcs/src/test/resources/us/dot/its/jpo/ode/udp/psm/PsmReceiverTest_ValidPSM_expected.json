@@ -1,0 +1,28 @@
+{
+  "metadata" : {
+    "recordType" : "psmTx",
+    "securityResultCode" : "success",
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeAsn1Payload",
+    "serialId" : {
+      "streamId" : "33efc65d-f138-4c77-972c-1584d936e63e",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2024-11-26T23:53:21.120Z",
+    "schemaVersion" : 7,
+    "maxDurationTime" : 0,
+    "recordGeneratedBy" : "UNKNOWN",
+    "sanitized" : false,
+    "asn1" : "00201A0000021BD86891DE75F84DA101C13F042E2214141FFF00022C2000270000000163B2CC79860100",
+    "psmSource" : "RSU",
+    "originIp" : "127.0.0.1"
+  },
+  "payload" : {
+    "dataType" : "us.dot.its.jpo.ode.model.OdeHexByteArray",
+    "data" : {
+      "bytes" : "00201A0000021BD86891DE75F84DA101C13F042E2214141FFF00022C2000270000000163B2CC79860100"
+    }
+  }
+}
