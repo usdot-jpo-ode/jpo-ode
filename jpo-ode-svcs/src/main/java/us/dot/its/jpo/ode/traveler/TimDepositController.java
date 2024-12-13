@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
@@ -314,8 +313,7 @@ if (xmlMsg != null) {
       String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
       // publish Broadcast TIM to a J2735 compliant topic.
       stringMsgProducer.send(jsonTopics.getJ2735TimBroadcast(), null, obfuscatedJ2735Tim);
-      // publish J2735 TIM also to general un-filtered TIM topic
-       with streamID as key
+      // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
       stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);// Write XML to the encoder input topic at the end to ensure the correct order
         // of operations to pair
         // each message to an OdeTimJson streamId key
