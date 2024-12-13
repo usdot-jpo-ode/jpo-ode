@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.springframework.kafka.core.KafkaTemplate;
-import us.dot.its.jpo.ode.kafka.producer.DisabledTopicException;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
@@ -73,8 +72,6 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
         String messageType = UperUtil.determineHexPacketType(payloadHexString);
         routeMessageByMessageType(messageType, packet);
 
-      } catch (DisabledTopicException e) {
-        log.warn(e.getMessage());
       } catch (UnsupportedMessageTypeException e) {
         log.error("Unsupported Message Type", e);
       } catch (InvalidPayloadException e) {

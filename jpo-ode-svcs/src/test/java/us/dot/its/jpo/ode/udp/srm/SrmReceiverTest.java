@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -45,6 +45,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
     UDPReceiverProperties.class,
     RawEncodedJsonTopics.class, KafkaProperties.class
 })
+@DirtiesContext
 class SrmReceiverTest {
 
   @Autowired
@@ -60,12 +61,7 @@ class SrmReceiverTest {
 
   @Test
   void testRun() throws Exception {
-
-    try {
-      embeddedKafka.addTopics(new NewTopic(rawEncodedJsonTopics.getSrm(), 1, (short) 1));
-    } catch (Exception e) {
-      // Ignore - ensure topic existence
-    }
+    EmbeddedKafkaHolder.addTopics(rawEncodedJsonTopics.getSrm());
 
     DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));

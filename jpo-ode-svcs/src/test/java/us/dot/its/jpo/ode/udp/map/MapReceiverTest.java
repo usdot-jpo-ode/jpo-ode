@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
@@ -79,13 +78,7 @@ class MapReceiverTest {
     ExecutorService executorService = Executors.newCachedThreadPool();
     executorService.submit(mapReceiver);
 
-    try {
-      embeddedKafka.addTopics(new NewTopic(rawEncodedJsonTopics.getMap(), 1, (short) 1));
-    } catch (Exception e) {
-      log.warn(
-          "Couldn't create topics. If the error indicates the topics already exist, this message is safe to ignore: {}",
-          e.getMessage());
-    }
+    EmbeddedKafkaHolder.addTopics(rawEncodedJsonTopics.getMap());
 
     // Set up a Kafka consumer
     Map<String, Object> consumerProps =

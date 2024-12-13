@@ -22,6 +22,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -45,6 +46,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
     UDPReceiverProperties.class,
     RawEncodedJsonTopics.class, KafkaProperties.class
 })
+@DirtiesContext
 class PsmReceiverTest {
 
   @Autowired
