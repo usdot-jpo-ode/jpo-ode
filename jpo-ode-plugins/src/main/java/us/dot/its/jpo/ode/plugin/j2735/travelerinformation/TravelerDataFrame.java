@@ -43,7 +43,7 @@ import us.dot.its.jpo.ode.plugin.types.Asn1Sequence;
 import us.dot.its.jpo.ode.plugin.types.Asn1SequenceOf;
 
 /*
- * EDITED -> notUsed, notUsed1, notUsed2, notUsed3, durationTime fields.
+ * EDITED -> doNotUse1, doNotUse2, doNotUse3, doNotUse4, durationTime fields.
  */
 
 @JsonInclude(Include.NON_NULL)
@@ -52,9 +52,9 @@ import us.dot.its.jpo.ode.plugin.types.Asn1SequenceOf;
 @Setter
 public class TravelerDataFrame extends Asn1Sequence {
 
-	@Asn1Property(tag = 0, name = "notUsed")
-	@JsonProperty("notUsed")
-	private SSPindex notUsed;
+	@Asn1Property(tag = 0, name = "doNotUse1")
+	@JsonProperty("doNotUse1")
+	private SSPindex doNotUse1;
 	@Asn1Property(tag = 1, name = "frameType")
 	@JsonProperty("frameType")
 	private TravelerInfoType frameType;
@@ -73,18 +73,18 @@ public class TravelerDataFrame extends Asn1Sequence {
 	@Asn1Property(tag = 6, name = "priority")
 	@JsonProperty("priority")
 	private SignPrority priority;
-	@Asn1Property(tag = 7, name = "notUsed1")
-	@JsonProperty("notUsed1")
-	private SSPindex notUsed1;
+	@Asn1Property(tag = 7, name = "doNotUse2")
+	@JsonProperty("doNotUse2")
+	private SSPindex doNotUse2;
 	@Asn1Property(tag = 8, name = "regions")
 	@JsonProperty("regions")
 	private SequenceOfRegions regions;
-	@Asn1Property(tag = 9, name = "notUsed2")
-	@JsonProperty("notUsed2")
-	private SSPindex notUsed2;
-	@Asn1Property(tag = 10, name = "notUsed3")
-	@JsonProperty("notUsed3")
-	private SSPindex notUsed3;
+	@Asn1Property(tag = 9, name = "doNotUse3")
+	@JsonProperty("doNotUse3")
+	private SSPindex doNotUse3;
+	@Asn1Property(tag = 10, name = "doNotUse4")
+	@JsonProperty("doNotUse4")
+	private SSPindex doNotUse4;
 	@Asn1Property(tag = 11, name = "content")
 	@JsonProperty("content")
 	private ContentChoice content;

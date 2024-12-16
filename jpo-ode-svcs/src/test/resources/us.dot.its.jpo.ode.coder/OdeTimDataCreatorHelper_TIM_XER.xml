@@ -44,7 +44,7 @@
             <urlB>IA5St</urlB>
             <dataFrames>
               <TravelerDataFrame>
-                <notUsed>29</notUsed>
+                <doNotUse1>0</doNotUse1>
                 <frameType>
                   <commercialSignage/>
                 </frameType>
@@ -55,7 +55,7 @@
                 <startTime>306216</startTime>
                 <durationTime>31001</durationTime>
                 <priority>2</priority>
-                <notUsed1>1</notUsed1>
+                <doNotUse2>0</doNotUse2>
                 <regions>
                   <GeographicalPath>
                     <name>IA5</name>
@@ -543,8 +543,8 @@
                     </description>
                   </GeographicalPath>
                 </regions>
-                <notUsed2>15</notUsed2>
-                <notUsed3>9</notUsed3>
+                <doNotUse3>0</doNotUse3>
+                <doNotUse4>0</doNotUse4>
                 <content>
                   <exitService>
                     <SEQUENCE>
@@ -557,7 +557,7 @@
                 <url>IA5S</url>
               </TravelerDataFrame>
               <TravelerDataFrame>
-                <notUsed>11</notUsed>
+                <doNotUse1>0</doNotUse1>
                 <frameType>
                   <commercialSignage/>
                 </frameType>
@@ -579,7 +579,7 @@
                 <startTime>305174</startTime>
                 <durationTime>24752</durationTime>
                 <priority>5</priority>
-                <notUsed1>10</notUsed1>
+                <doNotUse2>0</doNotUse2>
                 <regions>
                   <GeographicalPath>
                     <name>I</name>
@@ -789,8 +789,8 @@
                     </description>
                   </GeographicalPath>
                 </regions>
-                <notUsed2>11</notUsed2>
-                <notUsed3>23</notUsed3>
+                <doNotUse3>0</doNotUse3>
+                <doNotUse4>0</doNotUse4>
                 <content>
                   <exitService>
                     <SEQUENCE>
@@ -813,7 +813,7 @@
                 <url>IA5St</url>
               </TravelerDataFrame>
               <TravelerDataFrame>
-                <notUsed>13</notUsed>
+                <doNotUse1>0</doNotUse1>
                 <frameType>
                   <unknown/>
                 </frameType>
@@ -824,7 +824,7 @@
                 <startTime>408571</startTime>
                 <durationTime>15957</durationTime>
                 <priority>5</priority>
-                <notUsed1>6</notUsed1>
+                <doNotUse2>0</doNotUse2>
                 <regions>
                   <GeographicalPath>
                     <name>IA</name>
@@ -948,8 +948,8 @@
                     </description>
                   </GeographicalPath>
                 </regions>
-                <notUsed2>31</notUsed2>
-                <notUsed3>12</notUsed3>
+                <doNotUse3>0</doNotUse3>
+                <doNotUse4>0</doNotUse4>
                 <content>
                   <speedLimit>
                     <SEQUENCE>
