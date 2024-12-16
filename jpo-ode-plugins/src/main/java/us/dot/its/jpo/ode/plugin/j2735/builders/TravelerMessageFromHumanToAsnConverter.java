@@ -389,12 +389,12 @@ public class TravelerMessageFromHumanToAsnConverter {
    */
   public static JsonNode buildItem(String itemStr) {
     JsonNode item = null;
-    // check to see if it is a itis code or text
+    // check to see if it is an itis code or text
     try {
       item = JsonUtils.newNode().set(ITEM, JsonUtils.newNode().put(ITIS, Integer.valueOf(itemStr)));
       // it's a number, so create "itis" code
     } catch (NumberFormatException e) {
-      // it's a number, so create "text"
+      // it's not a number, so create "text"
       if (itemStr.startsWith("'")) {
         item = JsonUtils.newNode().set(ITEM, JsonUtils.newNode().put(TEXT, itemStr.substring(1)));
       } else {
