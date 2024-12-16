@@ -22,6 +22,7 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.travelerinformation;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -54,6 +55,7 @@ public class TravelerDataFrame extends Asn1Sequence {
 
 	@Asn1Property(tag = 0, name = "doNotUse1")
 	@JsonProperty("doNotUse1")
+	@JsonAlias({"sspTimRights", "notUsed"})
 	private SSPindex doNotUse1;
 	@Asn1Property(tag = 1, name = "frameType")
 	@JsonProperty("frameType")
@@ -69,21 +71,25 @@ public class TravelerDataFrame extends Asn1Sequence {
 	private MinuteOfTheYear startTime;
 	@Asn1Property(tag = 5, name = "durationTime")
 	@JsonProperty("durationTime")
+	@JsonAlias("duratonTime")
 	private MinutesDuration durationTime;
 	@Asn1Property(tag = 6, name = "priority")
 	@JsonProperty("priority")
 	private SignPrority priority;
 	@Asn1Property(tag = 7, name = "doNotUse2")
 	@JsonProperty("doNotUse2")
+	@JsonAlias({"sspLocationRights", "notUsed1"})
 	private SSPindex doNotUse2;
 	@Asn1Property(tag = 8, name = "regions")
 	@JsonProperty("regions")
 	private SequenceOfRegions regions;
 	@Asn1Property(tag = 9, name = "doNotUse3")
 	@JsonProperty("doNotUse3")
+	@JsonAlias({"sspMsgContent", "sspMsgRights1", "notUsed2"})
 	private SSPindex doNotUse3;
 	@Asn1Property(tag = 10, name = "doNotUse4")
 	@JsonProperty("doNotUse4")
+	@JsonAlias({"sspMsgTypes", "sspMsgRights2", "notUsed3"})
 	private SSPindex doNotUse4;
 	@Asn1Property(tag = 11, name = "content")
 	@JsonProperty("content")
