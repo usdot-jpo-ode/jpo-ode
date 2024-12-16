@@ -46,7 +46,7 @@
             <urlB>null</urlB>
             <dataFrames>
               <TravelerDataFrame>
-                <notUsed>1</notUsed>
+                <doNotUse1>0</doNotUse1>
                 <frameType>
                   <advisory/>
                 </frameType>
@@ -66,7 +66,7 @@
                 <startTime>448260</startTime>
                 <durationTime>1440</durationTime>
                 <priority>5</priority>
-                <notUsed1>1</notUsed1>
+                <doNotUse2>0</doNotUse2>
                 <regions>
                   <GeographicalPath>
                     <name>westbound_I-80_366.0_365.0_RSU-10.145.1.100_RW_4456</name>
@@ -187,8 +187,8 @@
                     </description>
                   </GeographicalPath>
                 </regions>
-                <notUsed2>1</notUsed2>
-                <notUsed3>1</notUsed3>
+                <doNotUse3>0</doNotUse3>
+                <doNotUse4>0</doNotUse4>
                 <content>
                   <advisory>
                     <SEQUENCE>
