@@ -57,4 +57,26 @@ class OdeTimDataCreatorHelperTest {
 
   }
 
+  @Test
+  public void testCreateOdeTimDataFromDecoded2016() throws Exception {
+    String xmlFilePath =
+        "src/test/resources/us.dot.its.jpo.ode.coder/OdeTimDataCreatorHelper_TIM_XER_J2735-2016.xml";
+    File xmlFile = new File(xmlFilePath);
+    byte[] xmlData = Files.readAllBytes(xmlFile.toPath());
+    String xmlString = new String(xmlData);
+
+    XmlUtils.toObjectNode(xmlString);
+
+    String jsonFilePath =
+        "src/test/resources/us.dot.its.jpo.ode.coder/OdeTimDataCreatorHelper_TIM_JSON_J2735-2024.json";
+    File jsonFile = new File(jsonFilePath);
+    byte[] jsonData = Files.readAllBytes(jsonFile.toPath());
+    String expectedJsonString = new String(jsonData);
+    OdeTimData timData;
+
+    timData = OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(xmlString);
+
+    assertEquals(expectedJsonString, timData.toString());
+
+  }
 }
