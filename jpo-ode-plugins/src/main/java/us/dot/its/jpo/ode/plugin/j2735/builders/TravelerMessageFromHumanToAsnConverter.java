@@ -209,7 +209,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     // INPUT
     //////
     // "dataframes": [
-    //
     // "startDateTime": "2017-08-02T22:25:00.000Z",
     // "durationTime": 1,
     // "frameType": "1",
@@ -233,7 +232,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     // "513"
     // ],
     // "url": "null"
-    //
     // ]
 
     /// OUTPUT:
@@ -493,7 +491,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     // "description": "path",
     // "path": {},
     // "direction": "0000000000001010"
-    //
 
     //// EXPECTED OUTPUT:
     // <GeographicalPath>
@@ -599,7 +596,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     // "scale": "0",
     // "type": "ll",
     // "nodes": []
-    //
 
     //// EXPECTED OUTPUT:
     // <path>
@@ -658,11 +654,10 @@ public class TravelerMessageFromHumanToAsnConverter {
   private static ObjectNode transformNodeLL(JsonNode oldNode) {
 
     //// EXPECTED INPUT:
-    //
+
     // "nodeLong": "0.0031024",
     // "nodeLat": "0.0014506",
     // "delta": "node-LL3"
-    //
 
     //// EXPECTED OUTPUT:
     // <NodeLL>
@@ -857,7 +852,6 @@ public class TravelerMessageFromHumanToAsnConverter {
     // center Position3D,
     // radius Radius-B12,
     // units DistanceUnits
-    //
 
     ObjectNode updatedNode = (ObjectNode) circle;
 
@@ -948,13 +942,13 @@ public class TravelerMessageFromHumanToAsnConverter {
     // offsetXaxis CHOICE
     // small DrivenLineOffsetSm,
     // large DrivenLineOffsetLg
-    //
+
     replaceScale(updatedNode, OFFSET_X_AXIS);
 
     // offsetYaxis CHOICE
     // small DrivenLineOffsetSm,
     // large DrivenLineOffsetLg
-    //
+
     replaceScale(updatedNode, OFFSET_Y_AXIS);
 
     // rotateXY Angle OPTIONAL
@@ -1172,11 +1166,10 @@ public class TravelerMessageFromHumanToAsnConverter {
    */
   public static ObjectNode transformNodeOffsetPointXY(JsonNode oldNode) {
     //// EXPECTED INPUT:
-    //
+
     // "nodeLong": "0.0031024",
     // "nodeLat": "0.0014506",
     // "delta": "node-LL3"
-    //
 
     //// EXPECTED OUTPUT:
     // <NodeLL>
