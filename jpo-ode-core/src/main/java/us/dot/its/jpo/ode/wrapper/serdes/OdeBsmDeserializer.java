@@ -17,6 +17,10 @@ package us.dot.its.jpo.ode.wrapper.serdes;
 
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
-public class OdeBsmDeserializer extends MessagingDeserializer<OdeBsmData> {
+/**
+ * @deprecated Use new MessagingDeserializer<OdeBsmData>() instead where needed
+ */
+@Deprecated(forRemoval = true)
+public non-sealed class OdeBsmDeserializer extends MessagingDeserializer<OdeBsmData> {
 
 }

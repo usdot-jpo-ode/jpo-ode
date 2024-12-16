@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.services.asn1;
+package us.dot.its.jpo.ode.kafka.listeners;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,26 +7,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.listeners.Asn1DecodedDataListener;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeMapData;
 import us.dot.its.jpo.ode.test.utilities.ApprovalTestCase;
@@ -36,7 +34,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 @Slf4j
 @SpringBootTest(
     classes = {
-        Asn1DecodedDataListener.class,
+        Asn1DecodedDataRouter.class,
         KafkaProperties.class,
         KafkaProducerConfig.class,
         KafkaConsumerConfig.class},
@@ -48,7 +46,8 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {
     UDPReceiverProperties.class, OdeKafkaProperties.class,
-    RawEncodedJsonTopics.class, KafkaProperties.class
+    RawEncodedJsonTopics.class, KafkaProperties.class,
+    PojoTopics.class, JsonTopics.class
 })
 @DirtiesContext
 class Asn1DecodedDataRouterApprovalTest {
@@ -62,27 +61,19 @@ class Asn1DecodedDataRouterApprovalTest {
   @Value("${ode.kafka.topics.json.map}")
   private String jsonMapTopic;
 
+  @Autowired
+  KafkaTemplate<String, String> producer;
+
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
   @Test
-  void testAsn1DecodedDataRouter() throws IOException {
-    NewTopic inputTopic = new NewTopic(decoderOutputTopic, 1, (short) 1);
-    NewTopic outputTopicTx = new NewTopic(txMapTopic, 1, (short) 1);
-    NewTopic outputTopicJson = new NewTopic(jsonMapTopic, 1, (short) 1);
-    try {
-      embeddedKafka.addTopics(inputTopic, outputTopicTx, outputTopicJson);
-    } catch (Exception e) {
-      // Ignore. We only care that the topics exist not that we created them here
-    }
+  void testAsn1DecodedDataRouter_MAPDataFlow() throws IOException {
+    String[] topics = {decoderOutputTopic, txMapTopic, jsonMapTopic};
+    EmbeddedKafkaHolder.addTopics(topics);
 
     @SuppressWarnings("checkstyle:linelength")
     List<ApprovalTestCase> testCases = ApprovalTestCase.deserializeTestCases(
         "src/test/resources/us.dot.its.jpo.ode.udp.map/Asn1DecoderRouter_ApprovalTestCases_MapTxPojo.json");
-
-    Map<String, Object> producerProps = KafkaTestUtils.producerProps(embeddedKafka);
-    DefaultKafkaProducerFactory<Integer, String> producerFactory =
-        new DefaultKafkaProducerFactory<>(producerProps);
-    Producer<Integer, String> producer = producerFactory.createProducer();
 
     Map<String, Object> consumerProps =
         KafkaTestUtils.consumerProps("testT", "false", embeddedKafka);
@@ -93,10 +84,7 @@ class Asn1DecodedDataRouterApprovalTest {
     embeddedKafka.consumeFromEmbeddedTopics(consumer, txMapTopic, jsonMapTopic);
 
     for (ApprovalTestCase testCase : testCases) {
-      ProducerRecord<Integer, String> producerRecord =
-          new ProducerRecord<>(decoderOutputTopic, 0, 0, testCase.getInput());
-      var sent = producer.send(producerRecord);
-      Awaitility.await().until(sent::isDone);
+      producer.send(decoderOutputTopic, testCase.getInput());
 
       String received = KafkaTestUtils.getSingleRecord(consumer, txMapTopic).value();
       ObjectMapper mapper = new ObjectMapper();
@@ -113,9 +101,7 @@ class Asn1DecodedDataRouterApprovalTest {
         "src/test/resources/us.dot.its.jpo.ode.udp.map/Asn1DecoderRouter_ApprovalTestCases_MapJson.json");
 
     for (ApprovalTestCase testCase : jsonTestCases) {
-      ProducerRecord<Integer, String> producerRecord =
-          new ProducerRecord<>(decoderOutputTopic, 0, 0, testCase.getInput());
-      producer.send(producerRecord);
+      producer.send(decoderOutputTopic, testCase.getInput());
 
       String received = KafkaTestUtils.getSingleRecord(consumer, jsonMapTopic).value();
       ObjectMapper mapper = new ObjectMapper();

@@ -3,17 +3,15 @@ package us.dot.its.jpo.ode.udp.tim;
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
-import us.dot.its.jpo.ode.kafka.producer.DisabledTopicException;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
 
 /**
- * The TimReceiver class extends the AbstractUdpReceiverPublisher and is responsible
- * for receiving UDP packets containing TIM (Traveler Information Message) data.
- * Upon receiving a packet, it decodes the TIM data and forwards it to a specified
- * Kafka topic using a KafkaTemplate.
+ * The TimReceiver class extends the AbstractUdpReceiverPublisher and is responsible for receiving
+ * UDP packets containing TIM (Traveler Information Message) data. Upon receiving a packet, it
+ * decodes the TIM data and forwards it to a specified Kafka topic using a KafkaTemplate.
  */
 @Slf4j
 public class TimReceiver extends AbstractUdpReceiverPublisher {
@@ -22,15 +20,15 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
   private final String publishTopic;
 
   /**
-   * Constructs a TimReceiver for receiving UDP packets and forwarding TIM
-   * (Traveler Information Message) data to a Kafka topic.
+   * Constructs a TimReceiver for receiving UDP packets and forwarding TIM (Traveler Information
+   * Message) data to a Kafka topic.
    *
-   * @param receiverProperties contains configuration properties such as
-   *        receiver port and buffer size needed for establishing the UDP receiver.
-   * @param kafkaTemplate the KafkaTemplate used for sending the TIM data to the specified
-   *        Kafka topic after decoding.
-   * @param publishTopic the name of the Kafka topic to which the decoded TIM data should
-   *        be published.
+   * @param receiverProperties contains configuration properties such as receiver port and buffer
+   *                           size needed for establishing the UDP receiver.
+   * @param kafkaTemplate      the KafkaTemplate used for sending the TIM data to the specified
+   *                           Kafka topic after decoding.
+   * @param publishTopic       the name of the Kafka topic to which the decoded TIM data should be
+   *                           published.
    */
   public TimReceiver(ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
@@ -59,8 +57,6 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
             timPublisher.send(publishTopic, timJson);
           }
         }
-      } catch (DisabledTopicException e) {
-        log.warn(e.getMessage());
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);
       } catch (Exception e) {

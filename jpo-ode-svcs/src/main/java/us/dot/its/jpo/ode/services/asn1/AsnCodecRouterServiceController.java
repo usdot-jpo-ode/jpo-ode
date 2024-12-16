@@ -18,10 +18,9 @@ package us.dot.its.jpo.ode.services.asn1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.kafka.topics.SDXDepositorTopics;
 import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.security.SecurityServicesProperties;
@@ -37,7 +36,6 @@ public class AsnCodecRouterServiceController {
     @Autowired
     public AsnCodecRouterServiceController(OdeKafkaProperties odeKafkaProperties,
                                            JsonTopics jsonTopics,
-                                           PojoTopics pojoTopics,
                                            Asn1CoderTopics asn1CoderTopics,
                                            SDXDepositorTopics sdxDepositorTopics,
                                            RsuProperties rsuProperties,
@@ -45,17 +43,6 @@ public class AsnCodecRouterServiceController {
         super();
 
         log.info("Starting {}", this.getClass().getSimpleName());
-
-        // asn1_codec Decoder Routing
-        log.info("Routing DECODED data received ASN.1 Decoder");
-
-        Asn1DecodedDataRouter decoderRouter = new Asn1DecodedDataRouter(odeKafkaProperties, pojoTopics, jsonTopics);
-
-        MessageConsumer<String, String> asn1DecoderConsumer = MessageConsumer.defaultStringMessageConsumer(
-                odeKafkaProperties.getBrokers(), this.getClass().getSimpleName(), decoderRouter);
-
-        asn1DecoderConsumer.setName("Asn1DecoderConsumer");
-        decoderRouter.start(asn1DecoderConsumer, asn1CoderTopics.getDecoderOutput());
 
         // asn1_codec Encoder Routing
         log.info("Routing ENCODED data received ASN.1 Encoder");

@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.udp.bsm;
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
-import us.dot.its.jpo.ode.kafka.producer.DisabledTopicException;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
@@ -65,8 +64,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
           });
         }
 
-      } catch (DisabledTopicException e) {
-        log.warn(e.getMessage());
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);
       } catch (Exception e) {
