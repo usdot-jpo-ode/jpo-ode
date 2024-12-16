@@ -1257,7 +1257,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * for old fields in the given data frame.
    *
    * @param dataFrame the JSON object representing the data frame to be checked
-   * @throws IllegalArgumentException if any old fields are found
+   * @throws NoncompliantFieldsException if any old fields are found
    */
   public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame)
       throws NoncompliantFieldsException {
