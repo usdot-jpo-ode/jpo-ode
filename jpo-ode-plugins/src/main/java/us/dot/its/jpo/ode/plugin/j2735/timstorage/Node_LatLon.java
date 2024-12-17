@@ -15,8 +15,12 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@EqualsAndHashCode(callSuper = false)
+@Data
 public class Node_LatLon extends Asn1Object {
 
    private static final long serialVersionUID = 1L;
@@ -24,20 +28,4 @@ public class Node_LatLon extends Asn1Object {
    private String lon;
 
    private String lat;
-
-   public String getLon() {
-      return lon;
-   }
-
-   public void setLon(String lon) {
-      this.lon = lon;
-   }
-
-   public String getLat() {
-      return lat;
-   }
-
-   public void setLat(String lat) {
-      this.lat = lat;
-   }
 }

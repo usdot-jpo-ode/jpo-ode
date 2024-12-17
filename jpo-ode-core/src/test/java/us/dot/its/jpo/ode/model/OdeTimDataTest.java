@@ -20,7 +20,7 @@ public class OdeTimDataTest {
   @Test
   public void shouldValidateJson() throws Exception {
     // Load test JSON
-    String jsonFilePath = 
+    String jsonFilePath =
         "src/test/resources/CVMessages/TIM_test.json";
     File jsonFile = new File(jsonFilePath);
     byte[] jsonData = Files.readAllBytes(jsonFile.toPath());
@@ -33,8 +33,8 @@ public class OdeTimDataTest {
     final JsonNode node = (JsonNode) JsonUtils.fromJson(json, JsonNode.class);
     Set<ValidationMessage> validationMessages = schema.validate(node);
     assertEquals(
-        String.format("Json validation errors: %s", validationMessages), 
-        0, 
+        String.format("Json validation errors: %s", validationMessages),
+        0,
         validationMessages.size());
   }
 }

@@ -358,7 +358,7 @@ definitions:
     required:
       - sspindex
     properties:
-      notUsed:
+      doNotUse1:
         type: integer
         description: A short header information
       frameType:
@@ -377,7 +377,7 @@ definitions:
           means forever.
       priority:
         type: integer
-      notUsed1:
+      doNotUse2:
         type: integer
       sspindex:
         type: integer
@@ -391,9 +391,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Region'
-      sspMsgTypes:
+      doNotUse4:
         type: integer
-      sspMsgContent:
+      doNotUse3:
         type: integer
       content:
         type: string

@@ -1,6 +1,14 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 4.0.0, released (TBD)
+----------------------------------------
+### **Summary**
+This is a placeholder for the upcoming 4.0.0 release. The release notes will be updated with the details of the release once it is available.
+
+The major version was incremented due to breaking changes in the 2024 revision of J2735.
+
+
 Version 3.0.0, released September 2024
 ----------------------------------------
 ### **Summary**

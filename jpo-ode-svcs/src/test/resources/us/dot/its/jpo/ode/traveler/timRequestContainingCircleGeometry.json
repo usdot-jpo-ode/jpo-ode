@@ -31,7 +31,7 @@
       {
         "startDateTime": "2024-09-25T10:00:00.000Z",
         "durationTime": 8640,
-        "sspTimRights": "0",
+        "doNotUse1": 0,
         "frameType": "advisory",
         "msgId": {
           "roadSignID": {
@@ -70,8 +70,8 @@
             "direction": "1111000011110000"
           }
         ],
-        "sspMsgTypes": "0",
-        "sspMsgContent": "0",
+        "doNotUse4": 0,
+        "doNotUse3": 0,
         "content": "advisory",
         "items": [
           "4868"

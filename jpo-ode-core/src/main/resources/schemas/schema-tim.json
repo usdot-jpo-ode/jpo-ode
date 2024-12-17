@@ -360,7 +360,7 @@
         "TravelerDataFrame": {
             "type": "object",
             "properties": {
-                "notUsed": {
+                "doNotUse1": {
                     "type": "number"
                 },
                 "frameType": {
@@ -409,7 +409,7 @@
                 "priority": {
                     "type": "number"
                 },
-                "notUsed1": {
+                "doNotUse2": {
                     "type": "number"
                 },
                 "regions": {
@@ -420,10 +420,10 @@
                         }
                     ]
                 },
-                "notUsed2": {
+                "doNotUse3": {
                     "type": "number"
                 },
-                "notUsed3": {
+                "doNotUse4": {
                     "type": "number"
                 },
                 "content": {
@@ -434,16 +434,16 @@
                 }
             },
             "required": [
-                "notUsed",
+                "doNotUse1",
                 "frameType",
                 "msgId",
                 "startTime",
                 "durationTime",
                 "priority",
-                "notUsed1",
+                "doNotUse2",
                 "regions",
-                "notUsed2",
-                "notUsed3",
+                "doNotUse3",
+                "doNotUse4",
                 "content"
             ]
         },

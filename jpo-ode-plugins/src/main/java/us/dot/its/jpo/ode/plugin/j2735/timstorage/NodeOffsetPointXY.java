@@ -1,180 +1,74 @@
 /*******************************************************************************
- * Copyright 2018 572682
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * Copyright 2018 572682.
+ *
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
+ * of the License at</p>
+ *
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
+ *
+ * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
+
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+/**
+ * Node offset point in XY plane.
+ */
+@EqualsAndHashCode(callSuper = false)
+@Data
 public class NodeOffsetPointXY extends Asn1Object {
 
-   private static final long serialVersionUID = 1L;
-   
-   @JsonProperty("node-XY")
-   private Node_XY node_XY;
-   
-   @JsonProperty("node-XY1")
-   private Node_XY node_XY1;
+  private static final long serialVersionUID = 1L;
 
-   @JsonProperty("node-XY2")
-   private Node_XY node_XY2;
+  @JsonProperty("node-XY")
+  private NodeXYAsn1Object nodeXY;
 
-   @JsonProperty("node-XY3")
-   private Node_XY node_XY3;
+  @JsonProperty("node-XY1")
+  private NodeXYAsn1Object nodeXY1;
 
-   @JsonProperty("node-XY4")
-   private Node_XY node_XY4;
+  @JsonProperty("node-XY2")
+  private NodeXYAsn1Object nodeXY2;
 
-   @JsonProperty("node-XY5")
-   private Node_XY node_XY5;
+  @JsonProperty("node-XY3")
+  private NodeXYAsn1Object nodeXY3;
 
-   @JsonProperty("node-XY6")
-   private Node_XY node_XY6;
+  @JsonProperty("node-XY4")
+  private NodeXYAsn1Object nodeXY4;
 
-   @JsonProperty("node-LL1")
-   private Node_LatLon node_LL1;
+  @JsonProperty("node-XY5")
+  private NodeXYAsn1Object nodeXY5;
 
-   @JsonProperty("node-LL2")
-   private Node_LatLon node_LL2;
+  @JsonProperty("node-XY6")
+  private NodeXYAsn1Object nodeXY6;
 
-   @JsonProperty("node-LL3")
-   private Node_LatLon node_LL3;
+  @JsonProperty("node-LL1")
+  private Node_LatLon nodeLL1;
 
-   @JsonProperty("node-LL4")
-   private Node_LatLon node_LL4;
+  @JsonProperty("node-LL2")
+  private Node_LatLon nodeLL2;
 
-   @JsonProperty("node-LL5")
-   private Node_LatLon node_LL5;
+  @JsonProperty("node-LL3")
+  private Node_LatLon nodeLL3;
 
-   @JsonProperty("node-LL6")
-   private Node_LatLon node_LL6;
+  @JsonProperty("node-LL4")
+  private Node_LatLon nodeLL4;
 
-   @JsonProperty("node-LatLon")
-   private Node_LatLon node_LatLon;
+  @JsonProperty("node-LL5")
+  private Node_LatLon nodeLL5;
 
-   public Node_XY getNode_XY() {
-      return node_XY;
-   }
+  @JsonProperty("node-LL6")
+  private Node_LatLon nodeLL6;
 
-   public void setNode_XY(Node_XY node_XY) {
-      this.node_XY = node_XY;
-   }
-
-   public Node_XY getNode_XY1() {
-      return node_XY1;
-   }
-
-   public void setNode_XY1(Node_XY node_XY1) {
-      this.node_XY1 = node_XY1;
-   }
-
-   public Node_XY getNode_XY2() {
-      return node_XY2;
-   }
-
-   public void setNode_XY2(Node_XY node_XY2) {
-      this.node_XY2 = node_XY2;
-   }
-
-   public Node_XY getNode_XY3() {
-      return node_XY3;
-   }
-
-   public void setNode_XY3(Node_XY node_XY3) {
-      this.node_XY3 = node_XY3;
-   }
-
-   public Node_XY getNode_XY4() {
-      return node_XY4;
-   }
-
-   public void setNode_XY4(Node_XY node_XY4) {
-      this.node_XY4 = node_XY4;
-   }
-
-   public Node_XY getNode_XY5() {
-      return node_XY5;
-   }
-
-   public void setNode_XY5(Node_XY node_XY5) {
-      this.node_XY5 = node_XY5;
-   }
-
-   public Node_XY getNode_XY6() {
-      return node_XY6;
-   }
-
-   public void setNode_XY6(Node_XY node_XY6) {
-      this.node_XY6 = node_XY6;
-   }
-
-   public Node_LatLon getNode_LL1() {
-      return node_LL1;
-   }
-
-   public void setNode_LL1(Node_LatLon node_LL1) {
-      this.node_LL1 = node_LL1;
-   }
-
-   public Node_LatLon getNode_LL2() {
-      return node_LL2;
-   }
-
-   public void setNode_LL2(Node_LatLon node_LL2) {
-      this.node_LL2 = node_LL2;
-   }
-
-   public Node_LatLon getNode_LL3() {
-      return node_LL3;
-   }
-
-   public void setNode_LL3(Node_LatLon node_LL3) {
-      this.node_LL3 = node_LL3;
-   }
-
-   public Node_LatLon getNode_LL4() {
-      return node_LL4;
-   }
-
-   public void setNode_LL4(Node_LatLon node_LL4) {
-      this.node_LL4 = node_LL4;
-   }
-
-   public Node_LatLon getNode_LL5() {
-      return node_LL5;
-   }
-
-   public void setNode_LL5(Node_LatLon node_LL5) {
-      this.node_LL5 = node_LL5;
-   }
-
-   public Node_LatLon getNode_LL6() {
-      return node_LL6;
-   }
-
-   public void setNode_LL6(Node_LatLon node_LL6) {
-      this.node_LL6 = node_LL6;
-   }
-
-   public Node_LatLon getNode_LatLon() {
-      return node_LatLon;
-   }
-
-   public void setNode_LatLon(Node_LatLon node_LatLon) {
-      this.node_LatLon = node_LatLon;
-   }
-
+  @JsonProperty("node-LatLon")
+  private Node_LatLon nodeLatLon;
 }

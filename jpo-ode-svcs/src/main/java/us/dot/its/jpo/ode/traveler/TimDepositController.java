@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright 2018 572682
+ * Copyright 2018 572682.
  *
  * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
+ * of the License at</p>
  *
- *   <p>http://www.apache.org/licenses/LICENSE-2.0
+ *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
  *
  * <p>Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
- * the License.
+ * the License.</p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.traveler;
@@ -103,11 +103,11 @@ public class TimDepositController {
    */
   @Autowired
   public TimDepositController(OdeKafkaProperties odeKafkaProperties,
-      Asn1CoderTopics asn1CoderTopics,
-      PojoTopics pojoTopics,
-      JsonTopics jsonTopics,
-      TimIngestTrackerProperties ingestTrackerProperties,
-      SecurityServicesProperties securityServicesProperties) {
+                              Asn1CoderTopics asn1CoderTopics,
+                              PojoTopics pojoTopics,
+                              JsonTopics jsonTopics,
+                              TimIngestTrackerProperties ingestTrackerProperties,
+                              SecurityServicesProperties securityServicesProperties) {
     super();
 
     this.asn1CoderTopics = asn1CoderTopics;
@@ -116,12 +116,12 @@ public class TimDepositController {
     this.serialIdJ2735 = new SerialId();
     this.serialIdOde = new SerialId();
 
-    this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
-      odeKafkaProperties.getBrokers(), odeKafkaProperties.getKafkaType(), 
-      odeKafkaProperties.getDisabledTopics());
-    this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(), 
-      odeKafkaProperties.getKafkaType(), null, 
-      OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
+    this.stringMsgProducer =
+        MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
+            odeKafkaProperties.getKafkaType(), odeKafkaProperties.getDisabledTopics());
+    this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(),
+        odeKafkaProperties.getKafkaType(), null,
+        OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
 
     this.dataSigningEnabledSDW = securityServicesProperties.getIsSdwSigningEnabled();
 
@@ -129,8 +129,9 @@ public class TimDepositController {
     if (ingestTrackerProperties.isTrackingEnabled()) {
       log.info("TIM ingest monitoring enabled.");
 
-      ScheduledExecutorService scheduledExecutorService = Executors
-          .newSingleThreadScheduledExecutor();
+      ScheduledExecutorService scheduledExecutorService =
+          Executors
+              .newSingleThreadScheduledExecutor();
 
       scheduledExecutorService.scheduleAtFixedRate(
           new TimIngestWatcher(ingestTrackerProperties.getInterval()),
@@ -143,10 +144,10 @@ public class TimDepositController {
   }
 
   /**
-   * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST
+   * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST.
    *
    * @param jsonString The value of the JSON message
-   * @param verb The HTTP verb being requested
+   * @param verb       The HTTP verb being requested
    * @return The request completion status
    */
   public synchronized ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
@@ -154,21 +155,25 @@ public class TimDepositController {
     if (null == jsonString || jsonString.isEmpty()) {
       String errMsg = "Empty request.";
       log.error(errMsg);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     OdeTravelerInputData odeTID;
     ServiceRequest request;
     try {
       // Convert JSON to POJO
-      odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(jsonString, 
-        OdeTravelerInputData.class, true);
+      odeTID =
+          (OdeTravelerInputData) JsonUtils.jacksonFromJson(jsonString,
+              OdeTravelerInputData.class,
+              true);
       if (odeTID == null) {
         String errMsg = "Malformed or non-compliant JSON syntax.";
         log.error(errMsg);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-          JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
       request = odeTID.getRequest();
@@ -185,13 +190,15 @@ public class TimDepositController {
     } catch (TimDepositControllerException e) {
       String errMsg = "Missing or invalid argument: " + e.getMessage();
       log.error(errMsg, e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (JsonUtilsException e) {
       String errMsg = "Malformed or non-compliant JSON syntax.";
       log.error(errMsg, e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     // Add metadata to message and publish to kafka
@@ -212,8 +219,8 @@ public class TimDepositController {
         try {
           latestStartDateTime = (latestStartDateTime == null || (latestStartDateTime != null
               && latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())))
-                  ? dateFormat.parse(dataFrameItem.getStartDateTime())
-                  : latestStartDateTime);
+              ? dateFormat.parse(dataFrameItem.getStartDateTime())
+              : latestStartDateTime);
         } catch (ParseException e) {
           log.error("Invalid dateTime parse: ", e);
         }
@@ -228,13 +235,15 @@ public class TimDepositController {
     timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
 
     try {
-      timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(
-          DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+      timMetadata.setRecordGeneratedAt(
+          DateTimeUtils.isoDateTime(
+              DateTimeUtils.isoDateTime(tim.getTimeStamp())));
     } catch (DateTimeParseException e) {
       String errMsg = "Invalid timestamp in tim record: " + tim.getTimeStamp();
       log.error(errMsg, e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
@@ -251,8 +260,9 @@ public class TimDepositController {
     // Short circuit
     // If the TIM has no RSU/SNMP or SDW structures, we are done
     if ((request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
-      String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. "
-          + "Message only published to broadcast streams.";
+      String warningMsg =
+          "Warning: TIM contains no RSU, SNMP, or SDW fields."
+              + " Message only published to broadcast streams.";
       log.warn(warningMsg);
       return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
     }
@@ -268,8 +278,14 @@ public class TimDepositController {
     } catch (JsonUtilsException e) {
       String errMsg = "Error converting to encodable TravelerInputData.";
       log.error(errMsg, e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    } catch (TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException e) {
+      String errMsg = "Non-compliant fields in TIM: " + e.getMessage();
+      log.error(errMsg, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     try {
@@ -281,24 +297,24 @@ public class TimDepositController {
         asd = TimTransmogrifier.buildASD(odeTID.getRequest());
       }
       xmlMsg = TimTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
-
       if (xmlMsg != null) {
         log.debug("XML representation: {}", xmlMsg);
 
         // Convert XML into ODE TIM JSON object and obfuscate RSU password
         OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(
             xmlMsg, timMetadata);
-        String j2735Tim = odeTimObj.toString();
-        String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
 
+        String j2735Tim =
+            odeTimObj
+                .toString();
+
+
+        String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
         // publish Broadcast TIM to a J2735 compliant topic.
         stringMsgProducer.send(jsonTopics.getJ2735TimBroadcast(), null, obfuscatedJ2735Tim);
-
         // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
-        stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), 
-            obfuscatedJ2735Tim);
-
-        // Write XML to the encoder input topic at the end to ensure the correct order
+        stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(),
+            obfuscatedJ2735Tim); // Write XML to the encoder input topic at the end to ensure the correct order
         // of operations to pair
         // each message to an OdeTimJson streamId key
         stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
@@ -306,13 +322,12 @@ public class TimDepositController {
 
       serialIdOde.increment();
       serialIdJ2735.increment();
-    } catch (JsonUtils.JsonUtilsException 
-        | XmlUtils.XmlUtilsException 
-        | TimTransmogrifierException e) {
+    } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException
+             | TimTransmogrifierException e) {
       String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
       log.error(errMsg, e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-        JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     INGEST_MONITOR.incrementTotalMessagesReceived();
