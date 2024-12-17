@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -26,37 +27,13 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  */
 @JsonPropertyOrder({"lat", "long", "elevation"})
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class Anchor extends Asn1Object {
   private static final long serialVersionUID = 1L;
-  private String lat;
-  private String llong;
-  private String elevation;
-
   @JsonProperty("lat")
-  public String getLat() {
-    return lat;
-  }
-
-  public void setLat(String lat) {
-    this.lat = lat;
-  }
-
+  private String lat;
   @JsonProperty("long")
-  public String getLlong() {
-    return llong;
-  }
-
-  public void setLlong(String llong) {
-    this.llong = llong;
-  }
-
+  private String llong;
   @JsonProperty("elevation")
-  public String getElevation() {
-    return elevation;
-  }
-
-  public void setElevation(String elevation) {
-    this.elevation = elevation;
-  }
-
+  private String elevation;
 }
