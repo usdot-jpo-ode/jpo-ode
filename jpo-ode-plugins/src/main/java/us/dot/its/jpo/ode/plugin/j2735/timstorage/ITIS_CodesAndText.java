@@ -16,18 +16,14 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@EqualsAndHashCode(callSuper = false)
+@Data
 public class ITIS_CodesAndText extends Asn1Object {
   private static final long serialVersionUID = 1L;
-  private Items[] SEQUENCE;
-
   @JsonProperty("SEQUENCE")
-  public Items[] getSEQUENCE() {
-    return SEQUENCE;
-  }
-  public void setSEQUENCE(Items[] sEQUENCE) {
-    SEQUENCE = sEQUENCE;
-  }
+  private Items[] SEQUENCE;
 }

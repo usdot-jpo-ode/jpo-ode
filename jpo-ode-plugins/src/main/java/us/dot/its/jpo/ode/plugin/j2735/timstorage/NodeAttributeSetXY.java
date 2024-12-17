@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -7,6 +8,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * NodeAttributeSetXY.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class NodeAttributeSetXY extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -34,14 +36,4 @@ public class NodeAttributeSetXY extends Asn1Object {
   //  -- the value of zero shall not be sent here
 
   private LaneDataAttributeList data;
-
-  public LaneDataAttributeList getData() {
-    return data;
-  }
-
-  public void setData(LaneDataAttributeList data) {
-    this.data = data;
-  }
-
-
 }

@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -26,6 +27,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  */
 @JsonPropertyOrder({"direction", "extent", "laneWidth", "circle"})
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class GeometricProjection extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -40,36 +42,4 @@ public class GeometricProjection extends Asn1Object {
 
   @JsonProperty("circle")
   private Circle circle;
-
-  public String getExtent() {
-    return extent;
-  }
-
-  public void setExtent(String extent) {
-    this.extent = extent;
-  }
-
-  public String getDirection() {
-    return direction;
-  }
-
-  public void setDirection(String direction) {
-    this.direction = direction;
-  }
-
-  public Circle getCircle() {
-    return circle;
-  }
-
-  public void setCircle(Circle circle) {
-    this.circle = circle;
-  }
-
-  public String getLaneWidth() {
-    return laneWidth;
-  }
-
-  public void setLaneWidth(String laneWidth) {
-    this.laneWidth = laneWidth;
-  }
 }

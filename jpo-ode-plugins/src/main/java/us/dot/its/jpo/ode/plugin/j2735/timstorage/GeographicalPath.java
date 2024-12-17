@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -27,6 +28,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 @JsonPropertyOrder({"name", "id", "anchor", "laneWidth", "directionality", "closedPath",
     "direction", "description"})
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class GeographicalPath extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -53,69 +55,4 @@ public class GeographicalPath extends Asn1Object {
 
   @JsonProperty("description")
   private Description description;
-
-  public Id getId() {
-    return id;
-  }
-
-  public void setId(Id id) {
-    this.id = id;
-  }
-
-  public String getClosedPath() {
-    return closedPath;
-  }
-
-  public void setClosedPath(String closedPath) {
-    this.closedPath = closedPath;
-  }
-
-
-  public DirectionOfUse getDirectionality() {
-    return directionality;
-  }
-
-  public void setDirectionality(DirectionOfUse directionality) {
-    this.directionality = directionality;
-  }
-
-  public String getDirection() {
-    return direction;
-  }
-
-  public void setDirection(String direction) {
-    this.direction = direction;
-  }
-
-  public Description getDescription() {
-    return description;
-  }
-
-  public void setDescription(Description description) {
-    this.description = description;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getLaneWidth() {
-    return laneWidth;
-  }
-
-  public void setLaneWidth(String laneWidth) {
-    this.laneWidth = laneWidth;
-  }
-
-  public Anchor getAnchor() {
-    return anchor;
-  }
-
-  public void setAnchor(Anchor anchor) {
-    this.anchor = anchor;
-  }
 }

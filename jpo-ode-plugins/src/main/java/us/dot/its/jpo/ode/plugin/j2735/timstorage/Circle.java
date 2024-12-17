@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -26,6 +27,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  */
 @JsonPropertyOrder({"center", "radius", "units"})
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class Circle extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -37,29 +39,4 @@ public class Circle extends Asn1Object {
 
   @JsonProperty("units")
   private DistanceUnits units;
-
-  public Position getCenter() {
-    return center;
-  }
-
-  public void setCenter(Position center) {
-    this.center = center;
-  }
-
-  public String getRadius() {
-    return radius;
-  }
-
-  public void setRadius(String radius) {
-    this.radius = radius;
-  }
-
-  public DistanceUnits getUnits() {
-    return units;
-  }
-
-  public void setUnits(DistanceUnits units) {
-    this.units = units;
-  }
-
 }

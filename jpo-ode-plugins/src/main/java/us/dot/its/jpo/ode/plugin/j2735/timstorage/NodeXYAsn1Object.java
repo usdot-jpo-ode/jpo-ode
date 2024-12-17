@@ -17,6 +17,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -24,6 +25,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * Node_XY.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class NodeXYAsn1Object extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -32,21 +34,4 @@ public class NodeXYAsn1Object extends Asn1Object {
 
   @JsonProperty("y")
   private String ypos;
-
-  public String getXpos() {
-    return xpos;
-  }
-
-  public void setXpos(String xpos) {
-    this.xpos = xpos;
-  }
-
-  public String getYpos() {
-    return ypos;
-  }
-
-  public void setYpos(String ypos) {
-    this.ypos = ypos;
-  }
-
 }

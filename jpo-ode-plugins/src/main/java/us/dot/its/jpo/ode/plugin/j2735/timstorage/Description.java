@@ -16,6 +16,7 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -23,6 +24,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * Description.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class Description extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -31,29 +33,4 @@ public class Description extends Asn1Object {
   private GeometricProjection geometry;
 
   private ValidRegion oldRegion;
-
-  public OffsetSystem getPath() {
-    return path;
-  }
-
-  public void setPath(OffsetSystem path) {
-    this.path = path;
-  }
-
-  public GeometricProjection getGeometry() {
-    return geometry;
-  }
-
-  public void setGeometry(GeometricProjection geometry) {
-    this.geometry = geometry;
-  }
-
-  public ValidRegion getOldRegion() {
-    return oldRegion;
-  }
-
-  public void setOldRegion(ValidRegion oldRegion) {
-    this.oldRegion = oldRegion;
-  }
-
 }

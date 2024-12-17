@@ -19,6 +19,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -28,6 +29,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"lat", "llong", "elevation"})
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class Position extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -37,28 +39,4 @@ public class Position extends Asn1Object {
   private String llong;
   @JsonProperty("elevation")
   private String elevation;
-
-  public String getElevation() {
-    return elevation;
-  }
-
-  public void setElevation(String elevation) {
-    this.elevation = elevation;
-  }
-
-  public String getLlong() {
-    return llong;
-  }
-
-  public void setLlong(String lon) {
-    this.llong = lon;
-  }
-
-  public String getLat() {
-    return lat;
-  }
-
-  public void setLat(String lat) {
-    this.lat = lat;
-  }
 }

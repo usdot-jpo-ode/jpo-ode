@@ -16,6 +16,7 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -23,6 +24,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * Content.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class Content extends Asn1Object {
   private static final long serialVersionUID = 1L;
   private ITIS_CodesAndText advisory;
@@ -30,45 +32,4 @@ public class Content extends Asn1Object {
   private ITIS_CodesAndText genericSign;
   private ITIS_CodesAndText speedLimit;
   private ITIS_CodesAndText exitService;
-
-  public ITIS_CodesAndText getAdvisory() {
-    return advisory;
-  }
-
-  public void setAdvisory(ITIS_CodesAndText advisory) {
-    this.advisory = advisory;
-  }
-
-  public ITIS_CodesAndText getWorkZone() {
-    return workZone;
-  }
-
-  public void setWorkZone(ITIS_CodesAndText workZone) {
-    this.workZone = workZone;
-  }
-
-  public ITIS_CodesAndText getGenericSign() {
-    return genericSign;
-  }
-
-  public void setGenericSign(ITIS_CodesAndText genericSign) {
-    this.genericSign = genericSign;
-  }
-
-  public ITIS_CodesAndText getSpeedLimit() {
-    return speedLimit;
-  }
-
-  public void setSpeedLimit(ITIS_CodesAndText speedLimit) {
-    this.speedLimit = speedLimit;
-  }
-
-  public ITIS_CodesAndText getExitService() {
-    return exitService;
-  }
-
-  public void setExitService(ITIS_CodesAndText exitService) {
-    this.exitService = exitService;
-  }
-
 }

@@ -16,6 +16,7 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -23,27 +24,11 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * OffsetAxis.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class OffsetAxis extends Asn1Object {
   private static final long serialVersionUID = 7703530986729802700L;
 
   private Integer small;
 
   private Integer large;
-
-  public Integer getSmall() {
-    return small;
-  }
-
-  public void setSmall(Integer small) {
-    this.small = small;
-  }
-
-  public Integer getLarge() {
-    return large;
-  }
-
-  public void setLarge(Integer large) {
-    this.large = large;
-  }
-
 }

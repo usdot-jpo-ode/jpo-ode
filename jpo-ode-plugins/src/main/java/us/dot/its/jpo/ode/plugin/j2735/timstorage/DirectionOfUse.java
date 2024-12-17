@@ -16,6 +16,7 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -23,6 +24,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * The direction of use for a given section of roadway.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class DirectionOfUse extends Asn1Object {
   private static final long serialVersionUID = 1L;
 
@@ -41,36 +43,4 @@ public class DirectionOfUse extends Asn1Object {
   private String forward;     // (1), -- direction of travel follows node ordering
   private String reverse;     // (2), -- direction of travel is the reverse of node ordering
   private String both;        // (3) -- direction of travel allowed in both directions
-
-  public String getUnavailable() {
-    return unavailable;
-  }
-
-  public void setUnavailable(String unavailable) {
-    this.unavailable = unavailable;
-  }
-
-  public String getForward() {
-    return forward;
-  }
-
-  public void setForward(String forward) {
-    this.forward = forward;
-  }
-
-  public String getReverse() {
-    return reverse;
-  }
-
-  public void setReverse(String reverse) {
-    this.reverse = reverse;
-  }
-
-  public String getBoth() {
-    return both;
-  }
-
-  public void setBoth(String both) {
-    this.both = both;
-  }
 }

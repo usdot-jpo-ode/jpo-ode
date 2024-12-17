@@ -17,6 +17,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
@@ -24,6 +25,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
  * Node offset point in XY plane.
  */
 @EqualsAndHashCode(callSuper = false)
+@Data
 public class NodeOffsetPointXY extends Asn1Object {
 
   private static final long serialVersionUID = 1L;
@@ -69,117 +71,4 @@ public class NodeOffsetPointXY extends Asn1Object {
 
   @JsonProperty("node-LatLon")
   private Node_LatLon nodeLatLon;
-
-  public NodeXYAsn1Object getNodeXY() {
-    return nodeXY;
-  }
-
-  public void setNodeXY(NodeXYAsn1Object nodeXY) {
-    this.nodeXY = nodeXY;
-  }
-
-  public NodeXYAsn1Object getNodeXY1() {
-    return nodeXY1;
-  }
-
-  public void setNodeXY1(NodeXYAsn1Object nodeXY1) {
-    this.nodeXY1 = nodeXY1;
-  }
-
-  public NodeXYAsn1Object getNodeXY2() {
-    return nodeXY2;
-  }
-
-  public void setNodeXY2(NodeXYAsn1Object nodeXY2) {
-    this.nodeXY2 = nodeXY2;
-  }
-
-  public NodeXYAsn1Object getNodeXY3() {
-    return nodeXY3;
-  }
-
-  public void setNodeXY3(NodeXYAsn1Object nodeXY3) {
-    this.nodeXY3 = nodeXY3;
-  }
-
-  public NodeXYAsn1Object getNodeXY4() {
-    return nodeXY4;
-  }
-
-  public void setNodeXY4(NodeXYAsn1Object nodeXY4) {
-    this.nodeXY4 = nodeXY4;
-  }
-
-  public NodeXYAsn1Object getNodeXY5() {
-    return nodeXY5;
-  }
-
-  public void setNodeXY5(NodeXYAsn1Object nodeXY5) {
-    this.nodeXY5 = nodeXY5;
-  }
-
-  public NodeXYAsn1Object getNodeXY6() {
-    return nodeXY6;
-  }
-
-  public void setNodeXY6(NodeXYAsn1Object nodeXY6) {
-    this.nodeXY6 = nodeXY6;
-  }
-
-  public Node_LatLon getNodeLL1() {
-    return nodeLL1;
-  }
-
-  public void setNodeLL1(Node_LatLon nodeLL1) {
-    this.nodeLL1 = nodeLL1;
-  }
-
-  public Node_LatLon getNodeLL2() {
-    return nodeLL2;
-  }
-
-  public void setNodeLL2(Node_LatLon nodeLL2) {
-    this.nodeLL2 = nodeLL2;
-  }
-
-  public Node_LatLon getNodeLL3() {
-    return nodeLL3;
-  }
-
-  public void setNodeLL3(Node_LatLon nodeLL3) {
-    this.nodeLL3 = nodeLL3;
-  }
-
-  public Node_LatLon getNodeLL4() {
-    return nodeLL4;
-  }
-
-  public void setNodeLL4(Node_LatLon nodeLL4) {
-    this.nodeLL4 = nodeLL4;
-  }
-
-  public Node_LatLon getNodeLL5() {
-    return nodeLL5;
-  }
-
-  public void setNodeLL5(Node_LatLon nodeLL5) {
-    this.nodeLL5 = nodeLL5;
-  }
-
-  public Node_LatLon getNodeLL6() {
-    return nodeLL6;
-  }
-
-  public void setNodeLL6(Node_LatLon nodeLL6) {
-    this.nodeLL6 = nodeLL6;
-  }
-
-  public Node_LatLon getNodeLatLon() {
-    return nodeLatLon;
-  }
-
-  public void setNodeLatLon(Node_LatLon nodeLatLon) {
-    this.nodeLatLon = nodeLatLon;
-  }
-
 }
