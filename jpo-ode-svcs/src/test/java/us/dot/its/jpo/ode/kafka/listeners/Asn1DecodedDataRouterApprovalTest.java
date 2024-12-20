@@ -20,8 +20,10 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1DecodedDataRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
@@ -37,7 +39,9 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
         Asn1DecodedDataRouter.class,
         KafkaProperties.class,
         KafkaProducerConfig.class,
-        KafkaConsumerConfig.class},
+        KafkaConsumerConfig.class,
+        SerializationConfig.class
+    },
     properties = {
         "ode.kafka.topics.asn1.decoder-output=topic.Asn1DecoderOutputRouterApprovalTest",
         "ode.kafka.topics.pojo.tx-map=topic.OdeMapTxPojoRouterApprovalTest",

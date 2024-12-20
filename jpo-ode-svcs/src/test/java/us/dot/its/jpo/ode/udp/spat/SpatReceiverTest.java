@@ -23,6 +23,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
@@ -33,7 +34,12 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class},
+    classes = {
+        OdeKafkaProperties.class,
+        UDPReceiverProperties.class,
+        KafkaProducerConfig.class,
+        SerializationConfig.class
+    },
     properties = {
         "ode.receivers.spat.receiver-port=15356",
         "ode.kafka.topics.raw-encoded-json.spat=topic.SpatReceiverTest"

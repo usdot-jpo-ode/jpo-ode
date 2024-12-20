@@ -25,6 +25,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
@@ -36,7 +37,12 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class},
+    classes = {
+        OdeKafkaProperties.class,
+        UDPReceiverProperties.class,
+        KafkaProducerConfig.class,
+        SerializationConfig.class
+    },
     properties = {
         "ode.receivers.psm.receiver-port=15456",
         "ode.kafka.topics.raw-encoded-json.psm=topic.PsmReceiverTest"

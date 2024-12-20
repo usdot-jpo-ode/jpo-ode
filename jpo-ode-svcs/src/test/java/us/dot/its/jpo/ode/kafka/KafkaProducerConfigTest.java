@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties.Producer;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.model.OdeObject;
@@ -36,7 +38,7 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @EnableConfigurationProperties({KafkaProperties.class})
-@Import({KafkaProducerConfigTest.KafkaProducerConfigTestConfig.class})
+@Import({KafkaProducerConfigTest.KafkaProducerConfigTestConfig.class, SerializationConfig.class})
 class KafkaProducerConfigTest {
 
   @Autowired
@@ -45,20 +47,22 @@ class KafkaProducerConfigTest {
   @Autowired
   @Qualifier("testOdeKafkaProperties")
   OdeKafkaProperties odeKafkaProperties;
+  @Autowired
+  XmlMapper xmlMapper;
 
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
   @Test
   void odeDataProducerFactory_shouldReturnNonNull() {
     ProducerFactory<String, OdeObject> producerFactory =
-        kafkaProducerConfig.odeDataProducerFactory();
+        kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
     assertNotNull(producerFactory);
   }
 
   @Test
   void odeDataProducerFactory_shouldReturnDefaultKafkaProducerFactory() {
     ProducerFactory<String, OdeObject> producerFactory =
-        kafkaProducerConfig.odeDataProducerFactory();
+        kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
     assertNotNull(producerFactory);
     assertInstanceOf(DefaultKafkaProducerFactory.class, producerFactory);
   }

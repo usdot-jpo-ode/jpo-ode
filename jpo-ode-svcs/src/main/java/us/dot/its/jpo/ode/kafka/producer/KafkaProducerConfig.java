@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.Map;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -95,9 +96,9 @@ public class KafkaProducerConfig {
    *         application's Kafka and ODE settings.
    */
   @Bean
-  public ProducerFactory<String, OdeObject> odeDataProducerFactory() {
+  public ProducerFactory<String, OdeObject> odeDataProducerFactory(XmlMapper xmlMapper) {
     return new DefaultKafkaProducerFactory<>(buildProducerProperties(),
-        new StringSerializer(), new XMLOdeObjectSerializer());
+        new StringSerializer(), new XMLOdeObjectSerializer(xmlMapper));
   }
 
   /**

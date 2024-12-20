@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.kafka;
+package us.dot.its.jpo.ode.kafka.listeners.asn1;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static us.dot.its.jpo.ode.test.utilities.ApprovalTestCase.deserializeTestCases;
@@ -21,7 +21,9 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import us.dot.its.jpo.ode.kafka.listeners.Asn1DecodeMAPJSONListener;
+import us.dot.its.jpo.ode.config.SerializationConfig;
+import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.test.utilities.ApprovalTestCase;
@@ -33,7 +35,9 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
     classes = {
         KafkaProducerConfig.class,
         KafkaConsumerConfig.class,
-        Asn1DecodeMAPJSONListener.class
+        RawEncodedMAPJsonRouter.class,
+        RawEncodedJsonService.class,
+        SerializationConfig.class
     },
     properties = {
         "ode.kafka.topics.raw-encoded-json.map=topic.Asn1DecoderTestMAPJSON",
@@ -45,7 +49,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
     RawEncodedJsonTopics.class, KafkaProperties.class
 })
 @DirtiesContext
-class Asn1DecodeMAPJSONTest {
+class RawEncodedMAPJsonRouterTest {
 
   @Value(value = "${ode.kafka.topics.raw-encoded-json.map}")
   private String rawEncodedMapJson;
