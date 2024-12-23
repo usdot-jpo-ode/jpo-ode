@@ -11,7 +11,7 @@
       "serialNumber": 0
     },
     "odeReceivedAt": "2024-03-15T19:16:35.212860500Z",
-    "schemaVersion": 6,
+    "schemaVersion": 8,
     "maxDurationTime": 0,
     "recordGeneratedBy": "UNKNOWN",
     "sanitized": false,

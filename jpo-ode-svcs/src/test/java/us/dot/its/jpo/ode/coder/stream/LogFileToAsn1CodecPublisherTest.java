@@ -19,7 +19,6 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher.LogFileToAsn1CodecPublisherException;
@@ -30,7 +29,6 @@ import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 import java.io.BufferedInputStream;
@@ -42,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LogFileToAsn1CodecPublisherTest {
 
     private static final String GZ = ".gz";
-    private static final String schemaVersion = "7";
+    private static final String schemaVersion = "8";
 
     @Tested
     LogFileToAsn1CodecPublisher testLogFileToAsn1CodecPublisher;
@@ -55,12 +53,6 @@ class LogFileToAsn1CodecPublisherTest {
 
     @Injectable
     RawEncodedJsonTopics injectableRawEncodedJsonTopics;
-
-
-    @BeforeAll
-    public static void setupClass() {
-        OdeMsgMetadata.setStaticSchemaVersion(Integer.parseInt(schemaVersion));
-    }
 
     @Test
     void testPublishInit(@Mocked LogFileParser mockLogFileParser) throws Exception {

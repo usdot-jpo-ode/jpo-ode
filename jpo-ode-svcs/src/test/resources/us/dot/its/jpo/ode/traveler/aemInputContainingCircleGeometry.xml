@@ -9,7 +9,7 @@
             <serialNumber>0</serialNumber>
         </serialId>
         <odeReceivedAt>2024-11-05T16:51:14.473Z</odeReceivedAt>
-        <schemaVersion>7</schemaVersion>
+        <schemaVersion>8</schemaVersion>
         <maxDurationTime>8640</maxDurationTime>
         <recordGeneratedAt>2024-09-25T10:00:00.000Z</recordGeneratedAt>
         <recordGeneratedBy>TMC</recordGeneratedBy>

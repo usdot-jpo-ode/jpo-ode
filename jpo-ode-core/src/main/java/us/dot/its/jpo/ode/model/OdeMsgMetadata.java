@@ -30,8 +30,7 @@ public class OdeMsgMetadata extends OdeObject {
    }
 
    private static final long serialVersionUID = 3979762143291085955L;
-
-   private static int staticSchemaVersion = 7;
+   private static final int staticSchemaVersion = 8;
 
    private String payloadType;
    private SerialId serialId;
@@ -158,10 +157,6 @@ public class OdeMsgMetadata extends OdeObject {
       return staticSchemaVersion;
    }
 
-   public static void setStaticSchemaVersion(int aSchemaVersion) {
-      staticSchemaVersion = aSchemaVersion;
-   }
-
    public String getAsn1() {
       return asn1;
    }
@@ -175,7 +170,7 @@ public class OdeMsgMetadata extends OdeObject {
          if (JsonUtils.getJsonNode(payload.getData().toString(), "bytes") != null)
             this.asn1 = JsonUtils.getJsonNode(payload.getData().toString(), "bytes").asText();
       }
-  }
+   }
 
    @Override
    public int hashCode() {

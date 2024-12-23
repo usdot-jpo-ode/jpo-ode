@@ -31,7 +31,7 @@
       <serialNumber>0</serialNumber>
     </serialId>
     <odeReceivedAt>2024-12-10T17:30:48.095Z</odeReceivedAt>
-    <schemaVersion>7</schemaVersion>
+    <schemaVersion>8</schemaVersion>
     <maxDurationTime>0</maxDurationTime>
     <recordGeneratedAt/>
     <recordGeneratedBy>OBU</recordGeneratedBy>

@@ -77,7 +77,6 @@ class MapReceiverTest {
     // This is necessary because the schema version is set in only one of the OdeMsgMetadata constructors (this should be fixed)
     // and the schema version is set to the static schema version in the constructor. This means that the schema version
     // will be set to 6 for all OdeMsgMetadata objects created in the MapReceiver run method's code path.
-    OdeMsgMetadata.setStaticSchemaVersion(7);
 
     MapReceiver mapReceiver = new MapReceiver(udpReceiverProperties.getMap(), kafkaTemplate,
         rawEncodedJsonTopics.getMap());

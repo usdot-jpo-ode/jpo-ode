@@ -18,7 +18,6 @@ spring:
       max-file-size: 1MB
       max-request-size: 1MB
 ode:
-  output-schema-version: 7
   security-services:
     host-ip: ${DOCKER_HOST_IP}
     port: 8090

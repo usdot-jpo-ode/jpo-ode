@@ -18,7 +18,6 @@ spring:
     admin:
       auto-create: false
 ode:
-  output-schema-version: 7
   security-services:
     host-ip: "test-host"
     port: 1234
