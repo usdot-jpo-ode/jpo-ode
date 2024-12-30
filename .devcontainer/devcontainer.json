@@ -26,7 +26,8 @@
 				"ms-vscode.cpptools",
 				"ms-vscode.cmake-tools",
 				"ms-vscode.makefile-tools",
-				"ms-python.python"
+				"ms-python.python",
+				"hediet.vscode-drawio"
 			]
 		}
 	},
