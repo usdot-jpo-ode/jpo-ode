@@ -18,6 +18,7 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+        cache: 'maven'
 
     - name: Remove snapshot from version
       run: mvn versions:set -DremoveSnapshot
