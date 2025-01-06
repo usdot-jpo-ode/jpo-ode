@@ -1,13 +1,53 @@
 JPO-ODE Release Notes
 ----------------------------
 
-Version 4.0.0, released (TBD)
+Version 4.0.0, released January 2025
 ----------------------------------------
 ### **Summary**
-This is a placeholder for the upcoming 4.0.0 release. The release notes will be updated with the details of the release once it is available.
 
-The major version was incremented due to breaking changes in the 2024 revision of J2735.
+The jpo-ode 4.0.0 release brings a variety of updates aimed at enhancing functionality, maintainability, and the overall development experience. Key highlights include the introduction of a Generated TMC TIM Topic, Spring Kafka migrations for improved integration, and updates to TIM schemas and JSON annotations for more accurate ODE processing. Significant strides have been made in optimizing configurations, with enhancements like the extraction of Kafka properties, environment variables, and Kafka topics into more streamlined Spring Configuration properties. Additionally, schema updates have been made to increment the version for output messages and ensure compatibility with J2735 2024. Developer-focused changes include revisions to the README, Makefile, and devcontainer to support smoother onboarding and ease of use. Other important updates encompass new entries in the submodule compatibility guide, version upgrades, and bug fixes related to Kafka configurations and message handling.
 
+Enhancements in this release:
+- [CDOT PR 100](https://github.com/CDOT-CV/jpo-ode/pull/100): Add Generated TMC TIM Topic
+- [CDOT PR 102](https://github.com/CDOT-CV/jpo-ode/pull/102): Remove Sping Dependencies from Maven Jars
+- [CDOT PR 105](https://github.com/CDOT-CV/jpo-ode/pull/105): Updates to README, Makefile, and devcontainer to improve onboarding and developer experience
+- [CDOT PR 106](https://github.com/CDOT-CV/jpo-ode/pull/106): Add configurable alert to print log statement warning of missing TIMs deposits
+- [CDOT PR 107](https://github.com/CDOT-CV/jpo-ode/pull/107): Submodule Compatibility Guide Entry for ODE 3.0.0
+- [CDOT PR 108](https://github.com/CDOT-CV/jpo-ode/pull/108): Update Release Documentation to Include jpo-utils Submodule
+- [CDOT PR 109](https://github.com/CDOT-CV/jpo-ode/pull/109): Update TIM schema
+- [CDOT PR 110](https://github.com/CDOT-CV/jpo-ode/pull/110): Extract Kafka properties from OdeProperties as a first step to breaking apart the monstrosity
+- [CDOT PR 111](https://github.com/CDOT-CV/jpo-ode/pull/111): Adding Compression to Ode
+- [CDOT PR 112](https://github.com/CDOT-CV/jpo-ode/pull/112): Extract Kafka Topics and related configurations into Spring Configuration properties
+- [CDOT PR 113](https://github.com/CDOT-CV/jpo-ode/pull/113): Extract environment variables from OdeProperties into Spring Configuration objects
+- [CDOT PR 114](https://github.com/CDOT-CV/jpo-ode/pull/114): Fixed JSON annotations to enable ODE processing of circle geometries
+- [CDOT PR 115](https://github.com/CDOT-CV/jpo-ode/pull/115): Update the TIM schema test
+- [CDOT PR 116](https://github.com/CDOT-CV/jpo-ode/pull/116): Add Approval Tests for MAP Data Flows
+- [CDOT PR 117](https://github.com/CDOT-CV/jpo-ode/pull/117): SSM Processing Fix
+- [CDOT PR 118](https://github.com/CDOT-CV/jpo-ode/pull/118): Spring Kafka Proof-of-Concept - Implemented in MAP Data Flow
+- [CDOT PR 119](https://github.com/CDOT-CV/jpo-ode/pull/119): OdeTimJson POJO Processing Rework
+- [CDOT PR 120](https://github.com/CDOT-CV/jpo-ode/pull/120): Introduce Checkstyle Linter to GH pipeline and provide steps for local configuration
+- [CDOT PR 121](https://github.com/CDOT-CV/jpo-ode/pull/121): Switching adopt builder to temurin
+- [CDOT PR 122](https://github.com/CDOT-CV/jpo-ode/pull/122): J2735 2024 Compatibility and Enhanced TIM Format Handling
+- [CDOT PR 123](https://github.com/CDOT-CV/jpo-ode/pull/123): add missing confluent.password and confluent.username to application.yaml
+- [CDOT PR 129](https://github.com/CDOT-CV/jpo-ode/pull/129): Migrate UDPRecievers to use Spring Kafka
+- [CDOT PR 130](https://github.com/CDOT-CV/jpo-ode/pull/130): BugFix: use correct config value for setting up producers with Confluent Properties
+- [CDOT PR 131](https://github.com/CDOT-CV/jpo-ode/pull/131): Migrate Asn1DecodedDataRouter to use Spring Kafka
+- [CDOT PR 132](https://github.com/CDOT-CV/jpo-ode/pull/132): Update POM Version 4.0.0
+- [CDOT PR 134](https://github.com/CDOT-CV/jpo-ode/pull/134): Migrate AsnCodecMessageServiceController to Spring Kafka
+- [CDOT PR 136](https://github.com/CDOT-CV/jpo-ode/pull/136): Update the schema version to 8 for the output messages
+- [CDOT PR 137](https://github.com/CDOT-CV/jpo-ode/pull/137): GitHub Actions Caching
+- [CDOT PR 140](https://github.com/CDOT-CV/jpo-ode/pull/140): Data flow diagram updates - Spring Kafka related
+- [CDOT PR 141](https://github.com/CDOT-CV/jpo-ode/pull/141): CDOT ASN1 Codec Submodule Update
+- [CDOT PR 142](https://github.com/CDOT-CV/jpo-ode/pull/142): Set scope of annotation processors to 'provided'
+- [CDOT PR 143](https://github.com/CDOT-CV/jpo-ode/pull/143): Updated Submodule Compatibility Guide for 2025 Q1 Release
+- [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
+- [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
+
+Breaking changes:
+- The major version was incremented due to breaking changes in the 2024 revision of J2735.
+
+Known Issues:
+- No known issues at this time.
 
 Version 3.0.0, released September 2024
 ----------------------------------------
@@ -26,6 +66,8 @@ Enhancements in this release:
 - CDOT PR 95: Fixed dev container build failure due to specified uid being taken
 - CDOT PR 96: Added the source ASN1 bytes payload to message topics to allow for IMP depositor support
 - CDOT PR 97: Removed jpo-s3-deposit submodule and added jpo-utils repository as a submodule
+- CDOT PR 99: Remove Spring Dependencies from Maven Jars
+- CDOT PR 101: ODE JSON Schema Updates
 
 
 Version 2.1.0, released June 2024
