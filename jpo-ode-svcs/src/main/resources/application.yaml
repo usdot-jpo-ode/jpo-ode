@@ -147,3 +147,5 @@ management:
   endpoint:
     health:
       enabled: false
+  tracing:
+    enabled: true
