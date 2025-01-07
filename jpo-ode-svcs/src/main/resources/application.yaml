@@ -13,6 +13,9 @@ spring:
       compression-type: "zstd"
       buffer-memory: 33554432
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
+    retry:
+      topic:
+        attempts: 1
   http:
     multipart:
       max-file-size: 1MB
