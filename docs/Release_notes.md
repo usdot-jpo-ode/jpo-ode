@@ -40,6 +40,7 @@ Enhancements in this release:
 - [CDOT PR 141](https://github.com/CDOT-CV/jpo-ode/pull/141): CDOT ASN1 Codec Submodule Update
 - [CDOT PR 142](https://github.com/CDOT-CV/jpo-ode/pull/142): Set scope of annotation processors to 'provided'
 - [CDOT PR 143](https://github.com/CDOT-CV/jpo-ode/pull/143): Updated Submodule Compatibility Guide for 2025 Q1 Release
+- [CDOT PR 145](https://github.com/CDOT-CV/jpo-ode/pull/145): Resolve TIM schema inconsistency
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
 
