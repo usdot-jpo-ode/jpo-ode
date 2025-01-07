@@ -136,3 +136,14 @@ ode:
   tim-ingest-monitoring:
     tracking-enabled: ${ODE_TIM_INGEST_MONITORING_ENABLED}
     interval: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: none
+      discovery:
+        enabled: false
+  endpoint:
+    health:
+      enabled: false
