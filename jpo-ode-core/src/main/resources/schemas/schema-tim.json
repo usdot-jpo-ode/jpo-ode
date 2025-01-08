@@ -731,78 +731,78 @@
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY1": {
+                        "node-XY1": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY1"
+                        "node-XY1"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY2": {
+                        "node-XY2": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY2"
+                        "node-XY2"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY3": {
+                        "node-XY3": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY3"
+                        "node-XY3"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY4": {
+                        "node-XY4": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY4"
+                        "node-XY4"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY5": {
+                        "node-XY5": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY5"
+                        "node-XY5"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeXY6": {
+                        "node-XY6": {
                             "$ref": "#/$defs/NodeXYPoint"
                         }
                     },
                     "required": [
-                        "nodeXY6"
+                        "node-XY6"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLatLon": {
+                        "node-LatLon": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLatLon"
+                        "node-LatLon"
                     ]
                 }
             ]
@@ -992,78 +992,78 @@
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL1": {
+                        "node-LL1": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL1"
+                        "node-LL1"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL2": {
+                        "node-LL2": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL2"
+                        "node-LL2"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL3": {
+                        "node-LL3": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL3"
+                        "node-LL3"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL4": {
+                        "node-LL4": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL4"
+                        "node-LL4"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL5": {
+                        "node-LL5": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL5"
+                        "node-LL5"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLL6": {
+                        "node-LL6": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLL6"
+                        "node-LL6"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "nodeLatLon": {
+                        "node-LatLon": {
                             "$ref": "#/$defs/NodeLLmD"
                         }
                     },
                     "required": [
-                        "nodeLatLon"
+                        "node-LatLon"
                     ]
                 }
             ]
