@@ -93,14 +93,12 @@ public class UperUtil {
     String headers = hexString.substring(0, payloadStartIndex);
     String payload = hexString.substring(payloadStartIndex);
     log.debug("Base payload: {}", payload);
-    String strippedPayload = stripTrailingZeros(payload);
-    log.debug("Stripped payload: {}", strippedPayload);
     // Look for the index of the start flag of a signed 1609.2 header
     int signedDot2StartIndex = headers.indexOf("038100");
     if (signedDot2StartIndex == -1) {
-      return strippedPayload;
+      return payload;
     } else {
-      return headers.substring(signedDot2StartIndex) + strippedPayload;
+      return headers.substring(signedDot2StartIndex) + payload;
     }
   }
 

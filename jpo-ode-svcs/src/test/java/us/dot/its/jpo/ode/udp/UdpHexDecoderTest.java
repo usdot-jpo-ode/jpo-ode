@@ -11,6 +11,15 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 class UdpHexDecoderTest {
 
+  /**
+   * Test method for ensuring that the getPayloadHexString method does not result in any missing bytes
+   * when retrieving the payload from a BSM message.
+   *
+   * Note: Except for the first 8 and last 4 characters, the rest of the characters in the hexString have been
+   * randomly generated.
+   *
+   * @throws InvalidPayloadException if the payload is invalid
+   */
   @Test
   void getPayloadHexString_BSM_VerifyNoMissingBytes() throws InvalidPayloadException {
     // prepare

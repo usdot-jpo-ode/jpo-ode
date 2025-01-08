@@ -66,6 +66,14 @@ public class UdpHexDecoder {
     if (payload == null) {
       throw new InvalidPayloadException("Payload is null");
     }
+    int length = packet.getLength();
+    int offset = packet.getOffset();
+
+    // ensure we only operate on relevant bytes
+    byte[] relevantPayload = new byte[length];
+    System.arraycopy(payload, offset, relevantPayload, 0, length);
+    payload = relevantPayload;
+
     // convert bytes to hex string and verify identity
     String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
     if (!payloadHexString.contains(msgType.getStartFlag())) {
@@ -74,8 +82,7 @@ public class UdpHexDecoder {
 
     log.debug("Full {} packet: {}", msgType, payloadHexString);
 
-    payloadHexString = UperUtil.stripTrailingZeros(
-        UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag())).toLowerCase();
+    payloadHexString = UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag()).toLowerCase();
     log.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
     return new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
