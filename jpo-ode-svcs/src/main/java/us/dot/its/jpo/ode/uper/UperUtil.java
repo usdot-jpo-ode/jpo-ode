@@ -42,7 +42,7 @@ public class UperUtil {
       throw new StartFlagNotFoundException(
           "Start flag" + payloadStartFlag + " not found in message");
     }
-    return stripTrailingZeros(hexString.substring(startIndex));
+    return hexString.substring(startIndex);
   }
 
   /**
@@ -78,8 +78,6 @@ public class UperUtil {
       log.debug("Packet is not a BSM, TIM or Map message: {}", hexPacketParsed);
     } else {
       log.debug("Base packet: {}", hexPacketParsed);
-      hexPacketParsed = stripTrailingZeros(hexPacketParsed);
-      log.debug("Stripped packet: {}", hexPacketParsed);
     }
     return HexUtils.fromHexString(hexPacketParsed);
   }
@@ -112,7 +110,6 @@ public class UperUtil {
     try {
       JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
       String hexString = payloadJson.getString("bytes").toLowerCase();
-      hexString = stripTrailingZeros(hexString);
       messageType = determineHexPacketType(hexString);
 
     } catch (JsonUtilsException e) {
@@ -193,27 +190,4 @@ public class UperUtil {
   }
 
 
-  /**
-   * Trims extra `00` bytes off of the end of an ASN1 payload string. This removes the padded bytes
-   * added to the payload when receiving ASN1 payloads and leaves one remaining byte of `00`s for
-   * decoding.
-   *
-   * @param payload The OdeMsgPayload as a string to trim.
-   */
-  public static String stripTrailingZeros(String payload) {
-    // Remove trailing '0's
-    while (payload.endsWith("0")) {
-      payload = payload.substring(0, payload.length() - 1);
-    }
-
-    // Ensure the payload length is even
-    if (payload.length() % 2 != 0) {
-      payload += "0";
-    }
-
-    // Append '00' to ensure one remaining byte of '00's for decoding
-    payload += "00";
-
-    return payload;
-  }
 }

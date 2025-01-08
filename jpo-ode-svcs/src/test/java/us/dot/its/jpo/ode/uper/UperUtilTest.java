@@ -1,21 +1,20 @@
 package us.dot.its.jpo.ode.uper;
 
 
-import org.apache.tomcat.util.buf.HexUtils;
-import org.junit.jupiter.api.Test;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.HashMap;
+import org.apache.tomcat.util.buf.HexUtils;
+import org.junit.jupiter.api.Test;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 
 class UperUtilTest {
 
     @Test
     void testStripDot2Header() throws StartFlagNotFoundException {
-        String testHexString = "10110014000000";
+        String testHexString = "1011001400";
         String testPayloadStartFlag = "0014";
         String expectedValue = "001400";
         assertEquals(expectedValue, UperUtil.stripDot2Header(testHexString, testPayloadStartFlag));
@@ -30,7 +29,7 @@ class UperUtilTest {
 
     @Test
     void testStripDot3Header() {
-        byte[] testPacket = {0x10, 0x20, 0x00, 0x1f, 0x00, 0x00};
+        byte[] testPacket = {0x10, 0x20, 0x00, 0x1f, 0x00};
         byte[] testExpected = {0x00, 0x1f, 0x00};
         HashMap<String, String> testMsgStartFlag = new HashMap<>();
         testMsgStartFlag.put("TIM", "001f");
@@ -50,7 +49,7 @@ class UperUtilTest {
 
     @Test
     void testStripDot3HeaderString() {
-        String testPacketString = "0102001f0000";
+        String testPacketString = "0102001f00";
         String testExpectedString = "001f00";
         String testMsgStartFlag = "001f";
         assertEquals(testExpectedString, UperUtil.stripDot3Header(testPacketString, testMsgStartFlag));
@@ -73,18 +72,5 @@ class UperUtilTest {
         String timHexString = "001F79201000000000012AA366D080729B8987D859717EE22001FFFE4FD0011589D828007E537130FB0B2E2FDC440001F46FFFF002B8B2E46E926E27CE6813D862CB90EDC9B89E11CE2CB8E98F9B89BCC4050518B2E365B66E26AE3B8B2E291A66E2591D8141462CB873969B89396C62CB86AFE9B89208E00000131560018300023E43A6A1351800023E4700EFC51881010100030180C620FB90CAAD3B9C5082080E1DDC905E10168E396921000325A0D73B83279C83010180034801090001260001808001838005008001F0408001828005008001304000041020407E800320409780050080012040000320409900018780032040958005000001E0408183E7139D7B70987019B526B8A950052F5C011D3C4B992143E885C71F95DA6071658082346CC03A50D66801F65288C30AB39673D0494536C559047E457AD291C99C20A7FB1244363E993EE3EE98C78742609340541DA01545A0F7339C26A527903576D30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         OdeAsn1Payload timPayload = new OdeAsn1Payload(HexUtils.fromHexString(timHexString));
         assertEquals("TIM", UperUtil.determineMessageType(timPayload));
-    }
-
-    @Test
-    void testStripTrailingZeros() {
-        // Test case: String with trailing zeros
-        String input1 = "12340000";
-        String expected1 = "123400";
-        assertEquals(expected1, UperUtil.stripTrailingZeros(input1));
-
-        // Test case: String without extra zero at end of payload
-        String input2 = "123450000";
-        String expected2 = "12345000";
-        assertEquals(expected2, UperUtil.stripTrailingZeros(input2));
     }
 }

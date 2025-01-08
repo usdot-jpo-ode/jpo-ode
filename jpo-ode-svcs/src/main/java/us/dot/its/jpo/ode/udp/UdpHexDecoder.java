@@ -69,10 +69,7 @@ public class UdpHexDecoder {
     int length = packet.getLength();
     int offset = packet.getOffset();
 
-    // ensure we only operate on relevant bytes
-    byte[] relevantPayload = new byte[length];
-    System.arraycopy(payload, offset, relevantPayload, 0, length);
-    payload = relevantPayload;
+    payload = getRelevantBytes(length, payload, offset);
 
     // convert bytes to hex string and verify identity
     String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
@@ -303,5 +300,20 @@ public class UdpHexDecoder {
     psmMetadata.setSecurityResultCode(SecurityResultCode.success);
 
     return JsonUtils.toJson(new OdeAsn1Data(psmMetadata, psmPayload), false);
+  }
+
+  /**
+   * Given an array of bytes with possible padded 0s at the end, this method retrieves
+   * the relevant bytes based on the length & offset of the message.
+   * @param length The length of the message
+   * @param payload The full payload possibly including padded bytes
+   * @param offset When the message begins in the array
+   * @return The relevant bytes
+   */
+  private static byte[] getRelevantBytes(int length, byte[] payload, int offset) {
+    byte[] relevantPayload = new byte[length];
+    System.arraycopy(payload, offset, relevantPayload, 0, length);
+    payload = relevantPayload;
+    return payload;
   }
 }
