@@ -61,15 +61,16 @@ public class UdpHexDecoder {
    */
   public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet,
       SupportedMessageType msgType) throws InvalidPayloadException {
-    // extract the actual packet from the buffer
-    byte[] payload = packet.getData();
-    if (payload == null) {
-      throw new InvalidPayloadException("Payload is null");
+    // retrieve the buffer from the packet
+    byte[] buffer = packet.getData();
+    if (buffer == null) {
+      throw new InvalidPayloadException("Buffer is null, no payload to extract");
     }
-    int length = packet.getLength();
-    int offset = packet.getOffset();
 
-    payload = getRelevantBytes(length, payload, offset);
+    // retrieve the payload from the buffer
+    int lengthOfReceivedPacket = packet.getLength();
+    int offsetOfReceivedPacket = packet.getOffset();
+    byte[] payload = retrieveRelevantBytes(lengthOfReceivedPacket, buffer, offsetOfReceivedPacket);
 
     // convert bytes to hex string and verify identity
     String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
@@ -306,14 +307,13 @@ public class UdpHexDecoder {
    * Given an array of bytes with possible padded 0s at the end, this method retrieves
    * the relevant bytes based on the length & offset of the message.
    * @param length The length of the message
-   * @param payload The full payload possibly including padded bytes
+   * @param buffer The full payload possibly including padded bytes
    * @param offset When the message begins in the array
    * @return The relevant bytes
    */
-  private static byte[] getRelevantBytes(int length, byte[] payload, int offset) {
+  private static byte[] retrieveRelevantBytes(int length, byte[] buffer, int offset) {
     byte[] relevantPayload = new byte[length];
-    System.arraycopy(payload, offset, relevantPayload, 0, length);
-    payload = relevantPayload;
-    return payload;
+    System.arraycopy(buffer, offset, relevantPayload, 0, length);
+    return relevantPayload;
   }
 }
