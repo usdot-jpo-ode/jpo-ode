@@ -304,12 +304,13 @@ public class UdpHexDecoder {
   }
 
   /**
-   * Given an array of bytes with possible padded 0s at the end, this method retrieves
-   * the relevant bytes based on the length & offset of the message.
+   * Given a buffer containing the full payload, this method retrieves and returns only the relevant
+   * bytes of the message, excluding any padded bytes.
+   *
    * @param length The length of the message
-   * @param buffer The full payload possibly including padded bytes
-   * @param offset When the message begins in the array
-   * @return The relevant bytes
+   * @param buffer The buffer containing the full message and possibly padded bytes
+   * @param offset The position in the buffer where the message starts
+   * @return The relevant bytes of the message
    */
   private static byte[] retrieveRelevantBytes(int length, byte[] buffer, int offset) {
     byte[] relevantPayload = new byte[length];
