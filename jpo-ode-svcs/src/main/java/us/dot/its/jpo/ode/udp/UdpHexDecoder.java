@@ -60,7 +60,8 @@ public class UdpHexDecoder {
    *                                 flag
    */
   public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet,
-      SupportedMessageType msgType) throws InvalidPayloadException {
+                                                   SupportedMessageType msgType)
+      throws InvalidPayloadException {
     // retrieve the buffer from the packet
     byte[] buffer = packet.getData();
     if (buffer == null) {
@@ -80,7 +81,8 @@ public class UdpHexDecoder {
 
     log.debug("Full {} packet: {}", msgType, payloadHexString);
 
-    payloadHexString = UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag()).toLowerCase();
+    payloadHexString =
+        UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag()).toLowerCase();
     log.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
     return new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
@@ -195,12 +197,9 @@ public class UdpHexDecoder {
     bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
 
     ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-    OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
-        "unavailable",
-        "unavailable",
-        "unavailable",
-        "unavailable",
-        "unavailable");
+    OdeLogMsgMetadataLocation locationData =
+        new OdeLogMsgMetadataLocation("unavailable", "unavailable", "unavailable", "unavailable",
+            "unavailable");
     receivedMessageDetails.setRxSource(RxSource.RSU);
     receivedMessageDetails.setLocationData(locationData);
     bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);

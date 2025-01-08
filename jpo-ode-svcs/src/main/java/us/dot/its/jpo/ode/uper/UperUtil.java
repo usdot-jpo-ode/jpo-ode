@@ -27,10 +27,8 @@ public class UperUtil {
    * @param hexString        the input hexadecimal string from which the IEEE 1609.2 security header
    *                         needs to be stripped.
    * @param payloadStartFlag the start flag indicating the beginning of the payload.
-   *
    * @return a string representing the payload without the IEEE 1609.2 security header, if the start
-   *         flag is found.
-   *
+   * flag is found.
    * @throws StartFlagNotFoundException if the specified start flag is not found within the
    *                                    hexadecimal string.
    */
@@ -124,7 +122,7 @@ public class UperUtil {
    *
    * @param hexString the hexadecimal string representing a packet whose type is to be determined
    * @return a string indicating the type of the packet, such as "MAP", "SPAT", "TIM", "BSM", "SSM",
-   *         "PSM", or "SRM". If no valid type is found, returns an empty string.
+   * "PSM", or "SRM". If no valid type is found, returns an empty string.
    */
   public static String determineHexPacketType(String hexString) {
     HashMap<String, Integer> flagIndexes = new HashMap<>();
@@ -170,7 +168,7 @@ public class UperUtil {
    * @param startFlag the specific flag pattern to locate within the given hex string, indicating
    *                  the start of a valid message.
    * @return the index of the start flag within the hex string if found, and located on an even byte
-   *         boundary; -1 if not found.
+   * boundary; -1 if not found.
    */
   public static int findValidStartFlagLocation(String hexString, String startFlag) {
     int index = hexString.indexOf(startFlag);
