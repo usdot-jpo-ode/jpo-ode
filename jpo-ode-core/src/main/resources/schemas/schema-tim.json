@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
@@ -98,26 +98,11 @@
                     "$ref": "#/$defs/RequestSdw"
                 },
                 "rsus": {
-                    "type": "object",
-                    "properties": {
-                        "rsus": {
-                            "oneOf": [
-                                {
-                                    "type": "array",
-                                    "prefixItems": [
-                                        {
-                                            "$ref": "#/$defs/RequestRsus"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "#/$defs/RequestRsus"
-                                }
-                            ]
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/RequestRsus"
                         }
-                    },
-                    "required": [
-                        "rsus"
                     ]
                 },
                 "snmp": {
@@ -132,7 +117,7 @@
                     "type": "string"
                 },
                 "version": {
-                    "type": "string"
+                    "type": "integer"
                 }
             },
             "required": [
@@ -195,13 +180,13 @@
                     "type": "string"
                 },
                 "rsuRetries": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "rsuTimeout": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "rsuIndex": {
-                    "type": "string"
+                    "type": "integer"
                 }
             },
             "required": [
@@ -218,7 +203,7 @@
             "type": "object",
             "properties": {
                 "mode": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "deliverystop": {
                     "type": "string"
@@ -230,19 +215,19 @@
                     "type": "string"
                 },
                 "enable": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "channel": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "msgid": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "interval": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "integer"
                 }
             },
             "required": [
@@ -1428,7 +1413,10 @@
                     "type": "object",
                     "properties": {
                         "itis": {
-                            "type": ["string", "number"]
+                            "type": [
+                                "string",
+                                "number"
+                            ]
                         }
                     },
                     "required": [
@@ -1439,7 +1427,6 @@
             "required": [
                 "item"
             ]
-
         },
         "Position3D": {
             "type": "object",
