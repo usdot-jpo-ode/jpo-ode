@@ -163,6 +163,10 @@ public class KafkaProducerConfig {
     if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
       producerProps.putAll(this.odeKafkaProperties.getConfluent().buildConfluentProperties());
     }
+    // linger.ms isn't present in the KafkaProperties object above, but it is important to limit the amount of time
+    // we wait before publishing messages via the KafkaTemplate producer while the data size of the batch is less than the
+    // batch-size set in the application.yaml. The default is (2^31)-1 millis, which is not suitable for our use case.
+    producerProps.put("linger.ms", odeKafkaProperties.getProducer().getLingerMs());
     return producerProps;
   }
 }
