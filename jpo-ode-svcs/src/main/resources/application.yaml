@@ -8,11 +8,16 @@ spring:
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
     producer:
       acks: "all"
-      retries: 0
+      retries: 2
       batch-size: 16384
       compression-type: "zstd"
       buffer-memory: 33554432
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
+    retry:
+      topic:
+        attempts: 0
+    listener:
+      log-container-config: true
   http:
     multipart:
       max-file-size: 1MB

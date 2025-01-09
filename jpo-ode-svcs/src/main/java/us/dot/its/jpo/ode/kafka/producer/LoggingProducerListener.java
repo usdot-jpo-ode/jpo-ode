@@ -22,8 +22,7 @@ public final class LoggingProducerListener<K, V>
 
   @Override
   public void onSuccess(ProducerRecord<K, V> producerRecord, RecordMetadata recordMetadata) {
-    log.debug("Successfully produced to topic {} with key {} and value {} ", producerRecord.topic(),
-        producerRecord.key(), producerRecord.value());
+    log.debug("Successfully produced to topic {} with key {} ", producerRecord.topic(), producerRecord.key());
   }
 
   @Override
@@ -31,7 +30,6 @@ public final class LoggingProducerListener<K, V>
       ProducerRecord<K, V> producerRecord,
       @Nullable RecordMetadata recordMetadata,
       Exception exception) {
-    log.error("Failed to produce to topic {} with key {} and value {} ", producerRecord.topic(),
-        producerRecord.key(), producerRecord.value(), exception);
+    log.error("Failed to produce to topic {} with key {} with exception: {}", producerRecord.topic(), producerRecord.key(), exception.getMessage());
   }
 }
