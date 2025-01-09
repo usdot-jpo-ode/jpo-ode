@@ -44,6 +44,7 @@ Enhancements in this release:
 - [CDOT PR 146](https://github.com/CDOT-CV/jpo-ode/pull/146): Update jpo-utils Submodule Reference to Fix Linux Startup Issues
 - [CDOT PR 147](https://github.com/CDOT-CV/jpo-ode/pull/147): Fixed Data Loss in UDP Payload Handling by Updating UdpHexDecoder Logic
 - [CDOT PR 148](https://github.com/CDOT-CV/jpo-ode/pull/148): Update jpo-utils Submodule Reference to Fix Required ENV Variables
+- [CDOT PR 149](https://github.com/CDOT-CV/jpo-ode/pull/149): JPO Utils Commit Reference Change to Create "topic.OdeTimRxJson" Topic
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
 
