@@ -74,8 +74,6 @@ public class UperUtil {
     if (hexPacketParsed.isEmpty()) {
       hexPacketParsed = hexString;
       log.debug("Packet is not a BSM, TIM or Map message: {}", hexPacketParsed);
-    } else {
-      log.debug("Base packet: {}", hexPacketParsed);
     }
     return HexUtils.fromHexString(hexPacketParsed);
   }
