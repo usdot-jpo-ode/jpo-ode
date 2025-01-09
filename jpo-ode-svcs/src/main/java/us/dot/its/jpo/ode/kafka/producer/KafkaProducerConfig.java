@@ -62,8 +62,10 @@ public class KafkaProducerConfig {
    *         additional settings for Confluent-based Kafka setups if applicable.
    */
   @Bean
-  public ProducerFactory<String, String> producerFactory() {
-    return new DefaultKafkaProducerFactory<>(buildProducerProperties());
+  public DefaultKafkaProducerFactory<String, String> producerFactory() {
+    var factory = new DefaultKafkaProducerFactory<String, String>(buildProducerProperties());
+    factory.setProducerPerThread(true);
+    return factory;
   }
 
   /**
