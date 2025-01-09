@@ -68,7 +68,6 @@ public class KafkaConsumerConfig {
     ConcurrentKafkaListenerContainerFactory<String, String> factory =
         new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
-    factory.getContainerProperties().setObservationEnabled(true);
     return factory;
   }
 
@@ -103,7 +102,6 @@ public class KafkaConsumerConfig {
     ConcurrentKafkaListenerContainerFactory<String, OdeMapData> factory =
         new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(odeMapDataConsumerFactory());
-    factory.getContainerProperties().setObservationEnabled(true);
     return factory;
   }
 
