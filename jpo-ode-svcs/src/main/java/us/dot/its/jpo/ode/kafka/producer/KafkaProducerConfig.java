@@ -63,9 +63,7 @@ public class KafkaProducerConfig {
    */
   @Bean
   public ProducerFactory<String, String> producerFactory() {
-    var factory = new DefaultKafkaProducerFactory<String, String>(buildProducerProperties());
-    factory.setProducerPerThread(true);
-    return factory;
+    return new DefaultKafkaProducerFactory<>(buildProducerProperties());
   }
 
   /**
@@ -99,10 +97,8 @@ public class KafkaProducerConfig {
    */
   @Bean
   public ProducerFactory<String, OdeObject> odeDataProducerFactory(XmlMapper xmlMapper) {
-    var factory = new DefaultKafkaProducerFactory<>(buildProducerProperties(),
+    return new DefaultKafkaProducerFactory<>(buildProducerProperties(),
         new StringSerializer(), new XMLOdeObjectSerializer(xmlMapper));
-    factory.setProducerPerThread(true);
-    return factory;
   }
 
   /**
@@ -136,10 +132,8 @@ public class KafkaProducerConfig {
    */
   @Bean
   public ProducerFactory<String, OdeBsmData> odeBsmProducerFactory() {
-    var factory = new DefaultKafkaProducerFactory<String, OdeBsmData>(buildProducerProperties(),
+    return new DefaultKafkaProducerFactory<>(buildProducerProperties(),
         new StringSerializer(), new MessagingSerializer<>());
-    factory.setProducerPerThread(true);
-    return factory;
   }
 
   /**
