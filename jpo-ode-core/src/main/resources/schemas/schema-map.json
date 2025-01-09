@@ -1021,8 +1021,7 @@
                                                     "properties": {
                                                         "elevation": {
                                                             "type": [
-                                                                "number",
-                                                                "null"
+                                                                "string"
                                                             ]
                                                         },
                                                         "latitude": {
@@ -1199,8 +1198,7 @@
                                                     "properties": {
                                                         "elevation": {
                                                             "type": [
-                                                                "number",
-                                                                "null"
+                                                                "string"
                                                             ]
                                                         },
                                                         "latitude": {
