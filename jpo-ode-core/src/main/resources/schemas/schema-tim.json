@@ -246,10 +246,10 @@
             "type": "object",
             "properties": {
                 "nwCorner": {
-                    "$ref": "#/$defs/Position3D"
+                    "$ref": "#/$defs/OdePosition3D"
                 },
                 "seCorner": {
-                    "$ref": "#/$defs/Position3D"
+                    "$ref": "#/$defs/OdePosition3D"
                 }
             },
             "required": [
@@ -1444,6 +1444,24 @@
             "required": [
                 "lat",
                 "long"
+            ]
+        },
+        "OdePosition3D": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "elevation": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "latitude",
+                "longitude"
             ]
         },
         "RoadSegmentReferenceID": {
