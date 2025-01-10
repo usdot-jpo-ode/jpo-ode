@@ -575,7 +575,7 @@ check the whole project. See [Checkstyle's Github](https://github.com/checkstyle
 
 ## 6. Release History
 
-[Release Notes](ReleaseNotes.md)
+[Release Notes](<docs/Release_notes.md>)
 
 [Back to top](#table-of-contents)
 
