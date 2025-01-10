@@ -48,6 +48,7 @@ Enhancements in this release:
 - [CDOT PR 151](https://github.com/CDOT-CV/jpo-ode/pull/151): Kafka and logging updates
 - [CDOT PR 152](https://github.com/CDOT-CV/jpo-ode/pull/152): TIM and Map Schema Fixes
 - [CDOT PR 153](https://github.com/CDOT-CV/jpo-ode/pull/153): Fix: producer failures
+- [CDOT PR 154](https://github.com/CDOT-CV/jpo-ode/pull/154): Fix: Use odeKafkaProperties env vars to drive producer retries
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
 
