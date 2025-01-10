@@ -8,7 +8,6 @@ spring:
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
     producer:
       acks: "all"
-      retries: 2
       batch-size: 16384
       compression-type: "zstd"
       buffer-memory: 33554432
