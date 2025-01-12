@@ -460,7 +460,7 @@ The New Ode version 1.0.8 includes below updates:
 
 ### Sprint 15
 - ODE-381 Leidos Security Library Integration implementing 1609.2
-  -- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details.
+  -- As part of this new feature, the build process was updated in the [ODE README file](../README.md)) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details.
 
 ### Sprint 14
 - ODE-312 Receiving Raw BSMs over UDP/IP (Phase 2)
