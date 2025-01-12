@@ -13,7 +13,7 @@
     },
     "sanitized" : false,
     "recordType" : "srmTx",
-    "asn1" : "001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C000",
+    "asn1" : "001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C0",
     "srmSource" : "RSU",
     "maxDurationTime" : 0,
     "odeReceivedAt": "2024-11-26T23:53:21.120Z",
@@ -21,7 +21,7 @@
   },
   "payload" : {
     "data" : {
-      "bytes" : "001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C000"
+      "bytes" : "001D2130000010090BD341080D00855C6C0C6899853000A534F7C24CB29897694759B7C0"
     },
     "dataType" : "us.dot.its.jpo.ode.model.OdeHexByteArray"
   }

@@ -60,12 +60,19 @@ public class UdpHexDecoder {
    *                                 flag
    */
   public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet,
-      SupportedMessageType msgType) throws InvalidPayloadException {
-    // extract the actual packet from the buffer
-    byte[] payload = packet.getData();
-    if (payload == null) {
-      throw new InvalidPayloadException("Payload is null");
+                                                   SupportedMessageType msgType)
+      throws InvalidPayloadException {
+    // retrieve the buffer from the packet
+    byte[] buffer = packet.getData();
+    if (buffer == null) {
+      throw new InvalidPayloadException("Buffer is null, no payload to extract");
     }
+
+    // retrieve the payload from the buffer
+    int lengthOfReceivedPacket = packet.getLength();
+    int offsetOfReceivedPacket = packet.getOffset();
+    byte[] payload = retrieveRelevantBytes(lengthOfReceivedPacket, buffer, offsetOfReceivedPacket);
+
     // convert bytes to hex string and verify identity
     String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
     if (!payloadHexString.contains(msgType.getStartFlag())) {
@@ -74,8 +81,8 @@ public class UdpHexDecoder {
 
     log.debug("Full {} packet: {}", msgType, payloadHexString);
 
-    payloadHexString = UperUtil.stripTrailingZeros(
-        UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag())).toLowerCase();
+    payloadHexString =
+        UperUtil.stripDot3Header(payloadHexString, msgType.getStartFlag()).toLowerCase();
     log.debug("Stripped {} packet: {}", msgType, payloadHexString);
 
     return new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
@@ -190,12 +197,9 @@ public class UdpHexDecoder {
     bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
 
     ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-    OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation(
-        "unavailable",
-        "unavailable",
-        "unavailable",
-        "unavailable",
-        "unavailable");
+    OdeLogMsgMetadataLocation locationData =
+        new OdeLogMsgMetadataLocation("unavailable", "unavailable", "unavailable", "unavailable",
+            "unavailable");
     receivedMessageDetails.setRxSource(RxSource.RSU);
     receivedMessageDetails.setLocationData(locationData);
     bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);
@@ -296,5 +300,20 @@ public class UdpHexDecoder {
     psmMetadata.setSecurityResultCode(SecurityResultCode.success);
 
     return JsonUtils.toJson(new OdeAsn1Data(psmMetadata, psmPayload), false);
+  }
+
+  /**
+   * Given a buffer containing the full payload, this method retrieves and returns only the relevant
+   * bytes of the message, excluding any padded bytes.
+   *
+   * @param length The length of the message
+   * @param buffer The buffer containing the full message and possibly padded bytes
+   * @param offset The position in the buffer where the message starts
+   * @return The relevant bytes of the message
+   */
+  private static byte[] retrieveRelevantBytes(int length, byte[] buffer, int offset) {
+    byte[] relevantPayload = new byte[length];
+    System.arraycopy(buffer, offset, relevantPayload, 0, length);
+    return relevantPayload;
   }
 }

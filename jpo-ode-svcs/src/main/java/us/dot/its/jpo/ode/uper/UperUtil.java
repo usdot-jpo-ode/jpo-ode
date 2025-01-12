@@ -27,10 +27,8 @@ public class UperUtil {
    * @param hexString        the input hexadecimal string from which the IEEE 1609.2 security header
    *                         needs to be stripped.
    * @param payloadStartFlag the start flag indicating the beginning of the payload.
-   *
    * @return a string representing the payload without the IEEE 1609.2 security header, if the start
-   *         flag is found.
-   *
+   *     flag is found.
    * @throws StartFlagNotFoundException if the specified start flag is not found within the
    *                                    hexadecimal string.
    */
@@ -42,7 +40,7 @@ public class UperUtil {
       throw new StartFlagNotFoundException(
           "Start flag" + payloadStartFlag + " not found in message");
     }
-    return stripTrailingZeros(hexString.substring(startIndex));
+    return hexString.substring(startIndex);
   }
 
   /**
@@ -76,10 +74,6 @@ public class UperUtil {
     if (hexPacketParsed.isEmpty()) {
       hexPacketParsed = hexString;
       log.debug("Packet is not a BSM, TIM or Map message: {}", hexPacketParsed);
-    } else {
-      log.debug("Base packet: {}", hexPacketParsed);
-      hexPacketParsed = stripTrailingZeros(hexPacketParsed);
-      log.debug("Stripped packet: {}", hexPacketParsed);
     }
     return HexUtils.fromHexString(hexPacketParsed);
   }
@@ -93,14 +87,12 @@ public class UperUtil {
     String headers = hexString.substring(0, payloadStartIndex);
     String payload = hexString.substring(payloadStartIndex);
     log.debug("Base payload: {}", payload);
-    String strippedPayload = stripTrailingZeros(payload);
-    log.debug("Stripped payload: {}", strippedPayload);
     // Look for the index of the start flag of a signed 1609.2 header
     int signedDot2StartIndex = headers.indexOf("038100");
     if (signedDot2StartIndex == -1) {
-      return strippedPayload;
+      return payload;
     } else {
-      return headers.substring(signedDot2StartIndex) + strippedPayload;
+      return headers.substring(signedDot2StartIndex) + payload;
     }
   }
 
@@ -114,7 +106,6 @@ public class UperUtil {
     try {
       JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
       String hexString = payloadJson.getString("bytes").toLowerCase();
-      hexString = stripTrailingZeros(hexString);
       messageType = determineHexPacketType(hexString);
 
     } catch (JsonUtilsException e) {
@@ -129,7 +120,7 @@ public class UperUtil {
    *
    * @param hexString the hexadecimal string representing a packet whose type is to be determined
    * @return a string indicating the type of the packet, such as "MAP", "SPAT", "TIM", "BSM", "SSM",
-   *         "PSM", or "SRM". If no valid type is found, returns an empty string.
+   *     "PSM", or "SRM". If no valid type is found, returns an empty string.
    */
   public static String determineHexPacketType(String hexString) {
     HashMap<String, Integer> flagIndexes = new HashMap<>();
@@ -175,7 +166,7 @@ public class UperUtil {
    * @param startFlag the specific flag pattern to locate within the given hex string, indicating
    *                  the start of a valid message.
    * @return the index of the start flag within the hex string if found, and located on an even byte
-   *         boundary; -1 if not found.
+   *     boundary; -1 if not found.
    */
   public static int findValidStartFlagLocation(String hexString, String startFlag) {
     int index = hexString.indexOf(startFlag);
@@ -195,27 +186,4 @@ public class UperUtil {
   }
 
 
-  /**
-   * Trims extra `00` bytes off of the end of an ASN1 payload string. This removes the padded bytes
-   * added to the payload when receiving ASN1 payloads and leaves one remaining byte of `00`s for
-   * decoding.
-   *
-   * @param payload The OdeMsgPayload as a string to trim.
-   */
-  public static String stripTrailingZeros(String payload) {
-    // Remove trailing '0's
-    while (payload.endsWith("0")) {
-      payload = payload.substring(0, payload.length() - 1);
-    }
-
-    // Ensure the payload length is even
-    if (payload.length() % 2 != 0) {
-      payload += "0";
-    }
-
-    // Append '00' to ensure one remaining byte of '00's for decoding
-    payload += "00";
-
-    return payload;
-  }
 }
