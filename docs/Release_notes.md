@@ -5,7 +5,19 @@ Version 4.0.0, released January 2025
 ----------------------------------------
 ### **Summary**
 
-The jpo-ode 4.0.0 release brings a variety of updates aimed at enhancing functionality, maintainability, and the overall development experience. Key highlights include the introduction of a generated TMC TIM Topic, the migration from a custom Kafka client to Spring Kafka for improved Spring integration, and updates to TIM schemas and JSON annotations for more J2735-accurate ODE processing. Significant strides have been made in optimizing configurations, with enhancements like the extraction of Kafka properties, environment variables, and Kafka topics into more streamlined Spring Configuration properties. Additionally, schema updates have been made to increment the version for output messages and ensure compatibility with J2735 2024. Developer-focused changes include revisions to the README, Makefile, and devcontainer to support smoother onboarding and ease of use. Other important updates encompass new entries in the submodule compatibility guide, version upgrades, and bug fixes related to Kafka configurations and message handling.
+The jpo-ode 4.0.0 release brings a variety of updates aimed at enhancing functionality, maintainability, and overall development experience.
+
+Key highlights include:
+- The introduction of a generated TMC TIM Topic
+- The migration from a custom Kafka client to Spring Kafka for improved Spring integration
+- Updates to TIM schemas and JSON annotations for more J2735-accurate ODE processing
+
+Significant strides have been made in optimizing configurations through enhancements like the extraction of Kafka properties,
+environment variables, and Kafka topics into more streamlined Spring Configuration properties. Additionally, schema
+updates have been made to increment the version for output messages and ensure compatibility with J2735 2024.
+Developer-focused changes include revisions to the README, Makefile, and devcontainer to support smoother onboarding and
+ease of use. Other vital updates encompass new entries in the submodule compatibility guide, version upgrades, and
+bug fixes related to Kafka configurations and message handling.
 
 Enhancements in this release:
 - [CDOT PR 100](https://github.com/CDOT-CV/jpo-ode/pull/100): Add Generated TMC TIM Topic
