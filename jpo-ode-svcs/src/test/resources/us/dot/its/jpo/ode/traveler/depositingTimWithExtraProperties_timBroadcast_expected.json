@@ -1,0 +1,40 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeMsgPayload",
+    "serialId" : {
+      "streamId" : "32f2b75e-5ed9-4cfe-bb1e-0e1f95d4b49f",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 0,
+    "recordGeneratedAt" : "2017-03-13T01:07:11.000Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "rsus" : [ ],
+      "snmp" : {
+        "msgid" : 0,
+        "mode" : 0,
+        "channel" : 0,
+        "interval" : 0,
+        "enable" : 0,
+        "status" : 0
+      }
+    }
+  },
+  "payload" : {
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage",
+    "data" : {
+      "msgCnt" : 13,
+      "timeStamp" : "2017-03-13T01:07:11-05:00"
+    }
+  }
+}

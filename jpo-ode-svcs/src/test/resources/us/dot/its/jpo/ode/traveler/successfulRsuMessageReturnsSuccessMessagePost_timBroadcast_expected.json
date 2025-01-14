@@ -1,0 +1,105 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeMsgPayload",
+    "serialId" : {
+      "streamId" : "1325faec-3a04-4221-99fa-632ca91bf10a",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 30,
+    "recordGeneratedAt" : "2024-05-10T19:01:22.000Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "odePacketID" : "123451234512345123",
+    "odeTimStartDateTime" : "2024-05-13T20:30:05.014Z",
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "rsus" : [ {
+        "rsuTarget" : "172.0.0.1",
+        "rsuUsername" : "myusername",
+        "rsuPassword" : "*",
+        "rsuRetries" : 3,
+        "rsuTimeout" : 5000,
+        "rsuIndex" : 7,
+        "snmpProtocol" : "NTCIP1218"
+      } ],
+      "snmp" : {
+        "rsuid" : "83",
+        "msgid" : 31,
+        "mode" : 1,
+        "channel" : 183,
+        "interval" : 2000,
+        "deliverystart" : "2024-05-13T14:30:00Z",
+        "deliverystop" : "2024-05-13T22:30:00Z",
+        "enable" : 1,
+        "status" : 4
+      }
+    }
+  },
+  "payload" : {
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage",
+    "data" : {
+      "msgCnt" : 1,
+      "timeStamp" : "2024-05-10T19:01:22Z",
+      "packetID" : "123451234512345123",
+      "urlB" : "null",
+      "dataframes" : [ {
+        "doNotUse1" : 0,
+        "frameType" : "advisory",
+        "msgId" : {
+          "roadSignID" : {
+            "position" : {
+              "latitude" : 30.123456,
+              "longitude" : -100.12345
+            },
+            "viewAngle" : "1111111111111111",
+            "mutcdCode" : "warning"
+          }
+        },
+        "startDateTime" : "2024-05-13T20:30:05.014Z",
+        "durationTime" : 30,
+        "priority" : 5,
+        "doNotUse2" : 0,
+        "regions" : [ {
+          "name" : "I_myroute_RSU_172.0.0.1",
+          "regulatorID" : 0,
+          "segmentID" : 0,
+          "anchorPosition" : {
+            "latitude" : 30.123456,
+            "longitude" : -100.12345
+          },
+          "laneWidth" : 50,
+          "directionality" : "3",
+          "closedPath" : false,
+          "direction" : "0000000000010000",
+          "description" : "path",
+          "path" : {
+            "scale" : 0,
+            "type" : "ll",
+            "nodes" : [ {
+              "delta" : "node-LL",
+              "nodeLat" : 0.0,
+              "nodeLong" : 0.0
+            }, {
+              "delta" : "node-LL",
+              "nodeLat" : 0.0,
+              "nodeLong" : 0.0
+            } ]
+          }
+        } ],
+        "doNotUse3" : 0,
+        "doNotUse4" : 0,
+        "content" : "workZone",
+        "items" : [ "771" ],
+        "url" : "null"
+      } ]
+    }
+  }
+}
