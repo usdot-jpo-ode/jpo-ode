@@ -101,7 +101,19 @@
                     "type": "string"
                 },
                 "recordGeneratedBy": {
-                    "type": "null"
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ]
                 },
                 "sanitized": {
                     "type": "boolean"
