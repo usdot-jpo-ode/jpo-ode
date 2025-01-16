@@ -63,6 +63,7 @@ Enhancements in this release:
 - [CDOT PR 154](https://github.com/CDOT-CV/jpo-ode/pull/154): Fix: Use odeKafkaProperties env vars to drive producer retries
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
+- [CDOT PR 158](https://github.com/CDOT-CV/jpo-ode/pull/158): Release/PSM schema fix
 
 Breaking changes:
 - The major version was incremented due to breaking changes in the 2024 revision of J2735.
