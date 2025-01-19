@@ -16,7 +16,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
 
@@ -38,9 +37,9 @@ public class SpecialVehicleExtensionsBuilder {
       if (desc != null) {
          specVeh.setDescription(EventDescriptionBuilder.genericEventDescription(desc));
       }
-      JsonNode tr = specVehExt.get("trailers");
+      JsonNode tr = specVehExt.get("doNotUse");
       if (tr != null) {
-         specVeh.setTrailers(TrailerDataBuilder.genericTrailerData(tr));
+         specVeh.setDoNotUse(TrailerDataBuilder.genericTrailerData(tr));
       }
    }
 

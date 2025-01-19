@@ -15,22 +15,15 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-
-import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import mockit.Capturing;
 import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DisabledVehicle;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
@@ -56,7 +49,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(outputContent, testInput);
 
-      assertEquals(Integer.valueOf(1), result.getClassification());
+      Assertions.assertEquals(Integer.valueOf(1), result.getClassification());
    }
 
    @Test
@@ -77,7 +70,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(outputContent, testInput);
 
-      assertNotNull(result.getClassDetails());
+      Assertions.assertNotNull(result.getClassDetails());
    }
 
    @Test
@@ -96,7 +89,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getVehicleData());
+      Assertions.assertNotNull(result.getVehicleData());
    }
 
    @Test
@@ -110,12 +103,12 @@ public class SupplementalVehicleExtensionsBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("weatherReport", "something");
+      testInput.put("doNotUse1", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getWeatherReport());
+      Assertions.assertNotNull(result.getDoNotUse1());
    }
 
    @Test
@@ -129,12 +122,12 @@ public class SupplementalVehicleExtensionsBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("weatherProbe", "something");
+      testInput.put("doNotUse2", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getWeatherProbe());
+      Assertions.assertNotNull(result.getDoNotUse2());
    }
 
    @Test
@@ -148,12 +141,12 @@ public class SupplementalVehicleExtensionsBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("obstacle", "something");
+      testInput.put("doNotUse3", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getObstacle());
+      Assertions.assertNotNull(result.getDoNotUse3());
    }
 
    @Test
@@ -172,7 +165,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getStatus());
+      Assertions.assertNotNull(result.getStatus());
    }
 
    @Test
@@ -186,12 +179,12 @@ public class SupplementalVehicleExtensionsBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("speedProfile", "something");
+      testInput.put("doNotUse4", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getSpeedProfile());
+      Assertions.assertNotNull(result.getDoNotUse4());
    }
 
    @Test
@@ -205,12 +198,12 @@ public class SupplementalVehicleExtensionsBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("theRTCM", "something");
+      testInput.put("doNotUse5", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getTheRTCM());
+      Assertions.assertNotNull(result.getDoNotUse5());
    }
 
    @Test
@@ -218,13 +211,13 @@ public class SupplementalVehicleExtensionsBuilderTest {
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<SupplementalVehicleExtensionsBuilder> constructor = SupplementalVehicleExtensionsBuilder.class
             .getDeclaredConstructor();
-      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
          constructor.newInstance();
-         fail("Expected IllegalAccessException.class");
+         Assertions.fail("Expected IllegalAccessException.class");
       } catch (Exception e) {
-         assertEquals(InvocationTargetException.class, e.getClass());
+         Assertions.assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
 

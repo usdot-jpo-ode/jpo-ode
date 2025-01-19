@@ -1,18 +1,15 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import static us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content.J2735BsmPart2Id.SpecialVehicleExtensions;
+import static us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content.J2735BsmPart2Id.SupplementalVehicleExtensions;
+import static us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content.J2735BsmPart2Id.VehicleSafetyExtensions;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.*;
-
-
-import static us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content.J2735BsmPart2Id.*;
-
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class J2735BsmPart2ContentTest {
 
-
-    
     @Test
     public void shouldDeserializeBsmPart2Content_VehicleSafetyExtensions() {
 
@@ -20,33 +17,34 @@ public class J2735BsmPart2ContentTest {
 
         var deserialized = (J2735BsmPart2Content)JsonUtils.fromJson(bsmJson, J2735BsmPart2Content.class);
 
-        assertNotNull(deserialized);
-        assertEquals(deserialized.getId(), VehicleSafetyExtensions);
-        assertTrue(deserialized.getValue() instanceof J2735VehicleSafetyExtensions);
+        Assertions.assertNotNull(deserialized);
+        Assertions.assertEquals(VehicleSafetyExtensions, deserialized.getId());
+      Assertions.assertInstanceOf(J2735VehicleSafetyExtensions.class, deserialized.getValue());
         var extensions = (J2735VehicleSafetyExtensions)deserialized.getValue();
-        assertNotNull(extensions.getPathHistory());
-        assertNotNull(extensions.getPathPrediction());
+        Assertions.assertNotNull(extensions.getPathHistory());
+        Assertions.assertNotNull(extensions.getPathPrediction());
     }
 
     @Test
     public void shouldDeserializeBsmPart2Content_SupplementalVehicleExtensions() {
-        final String bsmJson = "{\"id\":\"SupplementalVehicleExtensions\",\"value\":{\"classification\":null,\"classDetails\":null,\"vehicleData\":null,\"weatherReport\":null,\"weatherProbe\":null,\"obstacle\":null,\"status\":null,\"speedProfile\":null,\"theRTCM\":null}}";
+        final String bsmJson = "{\"id\":\"SupplementalVehicleExtensions\",\"value\":{\"classification\":null,\"classDetails\":null,\"vehicleData\":null,\"doNotUse1\":null,\"doNotUse2\":null,\"doNotUse3\":null,\"status\":null,\"doNotUse4\":null,\"doNotUse5\":null}}";
 
         var deserialized = (J2735BsmPart2Content)JsonUtils.fromJson(bsmJson, J2735BsmPart2Content.class);
 
-        assertNotNull(deserialized);
-        assertEquals(deserialized.getId(), SupplementalVehicleExtensions);
-        assertTrue(deserialized.getValue() instanceof J2735SupplementalVehicleExtensions);
+        Assertions.assertNotNull(deserialized);
+        Assertions.assertEquals(SupplementalVehicleExtensions, deserialized.getId());
+      Assertions.assertInstanceOf(J2735SupplementalVehicleExtensions.class,
+          deserialized.getValue());
     }
 
     @Test
     public void shouldDeserializeBsmPart2Content_SpecialVehicleExtensions() {
-        final String bsmJson = "{\"id\":\"SpecialVehicleExtensions\",\"value\":{\"vehicleAlerts\":null,\"description\":null,\"trailers\":null}}";
+        final String bsmJson = "{\"id\":\"SpecialVehicleExtensions\",\"value\":{\"vehicleAlerts\":null,\"description\":null,\"doNotUse\":null}}";
 
         var deserialized = (J2735BsmPart2Content)JsonUtils.fromJson(bsmJson, J2735BsmPart2Content.class);
 
-        assertNotNull(deserialized);
-        assertEquals(deserialized.getId(), SpecialVehicleExtensions);
-        assertTrue(deserialized.getValue() instanceof J2735SpecialVehicleExtensions);
+        Assertions.assertNotNull(deserialized);
+        Assertions.assertEquals(SpecialVehicleExtensions, deserialized.getId());
+      Assertions.assertInstanceOf(J2735SpecialVehicleExtensions.class, deserialized.getValue());
     }
 }

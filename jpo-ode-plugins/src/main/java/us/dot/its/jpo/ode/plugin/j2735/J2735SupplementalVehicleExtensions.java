@@ -21,12 +21,12 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 	private Integer classification;
 	private J2735VehicleClassification classDetails;
 	private J2735VehicleData vehicleData;
-	private J2735WeatherReport weatherReport;
-	private J2735WeatherProbe weatherProbe;
-	private J2735ObstacleDetection obstacle;
+	private J2735WeatherReport doNotUse1;
+	private J2735WeatherProbe doNotUse2;
+	private J2735ObstacleDetection doNotUse3;
 	private J2735DisabledVehicle status;
-	private J2735SpeedProfile speedProfile;
-	private J2735RTCMPackage theRTCM;
+	private J2735SpeedProfile doNotUse4;
+	private J2735RTCMPackage doNotUse5;
 
 	public Integer getClassification() {
 		return classification;
@@ -52,28 +52,28 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 		this.vehicleData = vehicleData;
 	}
 
-	public J2735WeatherReport getWeatherReport() {
-		return weatherReport;
+	public J2735WeatherReport getDoNotUse1() {
+		return doNotUse1;
 	}
 
-	public void setWeatherReport(J2735WeatherReport weatherReport) {
-		this.weatherReport = weatherReport;
+	public void setDoNotUse1(J2735WeatherReport doNotUse1) {
+		this.doNotUse1 = doNotUse1;
 	}
 
-	public J2735WeatherProbe getWeatherProbe() {
-		return weatherProbe;
+	public J2735WeatherProbe getDoNotUse2() {
+		return doNotUse2;
 	}
 
-	public void setWeatherProbe(J2735WeatherProbe weatherProbe) {
-		this.weatherProbe = weatherProbe;
+	public void setDoNotUse2(J2735WeatherProbe doNotUse2) {
+		this.doNotUse2 = doNotUse2;
 	}
 
-	public J2735ObstacleDetection getObstacle() {
-		return obstacle;
+	public J2735ObstacleDetection getDoNotUse3() {
+		return doNotUse3;
 	}
 
-	public void setObstacle(J2735ObstacleDetection obstacle) {
-		this.obstacle = obstacle;
+	public void setDoNotUse3(J2735ObstacleDetection doNotUse3) {
+		this.doNotUse3 = doNotUse3;
 	}
 
 	public J2735DisabledVehicle getStatus() {
@@ -84,20 +84,20 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 		this.status = status;
 	}
 
-	public J2735SpeedProfile getSpeedProfile() {
-		return speedProfile;
+	public J2735SpeedProfile getDoNotUse4() {
+		return doNotUse4;
 	}
 
-	public void setSpeedProfile(J2735SpeedProfile speedProfile) {
-		this.speedProfile = speedProfile;
+	public void setDoNotUse4(J2735SpeedProfile doNotUse4) {
+		this.doNotUse4 = doNotUse4;
 	}
 
-	public J2735RTCMPackage getTheRTCM() {
-		return theRTCM;
+	public J2735RTCMPackage getDoNotUse5() {
+		return doNotUse5;
 	}
 
-	public void setTheRTCM(J2735RTCMPackage theRTCM) {
-		this.theRTCM = theRTCM;
+	public void setDoNotUse5(J2735RTCMPackage doNotUse5) {
+		this.doNotUse5 = doNotUse5;
 	}
 
 }

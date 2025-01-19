@@ -15,15 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
 import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-//@RunWith(JMockit.class)
 public class J2735SupplementalVehicleExtensionsTest {
    @Tested
    J2735SupplementalVehicleExtensions sve;
@@ -31,10 +26,10 @@ public class J2735SupplementalVehicleExtensionsTest {
    @Test
    public void testGettersAndSetters() {
       J2735SpeedProfile speedProfile = new J2735SpeedProfile();
-      sve.setSpeedProfile(speedProfile);
-      assertEquals(speedProfile,sve.getSpeedProfile());
+      sve.setDoNotUse4(speedProfile);
+      Assertions.assertEquals(speedProfile, sve.getDoNotUse4());
       J2735RTCMPackage theRTCM = new J2735RTCMPackage();
-      sve.setTheRTCM(theRTCM);
-      assertEquals(theRTCM,sve.getTheRTCM());
+      sve.setDoNotUse5(theRTCM);
+      Assertions.assertEquals(theRTCM, sve.getDoNotUse5());
    }
 }

@@ -15,20 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735EmergencyDetails;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LightbarInUse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MultiVehicleResponse;
@@ -47,17 +41,17 @@ public class EmergencyDetailsBuilderTest {
       J2735MultiVehicleResponse expectedMulti = J2735MultiVehicleResponse.SINGLEVEHICLE;
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("sspRights", expectedSspRights);
+      testInput.put("doNotUse", expectedSspRights);
       testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
       testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
       testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
 
       J2735EmergencyDetails actualValue = EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
 
-      assertEquals(expectedSspRights, actualValue.getSspRights());
-      assertEquals(expectedSirenUse, actualValue.getSirenUse());
-      assertEquals(expectedLightsUse, actualValue.getLightsUse());
-      assertEquals(expectedMulti, actualValue.getMulti());
+      Assertions.assertEquals(expectedSspRights, actualValue.getDoNotUse());
+      Assertions.assertEquals(expectedSirenUse, actualValue.getSirenUse());
+      Assertions.assertEquals(expectedLightsUse, actualValue.getLightsUse());
+      Assertions.assertEquals(expectedMulti, actualValue.getMulti());
    }
    
    @Test
@@ -66,38 +60,38 @@ public class EmergencyDetailsBuilderTest {
       Integer expectedSspRights = 5;
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("sspRights", 8);
+      testInput.put("doNotUse", 8);
       testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
       testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
       testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
       
       // optional fields
-      testInput.set("events", JsonUtils.newNode().put("sspRights", 5).put("event", "001000"));
+      testInput.set("events", JsonUtils.newNode().put("doNotUse", 5).put("event", "001000"));
       testInput.set("responseType", JsonUtils.newNode().put("slowMoving", true));
 
       J2735EmergencyDetails actualValue = EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
 
-      assertEquals(expectedSspRights, actualValue.getEvents().getSspRights());
-      assertFalse(actualValue.getEvents().getEvent().get("peUnavailable"));
-      assertFalse(actualValue.getEvents().getEvent().get("peEmergencyResponse"));
-      assertTrue(actualValue.getEvents().getEvent().get("peEmergencyLightsActive"));
-      assertFalse(actualValue.getEvents().getEvent().get("peEmergencySoundActive"));
-      assertFalse(actualValue.getEvents().getEvent().get("peNonEmergencyLightsActive"));
-      assertFalse(actualValue.getEvents().getEvent().get("peNonEmergencySoundActive"));
-      assertEquals(J2735ResponseType.SLOWMOVING, actualValue.getResponseType());
+      Assertions.assertEquals(expectedSspRights, actualValue.getEvents().getDoNotUse());
+      Assertions.assertFalse(actualValue.getEvents().getEvent().get("peUnavailable"));
+      Assertions.assertFalse(actualValue.getEvents().getEvent().get("peEmergencyResponse"));
+      Assertions.assertTrue(actualValue.getEvents().getEvent().get("peEmergencyLightsActive"));
+      Assertions.assertFalse(actualValue.getEvents().getEvent().get("peEmergencySoundActive"));
+      Assertions.assertFalse(actualValue.getEvents().getEvent().get("peNonEmergencyLightsActive"));
+      Assertions.assertFalse(actualValue.getEvents().getEvent().get("peNonEmergencySoundActive"));
+      Assertions.assertEquals(J2735ResponseType.SLOWMOVING, actualValue.getResponseType());
    }
 
    @Test
    public void testOptionalFieldsWithInvalidSSPRights() {
       assertThrows(IllegalArgumentException.class, () -> {
          ObjectNode testInput = JsonUtils.newNode();
-         testInput.put("sspRights", 8);
+         testInput.put("doNotUse", 8);
          testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
          testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
          testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
          
          // optional fields
-         testInput.set("events", JsonUtils.newNode().put("sspRights", 32).put("event", "001000"));
+         testInput.set("events", JsonUtils.newNode().put("doNotUse", 32).put("event", "001000"));
          testInput.set("responseType", JsonUtils.newNode().put("slowMoving", true));
 
          EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
@@ -108,13 +102,13 @@ public class EmergencyDetailsBuilderTest {
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<EmergencyDetailsBuilder> constructor = EmergencyDetailsBuilder.class.getDeclaredConstructor();
-      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
          constructor.newInstance();
-         fail("Expected IllegalAccessException.class");
+         Assertions.fail("Expected IllegalAccessException.class");
       } catch (Exception e) {
-         assertEquals(InvocationTargetException.class, e.getClass());
+         Assertions.assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
 
@@ -122,13 +116,13 @@ public class EmergencyDetailsBuilderTest {
    public void testPrivilegedEventsBuilderConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<PrivilegedEventsBuilder> constructor = PrivilegedEventsBuilder.class.getDeclaredConstructor();
-      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
          constructor.newInstance();
-         fail("Expected IllegalAccessException.class");
+         Assertions.fail("Expected IllegalAccessException.class");
       } catch (Exception e) {
-         assertEquals(InvocationTargetException.class, e.getClass());
+         Assertions.assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
 }
