@@ -78,7 +78,7 @@ Known Issues:
 - **VehicleEventFlags Bitstring Bug**: A bug in the ASN.1 Compiler has necessitated reverting the VehicleEventFlags bitstring to its 2020 version, which excludes the eventJackKnife bit added in the 2024 revision. As a result, this bit will not appear in output BSMs until the bug is fixed.
 - **Unsupported BSM Fields**: New fields introduced in BSM-related structures by the 2024 revision of J2735 are currently not supported in the ODE. These fields will be implemented in a future release.
 
-- Version 3.0.0, released September 2024
+Version 3.0.0, released September 2024
 ----------------------------------------
 ### **Summary**
 The updates for the jpo-ode 3.0.0 release include several key improvements and cleanups. Outdated 'deposit over WebSocket to SDX' code was removed and the ppm_tim service was eliminated from Docker compose files. Additionally, the jpo-s3-deposit submodule was replaced with the jpo-utils submodule. Error handling was enhanced, particularly in interpreting "SNMP Error Code 10" from RSUs and stack traces for bad encoded data from ACM are now printed only when debug logging is enabled. Documentation updates provide more granular project references and mapfile references in ppm*.properties files were updated. Build and deployment improvements include resolving a UID conflict for container builds and adding Maven JAR publishing to GitHub Maven Central via GitHub Actions. Lastly, a Docker startup script was introduced for log offloading via SSH/SCP and source ASN1 bytes payload support was added for IMP depositors.
