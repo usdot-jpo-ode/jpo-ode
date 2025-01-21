@@ -15,13 +15,17 @@ Key highlights include:
 Significant strides have been made in optimizing configurations through enhancements like the extraction of Kafka properties,
 environment variables, and Kafka topics into more streamlined Spring Configuration properties.
 
-Schema updates have been implemented to increment the version of output messages and provide partial compatibility with 
-J2735 2024. However, some limitations remain. Due to [a bug in the ASN.1 Compiler](https://github.com/usdot-fhwa-stol/usdot-asn1c/issues/2), the VehicleEventFlags bitstring has 
-been reverted to its 2020 version, excluding the eventJackKnife bit introduced in the 2024 revision. As a result, this 
-bit will not appear in output BSMs until the issue is resolved. Additionally, new fields added to BSM-related structures in 
-J2735 2024 are not yet supported in the ODE. These fields—such as fhwaVehicleClass, trailers, and schoolBus for 
-SupplementalVehicleExtensions, as well as trailerPresent, pivotPoint, axles, and leanAngle for VehicleData—will be
-incorporated in a future release.
+Schema updates have been applied to increment the version of output messages and provide partial compatibility with J2735 2024. 
+However, several limitations remain. 
+- Due to [a bug in the ASN.1 Compiler](https://github.com/usdot-fhwa-stol/usdot-asn1c/issues/2), the VehicleEventFlags bitstring has been reverted to 
+  its 2020 version. This excludes the eventJackKnife bit introduced in the 2024 revision, which will not appear in output BSMs 
+  until the issue is resolved.
+- Additionally, fields newly added in J2735 2024 to BSM-related structures are not yet supported in the ODE. These include 
+  fhwaVehicleClass, trailers, and schoolBus under SupplementalVehicleExtensions, as well as trailerPresent, pivotPoint, axles, 
+  and leanAngle under VehicleData.
+- Similarly, new fields introduced for MAPs, SPATs, and TIMs, such as roadAuthorityId and contentNew, are not currently supported 
+  in the ODE.
+- These limitations will be addressed in future updates.
 
 Developer-focused changes include revisions to the README, Makefile, and devcontainer to support smoother onboarding and
 ease of use. Other vital updates encompass new entries in the submodule compatibility guide, version upgrades, and
