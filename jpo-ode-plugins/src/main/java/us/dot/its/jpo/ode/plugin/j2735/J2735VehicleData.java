@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class J2735VehicleData implements Serializable{
 	private static final long serialVersionUID = 1L;
