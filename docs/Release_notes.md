@@ -16,7 +16,7 @@ Significant strides have been made in optimizing configurations through enhancem
 environment variables, and Kafka topics into more streamlined Spring Configuration properties.
 
 Schema updates have been implemented to increment the version of output messages and provide partial compatibility with 
-J2735 2024. However, some limitations remain. Due to a bug in the ASN.1 Compiler, the VehicleEventFlags bitstring has 
+J2735 2024. However, some limitations remain. Due to [a bug in the ASN.1 Compiler](https://github.com/usdot-fhwa-stol/usdot-asn1c/issues/2), the VehicleEventFlags bitstring has 
 been reverted to its 2020 version, excluding the eventJackKnife bit introduced in the 2024 revision. As a result, this 
 bit will not appear in output BSMs until the issue is resolved. Additional fields added to BSM-related 
 structures in J2735 2024 are not yet supported in the ODE. These fields will be incorporated in a future release.
