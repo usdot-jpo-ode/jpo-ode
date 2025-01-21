@@ -67,9 +67,10 @@ Enhancements in this release:
 - [CDOT PR 152](https://github.com/CDOT-CV/jpo-ode/pull/152): TIM and Map Schema Fixes
 - [CDOT PR 153](https://github.com/CDOT-CV/jpo-ode/pull/153): Fix: producer failures
 - [CDOT PR 154](https://github.com/CDOT-CV/jpo-ode/pull/154): Fix: Use odeKafkaProperties env vars to drive producer retries
+- [CDOT PR 158](https://github.com/CDOT-CV/jpo-ode/pull/158): Release/PSM schema fix
+- [CDOT PR 160](https://github.com/CDOT-CV/jpo-ode/pull/160): Support Renamed Fields in J2735 2024 BSM Structures
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
-- [CDOT PR 158](https://github.com/CDOT-CV/jpo-ode/pull/158): Release/PSM schema fix
 
 Breaking changes:
 - The major version was incremented to reflect breaking changes related to TIM XER encoding introduced in the 2024 revision of J2735.
