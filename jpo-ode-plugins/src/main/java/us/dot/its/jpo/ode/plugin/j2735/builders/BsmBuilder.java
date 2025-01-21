@@ -15,10 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import java.util.Iterator;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.Iterator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class BsmBuilder {
@@ -36,7 +34,7 @@ public class BsmBuilder {
 
         JsonNode partII = basicSafetyMessage.get("partII");
         if (null != partII) {
-           JsonNode part2Content = partII.get("PartIIcontent");
+           JsonNode part2Content = partII.get("BSMpartIIExtension");
            if (null != part2Content) {
               if (part2Content.isArray()) {
                  Iterator<JsonNode> elements = part2Content.elements();
