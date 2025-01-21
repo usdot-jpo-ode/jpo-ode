@@ -2019,7 +2019,10 @@
                             "required": [
                                 "msgs"
                             ],
-                            "type": "object"
+                            "type": [
+                                "object",
+                                "null"
+                            ]
                         },
                         "vehicleData": {
                             "properties": {

@@ -47,31 +47,28 @@ class OdeBsmDataCreatorHelperTest {
         "Outputted BSM failed schema validation: " + validationResults);
   }
 
-//  /**
-//   * TODO: fix multi-partII-extension BSM failing schema validation
-//   */
-//  @Test
-//  void testCreateOdeBsmData_TwoPartIIExtensions()
-//      throws XmlUtils.XmlUtilsException, IOException, URISyntaxException {
-//    String xmlFilePath =
-//        "src/test/resources/us.dot.its.jpo.ode.coder/OdeBsmDataCreatorHelper_BSM_XER_J2735_2024_TwoExtensions.xml";
-//    String consumedData = loadResourceAsString(xmlFilePath);
-//    XmlUtils.toObjectNode(consumedData);
-//
-//    OdeBsmData bsmData = OdeBsmDataCreatorHelper.createOdeBsmData(consumedData);
-//    Assertions.assertNotNull(bsmData);
-//    J2735BsmPart2ExtensionBase part2Ext =
-//        ((OdeBsmPayload) bsmData.getPayload()).getBsm().getPartII().getFirst().getValue();
-//    Assertions.assertNotNull(part2Ext);
-//
-//    // validate against schema
-//    JsonSchema schema = loadBsmSchema();
-//    var objectMapper = new ObjectMapper();
-//    var serializedBsmData = objectMapper.writeValueAsString(bsmData);
-//    var validationResults = schema.validate(objectMapper.readTree(serializedBsmData));
-//    assertEquals(0, validationResults.size(),
-//        "Outputted BSM failed schema validation: " + validationResults);
-//  }
+  @Test
+  void testCreateOdeBsmData_TwoPartIIExtensions()
+      throws XmlUtils.XmlUtilsException, IOException, URISyntaxException {
+    String xmlFilePath =
+        "src/test/resources/us.dot.its.jpo.ode.coder/OdeBsmDataCreatorHelper_BSM_XER_J2735_2024_TwoExtensions.xml";
+    String consumedData = loadResourceAsString(xmlFilePath);
+    XmlUtils.toObjectNode(consumedData);
+
+    OdeBsmData bsmData = OdeBsmDataCreatorHelper.createOdeBsmData(consumedData);
+    Assertions.assertNotNull(bsmData);
+    J2735BsmPart2ExtensionBase part2Ext =
+        ((OdeBsmPayload) bsmData.getPayload()).getBsm().getPartII().getFirst().getValue();
+    Assertions.assertNotNull(part2Ext);
+
+    // validate against schema
+    JsonSchema schema = loadBsmSchema();
+    var objectMapper = new ObjectMapper();
+    var serializedBsmData = objectMapper.writeValueAsString(bsmData);
+    var validationResults = schema.validate(objectMapper.readTree(serializedBsmData));
+    assertEquals(0, validationResults.size(),
+        "Outputted BSM failed schema validation: " + validationResults);
+  }
 
   static String loadResourceAsString(String resourcePath) throws IOException {
     File file = new File(resourcePath);
