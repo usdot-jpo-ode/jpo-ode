@@ -33,7 +33,8 @@ class BsmBuilderTest {
 
     JsonNode jsonBsm = null;
     try {
-      jsonBsm = XmlUtils.toObjectNode(loadResourceAsString("src/test/resources/us/dot/its/jpo/ode/plugin/j2735/builders/BSM_XML_J2735_2024_ToTranslate.xml"));
+      jsonBsm = XmlUtils.toObjectNode(loadResourceAsString(
+          "src/test/resources/us/dot/its/jpo/ode/plugin/j2735/builders/BSM_XML_J2735_2024_ToTranslate.xml"));
     } catch (XmlUtilsException e) {
       Assertions.fail("XML parsing error:" + e);
     }
@@ -41,8 +42,12 @@ class BsmBuilderTest {
     J2735Bsm actualBsm = BsmBuilder.genericBsm(jsonBsm.findValue("BasicSafetyMessage"));
 
     Assertions.assertNotNull(actualBsm);
-    String expected = loadResourceAsString("src/test/resources/us/dot/its/jpo/ode/plugin/j2735/builders/BSM_JSON_J2735_2024_ExpectedTranslation.json");
+    String expected = loadResourceAsString(
+        "src/test/resources/us/dot/its/jpo/ode/plugin/j2735/builders/BSM_JSON_J2735_2024_ExpectedTranslation.json");
     Assertions.assertEquals(expected, actualBsm.toString());
+
+    // assert partII list is not empty
+    Assertions.assertFalse(actualBsm.getPartII().isEmpty());
   }
 
   static String loadResourceAsString(String resourcePath) throws IOException {
