@@ -16,12 +16,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735PrivilegedEvents;
 
 public class PrivilegedEventsBuilder {
 
-   private static final String SSP_RIGHTS = "sspRights";
+   private static final String DO_NOT_USE = "doNotUse";
 
    public enum J2735PrivilegedEventFlagsNames {
       peUnavailable, peEmergencyResponse, peEmergencyLightsActive, peEmergencySoundActive, peNonEmergencyLightsActive,
@@ -37,14 +36,14 @@ public class PrivilegedEventsBuilder {
 
    public static J2735PrivilegedEvents genericPrivilegedEvents(JsonNode events) {
 
-      if (events.get(SSP_RIGHTS).asInt() < SSP_LOWER_BOUND || events.get(SSP_RIGHTS).asInt() > SSP_UPPER_BOUND) {
+      if (events.get(DO_NOT_USE).asInt() < SSP_LOWER_BOUND || events.get(DO_NOT_USE).asInt() > SSP_UPPER_BOUND) {
          throw new IllegalArgumentException("SSPindex value out of bounds [0..31]");
       }
 
       J2735PrivilegedEvents pe = new J2735PrivilegedEvents();
 
       pe.setEvent(BitStringBuilder.genericBitString(events.get("event"), J2735PrivilegedEventFlagsNames.values()));
-      pe.setSspRights(events.get(SSP_RIGHTS).asInt());
+      pe.setDoNotUse(events.get(DO_NOT_USE).asInt());
 
       return pe;
    }

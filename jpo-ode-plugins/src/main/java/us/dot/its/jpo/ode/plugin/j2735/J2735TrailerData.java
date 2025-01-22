@@ -17,38 +17,16 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class J2735TrailerData extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 
 	private J2735PivotPointDescription connection;
-	private Integer sspRights;
+	private Integer doNotUse;
 	private List<J2735TrailerUnitDescription> units = new ArrayList<>();
-
-	public J2735PivotPointDescription getConnection() {
-		return connection;
-	}
-
-	public void setConnection(J2735PivotPointDescription connection) {
-		this.connection = connection;
-	}
-
-	public Integer getSspRights() {
-		return sspRights;
-	}
-
-	public void setSspRights(Integer sspRights) {
-		this.sspRights = sspRights;
-	}
-
-	public List<J2735TrailerUnitDescription> getUnits() {
-		return units;
-	}
-
-	public void setUnits(List<J2735TrailerUnitDescription> units) {
-		this.units = units;
-	}
-
 }

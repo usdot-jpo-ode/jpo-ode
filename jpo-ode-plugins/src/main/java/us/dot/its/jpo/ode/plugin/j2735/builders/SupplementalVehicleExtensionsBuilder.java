@@ -16,7 +16,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 
@@ -41,23 +40,23 @@ public class SupplementalVehicleExtensionsBuilder {
         if (sve.has("vehicleData")) {
             genericSVE.setVehicleData(VehicleDataBuilder.genericVehicleData(sve.get("vehicleData")));
         }
-        if (sve.has("weatherReport")) {
-            genericSVE.setWeatherReport(WeatherReportBuilder.genericWeatherReport(sve.get("weatherReport")));
+        if (sve.has("doNotUse1")) {
+            genericSVE.setDoNotUse1(WeatherReportBuilder.genericWeatherReport(sve.get("doNotUse1")));
         }
-        if (sve.has("weatherProbe")) {
-            genericSVE.setWeatherProbe(WeatherProbeBuilder.genericWeatherProbe(sve.get("weatherProbe")));
+        if (sve.has("doNotUse2")) {
+            genericSVE.setDoNotUse2(WeatherProbeBuilder.genericWeatherProbe(sve.get("doNotUse2")));
         }
-        if (sve.has("obstacle")) {
-            genericSVE.setObstacle(ObstacleDetectionBuilder.genericObstacleDetection(sve.get("obstacle")));
+        if (sve.has("doNotUse3")) {
+            genericSVE.setDoNotUse3(ObstacleDetectionBuilder.genericObstacleDetection(sve.get("doNotUse3")));
         }
         if (sve.has("status")) {
             genericSVE.setStatus(DisabledVehicleBuilder.genericDisabledVehicle(sve.get("status")));
         }
-        if (sve.has("speedProfile")) {
-            genericSVE.setSpeedProfile(SpeedProfileBuilder.genericSpeedProfile(sve.get("speedProfile")));
+        if (sve.has("doNotUse4")) {
+            genericSVE.setDoNotUse4(SpeedProfileBuilder.genericSpeedProfile(sve.get("doNotUse4")));
         }
-        if (sve.has("theRTCM")) {
-            genericSVE.setTheRTCM(RTCMPackageBuilder.genericRTCMPackage(sve.get("theRTCM")));
+        if (sve.has("doNotUse5")) {
+            genericSVE.setDoNotUse5(RTCMPackageBuilder.genericRTCMPackage(sve.get("doNotUse5")));
         }
 
         return genericSVE;

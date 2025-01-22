@@ -16,7 +16,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735EmergencyDetails;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LightbarInUse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MultiVehicleResponse;
@@ -33,7 +32,7 @@ public class EmergencyDetailsBuilder {
 		J2735EmergencyDetails va = new J2735EmergencyDetails();
 		
 		// Required elements
-		va.setSspRights(vehicleAlerts.get("sspRights").asInt());
+		va.setDoNotUse(vehicleAlerts.get("doNotUse").asInt());
       va.setSirenUse(J2735SirenInUse.valueOf(vehicleAlerts.get("sirenUse").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
       va.setLightsUse(J2735LightbarInUse.valueOf(vehicleAlerts.get("lightsUse").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
       va.setMulti(J2735MultiVehicleResponse.valueOf(vehicleAlerts.get("multi").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
