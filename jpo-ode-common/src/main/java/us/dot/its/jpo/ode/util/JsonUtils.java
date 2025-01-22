@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,15 +28,13 @@ import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.LogicalType;
-import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
-
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
 @Slf4j
 public class JsonUtils {
@@ -65,6 +64,10 @@ public class JsonUtils {
       mapper_noNulls = new ObjectMapper();
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper_noNulls.setSerializationInclusion(Include.NON_NULL);
+
+      // Ensure BigDecimals are serialized consistently as numbers not strings
+      mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
+      mapper_noNulls.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
    }
 
    public static String toJson(Object o, boolean verbose) {

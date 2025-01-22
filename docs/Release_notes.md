@@ -75,6 +75,7 @@ Enhancements in this release:
 - [CDOT PR 154](https://github.com/CDOT-CV/jpo-ode/pull/154): Fix: Use odeKafkaProperties env vars to drive producer retries
 - [CDOT PR 158](https://github.com/CDOT-CV/jpo-ode/pull/158): Release/PSM schema fix
 - [CDOT PR 160](https://github.com/CDOT-CV/jpo-ode/pull/160): Support Renamed Fields in J2735 2024 BSM Structures
+- [CDOT PR 165](https://github.com/CDOT-CV/jpo-ode/pull/165): fix: force BigDecimal serialization to NUMBER format
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
 
