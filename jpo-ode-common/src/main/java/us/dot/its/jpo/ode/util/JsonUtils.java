@@ -65,7 +65,7 @@ public class JsonUtils {
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper_noNulls.setSerializationInclusion(Include.NON_NULL);
 
-      // Ensure BigDecimals are serialized constistently as numbers not strings
+      // Ensure BigDecimals are serialized consistently as numbers not strings
       mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
       mapper_noNulls.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
    }
