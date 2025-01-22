@@ -27,7 +27,9 @@ public class BsmBuilder {
   }
 
   /**
-   * This string was moved into a constant because it has been updated in the latest revisions of J2735.
+   * The string was moved into a constant because it seems the specification has been updated
+   * since this code was originally written. The reason why the test data previously included
+   * the outdated indicator tag is unclear.
    */
   private final static String PARTII_EXTENSION_SECTION_INDICATOR_TAG = "BSMpartIIExtension";
 
