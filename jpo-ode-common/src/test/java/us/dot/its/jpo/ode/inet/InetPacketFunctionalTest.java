@@ -35,7 +35,7 @@ class InetPacketFunctionalTest {
   private static boolean isVerbose = false;
 
   @Test
-  void testConstrcutor() throws UnknownHostException {
+  void testConstructor() throws UnknownHostException {
     InetPacket pkt = new InetPacket("bah.com", 1111, null);
 
     assertNull(pkt.getPayload());
