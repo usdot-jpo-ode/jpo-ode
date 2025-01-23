@@ -1,6 +1,12 @@
 name: ci
 
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    branches:
+      - "develop"
+      - "master"
+      - "release/*"
 
 jobs:
   docker:
@@ -10,6 +16,9 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build
         uses: docker/build-push-action@v5
+        with:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   sonar:
     runs-on: ubuntu-latest
@@ -27,4 +36,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           ls -la && pwd
-          mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.projectKey=usdot.jpo.ode:jpo-ode -Dsonar.projectName=jpo-ode -Dsonar.organization=usdot-jpo-ode -Dsonar.host.url=https://sonarcloud.io -Dsonar.branch.name=$GITHUB_REF_NAME
+          mvn -e clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.projectKey=usdot.jpo.ode:jpo-ode -Dsonar.projectName=jpo-ode -Dsonar.organization=usdot-jpo-ode -Dsonar.host.url=https://sonarcloud.io -Dsonar.branch.name=$GITHUB_REF_NAME

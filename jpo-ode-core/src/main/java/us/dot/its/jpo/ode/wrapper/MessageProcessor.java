@@ -15,13 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.wrapper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author 572682

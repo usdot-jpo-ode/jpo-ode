@@ -5,9 +5,9 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class J2735ComputedLane extends Asn1Object {
     
     private static final long serialVersionUID = 1L;
-	private Integer referenceLaneId;
-    private Integer offsetXaxis;  // could have an object with min and max inside of it
-    private Integer offsetYaxis;  // could have an object with min and max inside of it
+		private Integer referenceLaneId;
+    private Integer offsetXaxis;
+    private Integer offsetYaxis;
     private Integer rotateXY;
     private Integer scaleXaxis;
     private Integer scaleYaxis;

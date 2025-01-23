@@ -17,17 +17,22 @@ package us.dot.its.jpo.ode.services.json;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 public class ToJsonServiceControllerTest {
 
    @Injectable
-   OdeProperties injectableOdeProperties;
+   OdeKafkaProperties mockOdeKafkaProperties;
+   @Injectable
+   JsonTopics jsonTopics;
+   @Injectable
+   PojoTopics pojoTopics;
 
 //   @Capturing
 //   ToJsonConverter<?> capturingToJsonConverter;
@@ -38,7 +43,7 @@ public class ToJsonServiceControllerTest {
    public void test() {
       new Expectations() {
          {
-            new ToJsonConverter<>((OdeProperties) any, anyBoolean, anyString);
+            new ToJsonConverter<>((OdeKafkaProperties) any, anyBoolean, anyString);
             times = 1;
 
             new MessageConsumer<>(anyString, anyString, (MessageProcessor<?, ?>) any, anyString);
@@ -46,7 +51,7 @@ public class ToJsonServiceControllerTest {
 
          }
       };
-      new ToJsonServiceController(injectableOdeProperties);
+      new ToJsonServiceController(mockOdeKafkaProperties, jsonTopics, pojoTopics);
    }
 
 }

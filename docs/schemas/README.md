@@ -1,8 +1,9 @@
 # jpo-ode JSON Output Schemas
 
-The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The supported message types are currently BSM, MAP, SPaT, SRM and SSM. These are decoded into XML, deserialized into POJOs and finally serialized into JSON. This JSON output can be access from any of the corresponding message's JSON output Kafka topics:
+The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The supported message types are currently BSM, TIM, MAP, SPaT, SRM, SSM, and PSM. These are decoded into XML, deserialized into POJOs and finally serialized into JSON. This JSON output can be access from any of the corresponding message's JSON output Kafka topics:
 
 - [topic.OdeBsmJson](../../jpo-ode-core/src/main/resources/schemas/schema-bsm.json)
+- [topic.OdeTimJson](../../jpo-ode-core/src/main/resources/schemas/schema-tim.json)
 - [topic.OdeMapJson](../../jpo-ode-core/src/main/resources/schemas/schema-map.json)
 - [topic.OdeSpatJson](../../jpo-ode-core/src/main/resources/schemas/schema-spat.json)
 - [topic.OdeSrmJson](../../jpo-ode-core/src/main/resources/schemas/schema-srm.json)
@@ -10,6 +11,8 @@ The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The support
 - [topic.OdePsmJson](../../jpo-ode-core/src/main/resources/schemas/schema-psm.json)
 
 The output JSON of the ODE is complex but it is similar to the official standard of J2735 with some minor differences due to the form of their deserialized POJOs. To help implement proper data validation for the JSON output of the ODE into any data pipeline infrastructure, you may use the provided validation schemas within this directory.
+
+Each jpo-ode output object also contains a `schemaVersion`. This value represents the version of the jpo-ode output that the object came from. This version is not intended to be changed except in the scenario of newly added breaking changes to the output. This value is set [here](./jpo-ode-core/src/main/java/us/dot/its/jpo/ode/model/OdeMsgMetadata.java).
 
 ## Testing the schemas
 These schemas can be used for manual validation in the following steps:

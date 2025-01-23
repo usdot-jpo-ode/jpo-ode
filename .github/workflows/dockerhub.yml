@@ -30,3 +30,5 @@ jobs:
         with:
           push: true
           tags: usdotjpoode/jpo-ode:${{ env.TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

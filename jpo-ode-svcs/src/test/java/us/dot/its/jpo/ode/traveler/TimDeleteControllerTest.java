@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import mockit.*;
 import org.junit.jupiter.api.Test;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -27,22 +28,17 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 
 public class TimDeleteControllerTest {
    
    @Tested
    TimDeleteController testTimDeleteController;
-   
+
    @Injectable
-   OdeProperties injectableOdeProperties;
+   RsuProperties injectableRsuProperties;
    
    @Capturing
    SnmpSession capturingSnmpSession;

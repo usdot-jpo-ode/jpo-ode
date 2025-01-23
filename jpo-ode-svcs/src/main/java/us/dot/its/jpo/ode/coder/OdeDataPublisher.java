@@ -15,29 +15,28 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.coder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class OdeDataPublisher extends MessagePublisher {
+import java.util.Set;
 
-   private static final Logger logger = LoggerFactory.getLogger(OdeDataPublisher.class);
+@Slf4j
+public class OdeDataPublisher implements MessagePublisher<OdeData> {
+
    protected MessageProducer<String, OdeObject> objectProducer;
 
-   public OdeDataPublisher(OdeProperties odeProps, String serializer) {
-      super(odeProps);
-      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), 
-            odeProperties.getKafkaProducerType(),
+   public OdeDataPublisher(String producerType, String brokers, Set<String> disabledTopics, String serializer) {
+      this.objectProducer = new MessageProducer<>(brokers,
+            producerType,
             null, serializer, 
-            odeProperties.getKafkaTopicsDisabledSet());
+            disabledTopics);
    }
 
-   public void publish(OdeData msg, String topic) {
-      logger.debug("Publishing to {}: {}", topic, msg);
+   public void publish(String topic, OdeData msg) {
+      log.debug("Publishing to {}: {}", topic, msg);
       objectProducer.send(topic, null, msg);
    }
 

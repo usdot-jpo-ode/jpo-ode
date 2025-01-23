@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true" scan="true">
-	<jmxConfigurator />
+    <jmxConfigurator/>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%date{"yyyy-MM-dd HH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
-		</encoder>
-	</appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{"yyyy-MM-dd HH:mm:ss", UTC} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{0} - %msg %n</pattern>
+        </encoder>
+    </appender>
 
-	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="ERROR" />
-	
-	<logger name="org.springframework.web" level="INFO" />
-	<logger name="us.dot.its.jpo.ode" level="DEBUG" />
-	<logger name="us.dot.its.jpo.ode.rsuHealth" level="DEBUG" />
+    <logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="ERROR"/>
 
-	<root level="WARN">
-		<appender-ref ref="STDOUT" />
-	</root>
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
 </configuration>

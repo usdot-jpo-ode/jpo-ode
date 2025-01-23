@@ -16,7 +16,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleData;
 
 public class VehicleDataBuilder {
@@ -37,8 +36,8 @@ public class VehicleDataBuilder {
         if (vehicleData.get("mass") != null) {
             vd.setMass(MassOrWeightBuilder.genericVehicleMass(vehicleData.get("mass")));
         }
-        if (vehicleData.get("trailerWeight") != null) {
-            vd.setTrailerWeight(MassOrWeightBuilder.genericTrailerWeight(vehicleData.get("trailerWeight")));
+        if (vehicleData.get("doNotUse") != null) {
+            vd.setDoNotUse(MassOrWeightBuilder.genericTrailerWeight(vehicleData.get("doNotUse")));
         }
 
         return vd;

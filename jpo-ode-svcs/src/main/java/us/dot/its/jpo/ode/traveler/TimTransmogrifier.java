@@ -1,12 +1,9 @@
 package us.dot.its.jpo.ode.traveler;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
@@ -29,6 +26,7 @@ import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -220,14 +218,14 @@ public class TimTransmogrifier {
       return encodings;
    }
 
-   public static void updateRsuCreds(RSU rsu, OdeProperties odeProperties) {
+   public static void updateRsuCreds(RSU rsu, RsuProperties rsuProperties) {
 
       if (rsu.getRsuUsername() == null || rsu.getRsuUsername().isEmpty()) {
-         rsu.setRsuUsername(odeProperties.getRsuUsername());
+         rsu.setRsuUsername(rsuProperties.getUsername());
       }
 
       if (rsu.getRsuPassword() == null || rsu.getRsuPassword().isEmpty()) {
-         rsu.setRsuPassword(odeProperties.getRsuPassword());
+         rsu.setRsuPassword(rsuProperties.getPassword());
       }
    }
 
@@ -235,16 +233,4 @@ public class TimTransmogrifier {
       Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
       return JsonUtils.toObjectNode(mfEnc.toJson());
    }
-
-   public static JSONObject createOdeTimData(JSONObject timData) {
-
-      JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
-      metadata.put("payloadType", OdeTimPayload.class.getName());
-      metadata.remove(AppContext.ENCODINGS_STRING);
-
-      JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
-      payload.put(AppContext.DATA_TYPE_STRING, TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION);
-      return timData;
-   }
-
 }

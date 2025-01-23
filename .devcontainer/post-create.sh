@@ -17,6 +17,7 @@ bin/kafka-topics.sh --create --topic "topic.OdeRawEncodedBSMJson" --bootstrap-se
 
 # TIM
 bin/kafka-topics.sh --create --topic "topic.OdeTimJson" --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+bin/kafka-topics.sh --create --topic "topic.OdeTimJsonTMCFiltered" --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 bin/kafka-topics.sh --create --topic "topic.OdeTimBroadcastJson" --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 bin/kafka-topics.sh --create --topic "topic.J2735TimBroadcastJson" --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 bin/kafka-topics.sh --create --topic "topic.OdeTIMCertExpirationTimeJson" --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1

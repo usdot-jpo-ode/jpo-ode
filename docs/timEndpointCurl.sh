@@ -196,8 +196,8 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H
 				}]
 			},
 			"content": {
-				"notUsed2": "0",
-				"notUsed3": "0",
+				"doNotUse3": 0,
+				"doNotUse4": 0,
 				"contentType": {
 					"advisory": [{
 						"ITISCodes": "268",

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,15 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.traveler;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,147 +27,147 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpNTCIP1218Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 @RestController
+@Slf4j
 public class TimQueryController {
-   
-   private static final Logger logger = LoggerFactory.getLogger(TimQueryController.class);
-   
-   private static final String ERRSTR = "error";
+    
+    private static final String ERRSTR = "error";
 
-   private OdeProperties odeProperties;
-   
-   @Autowired
-   public TimQueryController(OdeProperties odeProperties) {
-      this.odeProperties = odeProperties;
-   }
+    private final RsuProperties rsuProperties;
 
-   /**
-    * Checks given RSU for all TIMs set
-    * 
-    * @param jsonString
-    *           Request body containing RSU info
-    * @return list of occupied TIM slots on RSU
-    */
-   @CrossOrigin
-   @PostMapping(value = "/tim/query")
-   public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
+    @Autowired
+    public TimQueryController(RsuProperties rsuProperties) {
+        this.rsuProperties = rsuProperties;
+    }
 
-      if (null == jsonString || jsonString.isEmpty()) {
-         logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request."));
-      }
+    /**
+     * Checks given RSU for all TIMs set
+     *
+     * @param jsonString Request body containing RSU info
+     * @return list of occupied TIM slots on RSU
+     */
+    @CrossOrigin
+    @PostMapping(value = "/tim/query")
+    public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
 
-      RSU queryTarget = null;
-      try {
-         queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-      }
-      catch(Exception e) {
-         
-      }
-      if (queryTarget == null) {
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Unrecognized protocol"));
-      }
-      
-      TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
+        if (null == jsonString || jsonString.isEmpty()) {
+            log.error("Empty request.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request."));
+        }
 
-      SnmpSession snmpSession = null;
-      try {
-         snmpSession = new SnmpSession(queryTarget);
-         snmpSession.startListen();
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
+        RSU queryTarget = null;
+        try {
+            queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+        } catch (Exception e) {
+            log.error("Convert JSON to RSU failed.", e);
+        }
+        if (queryTarget == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Unrecognized protocol"));
+        }
 
-      PDU pdu0 = new ScopedPDU();
-      pdu0.setType(PDU.GET);
-      PDU pdu1 = new ScopedPDU();
-      pdu1.setType(PDU.GET);
+        TimTransmogrifier.updateRsuCreds(queryTarget, rsuProperties);
 
-      SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
+        SnmpSession snmpSession = null;
+        try {
+            snmpSession = new SnmpSession(queryTarget);
+            snmpSession.startListen();
+        } catch (IOException e) {
+            log.error("Error creating SNMP session.", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
+        }
 
-      if (snmpProtocol == null) {
-         logger.error("No SNMP protocol specified.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
-      }
+        PDU pdu0 = new ScopedPDU();
+        pdu0.setType(PDU.GET);
+        PDU pdu1 = new ScopedPDU();
+        pdu1.setType(PDU.GET);
 
-      if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
-         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-            pdu0.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
-         }
+        SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
 
-         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-            pdu1.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
-         }
-      }
-      else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
-         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-            pdu0.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
-         }
+        if (snmpProtocol == null) {
+            log.error("No SNMP protocol specified.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
+        }
 
-         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-            pdu1.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
-         }
-      }
-      else {
-         logger.error("Unsupported SNMP protocol: {}", snmpProtocol);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol: " + snmpProtocol));
-      }
+        switch (snmpProtocol) {
+            case SnmpProtocol.FOURDOT1 -> {
+                for (int i = 0; i < rsuProperties.getSrmSlots() - 50; i++) {
+                    pdu0.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
+                }
 
-      ResponseEvent response0 = null;
-      ResponseEvent response1 = null;
-      try {
-         response0 = snmpSession.getSnmp().send(pdu0, snmpSession.getTarget());
-         response1 = snmpSession.getSnmp().send(pdu1, snmpSession.getTarget());
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
+                for (int i = 50; i < rsuProperties.getSrmSlots(); i++) {
+                    pdu1.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
+                }
+            }
+            case SnmpProtocol.NTCIP1218 -> {
+                for (int i = 0; i < rsuProperties.getSrmSlots() - 50; i++) {
+                    pdu0.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
+                }
 
-      // Process response
-      if (response0 == null || response0.getResponse() == null || response1 == null
-            || response1.getResponse() == null) {
-         logger.error("RSU query failed, timeout.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(JsonUtils.jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
-      }
+                for (int i = 50; i < rsuProperties.getSrmSlots(); i++) {
+                    pdu1.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
+                }
+            }
+            default -> {
+                log.error("Unsupported SNMP protocol: {}", snmpProtocol);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol: " + snmpProtocol));
+            }
+        }
 
-      HashMap<String, Boolean> resultsMap = new HashMap<>();
-      for (Object vbo : response0.getResponse().getVariableBindings().toArray()) {
-         VariableBinding vb = (VariableBinding) vbo;
-         if (vb.getVariable().toInt() == 1) {
-            resultsMap.put(vb.getOid().toString().substring(21), true);
-         }
-      }
+        ResponseEvent response0 = null;
+        ResponseEvent response1 = null;
+        try {
+            response0 = snmpSession.getSnmp().send(pdu0, snmpSession.getTarget());
+            response1 = snmpSession.getSnmp().send(pdu1, snmpSession.getTarget());
+        } catch (IOException e) {
+            log.error("Error creating SNMP session.", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
+        }
 
-      for (Object vbo : response1.getResponse().getVariableBindings().toArray()) {
-         VariableBinding vb = (VariableBinding) vbo;
-         if (vb.getVariable().toInt() == 1) {
-            resultsMap.put(vb.getOid().toString().substring(21), true);
-         }
-      }
+        // Process response
+        if (response0 == null || response0.getResponse() == null || response1 == null
+                || response1.getResponse() == null) {
+            log.error("RSU query failed, timeout.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(JsonUtils.jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
+        }
 
-      try {
-         snmpSession.endSession();
-      } catch (IOException e) {
-         logger.error("Error closing SNMP session.", e);
-      }
+        HashMap<String, Boolean> resultsMap = new HashMap<>();
+        for (Object vbo : response0.getResponse().getVariableBindings().toArray()) {
+            VariableBinding vb = (VariableBinding) vbo;
+            if (vb.getVariable().toInt() == 1) {
+                resultsMap.put(vb.getOid().toString().substring(21), true);
+            }
+        }
 
-      logger.info("RSU query successful: {}", resultsMap.keySet());
-      return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue("indicies_set", resultsMap.keySet().toString()));
-   }
+        for (Object vbo : response1.getResponse().getVariableBindings().toArray()) {
+            VariableBinding vb = (VariableBinding) vbo;
+            if (vb.getVariable().toInt() == 1) {
+                resultsMap.put(vb.getOid().toString().substring(21), true);
+            }
+        }
 
+        try {
+            snmpSession.endSession();
+        } catch (IOException e) {
+            log.error("Error closing SNMP session.", e);
+        }
+
+        log.info("RSU query successful: {}", resultsMap.keySet());
+        return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue("indicies_set", resultsMap.keySet().toString()));
+    }
 }

@@ -1,0 +1,83 @@
+{
+  "request": {
+    "rsus": [
+      {
+        "rsuIndex": "21",
+        "rsuTarget": "172.0.0.1",
+        "rsuUsername": "username",
+        "rsuPassword": "password",
+        "rsuRetries": "3",
+        "rsuTimeout": "5000"
+      }
+    ],
+    "snmp": {
+      "rsuid": "83",
+      "msgid": "31",
+      "mode": "1",
+      "channel": "183",
+      "interval": "1000",
+      "deliverystart": "2024-09-25T10:00:00.0Z",
+      "deliverystop": "2024-09-30T10:00:00.0Z",
+      "enable": "1",
+      "status": "4"
+    }
+  },
+  "tim": {
+    "msgCnt": "1",
+    "timeStamp": "2024-09-25T10:00:00.0Z",
+    "packetID": "8D442FF4020C6B1A01",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "startDateTime": "2024-09-25T10:00:00.000Z",
+        "durationTime": 8640,
+        "doNotUse1": 0,
+        "frameType": "advisory",
+        "msgId": {
+          "roadSignID": {
+            "mutcdCode": "warning",
+            "viewAngle": "1111111111111111",
+            "position": {
+              "latitude": "41.153593",
+              "longitude": "-104.655785"
+            }
+          }
+        },
+        "priority": "5",
+        "sspLocationRights": "0",
+        "regions": [
+          {
+            "name": "myregionname",
+            "anchorPosition": {
+              "latitude": "41.153593",
+              "longitude": "-104.655785"
+            },
+            "directionality": "3",
+            "closedPath": "false",
+            "description": "geometry",
+            "geometry": {
+              "direction": "1111000011110000",
+              "circle": {
+                "center": {
+                  "latitude": "41.153593",
+                  "longitude": "-104.655785",
+                  "elevation": "1824"
+                },
+                "radius": "50",
+                "units": "3"
+              }
+            },
+            "direction": "1111000011110000"
+          }
+        ],
+        "doNotUse4": 0,
+        "doNotUse3": 0,
+        "content": "advisory",
+        "items": [
+          "4868"
+        ],
+        "url": "null"
+      }
+    ]
+  }
+}

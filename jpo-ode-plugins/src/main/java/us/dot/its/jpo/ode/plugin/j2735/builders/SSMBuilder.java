@@ -27,7 +27,7 @@ public class SSMBuilder {
         JsonNode sequenceNumber = SSMMessage.get("sequenceNumber");
 		if(sequenceNumber != null)
 		{
-			genericSSM.setSecond(sequenceNumber.asInt());
+			genericSSM.setSequenceNumber(sequenceNumber.asInt());
 		}
 		
 		JsonNode status = SSMMessage.get("status");

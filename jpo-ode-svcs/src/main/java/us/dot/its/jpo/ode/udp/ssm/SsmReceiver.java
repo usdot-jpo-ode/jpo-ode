@@ -1,60 +1,61 @@
 package us.dot.its.jpo.ode.udp.ssm;
 
 import java.net.DatagramPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.OdeProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
 
+/**
+ * The SsmReceiver class is responsible for receiving UDP packets and publishing them as JSON
+ * messages to a specified Kafka topic. It extends the functionality of AbstractUdpReceiverPublisher
+ * to handle UDP packet reception and decoding.
+ */
+@Slf4j
 public class SsmReceiver extends AbstractUdpReceiverPublisher {
-    private static Logger logger = LoggerFactory.getLogger(SsmReceiver.class);
 
-    private StringPublisher ssmPublisher;
+  private final KafkaTemplate<String, String> ssmPublisher;
+  private final String publishTopic;
 
-    @Autowired
-    public SsmReceiver(OdeProperties odeProps) {
-        this(odeProps, odeProps.getSsmReceiverPort(), odeProps.getSsmBufferSize());
+  /**
+   * Constructs an SsmReceiver to handle UDP packets and publish them to a specified Kafka topic.
+   *
+   * @param receiverProperties Properties object containing the receiver configuration like port and
+   *                           buffer size.
+   * @param kafkaTemplate      Kafka template used to send messages to a Kafka topic.
+   * @param publishTopic       The Kafka topic to which the decoded UDP packets will be published.
+   */
+  public SsmReceiver(ReceiverProperties receiverProperties,
+      KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
-        this.ssmPublisher = new StringPublisher(odeProps);
-    }
+    this.publishTopic = publishTopic;
+    this.ssmPublisher = kafkaTemplate;
+  }
 
-    public SsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
-        super(odeProps, port, bufferSize);
+  @Override
+  public void run() {
+    log.debug("SSM UDP Receiver Service started.");
 
-        this.ssmPublisher = new StringPublisher(odeProps);
-    }
-
-    @Override
-    public void run() {
-
-        logger.debug("SSM UDP Receiver Service started.");
-
-        byte[] buffer = new byte[bufferSize];
-
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-        do {
-            try {
-                logger.debug("Waiting for UDP SSM packets...");
-                socket.receive(packet);
-                if (packet.getLength() > 0) {
-                    
-                    String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
-
-                    if(ssmJson!=null){
-                        ssmPublisher.publish(ssmJson, ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
-                    }
-                    
-                }
-            } catch (Exception e) {
-                logger.error("Error receiving packet", e);
-            }
-        } while (!isStopped());
-    }
-
-    
+    byte[] buffer = new byte[bufferSize];
+    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+    do {
+      try {
+        log.debug("Waiting for UDP SSM packets...");
+        socket.receive(packet);
+        if (packet.getLength() > 0) {
+          String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
+          if (ssmJson != null) {
+            ssmPublisher.send(publishTopic, ssmJson);
+          }
+        }
+      } catch (InvalidPayloadException e) {
+        log.error("Error decoding packet", e);
+      } catch (Exception e) {
+        log.error("Error receiving packet", e);
+      }
+    } while (!isStopped());
+  }
 }

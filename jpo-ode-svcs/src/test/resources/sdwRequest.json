@@ -24,7 +24,7 @@
         {
           "startDateTime": "2020-04-30T14:23:59.497Z",
           "durationTime": 1440,
-          "notUsed": "1",
+          "doNotUse1": 0,
           "frameType": "advisory",
           "msgId": {
             "roadSignID": {
@@ -37,7 +37,7 @@
             }
           },
           "priority": "5",
-          "notUsed1": "0",
+          "doNotUse2": 0,
           "regions": [
             {
               "name": "I_I 25_SAT-1CEE1793",
@@ -82,8 +82,8 @@
               "direction": "1000000000000001"
             }
           ],
-          "sspMsgTypes": "1",
-          "sspMsgContent": "1",
+          "doNotUse4": 0,
+          "doNotUse3": 0,
           "content": "advisory",
           "items": [
             "5127"
