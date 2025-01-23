@@ -16,11 +16,11 @@
 
 package us.dot.its.jpo.ode.inet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -30,12 +30,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class InetPacketFunctionalTest {
+class InetPacketFunctionalTest {
 
   private static boolean isVerbose = false;
 
   @Test
-  public void testConstrcutor() throws UnknownHostException {
+  void testConstrcutor() throws UnknownHostException {
     InetPacket pkt = new InetPacket("bah.com", 1111, null);
 
     assertNull(pkt.getPayload());
@@ -43,7 +43,7 @@ public class InetPacketFunctionalTest {
 
   @Test
   @Disabled
-  public void test() throws UnknownHostException {
+  void test() throws UnknownHostException {
     test("127.0.0.1", 12, "01234567890".getBytes());
     test("::1", 47561, "0123456789001234567890".getBytes());
     test("1080:0:0:0:8:800:200C:417A", 345, "".getBytes());
@@ -56,7 +56,7 @@ public class InetPacketFunctionalTest {
     test("fdf8:f53b:82e4::53", 11111, new byte[] {(byte) 0xca, (byte) 0xfe, (byte) 0xba, (byte) 0xbe});
   }
 
-  public void test(String address, int port, byte[] payload) throws UnknownHostException {
+  void test(String address, int port, byte[] payload) throws UnknownHostException {
     if (payload == null) {
       return;
     }
@@ -68,7 +68,7 @@ public class InetPacketFunctionalTest {
     test(address, port, payload, pbOut);
   }
 
-  public void test(String address, int port, byte[] payload, InetPacket pbOut) throws UnknownHostException {
+  void test(String address, int port, byte[] payload, InetPacket pbOut) throws UnknownHostException {
     InetPacket pbIn = new InetPacket(pbOut.getBundle());
     if (isVerbose) {
       print("From params", pbOut);
