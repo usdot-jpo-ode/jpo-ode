@@ -179,6 +179,7 @@ None
     - [ ] Create a release for the jpo-utils project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
     - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
+
 ## jpo-ode
 ### Prerequisites
     - [ ] asn1_codec release completed
@@ -197,15 +198,15 @@ None
     - [ ] unit tests pass
     - [ ] program starts up correctly
     - [ ] http endpoint is reachable
-    - [ ] tims can be successfully pushed to http endpoint
+    - [ ] TIMs can be successfully pushed to http endpoint
     - [ ] capable of ingesting messages via udp (see scripts in `scripts/tests` directory)
-        - [ ] tims
-        - [ ] bsms
-        - [ ] ssms
-        - [ ] srms
-        - [ ] spats
-        - [ ] maps
-        - [ ] psms
+        - [ ] TIMs
+        - [ ] BSMs
+        - [ ] SSMs
+        - [ ] SRMs
+        - [ ] SPaTs
+        - [ ] Maps
+        - [ ] PSMs
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml files for the 'jpo-ode' project if not already done.
         - [ ] Open the jpo-ode project in an IDE
@@ -232,15 +233,15 @@ None
 ### 4. DockerHub Image Testing
     - [ ] image starts up correctly
     - [ ] http endpoint is reachable
-    - [ ] tims can be successfully pushed to http endpoint
+    - [ ] TIMs can be successfully pushed to http endpoint
     - [ ] capable of ingesting messages via udp (see scripts in `scripts/tests` directory)
-        - [ ] tims
-        - [ ] bsms
-        - [ ] ssms
-        - [ ] srms
-        - [ ] spats
-        - [ ] maps
-        - [ ] psms
+        - [ ] TIMs
+        - [ ] BSMs
+        - [ ] SSMs
+        - [ ] SRMs
+        - [ ] SPaTs
+        - [ ] Maps
+        - [ ] PSMs
 
 
 ## jpo-geojsonconverter
@@ -257,7 +258,7 @@ None
     - [ ] unit tests pass
     - [ ] program starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP, SPaT, & BSM messages are consumed successfully
+    - [ ] Map, SPaT, & BSM messages are consumed successfully
     - [ ] valid ProcessedMaps, ProcessedSpats, and ProcessedMaps are outputted
 
 ### 3. Project Reference Updates & Release Creation
@@ -280,7 +281,7 @@ None
 ### 4. DockerHub Image Testing
     - [ ] image starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP, SPaT, & BSM messages are consumed successfully  
+    - [ ] Map, SPaT, & BSM messages are consumed successfully  
     - [ ] valid ProcessedMaps, ProcessedSpats, and ProcessedMaps are outputted
 
 
@@ -298,13 +299,13 @@ None
     - [ ] code compiles
     - [ ] unit tests pass
     - [ ] program starts up correctly
-    - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
+    - [ ] program processes SpAT/Map/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
         - [ ] test BSM events
         - [ ] test connection of travel event
         - [ ] test intersection reference alignment events
         - [ ] test lane direction of travel event
-        - [ ] test MAP broadcast rate event
-        - [ ] test MAP minimum data event
+        - [ ] test Map broadcast rate event
+        - [ ] test Map minimum data event
         - [ ] test signal group alignment events
         - [ ] test signal state conflict events
         - [ ] test SPaT broadcast rate event
@@ -334,13 +335,13 @@ None
 
 ### 4. DockerHub Image Testing
     - [ ] image starts up correctly
-    - [ ] program processes SpAT/MAP/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
+    - [ ] program processes SpAT/Map/BSM messages and generates events as expected (see https://github.com/usdot-jpo-ode/jpo-conflictmonitor/wiki/Integration-Tests)
         - [ ] test BSM events
         - [ ] test connection of travel event
         - [ ] test intersection reference alignment events
         - [ ] test lane direction of travel event
-        - [ ] test MAP broadcast rate event
-        - [ ] test MAP minimum data event
+        - [ ] test Map broadcast rate event
+        - [ ] test Map minimum data event
         - [ ] test signal group alignment events
         - [ ] test signal state conflict events
         - [ ] test SPaT broadcast rate event
@@ -410,7 +411,7 @@ None
     - [ ] deduplicator code compiles
     - [ ] deduplicator unit tests pass
     - [ ] program starts up correctly
-    - [ ] program processes BSM, SPaT, MAP, and TIM messages
+    - [ ] program processes BSM, SPaT, Map, and TIM messages
     - [ ] ProcessedMap, ProcessedSpat, OdeMap, OdeTim, OdeRawEncodedTim, OdeBsm messages are consumed
     - [ ] A single message is output for each of the input types
 
