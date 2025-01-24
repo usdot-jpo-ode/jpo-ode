@@ -257,8 +257,8 @@ None
     - [ ] unit tests pass
     - [ ] program starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP & SPaT messages are consumed successfully
-    - [ ] valid ProcessedMaps & ProcessedSpats are outputted
+    - [ ] MAP, SPaT, & BSM messages are consumed successfully
+    - [ ] valid ProcessedMaps, ProcessedSpats, and ProcessedMaps are outputted
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-geojsonconverter` project if not already done.
@@ -280,8 +280,8 @@ None
 ### 4. DockerHub Image Testing
     - [ ] image starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP & SPaT messages are consumed successfully
-    - [ ] valid ProcessedMaps & ProcessedSpats are outputted
+    - [ ] MAP, SPaT, & BSM messages are consumed successfully  
+    - [ ] valid ProcessedMaps, ProcessedSpats, and ProcessedMaps are outputted
 
 
 ## jpo-conflictmonitor
