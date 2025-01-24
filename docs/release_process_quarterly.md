@@ -34,8 +34,8 @@ None
     - [ ] messages get encoded as expected
 
 ### 3. Project Reference Updates & Release Creation
-    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master/main’ branch for the asn1_codec project
-    - [ ] Create a release for the asn1_codec project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. asn1_codec-x.x.x)
+    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master’ branch for the asn1_codec project
+    - [ ] Create a release for the asn1_codec project from the ‘master’ branch and tag the release with the version number of the release. (e.g. asn1_codec-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the asn1_codec to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -73,8 +73,8 @@ None
     - [ ] BSMs below speed range are suppressed
 
 ### 3. Project Reference Updates & Release Creation
-    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master/main’ branch for the jpo-cvdp project
-    - [ ] Create a release for the jpo-cvdp project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-cvdp-x.x.x)
+    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master’ branch for the jpo-cvdp project
+    - [ ] Create a release for the jpo-cvdp project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-cvdp-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-cvdp to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -110,8 +110,8 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml if not already done
-    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master/main’ branch for the jpo-security-svcs project
-    - [ ] Create a release for the jpo-security-svcs project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-security-svcs-x.x.x)
+    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master’ branch for the jpo-security-svcs project
+    - [ ] Create a release for the jpo-security-svcs project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-security-svcs-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-security-svcs to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -144,8 +144,8 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml if not already done
-    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master/main’ branch for the jpo-sdw-depositor project
-    - [ ] Create a release for the jpo-sdw-depositor project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-sdw-depositor-x.x.x)
+    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master’ branch for the jpo-sdw-depositor project
+    - [ ] Create a release for the jpo-sdw-depositor project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-sdw-depositor-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-sdw-depositor to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -176,7 +176,7 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml files for the 'jpo-utils' project if not already done.
-    - [ ] Create a release for the jpo-utils project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
+    - [ ] Create a release for the jpo-utils project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
     - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
 ## jpo-ode
@@ -211,7 +211,7 @@ None
         - [ ] Open the jpo-ode project in an IDE
         - [ ] Update the version number in the pom.xml files of the jpo-ode-common, jpo-ode-plugins, and jpo-ode-svcs projects to match the version number of the release. (e.g. 1.0.0)
         - [ ] Update the dependencies in pom.xml files of the jpo-ode-common, jpo-ode-plugins, and jpo-ode-svcs projects to the version number set in the previous step. The `jpo-ode-plugins` depends on the `jpo-ode-common` project, and the `jpo-ode-svcs` project depends on the `jpo-ode-core` and `jpo-ode-plugins` projects. These should all be referencing the same version number. (e.g. 1.0.0)
-    - [ ] Update git submodule references for the ‘jpo-ode’ project to point to tagged commits in projects with updated `master/main` branches.
+    - [ ] Update git submodule references for the ‘jpo-ode’ project to point to tagged commits in projects with updated `master` branches.
         - [ ] Open the jpo-ode project in an IDE.
         - [ ] Navigate to the asn1_codec directory and run `git checkout tags/asn1_codec-x.x.x` to update the submodule reference.
         - [ ] Navigate to the jpo-cvdp directory and run `git checkout tags/jpo-cvdp-x.x.x` to update the submodule reference.
@@ -220,7 +220,7 @@ None
         - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference. 
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-ode to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -262,13 +262,13 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-geojsonconverter` project if not already done.
-    - [ ] Update git submodule references for the ‘jpo-geojsonconverter’ project to point to the tagged commit in jpo-ode master/main branch.
+    - [ ] Update git submodule references for the ‘jpo-geojsonconverter’ project to point to the tagged commit in jpo-ode master branch.
         - [ ] Open the jpo-geojsonconverter project in an IDE.
         - [ ] Navigate to the jpo-ode directory and run `git checkout tags/jpo-ode-x.x.x` to update the submodule reference.
         - [ ] Update the version number in the pom.xml for the jpo-ode-core and jpo-ode-plugins dependencies to match the version number of the corresponding releases. (e.g. 1.0.0)
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-geojsonconverter project, and create a release with the version number of the release. (e.g. jpo-geojsonconverter-x.x.x)
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-geojsonconverter project, and create a release with the version number of the release. (e.g. jpo-geojsonconverter-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-geojsonconverter to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -315,13 +315,13 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-conflictmonitor` project if not already done.
-    - [ ] Update git submodule references for the `jpo-conflictmonitor` project to point to the tagged commit in jpo-geojsonconverter master/main branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the conflictmonitor project. This change will be necessary in the jpo-conflictmonitor/pom.xml, jpo-deduplicator/pom.xml and message-sender/pom.xml files.
+    - [ ] Update git submodule references for the `jpo-conflictmonitor` project to point to the tagged commit in jpo-geojsonconverter master branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the conflictmonitor project. This change will be necessary in the jpo-conflictmonitor/pom.xml, jpo-deduplicator/pom.xml and message-sender/pom.xml files.
         - [ ] Open the jpo-conflictmonitor project in an IDE.
         - [ ] Navigate to the jpo-geojsonconverter directory and run `git checkout tags/jpo-geojsonconverter-x.x.x` to update the submodule reference.
         - [ ] Update the version number in the pom.xml files for the jpo-geojsonconverter and jpo-ode-* dependencies to match the version number of the corresponding releases. (e.g. 1.0.0)
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-conflictmonitor project, and create a release with the version number of the release. (e.g. jpo-conflictmonitor-x.x.x)
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-conflictmonitor project, and create a release with the version number of the release. (e.g. jpo-conflictmonitor-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-conflictmonitor to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -367,7 +367,7 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-conflictvisualizer` project if not already done. The pom.xml can be found in the `api/jpo-conflictvisualizer-api` directory.
-    - [ ] Update git submodule references for the `jpo-conflictvisualizer` project to point to the tagged commit in jpo-conflictmonitor master/main branch. Also update the corresponding version number for the jpo-conflictmonitor dependency in the pom.xml file of the conflictvisualizer project.
+    - [ ] Update git submodule references for the `jpo-conflictvisualizer` project to point to the tagged commit in jpo-conflictmonitor master branch. Also update the corresponding version number for the jpo-conflictmonitor dependency in the pom.xml file of the conflictvisualizer project.
         - [ ] Open the jpo-conflictvisualizer project in an IDE.
         - [ ] Navigate to the jpo-conflictmonitor directory and run `git checkout tags/jpo-conflictmonitor-x.x.x` to update the submodule reference.
         - [ ] Update the version number in the pom.xml files for the jpo-conflictmonitor dependency to match the version number of the release. (e.g. 1.0.0)
@@ -375,7 +375,7 @@ None
         - [ ] Update the version number in the pom.xml file for the jpo-ode dependency to match the version number of the release. (e.g. 1.0.0)
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-conflictvisualizer project, and create a release with the version number of the release. (e.g. jpo-conflictvisualizer-x.x.x)
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-conflictvisualizer project, and create a release with the version number of the release. (e.g. jpo-conflictvisualizer-x.x.x)
     - [ ] Create docker images
         - [ ] Use the release for the jpo-conflictmonitor to produce docker images containing the version number.
             - [ ] One image will be for the API
@@ -416,8 +416,8 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-deduplicator` project if not already done.
-    - [ ] Update git submodule references for the jpo-deduplicator project to point to the tagged commit in jpo-geojsonconverter master/main branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the jpo-deduplicator project. This change will be necessary in the jpo-deduplicator/jpo-deduplicator/pom.xml file.
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-deduplicator project, update the existing release tag (e.g. jpo-deduplicator-x.x.x) to point to the newly committed version of jpo-deduplicator
+    - [ ] Update git submodule references for the jpo-deduplicator project to point to the tagged commit in jpo-geojsonconverter master branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the jpo-deduplicator project. This change will be necessary in the jpo-deduplicator/jpo-deduplicator/pom.xml file.
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-deduplicator project, update the existing release tag (e.g. jpo-deduplicator-x.x.x) to point to the newly committed version of jpo-deduplicator
     - [ ] Create docker image
         - [ ] Use the release for the jpo-conflictmonitor to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
@@ -448,7 +448,7 @@ None
     - [ ] webapp can be signed into successfully
 
 ### 3. Project Reference Updates & Release Creation
-    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-cvmanager project, and create a release with the version number of the release. (e.g. jpo-cvmanager-x.x.x)
+    - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-cvmanager project, and create a release with the version number of the release. (e.g. jpo-cvmanager-x.x.x)
 
 
 ## jpo-s3-deposit
@@ -467,8 +467,8 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml if not already done
-    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master/main’ branch for the jpo-s3-deposit project
-    - [ ] Create a release for the jpo-s3-deposit project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-s3-deposit-x.x.x)
+    - [ ] Merge ‘release/(year)-(quarter)’ branch into ‘master’ branch for the jpo-s3-deposit project
+    - [ ] Create a release for the jpo-s3-deposit project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-s3-deposit-x.x.x)
     - [ ] Create docker image
         - [ ] Use the release for the jpo-s3-deposit to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
