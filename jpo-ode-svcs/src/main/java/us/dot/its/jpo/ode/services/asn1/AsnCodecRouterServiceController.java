@@ -26,9 +26,6 @@ import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-/**
- * Launches ToJsonConverter service
- */
 @Controller
 @Slf4j
 public class AsnCodecRouterServiceController {

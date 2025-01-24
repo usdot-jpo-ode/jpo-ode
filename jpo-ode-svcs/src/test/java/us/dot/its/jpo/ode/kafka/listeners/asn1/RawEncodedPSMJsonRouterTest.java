@@ -83,5 +83,6 @@ class RawEncodedPSMJsonRouterTest {
         KafkaTestUtils.getSingleRecord(testConsumer, asn1CoderTopics.getDecoderInput());
     var odePsmData = produced.value();
     assertEquals(expectedPsm, odePsmData);
+    testConsumer.close();
   }
 }

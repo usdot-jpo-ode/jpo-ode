@@ -85,5 +85,6 @@ class RawEncodedSPATJsonRouterTest {
     assert inputStream != null;
     var expectedSpat = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals(expectedSpat, consumedSpat.value());
+    testConsumer.close();
   }
 }

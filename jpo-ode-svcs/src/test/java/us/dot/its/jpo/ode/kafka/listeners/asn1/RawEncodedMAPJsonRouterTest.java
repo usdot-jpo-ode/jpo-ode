@@ -87,5 +87,6 @@ class RawEncodedMAPJsonRouterTest {
       assertEquals(approvalTestCase.getExpected(), actualRecord.value(),
           approvalTestCase.getDescription());
     }
+    testConsumer.close();
   }
 }

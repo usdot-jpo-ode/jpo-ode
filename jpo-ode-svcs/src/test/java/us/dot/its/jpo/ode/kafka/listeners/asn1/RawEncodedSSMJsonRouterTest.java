@@ -83,5 +83,6 @@ class RawEncodedSSMJsonRouterTest {
 
     var consumedSSM = KafkaTestUtils.getSingleRecord(testConsumer, asn1CoderTopics.getDecoderInput());
     assertEquals(expectedSSM, consumedSSM.value());
+    testConsumer.close();
   }
 }

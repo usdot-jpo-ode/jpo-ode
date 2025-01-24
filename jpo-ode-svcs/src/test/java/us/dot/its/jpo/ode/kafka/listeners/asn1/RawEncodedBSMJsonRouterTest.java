@@ -87,5 +87,6 @@ class RawEncodedBSMJsonRouterTest {
         KafkaTestUtils.getSingleRecord(testConsumer, asn1DecoderInput);
     var odeBsmData = produced.value();
     assertEquals(expectedBsm, odeBsmData);
+    testConsumer.close();
   }
 }
