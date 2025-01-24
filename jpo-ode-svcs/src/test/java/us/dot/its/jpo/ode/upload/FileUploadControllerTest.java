@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*============================================================================
  * Copyright 2018 572682
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -13,110 +13,58 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
+
 package us.dot.its.jpo.ode.upload;
 
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
-import us.dot.its.jpo.ode.kafka.topics.FileTopics;
-import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertEquals;
-
+@ExtendWith(MockitoExtension.class)
 class FileUploadControllerTest {
 
-    FileUploadController testFileUploadController;
+  FileUploadController testFileUploadController;
 
-    @Mocked
-    StorageService mockStorageService;
+  @Mock
+  StorageService mockStorageService;
 
-    @Injectable
-    OdeKafkaProperties injectableOdeKafkaProperties;
+  @Mock
+  ImporterDirectoryWatcher mockImporterDirectoryWatcher;
 
-    @Injectable
-    SimpMessagingTemplate injectableSimpMessagingTemplate;
+  @Mock
+  MultipartFile mockMultipartFile;
 
-    @Injectable
-    FileImporterProperties fileImporterProps;
+  @BeforeEach
+  public void setup() {
+    testFileUploadController = new FileUploadController(mockStorageService, mockImporterDirectoryWatcher);
+  }
 
-    @Injectable
-    FileTopics fileTopics;
+  @Test
+  void handleFileUploadReturnsErrorOnStorageException() {
+    doThrow(new RuntimeException()).when(mockStorageService).store(any(), anyString());
+    Assertions.assertEquals(HttpStatus.BAD_REQUEST, testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
+  }
 
-    @Injectable
-    JsonTopics jsonTopics;
+  @Test
+  void successfulUploadReturnsHttpOk() {
+    Assertions.assertEquals(HttpStatus.OK, testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
+  }
 
-    @Injectable
-    RawEncodedJsonTopics rawEncodedJsonTopics;
-
-    @Capturing
-    Executors capturingExecutors;
-    @Capturing
-    ImporterDirectoryWatcher capturingImporterDirectoryWatcher;
-    @Mocked
-    ExecutorService mockExecutorService;
-
-    @Mocked
-    MultipartFile mockMultipartFile;
-
-    @BeforeEach
-    public void constructorShouldLaunchSevenThreads() {
-        new Expectations() {
-            {
-                Executors.newCachedThreadPool();
-                result = mockExecutorService;
-
-                mockExecutorService.submit((Runnable) any);
-                times = 11;
-            }
-        };
-
-        testFileUploadController = new FileUploadController(mockStorageService,
-                injectableSimpMessagingTemplate, fileImporterProps, fileTopics, jsonTopics, rawEncodedJsonTopics, injectableOdeKafkaProperties);
-    }
-
-    @Test
-    void handleFileUploadReturnsErrorOnStorageException() {
-        new Expectations() {
-            {
-                mockStorageService.store((MultipartFile) any, anyString);
-                result = new StorageFileNotFoundException("testException123");
-            }
-        };
-
-        assertEquals(HttpStatus.BAD_REQUEST,
-                testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
-    }
-
-    @Test
-    void successfulUploadReturnsHttpOk() {
-        new Expectations() {
-            {
-                mockStorageService.store((MultipartFile) any, anyString);
-                times = 1;
-            }
-        };
-
-        assertEquals(HttpStatus.OK, testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
-    }
-
-    @Test
-    void testStorageFileNotFoundException() {
-        assertEquals(HttpStatus.NOT_FOUND, testFileUploadController
-                .handleStorageFileNotFound(new StorageFileNotFoundException("testException123")).getStatusCode());
-    }
+  @Test
+  void testStorageFileNotFoundException() {
+    Assertions.assertEquals(HttpStatus.NOT_FOUND, testFileUploadController
+        .handleStorageFileNotFound(new StorageFileNotFoundException("testException123")).getStatusCode());
+  }
 }
