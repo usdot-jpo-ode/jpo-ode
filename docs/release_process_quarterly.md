@@ -315,10 +315,12 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-conflictmonitor` project if not already done.
-    - [ ] Update git submodule references for the `jpo-conflictmonitor` project to point to the tagged commit in jpo-geojsonconverter master branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the conflictmonitor project. This change will be necessary in the jpo-conflictmonitor/pom.xml, jpo-deduplicator/pom.xml and message-sender/pom.xml files.
+    - [ ] Update git submodule & artifact references for the ‘jpo-conflictmonitor project.
         - [ ] Open the jpo-conflictmonitor project in an IDE.
-        - [ ] Navigate to the jpo-geojsonconverter directory and run `git checkout tags/jpo-geojsonconverter-x.x.x` to update the submodule reference.
+        - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference.
         - [ ] Update the version number in the pom.xml files for the jpo-geojsonconverter and jpo-ode-* dependencies to match the version number of the corresponding releases. (e.g. 1.0.0)
+            - [ ] Update the jpo-conflictmonitor/pom.xml
+            - [ ] Update the message-sender/pom.xml
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-conflictmonitor project, and create a release with the version number of the release. (e.g. jpo-conflictmonitor-x.x.x)
@@ -367,12 +369,10 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-conflictvisualizer` project if not already done. The pom.xml can be found in the `api/jpo-conflictvisualizer-api` directory.
-    - [ ] Update git submodule references for the `jpo-conflictvisualizer` project to point to the tagged commit in jpo-conflictmonitor master branch. Also update the corresponding version number for the jpo-conflictmonitor dependency in the pom.xml file of the conflictvisualizer project.
+    - [ ] Update git submodule & artifact references for the 'jpo-conflictvisualizer' project.
         - [ ] Open the jpo-conflictvisualizer project in an IDE.
-        - [ ] Navigate to the jpo-conflictmonitor directory and run `git checkout tags/jpo-conflictmonitor-x.x.x` to update the submodule reference.
-        - [ ] Update the version number in the pom.xml files for the jpo-conflictmonitor dependency to match the version number of the release. (e.g. 1.0.0)
-        - [ ] Update the version number in the pom.xml file for the jpo-geojsonconverter dependency to match the version number of the release. (e.g. 1.0.0)
-        - [ ] Update the version number in the pom.xml file for the jpo-ode dependency to match the version number of the release. (e.g. 1.0.0)
+        - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference.
+        - [ ] Update the version number in the api/jpo-conflictvisualizer-api/pom.xml file for the jpo-geojsonconverter, jpo-ode-*, and jpo-conflictmonitor dependencies to match the version number of the corresponding releases. (e.g. 1.0.0)
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-conflictvisualizer project, and create a release with the version number of the release. (e.g. jpo-conflictvisualizer-x.x.x)
