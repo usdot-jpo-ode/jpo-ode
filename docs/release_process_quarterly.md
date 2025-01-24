@@ -427,10 +427,13 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-deduplicator` project if not already done.
-    - [ ] Update git submodule references for the jpo-deduplicator project to point to the tagged commit in jpo-geojsonconverter master branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the jpo-deduplicator project. This change will be necessary in the jpo-deduplicator/jpo-deduplicator/pom.xml file.
+    - [ ] Update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the jpo-deduplicator project. This change will be necessary in the jpo-deduplicator/pom.xml file.
+    - [ ] Update git submodule references for the ‘jpo-ode’ project to point to tagged commits in projects with updated `master` branches.
+        - [ ] Open the jpo-ode project in an IDE.
+        - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference.
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-deduplicator project, update the existing release tag (e.g. jpo-deduplicator-x.x.x) to point to the newly committed version of jpo-deduplicator
     - [ ] Create docker image
-        - [ ] Use the release for the jpo-conflictmonitor to produce docker image with the same tag name, containing the version number.
+        - [ ] Use the release for the jpo-deduplicator to produce docker image with the same tag name, containing the version number.
         - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
         - [ ] Tag docker image with the version number of the app. (e.g. 1.0.0)
         - [ ] Tag docker image with year and quarter of release. (e.g. 2024-Q2)
