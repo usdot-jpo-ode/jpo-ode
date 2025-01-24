@@ -179,6 +179,16 @@ None
     - [ ] Create a release for the jpo-utils project from the ‘master’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
     - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
+### 4. DockerHub Image Testing
+    - [ ] Change the image references in `docker-compose-kafka.yml` and `docker-compose-connect.yml` to the version number of the release. (e.g. 1.0.0)
+        - [ ] `docker-compose-kafka.yml` services changed:
+            - [ ] kafka-setup image: `usdotjpoode/jpo-jikkou:1.0.0`
+        - [ ] `docker-compose-connect.yml` services changed:
+            - [ ] kafka-connect image: `usdotjpoode/jpo-kafka-connect:1.0.0`
+            - [ ] kafka-connect-setup image: `usdotjpoode/jpo-jikkou:1.0.0`
+    - [ ] jpo-jikkou docker image runs successfully
+    - [ ] jpo-kafka-connect image runs successfully
+        - [ ] Verify all connectors are created using connect rest api
 
 ## jpo-ode
 ### Prerequisites
