@@ -262,9 +262,9 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Update version number in pom.xml file for the `jpo-geojsonconverter` project if not already done.
-    - [ ] Update git submodule references for the ‘jpo-geojsonconverter’ project to point to the tagged commit in jpo-ode master branch.
+    - [ ] Update git submodule & artifact references for the ‘jpo-geojsonconverter’ project.
         - [ ] Open the jpo-geojsonconverter project in an IDE.
-        - [ ] Navigate to the jpo-ode directory and run `git checkout tags/jpo-ode-x.x.x` to update the submodule reference.
+        - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference.
         - [ ] Update the version number in the pom.xml for the jpo-ode-core and jpo-ode-plugins dependencies to match the version number of the corresponding releases. (e.g. 1.0.0)
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
