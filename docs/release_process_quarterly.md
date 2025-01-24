@@ -280,7 +280,7 @@ None
 ### 4. DockerHub Image Testing
     - [ ] image starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP & SPaT messages are consumed successfully
+    - [ ] MAP, SPaT, & BSM messages are consumed successfully  
     - [ ] valid ProcessedMaps & ProcessedSpats are outputted
 
 
