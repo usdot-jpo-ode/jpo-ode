@@ -5,7 +5,7 @@ The order of project releases is as follows:
 1. [asn1_codec](#asn1_codec)
 2. [jpo-cvdp](#jpo-cvdp)
 3. [jpo-security-svcs](#jpo-security-svcs)
-4. [jpo-sdw-depositor](#jpo-s3-deposit)
+4. [jpo-sdw-depositor](#jpo-sdw-depositor)
 5. [jpo-utils](#jpo-utils)
 6. [jpo-ode](#jpo-ode)
 7. [jpo-geojsonconverter](#jpo-geojsonconverter)
@@ -165,17 +165,19 @@ None
 None
 
 ### 1. Code Ready & Release Notes
-(TBD)
+    - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
+    - [ ] Code changes for release are merged into `develop`
+    - [ ] A new branch `release/(year)-(quarter)` is created from `develop`
 
 ### 2. Preliminary Testing
-(TBD)
+    - [ ] jpo-jikkou docker image builds
+    - [ ] jpo-kafka-connect image builds
+        - [ ] Verify all connectors are created using connect rest api
 
 ### 3. Project Reference Updates & Release Creation
-(TBD)
-
-### 4. DockerHub Image Testing
-(TBD)
-
+    - [ ] Update version number in pom.xml files for the 'jpo-utils' project if not already done.
+    - [ ] Create a release for the jpo-utils project from the ‘master/main’ branch and tag the release with the version number of the release. (e.g. jpo-utils-x.x.x)
+    - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
 ## jpo-ode
 ### Prerequisites
@@ -400,16 +402,34 @@ None
     - [ ] jpo-conflictmonitor release completed
 
 ### 1. Code Ready & Release Notes
-(TBD)
+    - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
+    - [ ] Code changes for release are merged into `develop`
+    - [ ] A new branch `release/(year)-(quarter)` is created from `develop`
 
 ### 2. Preliminary Testing
-(TBD)
+    - [ ] deduplicator code compiles
+    - [ ] deduplicator unit tests pass
+    - [ ] program starts up correctly
+    - [ ] program processes BSM, SPaT, MAP, and TIM messages
+    - [ ] ProcessedMap, ProcessedSpat, OdeMap, OdeTim, OdeRawEncodedTim, OdeBsm messages are consumed
+    - [ ] A single message is output for each of the input types
 
 ### 3. Project Reference Updates & Release Creation
-(TBD)
+    - [ ] Update version number in pom.xml file for the `jpo-deduplicator` project if not already done.
+    - [ ] Update git submodule references for the jpo-deduplicator project to point to the tagged commit in jpo-geojsonconverter master/main branch. Also update the corresponding version number for the jpo-geojsonconverter and jpo-ode-* dependencies in the pom.xml files of the jpo-deduplicator project. This change will be necessary in the jpo-deduplicator/jpo-deduplicator/pom.xml file.
+    - [ ] Merge `release/(year)-(quarter)` branch into `master/main` branch for the jpo-deduplicator project, update the existing release tag (e.g. jpo-deduplicator-x.x.x) to point to the newly committed version of jpo-deduplicator
+    - [ ] Create docker image
+        - [ ] Use the release for the jpo-conflictmonitor to produce docker image with the same tag name, containing the version number.
+        - [ ] Upload docker image to [DockerHub](https://hub.docker.com/u/usdotjpoode)
+        - [ ] Tag docker image with the version number of the app. (e.g. 1.0.0)
+        - [ ] Tag docker image with year and quarter of release. (e.g. 2024-Q2)
+        - [ ] Tag docker image with 'latest' tag for the most recent release.
+    - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
 ### 4. DockerHub Image Testing
-(TBD)
+    - [ ] image starts up correctly
+    - [ ] ProcessedMap, ProcessedSpat, OdeMap, OdeTim, OdeRawEncodedTim, OdeBsm messages are consumed
+    - [ ] A single message is output for each of the input types
 
 
 ## jpo-cvmanager
