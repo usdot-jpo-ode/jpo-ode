@@ -257,7 +257,7 @@ None
     - [ ] unit tests pass
     - [ ] program starts up correctly
     - [ ] program can be configured successfully
-    - [ ] MAP & SPaT messages are consumed successfully
+    - [ ] MAP, SPaT, & BSM messages are consumed successfully
     - [ ] valid ProcessedMaps & ProcessedSpats are outputted
 
 ### 3. Project Reference Updates & Release Creation
