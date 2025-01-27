@@ -505,8 +505,15 @@ None
 ### 2. Preliminary Testing
     - [ ] code compiles
     - [ ] unit tests pass
+        - [ ] python api
+        - [ ] webapp
+        - [ ] intersection api
     - [ ] program starts up correctly
     - [ ] webapp can be signed into successfully
+    - [ ] map page displays RSUs status information, RSU filtering, and displaying message counts in side window + heatmap
+    - [ ] map page displays work zones (wzdx), intersection locations, and supports historic BSM queries
+    - [ ] intersection map displays live and historic data
+    - [ ] intersection dashboard displays notifications and assessments
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-cvmanager project, and create a release with the version number of the release. (e.g. jpo-cvmanager-x.x.x)
