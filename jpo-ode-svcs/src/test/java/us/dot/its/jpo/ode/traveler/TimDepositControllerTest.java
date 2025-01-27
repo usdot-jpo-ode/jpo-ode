@@ -165,7 +165,7 @@ class TimDepositControllerTest {
     pojoTopics.setTimBroadcast("test.messageWithNoRSUsOrSDWShouldReturnWarning.timBroadcast.pojo");
     jsonTopics.setTimBroadcast("test.messageWithNoRSUsOrSDWShouldReturnWarning.timBroadcast.json");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -207,6 +207,7 @@ class TimDepositControllerTest {
     // cleanup
     stringConsumer.close();
     pojoConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -221,7 +222,7 @@ class TimDepositControllerTest {
     jsonTopics.setTimBroadcast(
         "test.failedObjectNodeConversionShouldReturnConvertingError.timBroadcast.json");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -272,6 +273,7 @@ class TimDepositControllerTest {
     // cleanup
     stringConsumer.close();
     pojoConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -285,7 +287,7 @@ class TimDepositControllerTest {
     jsonTopics.setTimBroadcast(
         "test.failedXmlConversionShouldReturnConversionError.timBroadcast.json");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -332,6 +334,7 @@ class TimDepositControllerTest {
     // cleanup
     stringConsumer.close();
     pojoConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -346,7 +349,7 @@ class TimDepositControllerTest {
     asn1CoderTopics.setEncoderInput("test.successfulMessageReturnsSuccessMessagePost.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -438,6 +441,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -455,7 +459,7 @@ class TimDepositControllerTest {
         "test.successfulSdwRequestMessageReturnsSuccessMessagePost.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -548,6 +552,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -565,7 +570,7 @@ class TimDepositControllerTest {
         "test.successfulMessageReturnsSuccessMessagePostWithOde.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -657,6 +662,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -671,7 +677,7 @@ class TimDepositControllerTest {
     asn1CoderTopics.setEncoderInput("test.successfulMessageReturnsSuccessMessagePut.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -763,6 +769,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -776,7 +783,7 @@ class TimDepositControllerTest {
     asn1CoderTopics.setEncoderInput("test.depositingTimWithExtraProperties.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -869,6 +876,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -882,7 +890,7 @@ class TimDepositControllerTest {
     asn1CoderTopics.setEncoderInput("test.successfulTimIngestIsTracked.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -976,6 +984,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   // This serves as an integration test without mocking the TimTransmogrifier and XmlUtils
@@ -994,7 +1003,7 @@ class TimDepositControllerTest {
         "test.successfulRsuMessageReturnsSuccessMessagePost.encoderInput");
     EmbeddedKafkaHolder.addTopics(pojoTopics.getTimBroadcast(), jsonTopics.getTimBroadcast(),
         jsonTopics.getJ2735TimBroadcast(), jsonTopics.getTim(), asn1CoderTopics.getEncoderInput());
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
     TimDepositController testTimDepositController =
         new TimDepositController(asn1CoderTopics, pojoTopics, jsonTopics,
@@ -1086,6 +1095,7 @@ class TimDepositControllerTest {
     jsonJ2735TimBroadcastConsumer.close();
     jsonTimConsumer.close();
     asn1CoderEncoderInputConsumer.close();
+    DateTimeUtils.setClock(prevClock);
   }
 
   /**

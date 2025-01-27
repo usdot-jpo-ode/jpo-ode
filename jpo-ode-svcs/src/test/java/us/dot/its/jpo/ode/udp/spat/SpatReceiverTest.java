@@ -67,7 +67,7 @@ class SpatReceiverTest {
   void testRun() throws Exception {
     EmbeddedKafkaHolder.addTopics(rawEncodedJsonTopics.getSpat());
 
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));
 
     SpatReceiver spatReceiver = new SpatReceiver(udpReceiverProperties.getSpat(), kafkaTemplate,
@@ -105,5 +105,7 @@ class SpatReceiverTest {
     assertEquals(
         expectedJson.toString(2),
         producedJson.toString(2));
+
+    DateTimeUtils.setClock(prevClock);
   }
 }

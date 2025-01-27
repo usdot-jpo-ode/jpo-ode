@@ -97,7 +97,7 @@ class GenericReceiverTest {
     var consumer = cf.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(consumer, topics);
 
-    DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
+    final Clock prevClock = DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
 
     // Test the PSM path
     String psmFileContent = Files.readString(
@@ -171,6 +171,8 @@ class GenericReceiverTest {
 
     var srmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSrm());
     assertExpected("Produced SRM message does not match expected", srmRecord.value(), expectedSrm);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   private static void assertExpected(String failureMsg, String actual, String expected) {

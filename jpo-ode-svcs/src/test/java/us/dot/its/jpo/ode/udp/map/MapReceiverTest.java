@@ -30,7 +30,6 @@ import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.test.utilities.ApprovalTestCase;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.test.utilities.TestUDPClient;
@@ -71,7 +70,7 @@ class MapReceiverTest {
   void testMapReceiver() throws IOException {
 
     // Set the clock to a fixed time so that the MapReceiver will produce the same output every time
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2020-01-01T00:00:00Z"), Clock.systemUTC().getZone()));
 
     MapReceiver mapReceiver = new MapReceiver(udpReceiverProperties.getMap(), kafkaTemplate,
@@ -113,6 +112,8 @@ class MapReceiverTest {
       assertEquals(expectedJson.toString(), producedJson.toString(),
           approvalTestCase.getDescription());
     }
+
+    DateTimeUtils.setClock(prevClock);
   }
 }
 

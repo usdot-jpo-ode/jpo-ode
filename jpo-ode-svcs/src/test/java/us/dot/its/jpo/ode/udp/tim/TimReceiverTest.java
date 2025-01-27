@@ -67,7 +67,7 @@ class TimReceiverTest {
   void testRun() throws Exception {
     EmbeddedKafkaHolder.addTopics(rawEncodedJsonTopics.getTim());
 
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));
 
     TimReceiver timReceiver = new TimReceiver(udpReceiverProperties.getTim(),
@@ -106,5 +106,7 @@ class TimReceiverTest {
     assertEquals(
         expectedJson.toString(2),
         producedJson.toString(2));
+
+    DateTimeUtils.setClock(prevClock);
   }
 }
