@@ -198,6 +198,15 @@ None
     - [ ] jpo-sdw-depositor release completed
     - [ ] jpo-utils release completed
 
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| asn1_codec | Git Submodule |
+| jpo-cvdp | Git Submodule |
+| jpo-security-svcs | Git Submodule |
+| jpo-sdw-depositor | Git Submodule |
+| jpo-utils | Git Submodule |
+
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
     - [ ] Code changes for release are merged into `develop`
@@ -258,6 +267,11 @@ None
 ### Prerequisites
     - [ ] jpo-ode release completed
 
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| jpo-ode | Maven, DockerHub |
+
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
     - [ ] Code changes for release are merged into `develop`
@@ -299,6 +313,12 @@ None
 ### Prerequisites
     - [ ] jpo-ode release completed
     - [ ] jpo-geojsonconverter release completed
+
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| jpo-ode | Maven, DockerHub |
+| jpo-geojsonconverter | Maven, DockerHub |
 
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
@@ -366,6 +386,15 @@ None
     - [ ] jpo-ode release completed
     - [ ] jpo-geojsonconverter release completed
     - [ ] jpo-conflictmonitor release completed
+    - [ ] asn1_codec release completed
+
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| jpo-ode | Maven, DockerHub |
+| jpo-geojsonconverter | Maven, DockerHub |
+| jpo-conflictmonitor | Maven, DockerHub |
+| asn1_codec | Git Submodule |
 
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
@@ -412,6 +441,13 @@ None
     - [ ] jpo-geojsonconverter release completed
     - [ ] jpo-conflictmonitor release completed
 
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| jpo-ode | Maven |
+| jpo-geojsonconverter | Maven |
+| jpo-conflictmonitor | Maven |
+
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
     - [ ] Code changes for release are merged into `develop`
@@ -448,7 +484,18 @@ None
 
 ## jpo-cvmanager
 ### Prerequisites
+    - [ ] jpo-ode release completed
     - [ ] jpo-conflictmonitor release completed
+    - [ ] jpo-geojsonconverter release completed
+    - [ ] asn1_codec release completed
+
+#### Dependency Types
+| Dependency | Type |
+| --- | --- |
+| jpo-ode | Maven |
+| jpo-geojsonconverter | Maven |
+| jpo-conflictmonitor | Maven |
+| asn1_codec | Git Submodule |
 
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
