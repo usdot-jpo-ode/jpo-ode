@@ -15,11 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.wrapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
 import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author 572682
@@ -33,9 +32,9 @@ import org.slf4j.LoggerFactory;
  * @param <S>
  *           Received Message Value Type
  */
+@Slf4j
 public abstract class AbstractSubscriberProcessor<K, S> extends MessageProcessor<K, S> {
 
-   private Logger logger = LoggerFactory.getLogger(this.getClass());
    protected int messagesConsumed = 0;
 
    /**
@@ -45,14 +44,9 @@ public abstract class AbstractSubscriberProcessor<K, S> extends MessageProcessor
     * @param inputTopics
     */
    public void start(MessageConsumer<K, S> consumer, String... inputTopics) {
-      logger.info("Subscribing to {}", Arrays.asList(inputTopics).toString());
+      log.info("Subscribing to {}", Arrays.asList(inputTopics));
 
-      Executors.newSingleThreadExecutor().submit(new Runnable() {
-         @Override
-         public void run() {
-            consumer.subscribe(inputTopics);
-         }
-      });
+      Executors.newSingleThreadExecutor().submit(() -> consumer.subscribe(inputTopics));
    }
 
    @Override

@@ -51,7 +51,7 @@
 						<packetID>00000000003616371F</packetID>
 						<dataFrames>
 							<TravelerDataFrame>
-								<notUsed>0</notUsed>
+								<doNotUse1>0</doNotUse1>
 								<frameType>
 									<advisory/>
 								</frameType>
@@ -72,7 +72,7 @@
 								<startTime>359511</startTime>
 								<durationTime>10080</durationTime>
 								<priority>6</priority>
-								<notUsed1>0</notUsed1>
+								<doNotUse2>0</doNotUse2>
 								<regions>
 									<GeographicalPath>
 										<anchor>
@@ -116,8 +116,8 @@
 										</description>
 									</GeographicalPath>
 								</regions>
-								<notUsed2>0</notUsed2>
-								<notUsed3>0</notUsed3>
+								<doNotUse3>0</doNotUse3>
+								<doNotUse4>0</doNotUse4>
 								<content>
 									<advisory>
 										<SEQUENCE>

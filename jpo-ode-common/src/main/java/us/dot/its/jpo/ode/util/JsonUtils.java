@@ -15,19 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.util;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,7 +28,15 @@ import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.LogicalType;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
+@Slf4j
 public class JsonUtils {
 
    public static class JsonUtilsException extends Exception {
@@ -50,12 +49,10 @@ public class JsonUtils {
 
    }
 
-   private static ObjectMapper mapper;
-   private static ObjectMapper mapper_noNulls;
-   private static Logger logger;
+   private static final ObjectMapper mapper;
+   private static final ObjectMapper mapper_noNulls;
 
    private JsonUtils() {
-      logger = LoggerFactory.getLogger(JsonUtils.class);
    }
 
    static {
@@ -67,6 +64,10 @@ public class JsonUtils {
       mapper_noNulls = new ObjectMapper();
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper_noNulls.setSerializationInclusion(Include.NON_NULL);
+
+      // Ensure BigDecimals are serialized consistently as numbers not strings
+      mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
+      mapper_noNulls.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
    }
 
    public static String toJson(Object o, boolean verbose) {
@@ -75,7 +76,7 @@ public class JsonUtils {
       try {
          return verbose ? mapper.writeValueAsString(o) : mapper_noNulls.writeValueAsString(o);
       } catch (JsonProcessingException e) {
-         e.printStackTrace();
+         log.error("Error converting object to JSON", e);
          return "";
       }
    }
@@ -84,7 +85,7 @@ public class JsonUtils {
       try {
          return jacksonFromJson(s, clazz);
       } catch (JsonUtilsException e) {
-         e.printStackTrace();
+         log.error("Error deserializing JSON tree to {}", clazz.getName(), e);
          return null;
       }
    }
@@ -113,10 +114,6 @@ public class JsonUtils {
       return newObjectNode(key, value).toString();
    }
 
-   public static ObjectNode cloneObjectNode(ObjectNode src) {
-      return src.deepCopy();
-   }
-
    public static ObjectNode newObjectNode(String key, Object value) {
       ObjectNode json = mapper.createObjectNode();
       json.putPOJO(key, value);
@@ -135,7 +132,7 @@ public class JsonUtils {
          node = jsonNode.get(fieldName);
 
       } catch (IOException e) {
-         logger.error("IOException", e);
+         log.error("IOException", e);
       }
       return node;
    }

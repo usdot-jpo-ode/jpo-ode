@@ -22,14 +22,14 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
-import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.topics.SDXDepositorTopics;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
+import us.dot.its.jpo.ode.rsu.RsuProperties;
+import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -40,7 +40,16 @@ public class Asn1CommandManagerTest {
    Asn1CommandManager testAsn1CommandManager;
 
    @Injectable
-   OdeProperties injectableOdeProperties;
+   OdeKafkaProperties injectableOdeKafkaProperties;
+
+   @Injectable
+   SDXDepositorTopics injectableSDXDepositorTopics;
+
+   @Injectable
+   RsuProperties injectableRsuProperties;
+
+   @Injectable
+   SecurityServicesProperties injectableSecurityServicesProperties;
 
    @Capturing
    MessageProducer<String, String> capturingMessageProducer;

@@ -15,12 +15,12 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
 
@@ -28,28 +28,27 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
  * Launches ToJsonConverter service
  */
 @Controller
+@Slf4j
 public class ToJsonServiceController {
-
-   private static final Logger logger = LoggerFactory.getLogger(ToJsonServiceController.class);
-
-   private OdeProperties odeProperties;
+   
+   private final String brokers;
 
    @Autowired
-   public ToJsonServiceController(OdeProperties odeProps) {
+   public ToJsonServiceController(OdeKafkaProperties odeKafkaProperties, JsonTopics jsonTopics, PojoTopics pojoTopics) {
       super();
 
-      this.odeProperties = odeProps;
+      this.brokers = odeKafkaProperties.getBrokers();
 
       // BSM POJO --> JSON converter
-      launchConverter(odeProps.getKafkaTopicOdeBsmPojo(), OdeBsmDeserializer.class.getName(),
-            new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeBsmJson()));
+      launchConverter(pojoTopics.getBsm(), OdeBsmDeserializer.class.getName(),
+            new ToJsonConverter<>(odeKafkaProperties, false, jsonTopics.getBsm()));
    }
 
    private <V> void launchConverter(String fromTopic, String serializerFQN, ToJsonConverter<V> jsonConverter) {
-      logger.info("Starting JSON converter, converting records from topic {} and publishing to topic {} ", fromTopic,
+      log.info("Starting JSON converter, converting records from topic {} and publishing to topic {} ", fromTopic,
             jsonConverter.getOutputTopic());
 
-      MessageConsumer<String, V> consumer = new MessageConsumer<>(odeProperties.getKafkaBrokers(),
+      MessageConsumer<String, V> consumer = new MessageConsumer<>(this.brokers,
             this.getClass().getSimpleName(), jsonConverter, serializerFQN);
 
       consumer.setName(this.getClass().getName() + fromTopic + "Consumer");

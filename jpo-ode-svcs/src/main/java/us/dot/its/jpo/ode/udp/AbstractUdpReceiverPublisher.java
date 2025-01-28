@@ -1,58 +1,49 @@
 package us.dot.its.jpo.ode.udp;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import us.dot.its.jpo.ode.OdeProperties;
-
+@Slf4j
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
 
-   public class UdpReceiverException extends Exception {
-      private static final long serialVersionUID = 1L;
+    public class UdpReceiverException extends Exception {
+        private static final long serialVersionUID = 1L;
 
-      public UdpReceiverException(String string, Exception e) {
-         super(string, e);
-      }
-   }
+        public UdpReceiverException(String string, Exception e) {
+            super(string, e);
+        }
+    }
 
-   private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
-   protected DatagramSocket socket;
+    protected DatagramSocket socket;
 
-   protected String senderIp;
-   protected int senderPort;
+    protected String senderIp;
+    protected int senderPort;
 
-   protected OdeProperties odeProperties;
-   protected int port;
-   protected int bufferSize;
+     protected int port;
+    protected int bufferSize;
 
-   private boolean stopped = false;
+    private boolean stopped = false;
 
-   public boolean isStopped() {
-      return stopped;
-   }
+    public boolean isStopped() {
+        return stopped;
+    }
 
-   public void setStopped(boolean stopped) {
-      this.stopped = stopped;
-   }
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
 
-   @Autowired
-   public AbstractUdpReceiverPublisher(OdeProperties odeProps, int port, int bufferSize) {
-      this.odeProperties = odeProps;
-      this.port = port;
-      this.bufferSize = bufferSize;
+    protected AbstractUdpReceiverPublisher(int port, int bufferSize) {
+        this.port = port;
+        this.bufferSize = bufferSize;
 
-      try {
-         socket = new DatagramSocket(this.port);
-         logger.info("Created UDP socket bound to port {}", this.port);
-      } catch (SocketException e) {
-         logger.error("Error creating socket with port " + this.port, e);
-      }
-   }
-
-   
+        try {
+            this.socket = new DatagramSocket(this.port);
+            log.info("Created UDP socket bound to port {}", this.port);
+        } catch (SocketException e) {
+            log.error("Error creating socket with port {}", this.port, e);
+        }
+    }
 
 }

@@ -7,50 +7,50 @@ public class J2735LaneDataAttribute extends Asn1Object {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Integer pathEndPointAngle;
-	private Integer laneCrownPointCenter;
-	private Integer laneCrownPointLeft;
-	private Integer laneCrownPointRight;
-	private Integer laneAngle;
+	private int pathEndPointAngle;
+	private int laneCrownPointCenter;
+	private int laneCrownPointLeft;
+	private int laneCrownPointRight;
+	private int laneAngle;
 	private J2735SpeedLimitList speedLimits;
 
-	public Integer getPathEndPointAngle() {
+	public int getPathEndPointAngle() {
 		return pathEndPointAngle;
 	}
 
-	public void setPathEndPointAngle(Integer pathEndPointAngle) {
+	public void setPathEndPointAngle(int pathEndPointAngle) {
 		this.pathEndPointAngle = pathEndPointAngle;
 	}
 
-	public Integer getLaneCrownPointCenter() {
+	public int getLaneCrownPointCenter() {
 		return laneCrownPointCenter;
 	}
 
-	public void setLaneCrownPointCenter(Integer laneCrownPointCenter) {
+	public void setLaneCrownPointCenter(int laneCrownPointCenter) {
 		this.laneCrownPointCenter = laneCrownPointCenter;
 	}
 
-	public Integer getLaneCrownPointLeft() {
+	public int getLaneCrownPointLeft() {
 		return laneCrownPointLeft;
 	}
 
-	public void setLaneCrownPointLeft(Integer laneCrownPointLeft) {
+	public void setLaneCrownPointLeft(int laneCrownPointLeft) {
 		this.laneCrownPointLeft = laneCrownPointLeft;
 	}
 
-	public Integer getLaneCrownPointRight() {
+	public int getLaneCrownPointRight() {
 		return laneCrownPointRight;
 	}
 
-	public void setLaneCrownPointRight(Integer laneCrownPointRight) {
+	public void setLaneCrownPointRight(int laneCrownPointRight) {
 		this.laneCrownPointRight = laneCrownPointRight;
 	}
 
-	public Integer getLaneAngle() {
+	public int getLaneAngle() {
 		return laneAngle;
 	}
 
-	public void setLaneAngle(Integer laneAngle) {
+	public void setLaneAngle(int laneAngle) {
 		this.laneAngle = laneAngle;
 	}
 

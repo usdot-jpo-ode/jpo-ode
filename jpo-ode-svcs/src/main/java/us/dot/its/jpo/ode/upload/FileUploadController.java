@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,93 +15,87 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.upload;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.exporter.StompStringExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.kafka.topics.FileTopics;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Slf4j
 @RestController
 public class FileUploadController {
-   private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
-   private static final String UNFILTERED_OUTPUT_TOPIC = "/topic/unfiltered_messages";
+    private final StorageService storageService;
 
-   private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+    @Autowired
+    public FileUploadController(
+            StorageService storageService,
+            SimpMessagingTemplate template,
+            FileImporterProperties fileImporterProps,
+            FileTopics fileTopics,
+            JsonTopics jsonTopics,
+            RawEncodedJsonTopics rawEncodedJsonTopics,
+            OdeKafkaProperties odeKafkaProperties) {
+        super();
+        this.storageService = storageService;
 
-   private final StorageService storageService;
+        ExecutorService threadPool = Executors.newCachedThreadPool();
 
-   @Autowired
-   public FileUploadController(
-         StorageService storageService, OdeProperties odeProperties,
-         SimpMessagingTemplate template) {
-      super();
-      this.storageService = storageService;
+        // Create the importers that watch folders for new/modified files
+        threadPool.submit(
+                new ImporterDirectoryWatcher(fileImporterProps,
+                        odeKafkaProperties,
+                        jsonTopics,
+                        ImporterDirectoryWatcher.ImporterFileType.LOG_FILE,
+                        rawEncodedJsonTopics)
+        );
 
-      ExecutorService threadPool = Executors.newCachedThreadPool();
+        // Create unfiltered exporters
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getBsm(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getTim(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getSpat(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getMap(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getSsm(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getSrm(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getDriverAlert(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getUnfilteredOutput(), template, jsonTopics.getTimBroadcast(), odeKafkaProperties.getBrokers()));
 
-      Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
-         odeProperties.getUploadLocationObuLog());
-      logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
-      Path failurePath = Paths.get(odeProperties.getUploadLocationRoot(), "failed");
-      logger.debug("UPLOADER - Failure directory: {}", failurePath);
-      Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
-      logger.debug("UPLOADER - Backup directory: {}", backupPath);
+        // Create filtered exporters
+        threadPool.submit(new StompStringExporter(fileTopics.getFilteredOutput(), template, jsonTopics.getBsmFiltered(), odeKafkaProperties.getBrokers()));
+        threadPool.submit(new StompStringExporter(fileTopics.getFilteredOutput(), template, jsonTopics.getTimFiltered(), odeKafkaProperties.getBrokers()));
+    }
 
-      // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, failurePath, ImporterFileType.LOG_FILE, odeProperties.getFileWatcherPeriod()));
+    @PostMapping("/upload/{type}")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
 
-      // Create unfiltered exporters
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSpatJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeMapJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSrmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicDriverAlertJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimBroadcastJson()));
+        log.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
+        try {
+            storageService.store(file, type);
+        } catch (Exception e) {
+            log.error("File storage error", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Error\": \"File storage error.\"}");
+            // do not return exception, XSS vulnerable
+        }
 
-      // Create filtered exporters
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeTimJson()));
-   }
+        return ResponseEntity.status(HttpStatus.OK).body("{\"Success\": \"True\"}");
+    }
 
-   @PostMapping("/upload/{type}")
-   public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
-
-      logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
-      try {
-         storageService.store(file, type);
-      } catch (Exception e) {
-         logger.error("File storage error", e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Error\": \"File storage error.\"}");
-         // do not return exception, XSS vulnerable
-      }
-
-      return ResponseEntity.status(HttpStatus.OK).body("{\"Success\": \"True\"}");
-   }
-
-   @ExceptionHandler(StorageFileNotFoundException.class)
-   public ResponseEntity<Void> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-      return ResponseEntity.notFound().build();
-   }
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<Void> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().build();
+    }
 
 }

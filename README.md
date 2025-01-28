@@ -30,22 +30,22 @@ All stakeholders are invited to provide input to these documents. To provide fee
 
 The current version and release history of the JPO-ODE: [ODE Release Notes](<docs/Release_notes.md>)
 
-**Table of Contents**
+## Table of Contents
 
-1. [Usage Example](#usage-example)
-1. [Configuration](#configuration)
-1. [Installation](#installation)
-1. [File Manifest](#file-manifest)
-1. [Development Setup](#development-setup)
-1. [Release History](#release-history)
-1. [Contact Information](#contact-information)
-1. [Contributing](#contributing)
-1. [Credits and Acknowledgement](#credits-and-acknowledgement)
-1. [Code.gov Registration Info](#codegov-registration-info)
-1. [Kubernetes](#kubernetes)
-1. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
-1. [SNMP](#snmp)
-1. [GitHub Artifact Usage](#githhub-artifact-usage)
+1. [Usage Example](#1-usage-example)
+1. [Configuration](#2-configuration)
+1. [Installation](#3-installation)
+1. [File Manifest](#4-file-manifest)
+1. [Development Setup](#5-development-setup)
+1. [Release History](#6-release-history)
+1. [Contact Information](#7-contact-information)
+1. [Contributing](#8-contributing)
+1. [Credits and Acknowledgement](#9-credits-and-acknowledgement)
+1. [Code.gov Registration Info](#10-codegov-registration-info)
+1. [Kubernetes](#11-kubernetes)
+1. [Sonar Cloud](#12-sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
+1. [SNMP](#13-snmp)
+1. [GitHub Artifact Usage](#14-gitHub-artifact-usage)
 
 <!--
 #########################################
@@ -104,7 +104,7 @@ Supported message types:
   <img src="./docs/images/readme/figure3.png" width="80%" height="50%">
 </p>
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -165,7 +165,10 @@ The following guide contains information about the data flow diagrams for the OD
 
 **Configuration:**
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` 
+properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log 
+file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.yaml` file as desired.
+To adjust the settings in your unit/integration tests, modify the `jpo-ode-svcs\src\test\resources\application.yaml` file.
 
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
@@ -173,7 +176,7 @@ ODE configuration can be customized for every deployment environment using envir
 
 You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -203,18 +206,24 @@ git config --global core.autocrlf false
 
 The ODE software system consists of the following modules hosted in separate Github repositories:
 
-|Name|Visibility|Description|
-|----|----------|-----------|
-|[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
-|[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
-|[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
-|[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
-|[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable|
+| Name                                                                    | Visibility | Description                                                                                            |
+|-------------------------------------------------------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)                     | public     | Contains the public components of the application code.                                                |
+| [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)                   | public     | Privacy Protection Module                                                                              |
+| [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)               | public     | ASN.1 Encoder/Decoder module                                                                           |
+| [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs) | public     | Provides cryptographic services.                                                                       |
+| [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor) | public     | SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable |
 
 You may download the stable, default branch for ALL of these dependencies by using the following recursive git clone command:
 
 ```bash
 git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
+```
+
+If you have already cloned the repository, you can use the following command to download the stable, default branch for all dependencies by using the following command:
+
+```bash
+git submodule update --init --recursive
 ```
 
 Once you have these repositories obtained, you are ready to build and deploy the application.
@@ -279,14 +288,12 @@ git submodule deinit -f . && git submodule update --recursive --init
 
 - Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
-- In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`. **This file will contain private keys, do not put add it to version control.**
-
-Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME directory.
-- Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
-- Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
-- Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
-- Copy jpo-utils/sample.env to jpo-utils/.env
-  - Fill in the variables as described in the [README](jpo-utils/README.md)
+- In order for Docker to automatically read the environment variable files, you must:
+  - Make a copy of [sample.env](./sample.env) rename it as `.env` **_and_**;
+  - Make a copy of [jpo-utils/sample.env](jpo-utils/sample.env), rename it as `.env` (keep this one in the `jpo-utils/` directory), and fill in the variables as described in the [jpo-utils README](jpo-utils/README.md)
+  - **The .env files will contain private keys, do not add them to version control.**
+  - Log-based alerts are enabled by default in the `sample.env`. If you don't want log messages notifying you when no TIMs were ingested in a specific period of time, 
+  you will want to update your `.env` file to set `ODE_TIM_INGEST_MONITORING_ENABLED=false`. See [TimIngestWatcher](jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/traveler/TimIngestWatcher.java) to see the log-based monitoring provided.
 
 **Make:**
 
@@ -300,6 +307,7 @@ Make target options:
 `make build` to build the ODE
 `make stop` to stop the ODE
 `make delete` to stop the ODE and remove the volumes
+`make restart` to restart the ODE
 `make rebuild` to stop, delete, and then rebuild the containers
 `make clean-build` to rebuild the containers without using the cache
 ```
@@ -318,19 +326,38 @@ Makefile:14: *** "ERROR: jpo-utils Environment file `.env` not found in ".  Stop
 
 **Docker Compose:**
 
-Navigate to the root directory of the jpo-ode project and run the following command:
+Navigate to the root directory of the jpo-ode project and run:
+
+```bash
+make start
+```
+
+OR
 
 ```bash
 docker compose up --build -d
 docker compose ps
 ```
 
-To bring down the services and remove the running containers run the following command:
+To bring down the services and remove the running containers run:
+
+```bash
+make stop
+```
+
+OR
 
 ```bash
 docker compose down
 ```
+
 For a fresh restart, run:
+
+```bash
+make rebuild
+```
+
+OR
 
 ```bash
 docker compose down
@@ -341,8 +368,14 @@ docker compose ps
 To completely rebuild from scratch, run:
 
 ```bash
+make rebuild
+```
+
+OR
+
+```bash
 docker compose down
-docker compose rm -fvs
+docker compose rm -v
 docker compose up --build -d
 docker compose ps
 ```
@@ -360,6 +393,7 @@ To configure what services are started, use the `COMPOSE_PROFILE` environmental 
 Profiles are also available for each service name to individually specify a service to enable.
 
 #### asn1_codec Module (ASN.1 Encoder and Decoder)
+
 ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` file is set up to build and deploy the module in a Docker container. If you wish to run `asn1_codec` module outside Docker (i.e. directly on the host machine), please refer to the documentation of `asn1_codec` module.
 
 The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
@@ -368,20 +402,18 @@ The only requirement for deploying `asn1_codec` module on Docker is the setup of
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
 
- - ODE properties for communications with PPM (set in application.properties)
-	 - ode.kafkaTopicOdeBsmJson  (default = topic.OdeBsmJson)
-	 - ode.kafkaTopicFilteredOdeBsmJson (default = topic.FilteredOdeBsmJson)
+ - ODE properties for communications with PPM (set in [application.yaml](jpo-ode-svcs/src/main/resources/application.yaml))
+	 - ode.kafka.topics.json.bsm  (default = topic.OdeBsmJson)
+	 - ode.kafka.topics.json.bsm-filtered (default = topic.FilteredOdeBsmJson)
  - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
 
 Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service.
 
-During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
-
 After a successful build, use the following commands to configure and run the PPM
 
-```
+```bash
 cd $BASE_PPM_DIR/jpo-cvdp/build
 $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
@@ -416,7 +448,7 @@ In order to utilize Confluent Cloud:
 
 This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 # MongoDB Integration
 
@@ -438,7 +470,7 @@ For further documentation on configuring the MongoDB Kafka Connect image refer [
 
 Kafka connect is being used for MongoDB in this implementation but it can interact with many types of databases, here is further documentation for [kafka connect](https://docs.confluent.io/platform/current/connect/index.html)
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 <!--
 #########################################
@@ -487,7 +519,7 @@ This section outlines the software technology stacks of the ODE.
 - [Stomp Websocket](http://jmesnil.net/stomp-websocket)
 - [SockJS](https://github.com/sockjs)
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -510,14 +542,26 @@ Install the IDE of your choice:
 * IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
 * VSCode: [https://code.visualstudio.com/](https://code.visualstudio.com/)
 
-### Continuous Integration
-
-See the [GitHub Workflows](.github/workflows/) defined for this project.
-
 ### Dev Container Environment
-The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
-[Back to top](#toc)
+The project can be reopened inside a dev container in VSCode. This environment should have all the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
+
+
+### Checkstyle configuration
+
+This project uses [Checkstyle](https://github.com/checkstyle/checkstyle) with a modified version 
+of Google's Java Style guide to weakly enforce style standards. To configure Checkstyle with your 
+chosen IDE follow one of the following guides. This repo's checkstyle configuration file can be found 
+[here](checkstyle.xml). For a quick guide to Checkstyle, check out this short [article](https://www.baeldung.com/checkstyle-java).
+
+- [Intellij](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)
+- [VSCode](https://code.visualstudio.com/docs/java/java-linting#_checkstyle)
+- [Eclipse](https://checkstyle.org/eclipse-cs/#!/project-setup)
+
+If you prefer the command line for your checkstyle output. You can run `mvn checkstyle:check` to
+check the whole project. See [Checkstyle's Github](https://github.com/checkstyle/checkstyle) for more info.
+
+[Back to top](#table-of-contents)
 
 
 
@@ -531,9 +575,9 @@ The project can be reopened inside of a dev container in VSCode. This environmen
 
 ## 6. Release History
 
-[Release Notes](ReleaseNotes.md)
+[Release Notes](<docs/Release_notes.md>)
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -560,7 +604,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing
 permissions and limitations under the [License](http://www.apache.org/licenses/LICENSE-2.0).
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -601,7 +645,7 @@ Code quality assurance is reported through the [usdot-jpo-ode SonarCloud organiz
 
 For regression and user acceptance testing, ODE provides an automated test harness. The test harness is provided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
 
-For more information, please see: https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness
+For more information, please see: <https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness>
 
 ### Troubleshooting
 
@@ -609,7 +653,7 @@ Please read our [Wiki](https://github.com/usdot-jpo-ode/jpo-ode/wiki) for more i
 
 Application Support for the ODE currently managed via GitHub's native issue tracker: <https://github.com/usdot-jpo-ode/jpo-ode/issues>.
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -625,7 +669,7 @@ Application Support for the ODE currently managed via GitHub's native issue trac
 
 [Attribution](ATTRIBUTION.md)
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 
@@ -665,7 +709,7 @@ Contact Phone: (202) 366-3000
 The ODE can be run in a Kubernetes (k8s) environment.
 See [the Kubernetes document](./docs/Kubernetes.md) for more details about this.
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 <!--
@@ -677,16 +721,19 @@ See [the Kubernetes document](./docs/Kubernetes.md) for more details about this.
 <a name="sonar-token-configuration"></a>
 
 ## 12. Sonar Token Configuration
+
 Generating and Using Tokens
 Users can generate tokens that can be used to run analyses or invoke web services without access to the user's actual credentials.
 
 USDOT-JPO-ODE SonarCloud Organization : https://sonarcloud.io/organizations/usdot-jpo-ode-1/
 
 ### Generating a token
+
 You can generate new tokens at User > My Account > Security.
 The form at the bottom of the page allows you to generate new tokens. Once you click the Generate button, you will see the token value. Copy it immediately; once you dismiss the notification you will not be able to retrieve it.
 
 ### Using a token
+
 SonarScanners running in GitHub Actions can automatically detect branches and pull requests being built so you don't need to specifically pass them as parameters to the scanner.
 
 **<ins>To analyze your projects with GitHub Actions, you need to: </ins>**
@@ -705,9 +752,10 @@ Configure your workflow YAML file as below:
 Commit and push your code to start the analysis.
 
 ### Revoking a token
+
 You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
 
-[Back to top](#toc)
+[Back to top](#table-of-contents)
 
 
 <!--
@@ -810,6 +858,4 @@ Finally, set the environment variables:
 * PACKAGE_READ_USERNAME - User name with read access to the repositories containing the packages.
 * PACKAGE_READ_TOKEN - Personal access token with `read:packages` scope.
 
-
-
-[Back to top](#toc)
+[Back to top](#table-of-contents)

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
 
-import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubPubTransformer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -25,13 +25,13 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
  */
 public class ToJsonConverter<V> extends AbstractSubPubTransformer<String, V, String> {
 
-    private boolean verbose;
+    private final boolean verbose;
 
-    public ToJsonConverter(OdeProperties odeProps, boolean verbose, String outTopic) {
+    public ToJsonConverter(OdeKafkaProperties odeKafkaProperties, boolean verbose, String outTopic) {
         super(MessageProducer.defaultStringMessageProducer(
-           odeProps.getKafkaBrokers(),
-           odeProps.getKafkaProducerType(), 
-           odeProps.getKafkaTopicsDisabledSet()), outTopic);
+           odeKafkaProperties.getBrokers(),
+           odeKafkaProperties.getKafkaType(),
+           odeKafkaProperties.getDisabledTopics()), outTopic);
         this.verbose = verbose;
     }
 

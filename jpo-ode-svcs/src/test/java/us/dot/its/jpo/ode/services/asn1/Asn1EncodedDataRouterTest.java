@@ -21,25 +21,19 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class Asn1EncodedDataRouterTest {
    
    @Tested
    Asn1EncodedDataRouter testAsn1EncodedDataRouter;
-   
-   @Injectable
-   OdeProperties injectableOdeProperties;
+
    
 //   @Capturing
 //   MessageProducer<?,?> capturingMessageProducer;
