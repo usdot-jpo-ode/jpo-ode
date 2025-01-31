@@ -1,114 +1,114 @@
-/*******************************************************************************
+/*============================================================================
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
+
 package us.dot.its.jpo.ode.importer.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
-import mockit.Injectable;
-import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class SecResultCodeParserTest {
-   
-   @Tested
-   SecurityResultCodeParser secResultCodeParser;
-   @Injectable long bundleId;
+class SecResultCodeParserTest {
 
-   /**
-    * Should extract securityResultCode and return ParserStatus.COMPLETE
-    */
-   @Test
-   public void testAll() {
+  SecurityResultCodeParser secResultCodeParser;
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+  SecResultCodeParserTest() {
+    secResultCodeParser = new SecurityResultCodeParser(OdeLogMetadata.RecordType.bsmTx, OdeLogMetadata.RecordType.bsmTx.name());
+  }
 
-      byte[] buf = new byte[] { 
-             (byte)0x00,                                     //0. securityResultCode
-             };
-      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
+  /**
+   * Should extract securityResultCode and return ParserStatus.COMPLETE.
+   */
+  @Test
+  void testAll() {
 
-      try {
-         assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(SecurityResultCode.success, secResultCodeParser.getSecurityResultCode());
-         assertEquals(expectedStep, secResultCodeParser.getStep());
-         
-         ByteArrayOutputStream os = new ByteArrayOutputStream();
-         secResultCodeParser.writeTo(os);
-         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException | IOException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    int expectedStep = 0;
 
-   /**
-    * Test securityResultCode = unknown
-    */
-   @Test
-   public void testSecurityResultCodeUnknown() {
+    byte[] buf = new byte[] {
+        (byte) 0x00,                                     //0. securityResultCode
+    };
+    BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+    try {
+      assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream));
+      assertEquals(SecurityResultCode.success, secResultCodeParser.getSecurityResultCode());
+      assertEquals(expectedStep, secResultCodeParser.getStep());
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x01,                                     //0. securityResultCode
-               }));
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      secResultCodeParser.writeTo(os);
+      assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+    } catch (FileParserException | IOException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      try {
-         assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(SecurityResultCode.unknown, secResultCodeParser.getSecurityResultCode());
-         assertEquals(expectedStep, secResultCodeParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+  /**
+   * Test securityResultCode = unknown.
+   */
+  @Test
+  void testSecurityResultCodeUnknown() {
 
-   /**
-    * Test securityResultCode failure
-    */
-   @Test
-   public void testSecurityResultCodeFailure() {
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    int expectedStep = 0;
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x01,                                     //0. securityResultCode
+        }));
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x02,                                     //0. securityResultCode
-               }));
+    try {
+      assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream));
+      assertEquals(SecurityResultCode.unknown, secResultCodeParser.getSecurityResultCode());
+      assertEquals(expectedStep, secResultCodeParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      try {
-         assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(SecurityResultCode.inconsistentInputParameters, secResultCodeParser.getSecurityResultCode());
-         assertEquals(expectedStep, secResultCodeParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+  /**
+   * Test securityResultCode failure.
+   */
+  @Test
+  void testSecurityResultCodeFailure() {
+
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    int expectedStep = 0;
+
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x02,                                     //0. securityResultCode
+        }));
+
+    try {
+      assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream));
+      assertEquals(SecurityResultCode.inconsistentInputParameters, secResultCodeParser.getSecurityResultCode());
+      assertEquals(expectedStep, secResultCodeParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
 }

@@ -1,436 +1,437 @@
-/*******************************************************************************
+/*=============================================================================
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
+
 package us.dot.its.jpo.ode.importer.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.apache.tomcat.util.buf.HexUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import mockit.Injectable;
-import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class DistressMsgFileParserTest {
-   
-   @Tested
-   DistressMsgFileParser testDistressMsgFileParser;
-   @Injectable long bundleId;
+class DistressMsgFileParserTest {
 
-   /**
-    * Step 0 test. Test an empty stream should immediately return EOF, but still
-    * set the filename.
-    */
-   @Test
-   public void testStep0() {
+  String testFileName = "testLogFile.bin";
+  DistressMsgFileParser testDistressMsgFileParser;
 
-      String testFileName = "testLogFile.bin";
-      ParserStatus expectedStatus = ParserStatus.EOF;
-      int expectedStep = 1;
+  @BeforeEach
+  void setUp() {
+    testDistressMsgFileParser = new DistressMsgFileParser(OdeLogMetadata.RecordType.dnMsg, testFileName);
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
+  /**
+   * Step 0 test. Test an empty stream should immediately return EOF, but still
+   * set the filename.
+   */
+  @Test
+  void testStep0() {
+    ParserStatus expectedStatus = ParserStatus.EOF;
+    int expectedStep = 1;
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(testFileName, testDistressMsgFileParser.getFilename());
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
-   /**
-    * Step 1 test. Should extract the "location->latitude" value, length 4
-    * bytes, then return EOF.
-    */
-   @Test
-   public void testAll() {
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(testFileName, testDistressMsgFileParser.getFilename());
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
-      int expectedStep = 0;
+  /**
+   * Step 1 test. Should extract the "location->latitude" value, length 4
+   * bytes, then return EOF.
+   */
+  @Test
+  void testAll() {
 
-      byte[] buf = new byte[] { 
-             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-             (byte)0x04, (byte)0x00,                         //1.4 speed
-             (byte)0x09, (byte)0x27,                         //1.5 heading
-             (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-             (byte)0x8f, (byte)0x01,                         //3. mSec
-             (byte)0x00,                                     //4. securityResultCode
-             (byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                             //5.2 payload
-             (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-             };
-      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    byte[] expectedPayload = new byte[] {(byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80};
+    int expectedStep = 0;
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(424506735L, testDistressMsgFileParser.getLocationParser().getLocation().getLatitude());
-         assertEquals(-832790108L, testDistressMsgFileParser.getLocationParser().getLocation().getLongitude());
-         assertEquals(1639L, testDistressMsgFileParser.getLocationParser().getLocation().getElevation());
-         assertEquals(4, testDistressMsgFileParser.getLocationParser().getLocation().getSpeed());
-         assertEquals(9993, testDistressMsgFileParser.getLocationParser().getLocation().getHeading());
-         assertEquals(1524772009, testDistressMsgFileParser.getTimeParser().getUtcTimeInSec());
-         assertEquals(399, testDistressMsgFileParser.getTimeParser().getmSec());
-         assertEquals(SecurityResultCode.success, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
-         assertEquals(6, testDistressMsgFileParser.getPayloadParser().getPayloadLength());
-         assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testDistressMsgFileParser.getPayloadParser().getPayload()));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-         
-         ByteArrayOutputStream os = new ByteArrayOutputStream();
-         testDistressMsgFileParser.writeTo(os);
-         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException | IOException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    byte[] buf = new byte[] {
+        (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+        (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+        (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+        (byte) 0x04, (byte) 0x00,                         //1.4 speed
+        (byte) 0x09, (byte) 0x27,                         //1.5 heading
+        (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, //2. utcTimeInSec
+        (byte) 0x8f, (byte) 0x01,                         //3. mSec
+        (byte) 0x00,                                     //4. securityResultCode
+        (byte) 0x06, (byte) 0x00,                         //5.1 payloadLength
+        //5.2 payload
+        (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+    };
+    BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-   /**
-    * Step 1 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep1_1Partial() {
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(424506735L, testDistressMsgFileParser.getLocationParser().getLocation().getLatitude());
+      assertEquals(-832790108L, testDistressMsgFileParser.getLocationParser().getLocation().getLongitude());
+      assertEquals(1639L, testDistressMsgFileParser.getLocationParser().getLocation().getElevation());
+      assertEquals(4, testDistressMsgFileParser.getLocationParser().getLocation().getSpeed());
+      assertEquals(9993, testDistressMsgFileParser.getLocationParser().getLocation().getHeading());
+      assertEquals(1524772009, testDistressMsgFileParser.getTimeParser().getUtcTimeInSec());
+      assertEquals(399, testDistressMsgFileParser.getTimeParser().getMilliSec());
+      assertEquals(SecurityResultCode.success, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
+      assertEquals(6, testDistressMsgFileParser.getPayloadParser().getPayloadLength());
+      assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testDistressMsgFileParser.getPayloadParser().getPayload()));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 1;
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      testDistressMsgFileParser.writeTo(os);
+      assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+    } catch (FileParserException | IOException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75//, (byte)0x4d, (byte)0x19, //1.1 latitude
-               //(byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               //(byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               //(byte)0x04, (byte)0x00,                         //1.4 speed
-               //(byte)0x09, (byte)0x27,                         //1.5 heading
-               //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 1 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep1_1Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 1;
 
-   /**
-    * Step 2 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep1_2Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75//, (byte)0x4d, (byte)0x19, //1.1 latitude
+            //(byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
+            //(byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
+            //(byte)0x04, (byte)0x00,                         //1.4 speed
+            //(byte)0x09, (byte)0x27,                         //1.5 heading
+            //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 1;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1//, (byte)0x5c, (byte)0xce, //1.2 longitude
-               //(byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               //(byte)0x04, (byte)0x00,                         //1.4 speed
-               //(byte)0x09, (byte)0x27,                         //1.5 heading
-               //(byte)0xa9, (byte)0x2c, //(byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 2 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep1_2Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 1;
 
-   /**
-    * Step 3 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep1_3Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1//, (byte)0x5c, (byte)0xce, //1.2 longitude
+            //(byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
+            //(byte)0x04, (byte)0x00,                         //1.4 speed
+            //(byte)0x09, (byte)0x27,                         //1.5 heading
+            //(byte)0xa9, (byte)0x2c, //(byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 1;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06//, (byte)0x00, (byte)0x00, //1.3 elevation
-               //(byte)0x04, (byte)0x00,                         //1.4 speed
-               //(byte)0x09, (byte)0x27,                         //1.5 heading
-               //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 3 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep1_3Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 1;
 
-   /**
-    * Step 4 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep1_4Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06//, (byte)0x00, (byte)0x00, //1.3 elevation
+            //(byte)0x04, (byte)0x00,                         //1.4 speed
+            //(byte)0x09, (byte)0x27,                         //1.5 heading
+            //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 1;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04//, (byte)0x00,                         //1.4 speed
-               //(byte)0x09, (byte)0x27,                         //1.5 heading
-               //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 4 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep1_4Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 1;
 
-   /**
-    * Step 5 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep1_5Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04//, (byte)0x00,                         //1.4 speed
+            //(byte)0x09, (byte)0x27,                         //1.5 heading
+            //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 1;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09//, (byte)0x27,                         //1.5 heading
-               //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81//, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 5 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep1_5Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 1;
 
-   /**
-    * Step 7 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep2Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09//, (byte)0x27,                         //1.5 heading
+            //(byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81//, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 2;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5heading
-               (byte)0xa9, (byte)0x2c//, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               //(byte)0x8f, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 7 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep2Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 2;
 
-   /**
-    * Step 7 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testStep3Partial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09, (byte) 0x27,                         //1.5heading
+            (byte) 0xa9, (byte) 0x2c//, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+            //(byte)0x8f, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 2;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f//, (byte)0x01,                         //3. mSec
-               //(byte)0x00,                                     //4. securityResultCode
-               //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 7 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testStep3Partial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 2;
 
-   /**
-    * Step 8 test. Should extract the "verification status" value, length 1
-    * bytes, then return EOF.
-    */
-   @Test
-   public void testStep4Unknown() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09, (byte) 0x27,                         //1.5heading
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, //2. utcTimeInSec
+            (byte) 0x8f//, (byte)0x01,                         //3. mSec
+            //(byte)0x00,                                     //4. securityResultCode
+            //(byte)0x06, (byte)0x00,                         //5.1 payloadLength
+            //5.2 payload
+            //(byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //3. mSec
-               (byte)0x01,                                     //4. securityResultCode
-               (byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 8 test. Should extract the "verification status" value, length 1
+   * bytes, then return EOF.
+   */
+  @Test
+  void testStep4Unknown() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(SecurityResultCode.unknown, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    int expectedStep = 0;
 
-   /**
-    * Step 8 test. Should extract the "verification status" value, length 1
-    * bytes, then return EOF.
-    */
-   @Test
-   public void testStep4Failure() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09, (byte) 0x27,                         //1.5heading
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, //2. utcTimeInSec
+            (byte) 0x8f, (byte) 0x01,                         //3. mSec
+            (byte) 0x01,                                     //4. securityResultCode
+            (byte) 0x06, (byte) 0x00,                         //5.1 payloadLength
+            //5.2 payload
+            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(SecurityResultCode.unknown, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //3. mSec
-               (byte)0x02,                                     //4. securityResultCode
-               (byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 8 test. Should extract the "verification status" value, length 1
+   * bytes, then return EOF.
+   */
+  @Test
+  void testStep4Failure() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(SecurityResultCode.inconsistentInputParameters, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    int expectedStep = 0;
 
-   /**
-    * Step 10 test without enough bytes. Should return PARTIAL.
-    */
-   @Test
-   public void testPayloadPartial() {
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09, (byte) 0x27,                         //1.5heading
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, //2. utcTimeInSec
+            (byte) 0x8f, (byte) 0x01,                         //3. mSec
+            (byte) 0x02,                                     //4. securityResultCode
+            (byte) 0x06, (byte) 0x00,                         //5.1 payloadLength
+            //5.2 payload
+            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+        }));
 
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 4;
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(SecurityResultCode.inconsistentInputParameters, testDistressMsgFileParser.getSecResCodeParser().getSecurityResultCode());
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //3. mSec
-               (byte)0x00,                                     //4. securityResultCode
-               (byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               (byte)0x03, (byte)0x81//, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+  /**
+   * Step 10 test without enough bytes. Should return PARTIAL.
+   */
+  @Test
+  void testPayloadPartial() {
 
-      try {
-         assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedStep, testDistressMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    int expectedStep = 4;
+
+    BufferedInputStream testInputStream = new BufferedInputStream(
+        new ByteArrayInputStream(new byte[] {
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, //1.1 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, //1.2 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, //1.3 elevation
+            (byte) 0x04, (byte) 0x00,                         //1.4 speed
+            (byte) 0x09, (byte) 0x27,                         //1.5heading
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, //2. utcTimeInSec
+            (byte) 0x8f, (byte) 0x01,                         //3. mSec
+            (byte) 0x00,                                     //4. securityResultCode
+            (byte) 0x06, (byte) 0x00,                         //5.1 payloadLength
+            //5.2 payload
+            (byte) 0x03, (byte) 0x81//, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80
+        }));
+
+    try {
+      assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream));
+      assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+    } catch (FileParserException e) {
+      fail("Unexpected exception: " + e);
+    }
+  }
 
 }
