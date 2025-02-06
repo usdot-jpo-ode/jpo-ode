@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.udp.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.concurrent.DefaultManagedTaskExecutor;
 import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
@@ -35,8 +36,7 @@ public class UdpServicesController {
       KafkaTemplate<String, String> kafkaTemplate) {
     super();
 
-    ServiceManager serviceManager = new ServiceManager(
-        new UdpServiceThreadFactory("UdpReceiverManager"));
+    var serviceManager = new DefaultManagedTaskExecutor();
     log.debug("Starting UDP receiver services...");
 
     serviceManager.submit(
