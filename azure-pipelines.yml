@@ -4,16 +4,29 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - 'jpo-ode-common/*'
+      - 'jpo-ode-core/*'
+      - 'jpo-ode-plugins/*'
+      - 'jpo-ode-svcs/*'
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '.'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  # Publish the artifacts directory for consumption in publish pipeline
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'jpo-ode'
+      publishLocation: 'Container'
