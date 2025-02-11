@@ -31,8 +31,12 @@ The pipeline automatically triggers when:
 ## Pipeline Steps
 
 1. **Copy Files**
-   - Copies all project files to the artifact staging directory
-   - Ensures all necessary source code is included in the artifact
+   - Copies project files to the artifact staging directory
+   - Excludes certain files/directories by default:
+     - `.git` directories
+     - `data` directories
+     - `docs` directories
+     - Markdown (`.md`) files
 
 2. **Publish Artifact**
    - Creates an artifact named 'jpo-ode'
