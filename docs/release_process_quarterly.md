@@ -517,7 +517,7 @@ None
 
 ### 3. Project Reference Updates & Release Creation
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-cvmanager project, and create a release with the version number of the release. (e.g. jpo-cvmanager-x.x.x)
-
+    - [ ] Merge master branch into develop branch & verify that CI/CD passes.
 
 ## jpo-s3-deposit
 ### Prerequisites
