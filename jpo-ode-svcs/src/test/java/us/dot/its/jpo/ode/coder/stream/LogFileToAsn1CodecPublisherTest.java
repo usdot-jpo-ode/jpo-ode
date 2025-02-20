@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*=============================================================================
  * Copyright 2018 572682
  *
  * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -34,9 +34,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import us.dot.its.jpo.ode.coder.StringPublisher;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher.LogFileToAsn1CodecPublisherException;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.FileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParserFactory;
@@ -46,22 +49,18 @@ import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
+@ExtendWith(MockitoExtension.class)
 class LogFileToAsn1CodecPublisherTest {
 
   private static final String GZ = ".gz";
   private static final String SCHEMA_VERSION = "8";
 
-  LogFileToAsn1CodecPublisher testLogFileToAsn1CodecPublisher;
-
-  public LogFileToAsn1CodecPublisherTest() {
-    var mockStringPublisher = mock(StringPublisher.class);
-    var mockJsonTopics = mock(JsonTopics.class);
-    var mockRawEncodedJsonTopics = mock(RawEncodedJsonTopics.class);
-    testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(mockStringPublisher, mockJsonTopics, mockRawEncodedJsonTopics);
-  }
-
   @Test
-  void testPublishInit() throws Exception {
+  void testPublishInit(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     var fileName = bsmTx.name() + "thisIsAFile.txt";
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
@@ -71,7 +70,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishEOF() throws Exception {
+  void testPublishEmptyInputStreamDoesNotThrowException(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
     var fileName = rxMsg.name() + "fileName";
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
@@ -82,7 +85,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishThrowsLogFileToAsn1CodecPublisherException() {
+  void testPublishThrowsLogFileToAsn1CodecPublisherException(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
       var mockLogFileParser = mock(LogFileParser.class);
       when(mockLogFileParser.parseFile(any())).thenThrow(new FileParser.FileParserException("exception msg", null));
@@ -94,8 +101,12 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishDecodeFailure() throws Exception {
-    var mockLogFileParser = mock(LogFileParser.class);
+  void testPublishDecodeFailure(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate,
+      @Mock LogFileParser mockLogFileParser) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
     when(mockLogFileParser.parseFile(any())).thenReturn(FileParser.ParserStatus.ERROR);
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
@@ -106,8 +117,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishBsmTxLogFile() throws Exception {
-
+  void testPublishBsmTxLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x00, // 1. direction
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -143,8 +157,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishDistressNotificationLogFile() throws Exception {
-
+  void testPublishDistressNotificationLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 1.1 latitude
         (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 1.2 longitude
@@ -179,8 +196,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishDriverAlertLogFile() throws Exception {
-
+  void testPublishDriverAlertLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 1.0 latitude
         (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 1.1 longitude
@@ -214,8 +234,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishRxMsgTIMLogFile() throws Exception {
-
+  void testPublishRxMsgTIMLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x01, // 1. RxSource = SAT
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -251,8 +274,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishRxMsgBSMLogFile() throws Exception {
-
+  void testPublishRxMsgBSMLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x02, // 1. RxSource = RV
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -288,8 +314,11 @@ class LogFileToAsn1CodecPublisherTest {
   }
 
   @Test
-  void testPublishNonLearLogFile() throws Exception {
-
+  void testPublishNonLearLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     String filename = rxMsg.name() + GZ;
 
     String jsonData = "{\"fakeJsonKey\":\"fakeJsonValue\"";
@@ -303,14 +332,17 @@ class LogFileToAsn1CodecPublisherTest {
      */
 
     List<OdeData> dataList =
-        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE, LogFileParserFactory.getLogFileParser(filename));
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.UNKNOWN, LogFileParserFactory.getLogFileParser(filename));
 
     assertTrue(dataList.isEmpty());
   }
 
   @Test
-  void testPublishRxMsgBSMLogFileNewLine() throws Exception {
-
+  void testPublishRxMsgBSMLogFileNewLine(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x02, // 1. RxSource = RV
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude

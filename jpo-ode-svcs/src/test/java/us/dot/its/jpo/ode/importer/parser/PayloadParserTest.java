@@ -46,7 +46,7 @@ class PayloadParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     byte[] expectedPayload = new byte[] {(byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80};
     int expectedStep = 0;
 
@@ -77,7 +77,7 @@ class PayloadParserTest {
   @Test
   void testPayloadLengthPartial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -101,7 +101,7 @@ class PayloadParserTest {
   @Test
   void testPayloadPartial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(

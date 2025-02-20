@@ -54,14 +54,14 @@ public interface FileParser {
    *   <li>UNKNOWN: The parser status is not determined or has not been initialized.</li>
    *   <li>INIT: The parser is initialized and ready to begin processing.</li>
    *   <li>NA: The parser is unable to determine the status or the input is deemed not applicable.</li>
-   *   <li>PARTIAL: The parsing is in progress but not yet complete.</li>
-   *   <li>COMPLETE: The parsing has successfully completed.</li>
-   *   <li>EOF: End of file is reached during parsing.</li>
+   *   <li>ENTRY_PARTIALLY_PROCESSED: The parsing of an entry is in progress but not yet complete.</li>
+   *   <li>ENTRY_PARSING_COMPLETE: The parsing has successfully completed for an entry in the file.</li>
+   *   <li>FILE_PARSING_COMPLETE: End of file is reached during parsing.</li>
    *   <li>ERROR: An error has occurred during the parsing process.</li>
    * </ul>
    */
   enum ParserStatus {
-    UNKNOWN, INIT, NA, PARTIAL, COMPLETE, EOF, ERROR
+    UNKNOWN, INIT, NA, ENTRY_PARTIALLY_PROCESSED, ENTRY_PARSING_COMPLETE, FILE_PARSING_COMPLETE, ERROR
   }
 
   ParserStatus parseFile(BufferedInputStream bis) throws FileParserException;

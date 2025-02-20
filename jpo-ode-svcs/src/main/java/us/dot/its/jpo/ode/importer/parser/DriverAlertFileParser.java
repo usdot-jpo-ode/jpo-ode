@@ -52,34 +52,34 @@ public class DriverAlertFileParser extends LogFileParser {
     ParserStatus status;
     try {
       status = super.parseFile(bis);
-      if (status != ParserStatus.COMPLETE) {
+      if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
         return status;
       }
 
       if (getStep() == 1) {
         status = nextStep(bis, locationParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 2) {
         status = nextStep(bis, timeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 3) {
         status = nextStep(bis, payloadParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setAlert(payloadParser.getPayload());
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

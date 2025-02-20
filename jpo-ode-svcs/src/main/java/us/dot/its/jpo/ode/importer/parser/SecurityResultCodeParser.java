@@ -53,14 +53,14 @@ public class SecurityResultCodeParser extends LogFileParser {
       // parse SecurityResultCode
       if (getStep() == 0) {
         status = parseStep(bis, SECURITY_RESULT_CODE_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setSecurityResultCode(readBuffer[0]);
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

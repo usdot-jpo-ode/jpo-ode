@@ -48,7 +48,7 @@ class DistressMsgFileParserTest {
    */
   @Test
   void testStep0() {
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
@@ -69,7 +69,7 @@ class DistressMsgFileParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     byte[] expectedPayload = new byte[] {(byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80};
     int expectedStep = 0;
 
@@ -116,7 +116,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep1_1Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -148,7 +148,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep1_2Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -180,7 +180,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep1_3Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -212,7 +212,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep1_4Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -244,7 +244,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep1_5Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -276,7 +276,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep2Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 2;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -308,7 +308,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep3Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 2;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -341,7 +341,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep4Unknown() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -375,7 +375,7 @@ class DistressMsgFileParserTest {
   @Test
   void testStep4Failure() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -408,7 +408,7 @@ class DistressMsgFileParserTest {
   @Test
   void testPayloadPartial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 4;
 
     BufferedInputStream testInputStream = new BufferedInputStream(

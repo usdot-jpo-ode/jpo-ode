@@ -63,14 +63,14 @@ public class RxMsgFileParser extends LogFileParser {
     ParserStatus status;
     try {
       status = super.parseFile(bis);
-      if (status != ParserStatus.COMPLETE) {
+      if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
         return status;
       }
 
       // parse rxSource
       if (getStep() == 1) {
         status = parseStep(bis, RX_SOURCE_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         try {
@@ -82,34 +82,34 @@ public class RxMsgFileParser extends LogFileParser {
 
       if (getStep() == 2) {
         status = nextStep(bis, locationParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 3) {
         status = nextStep(bis, timeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 4) {
         status = nextStep(bis, secResCodeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 5) {
         status = nextStep(bis, payloadParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

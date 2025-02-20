@@ -46,7 +46,7 @@ class BsmFileParserTest {
   @Test
   void testStepsAlreadyDone() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
@@ -67,7 +67,7 @@ class BsmFileParserTest {
   void testAll() {
 
     try {
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
+      ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
 
       byte[] buf = new byte[] {
           (byte) 0x00,                                     //1. direction
@@ -116,7 +116,7 @@ class BsmFileParserTest {
    */
   @Test
   void testStep0() {
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
@@ -137,7 +137,7 @@ class BsmFileParserTest {
   void testDirectionEV() {
 
     int testDirection = 0;
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     BsmSource expectedDirection = BsmSource.EV;
     int expectedStep = 2;
 
@@ -160,7 +160,7 @@ class BsmFileParserTest {
   void testDirectionRV() {
 
     int testDirection = 1;
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     BsmSource expectedDirection = BsmSource.RV;
     int expectedStep = 2;
 
@@ -183,7 +183,7 @@ class BsmFileParserTest {
   void testDirectionUnknown() {
 
     int testDirection = 111;
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     BsmSource expectedDirection = BsmSource.unknown;
     int expectedStep = 2;
 

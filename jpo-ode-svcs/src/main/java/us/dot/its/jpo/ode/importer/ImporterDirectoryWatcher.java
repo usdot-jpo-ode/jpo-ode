@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*============================================================================
  * Copyright 2018 572682
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -13,98 +13,99 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package us.dot.its.jpo.ode.importer;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
-import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
-import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+package us.dot.its.jpo.ode.importer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
+import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
+/**
+ * The ImporterDirectoryWatcher uses a scheduled task to periodically scan the designated inbox directory for
+ * files offloaded from the Roadside Units (RSUs) for offline bulk processing.
+ */
+@Component
+@EnableScheduling
 @Slf4j
-public class ImporterDirectoryWatcher implements Runnable {
+public class ImporterDirectoryWatcher {
 
-    public enum ImporterFileType {
-        LOG_FILE, JSON_FILE
+  private final ImporterProcessor importerProcessor;
+  private final FileImporterProperties props;
+  private final Path inboxPath;
+  private final Path backupPath;
+  private final Path failuresPath;
+
+  /**
+   * Constructs an instance of ImporterDirectoryWatcher responsible for managing the
+   * inbox, failure, and backup directories for processing files offloaded from RSUs.
+   * Initializes the ImporterProcessor for handling log files and their associated encoding.
+   *
+   * @param fileImporterProperties Configuration properties for file importer.
+   * @param jsonTopics             Configuration for Kafka topics that handle JSON payloads.
+   * @param rawEncodedJsonTopics   Configuration for Kafka topics that handle raw encoded
+   *                               JSON payloads.
+   * @param kafkaTemplate          Kafka template for producing messages to Kafka topics.
+   */
+  public ImporterDirectoryWatcher(FileImporterProperties fileImporterProperties,
+                                  JsonTopics jsonTopics,
+                                  RawEncodedJsonTopics rawEncodedJsonTopics,
+                                  KafkaTemplate<String, String> kafkaTemplate) {
+    this.props = fileImporterProperties;
+
+    this.inboxPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getObuLogUploadLocation());
+    log.debug("UPLOADER - BSM log file upload directory: {}", inboxPath);
+
+    this.failuresPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getFailedDir());
+    log.debug("UPLOADER - Failure directory: {}", failuresPath);
+
+    this.backupPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getBackupDir());
+    log.debug("UPLOADER - Backup directory: {}", backupPath);
+
+    try {
+      OdeFileUtils.createDirectoryRecursively(inboxPath);
+      log.debug("Created inbox directory at: {}", inboxPath);
+
+      OdeFileUtils.createDirectoryRecursively(failuresPath);
+      log.debug("Created failures directory at: {}", failuresPath);
+
+      OdeFileUtils.createDirectoryRecursively(backupPath);
+      log.debug("Created backup directory at: {}", backupPath);
+    } catch (IOException e) {
+      log.error("Error creating directory", e);
     }
 
-    @Setter
-    @Getter
-    private boolean watching;
+    this.importerProcessor = new ImporterProcessor(
+        new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics),
+        ImporterFileType.LOG_FILE,
+        fileImporterProperties.getBufferSize());
+  }
 
-    private final ImporterProcessor importerProcessor;
-    private final FileImporterProperties props;
-    private final ScheduledExecutorService executor;
-    private final Path inboxPath;
-    private final Path backupPath;
-    private final Path failuresPath;
-
-    public ImporterDirectoryWatcher(FileImporterProperties fileImporterProperties,
-                                    OdeKafkaProperties odeKafkaProperties,
-                                    JsonTopics jsonTopics,
-                                    ImporterFileType fileType,
-                                    RawEncodedJsonTopics rawEncodedJsonTopics) {
-        this.props = fileImporterProperties;
-        this.watching = true;
-
-        this.inboxPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getObuLogUploadLocation());
-        log.debug("UPLOADER - BSM log file upload directory: {}", inboxPath);
-
-        this.failuresPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getFailedDir());
-        log.debug("UPLOADER - Failure directory: {}", failuresPath);
-
-        this.backupPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getBackupDir());
-        log.debug("UPLOADER - Backup directory: {}", backupPath);
-
-        try {
-            String msg = "Created directory {}";
-
-            OdeFileUtils.createDirectoryRecursively(inboxPath);
-            log.debug(msg, inboxPath);
-
-            OdeFileUtils.createDirectoryRecursively(failuresPath);
-            log.debug(msg, failuresPath);
-
-            OdeFileUtils.createDirectoryRecursively(backupPath);
-            log.debug(msg, backupPath);
-        } catch (IOException e) {
-            log.error("Error creating directory", e);
-        }
-
-        this.importerProcessor = new ImporterProcessor(new FileAsn1CodecPublisher(odeKafkaProperties, jsonTopics, rawEncodedJsonTopics),
-                fileType,
-                fileImporterProperties.getBufferSize());
-
-        executor = Executors.newScheduledThreadPool(1);
-    }
-
-    @Override
-    public void run() {
-
-        log.info("Processing inbox directory {} every {} seconds.", inboxPath, props.getTimePeriod());
-
-        // ODE-646: the old method of watching the directory used file
-        // event notifications and was unreliable for large quantities of files
-        // Watch directory for file events
-        executor.scheduleWithFixedDelay(() -> importerProcessor.processDirectory(inboxPath, backupPath, failuresPath),
-                0, props.getTimePeriod(), TimeUnit.SECONDS);
-
-        try {
-            // This line will only execute in the event that .scheduleWithFixedDelay() throws an error
-            executor.awaitTermination(props.getTimePeriod(), TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Directory watcher polling loop interrupted!", e);
-        }
-    }
+  /**
+   * Executes the scheduled task to process the inbox directory at a fixed interval.
+   * The method logs the processing information, processes files in the inbox, and logs
+   * the number of files processed successfully.
+   *
+   * <p>This task runs at a fixed rate defined in the application configuration using
+   * the property {@code ode.file-importer.time-period}, measured in seconds.</p>
+   *
+   * <p>During execution, the method utilizes the file processing logic to handle files
+   * located in the inbox directory, moving them to either the backup or failures directory
+   * based on the processing outcome.</p>
+   */
+  @Scheduled(fixedRateString = "${ode.file-importer.time-period}", timeUnit = TimeUnit.SECONDS)
+  public void run() {
+    log.info("Processing inbox directory {} every {} seconds.", inboxPath, props.getTimePeriod());
+    var filesProcessedSuccessfully = importerProcessor.processDirectory(inboxPath, backupPath, failuresPath);
+    log.info("Successfully processed {} files.", filesProcessedSuccessfully);
+  }
 }

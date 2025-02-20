@@ -54,7 +54,7 @@ public class LocationParser extends LogFileParser {
       // Step 1 - parse location.latitude
       if (getStep() == 0) {
         status = parseStep(bis, LOCATION_LAT_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         location.setLatitude(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_LAT_LENGTH, ByteOrder.LITTLE_ENDIAN));
@@ -63,7 +63,7 @@ public class LocationParser extends LogFileParser {
       // Step 2 - parse location.longitude
       if (getStep() == 1) {
         status = parseStep(bis, LOCATION_LON_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         location.setLongitude(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_LON_LENGTH, ByteOrder.LITTLE_ENDIAN));
@@ -72,7 +72,7 @@ public class LocationParser extends LogFileParser {
       // Step 3 - parse location.elevation
       if (getStep() == 2) {
         status = parseStep(bis, LOCATION_ELEV_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         location.setElevation(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_ELEV_LENGTH, ByteOrder.LITTLE_ENDIAN));
@@ -81,7 +81,7 @@ public class LocationParser extends LogFileParser {
       // Step 4 - parse location.speed
       if (getStep() == 3) {
         status = parseStep(bis, LOCATION_SPEED_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         location.setSpeed(CodecUtils.bytesToShort(readBuffer, 0, LOCATION_SPEED_LENGTH, ByteOrder.LITTLE_ENDIAN));
@@ -90,14 +90,14 @@ public class LocationParser extends LogFileParser {
       // Step 5 - parse location.heading
       if (getStep() == 4) {
         status = parseStep(bis, LOCATION_HEADING_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         location.setHeading(CodecUtils.bytesToShort(readBuffer, 0, LOCATION_HEADING_LENGTH, ByteOrder.LITTLE_ENDIAN));
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);
     }

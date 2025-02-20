@@ -84,7 +84,7 @@ public abstract class LogFileParser implements FileParser {
     if (getStep() == 0) {
       setStep(1);
     }
-    status = ParserStatus.COMPLETE;
+    status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     return status;
   }
@@ -102,15 +102,15 @@ public abstract class LogFileParser implements FileParser {
       }
       numBytes = bis.read(readBuffer, 0, length);
       if (numBytes < 0) {
-        return ParserStatus.EOF;
+        return ParserStatus.FILE_PARSING_COMPLETE;
       } else if (numBytes < length) {
         if (bis.markSupported()) {
           bis.reset();
         }
-        return ParserStatus.PARTIAL;
+        return ParserStatus.ENTRY_PARTIALLY_PROCESSED;
       } else {
         step++;
-        return ParserStatus.COMPLETE;
+        return ParserStatus.ENTRY_PARSING_COMPLETE;
       }
     } catch (IOException ioe) {
       throw new FileParserException("Error resetting Input Stream to marked position", ioe);
@@ -128,7 +128,7 @@ public abstract class LogFileParser implements FileParser {
       throws FileParserException {
 
     ParserStatus status = parser.parseFile(bis);
-    if (status == ParserStatus.COMPLETE) {
+    if (status == ParserStatus.ENTRY_PARSING_COMPLETE) {
       step++;
     }
     return status;

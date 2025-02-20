@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import org.springframework.kafka.core.KafkaTemplate;
+import us.dot.its.jpo.ode.importer.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
@@ -48,13 +48,13 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
  * The LogFileToAsn1CodecPublisher class is responsible for processing log files
- * and publishing data in ASN.1 encoded format to Kafka topics. It serves as an implementation
+ * and publishing the data to Kafka topics. It serves as an implementation
  * of the Asn1CodecPublisher interface.
  *
- * <p>This class handles different file types and decoding processes, converting them into ODE metadata
- * and payload models for publishing. It can also differentiate between various record types, such as
- * Driver Alert, BSM (Basic Safety Message), and SPAT (Signal Phase and Timing), and directs the data
- * to the appropriate topics defined in RawEncodedJsonTopics or JsonTopics.</p>
+ * <p>This class handles different file types and decoding processes, converting them into {@link OdeData}
+ * containing {@link OdeLogMetadata} and {@link OdeMsgPayload} models for publishing. It can also differentiate between various record types,
+ * such as Traveler Information Message (TIM), BSM (Basic Safety Message), and SPaT (Signal Phase and Timing), and directs the data to
+ * the appropriate topics defined in {@link RawEncodedJsonTopics} or {@link JsonTopics}.</p>
  */
 @Slf4j
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
@@ -81,30 +81,28 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
   private final RawEncodedJsonTopics rawEncodedJsonTopics;
   private final JsonTopics jsonTopics;
-  private final StringPublisher publisher;
+  private final KafkaTemplate<String, String> template;
   private final SerialId serialId;
 
   /**
-   * Constructs a LogFileToAsn1CodecPublisher instance used for converting log files
-   * to ASN.1 encoded formats and publishing them. It integrates with given
-   * publishers and topic configurations for data processing and dissemination.
+   * Constructs a LogFileToAsn1CodecPublisher instance used for converting log files into {@link OdeData} objects and publishing
+   * the data to the relevant kafka topics for further processing.
    *
-   * @param stringPublisher      the publisher responsible for publishing the encoded strings
+   * @param template             the publisher responsible for publishing the encoded strings
    * @param jsonTopics           the topic configuration for processing JSON data
    * @param rawEncodedJsonTopics the topic configuration for processing raw encoded JSON data
    */
-  public LogFileToAsn1CodecPublisher(StringPublisher stringPublisher, JsonTopics jsonTopics, RawEncodedJsonTopics rawEncodedJsonTopics) {
+  public LogFileToAsn1CodecPublisher(KafkaTemplate<String, String> template, JsonTopics jsonTopics,
+                                     RawEncodedJsonTopics rawEncodedJsonTopics) {
     this.jsonTopics = jsonTopics;
     this.rawEncodedJsonTopics = rawEncodedJsonTopics;
-    this.publisher = stringPublisher;
+    this.template = template;
     this.serialId = new SerialId();
   }
 
   /**
-   * Publishes data parsed from a given input stream based on the specified file type.
-   * The method processes the input stream, parses the data using specific parsers
-   * depending on the file type, and publishes the parsed data. Handles both complete
-   * and incomplete data scenarios and maintains a list of all successfully parsed data.
+   * Uses the {@link LogFileParser} to parse the {@code BufferedInputStream} into {@link OdeData} objects. It then publishes each
+   * parsed {@code OdeData} object to the relevant kafka topic for further processing.
    *
    * @param inputStream the input stream containing the data to be parsed
    * @param fileName    the name of the file associated with the data in the input stream
@@ -126,16 +124,16 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
         try {
           status = fileParser.parseFile(inputStream);
           switch (status) {
-            case ParserStatus.COMPLETE -> addDataToList(dataList, fileParser);
-            case ParserStatus.EOF -> publishList(dataList, fileParser);
+            case ParserStatus.ENTRY_PARSING_COMPLETE -> addDataToList(dataList, fileParser);
+            case ParserStatus.FILE_PARSING_COMPLETE -> publishList(dataList, fileParser);
             case ParserStatus.INIT -> log.error("Failed to parse the header bytes.");
             default -> log.error("Failed to decode ASN.1 data");
           }
-          inputStream = removeNextNewLineCharacter(inputStream);
+          removeNextNewLineCharacter(inputStream);
         } catch (Exception e) {
           throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
         }
-      } while (status == ParserStatus.COMPLETE);
+      } while (status == ParserStatus.ENTRY_PARSING_COMPLETE);
     }
 
     return dataList;
@@ -191,21 +189,21 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       msgMetadata.setSerialId(serialId);
 
       if (isDriverAlertRecord(fileParser)) {
-        publisher.publish(jsonTopics.getDriverAlert(), JsonUtils.toJson(odeData, false));
+        template.send(jsonTopics.getDriverAlert(), JsonUtils.toJson(odeData, false));
       } else if (isBsmRecord(fileParser)) {
-        publisher.publish(rawEncodedJsonTopics.getBsm(), JsonUtils.toJson(odeData, false));
+        template.send(rawEncodedJsonTopics.getBsm(), JsonUtils.toJson(odeData, false));
       } else if (isSpatRecord(fileParser)) {
-        publisher.publish(rawEncodedJsonTopics.getSpat(), JsonUtils.toJson(odeData, false));
+        template.send(rawEncodedJsonTopics.getSpat(), JsonUtils.toJson(odeData, false));
       } else {
         String messageType = UperUtil.determineMessageType(msgPayload);
         switch (messageType) {
-          case "MAP" -> publisher.publish(rawEncodedJsonTopics.getMap(), JsonUtils.toJson(odeData, false));
-          case "SPAT" -> publisher.publish(rawEncodedJsonTopics.getSpat(), JsonUtils.toJson(odeData, false));
-          case "TIM" -> publisher.publish(rawEncodedJsonTopics.getTim(), JsonUtils.toJson(odeData, false));
-          case "BSM" -> publisher.publish(rawEncodedJsonTopics.getBsm(), JsonUtils.toJson(odeData, false));
-          case "SSM" -> publisher.publish(rawEncodedJsonTopics.getSsm(), JsonUtils.toJson(odeData, false));
-          case "SRM" -> publisher.publish(rawEncodedJsonTopics.getSrm(), JsonUtils.toJson(odeData, false));
-          case "PSM" -> publisher.publish(rawEncodedJsonTopics.getPsm(), JsonUtils.toJson(odeData, false));
+          case "MAP" -> template.send(rawEncodedJsonTopics.getMap(), JsonUtils.toJson(odeData, false));
+          case "SPAT" -> template.send(rawEncodedJsonTopics.getSpat(), JsonUtils.toJson(odeData, false));
+          case "TIM" -> template.send(rawEncodedJsonTopics.getTim(), JsonUtils.toJson(odeData, false));
+          case "BSM" -> template.send(rawEncodedJsonTopics.getBsm(), JsonUtils.toJson(odeData, false));
+          case "SSM" -> template.send(rawEncodedJsonTopics.getSsm(), JsonUtils.toJson(odeData, false));
+          case "SRM" -> template.send(rawEncodedJsonTopics.getSrm(), JsonUtils.toJson(odeData, false));
+          case "PSM" -> template.send(rawEncodedJsonTopics.getPsm(), JsonUtils.toJson(odeData, false));
           default -> log.warn("Unknown message type: {}", messageType);
         }
       }
@@ -216,7 +214,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
   // This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal)
   // or if the next character does not contain a newline character it will put that character back into the buffered input stream
-  private BufferedInputStream removeNextNewLineCharacter(BufferedInputStream bis) {
+  private void removeNextNewLineCharacter(BufferedInputStream bis) {
     try {
       bis.mark(1);
       int nextByte = bis.read();
@@ -226,6 +224,5 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
     } catch (IOException e) {
       log.error("Error removing next newline character: ", e);
     }
-    return bis;
   }
 }

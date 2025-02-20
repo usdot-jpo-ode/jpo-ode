@@ -46,7 +46,7 @@ class RxMsgFileParserTest {
   @Test
   void testStepsAlreadyDone() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
@@ -66,7 +66,7 @@ class RxMsgFileParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     byte[] expectedPayload = new byte[] {(byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80};
     int expectedStep = 0;
 
@@ -115,7 +115,7 @@ class RxMsgFileParserTest {
    */
   @Test
   void testStep0() {
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));

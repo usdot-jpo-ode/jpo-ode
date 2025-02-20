@@ -16,8 +16,6 @@
 
 package us.dot.its.jpo.ode.upload;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
+import us.dot.its.jpo.ode.storage.LogFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
@@ -45,19 +43,13 @@ public class FileUploadController {
    * Constructs an instance of FileUploadController, initializes the storage service,
    * and sets up a directory watcher for monitoring file events.
    *
-   * @param storageService       the storage service used to handle file storage operations
+   * @param storageService the storage service used to handle file storage operations
    */
   @Autowired
   public FileUploadController(
-      StorageService storageService,
-      ImporterDirectoryWatcher importerDirectoryWatcher) {
+      StorageService storageService) {
     super();
     this.storageService = storageService;
-
-    ExecutorService threadPool = Executors.newCachedThreadPool();
-
-    // Create the importers that watch folders for new/modified files
-    threadPool.submit(importerDirectoryWatcher);
   }
 
   /**
@@ -76,7 +68,7 @@ public class FileUploadController {
 
     log.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
     try {
-      storageService.store(file, type);
+      storageService.store(file, LogFileType.fromString(type));
     } catch (Exception e) {
       log.error("File storage error", e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Error\": \"File storage error.\"}");

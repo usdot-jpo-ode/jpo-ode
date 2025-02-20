@@ -21,8 +21,11 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 
 /**
  * DistressMsgFileParser extends the {@link LogFileParser} abstract class and provides functionality
- * to parse log files containing Distress TIMs. It defines steps to parse specific components like
+ * to parse log files containing Distress TIMs. It defines * steps to parse specific components like
  * location, time, security result codes, and payload data within the file.
+ *
+ * <p>Note: There doesn't seem to be any reference to Distress Notifications in the 2024 spec,
+ * so it's likely this message type is no longer supported. We may consider deprecating this parser in the future.
  */
 public class DistressMsgFileParser extends LogFileParser {
 
@@ -50,40 +53,40 @@ public class DistressMsgFileParser extends LogFileParser {
     ParserStatus status;
     try {
       status = super.parseFile(bis);
-      if (status != ParserStatus.COMPLETE) {
+      if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
         return status;
       }
 
       if (getStep() == 1) {
         status = nextStep(bis, locationParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 2) {
         status = nextStep(bis, timeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 3) {
         status = nextStep(bis, secResCodeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 4) {
         status = nextStep(bis, payloadParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

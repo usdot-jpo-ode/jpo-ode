@@ -52,7 +52,7 @@ public class TimeParser extends LogFileParser {
       // parse utcTimeInSec
       if (getStep() == 0) {
         status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
@@ -61,14 +61,14 @@ public class TimeParser extends LogFileParser {
       // parse mSec
       if (getStep() == 1) {
         status = parseStep(bis, MSEC_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

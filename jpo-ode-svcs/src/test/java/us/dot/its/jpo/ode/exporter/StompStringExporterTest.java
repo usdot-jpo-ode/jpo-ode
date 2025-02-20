@@ -22,20 +22,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.stomp.StompContent;
 
+@ExtendWith(MockitoExtension.class)
 class StompStringExporterTest {
 
-  private SimpMessagingTemplate mockTemplate;
-
-  @BeforeEach
-  public void setup() {
-    mockTemplate = Mockito.mock(SimpMessagingTemplate.class);
-  }
+  @Mock
+  SimpMessagingTemplate mockTemplate;
 
   @Test
   void testListenUnfiltered() {

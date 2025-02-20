@@ -44,7 +44,7 @@ class LocationParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     byte[] buf = new byte[] {
@@ -79,7 +79,7 @@ class LocationParserTest {
   @Test
   void testStep0Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -105,7 +105,7 @@ class LocationParserTest {
   @Test
   void testStep1Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -131,7 +131,7 @@ class LocationParserTest {
   @Test
   void testStep2Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 2;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -157,7 +157,7 @@ class LocationParserTest {
   @Test
   void testStep3Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 3;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -183,7 +183,7 @@ class LocationParserTest {
   @Test
   void testStep4Partial() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 4;
 
     BufferedInputStream testInputStream = new BufferedInputStream(

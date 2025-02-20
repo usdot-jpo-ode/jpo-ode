@@ -66,7 +66,7 @@ public class PayloadParser extends LogFileParser {
       // parse payload length
       if (getStep() == 0) {
         status = parseStep(bis, PAYLOAD_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH, ByteOrder.LITTLE_ENDIAN);
@@ -76,14 +76,14 @@ public class PayloadParser extends LogFileParser {
       // Step 10 - copy payload bytes
       if (getStep() == 1) {
         status = parseStep(bis, getPayloadLength());
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setPayload(UperUtil.stripDot3Header(Arrays.copyOf(readBuffer, getPayloadLength()), msgStartFlags));
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);

@@ -44,7 +44,7 @@ class SecResultCodeParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     byte[] buf = new byte[] {
@@ -71,7 +71,7 @@ class SecResultCodeParserTest {
   @Test
   void testSecurityResultCodeUnknown() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -94,7 +94,7 @@ class SecResultCodeParserTest {
   @Test
   void testSecurityResultCodeFailure() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(

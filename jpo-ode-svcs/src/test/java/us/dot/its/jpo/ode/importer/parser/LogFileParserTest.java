@@ -106,7 +106,7 @@ class LogFileParserTest {
     OdeBsmMetadata metadata = new OdeBsmMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(BsmSource.EV, metadata.getBsmSource());
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.NA, metadata.getReceivedMessageDetails().getRxSource());
@@ -138,7 +138,7 @@ class LogFileParserTest {
     OdeBsmMetadata metadata = new OdeBsmMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(BsmSource.EV, metadata.getBsmSource());
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.NA, metadata.getReceivedMessageDetails().getRxSource());
@@ -170,7 +170,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.NA, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -200,7 +200,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.NA, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -232,7 +232,7 @@ class LogFileParserTest {
     OdeBsmMetadata metadata = new OdeBsmMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.RV, metadata.getReceivedMessageDetails().getRxSource());
     assertEquals(BsmSource.RV, metadata.getBsmSource());
@@ -265,7 +265,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.RSU, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.RSU, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -297,7 +297,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.TMC_VIA_SAT, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.SAT, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -329,7 +329,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.TMC_VIA_SNMP, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.SNMP, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -361,7 +361,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.UNKNOWN, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.UNKNOWN, metadata.getReceivedMessageDetails().getRxSource());
   }
@@ -393,7 +393,7 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.UNKNOWN, metadata.getRecordGeneratedBy());
     assertEquals(RxSource.UNKNOWN, metadata.getReceivedMessageDetails().getRxSource());
     assertNull(metadata.getReceivedMessageDetails().getLocationData().getElevation());
@@ -431,8 +431,9 @@ class LogFileParserTest {
     OdeLogMetadata metadata = new OdeLogMetadata();
     parser.updateMetadata(metadata);
 
-    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(ParserStatus.ENTRY_PARSING_COMPLETE, status);
     assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
     assertNull(metadata.getReceivedMessageDetails());
   }
+
 }

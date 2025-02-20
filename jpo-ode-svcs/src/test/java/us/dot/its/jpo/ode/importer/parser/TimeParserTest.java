@@ -43,7 +43,7 @@ class TimeParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     int expectedStep = 0;
 
     byte[] buf = new byte[] {
@@ -72,7 +72,7 @@ class TimeParserTest {
   @Test
   void testPartialUtcTimeInSec() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 0;
 
     BufferedInputStream testInputStream = new BufferedInputStream(
@@ -95,7 +95,7 @@ class TimeParserTest {
   @Test
   void testPartialMSec() {
 
-    ParserStatus expectedStatus = ParserStatus.PARTIAL;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARTIALLY_PROCESSED;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(

@@ -34,7 +34,7 @@ public class IntersectionParser extends LogFileParser {
       // Step 1 - parse intersection.intersectionStatus
       if (getStep() == 0) {
         status = parseStep(bis, INTERSECTION_ID_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         intersection.setIntersectionId(
@@ -44,14 +44,14 @@ public class IntersectionParser extends LogFileParser {
       // Step 2 - parse intersection.intersectionId
       if (getStep() == 1) {
         status = parseStep(bis, INTERSECTION_STATUS_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         intersection.setIntersectionStatus(readBuffer[0]);
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
     } catch (Exception e) {
       throw new FileParserException(String.format("Error parsing %s on step %d", getFilename(), getStep()), e);
     }

@@ -48,7 +48,7 @@ class DriverAlertFileParserTest {
    */
   @Test
   void testStep0() {
-    ParserStatus expectedStatus = ParserStatus.EOF;
+    ParserStatus expectedStatus = ParserStatus.FILE_PARSING_COMPLETE;
     int expectedStep = 1;
 
     BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
@@ -65,7 +65,7 @@ class DriverAlertFileParserTest {
   @Test
   void testAll() {
 
-    ParserStatus expectedStatus = ParserStatus.COMPLETE;
+    ParserStatus expectedStatus = ParserStatus.ENTRY_PARSING_COMPLETE;
     String expectedPayload = "Test Driver Alert";
     int expectedStep = 0;
 

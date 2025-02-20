@@ -54,13 +54,13 @@ public class SpatLogFileParser extends LogFileParser {
     ParserStatus status;
     try {
       status = super.parseFile(bis);
-      if (status != ParserStatus.COMPLETE) {
+      if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
         return status;
       }
 
       if (getStep() == 1) {
         status = parseStep(bis, RX_FROM_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setSpatSource(readBuffer);
@@ -68,28 +68,28 @@ public class SpatLogFileParser extends LogFileParser {
 
       if (getStep() == 2) {
         status = nextStep(bis, intersectionParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 3) {
         status = nextStep(bis, timeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 4) {
         status = nextStep(bis, secResCodeParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       if (getStep() == 5) {
         status = parseStep(bis, IS_CERT_PRESENT_LENGTH);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
         setCertPresent(readBuffer);
@@ -97,13 +97,13 @@ public class SpatLogFileParser extends LogFileParser {
 
       if (getStep() == 6) {
         status = nextStep(bis, payloadParser);
-        if (status != ParserStatus.COMPLETE) {
+        if (status != ParserStatus.ENTRY_PARSING_COMPLETE) {
           return status;
         }
       }
 
       resetStep();
-      status = ParserStatus.COMPLETE;
+      status = ParserStatus.ENTRY_PARSING_COMPLETE;
 
     } catch (Exception e) {
       throw new FileParserException("Error parsing " + getFilename(), e);
