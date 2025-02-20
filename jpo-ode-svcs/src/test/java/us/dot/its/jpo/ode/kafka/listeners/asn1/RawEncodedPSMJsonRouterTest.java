@@ -28,6 +28,7 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 
 @SpringBootTest(
     classes = {
+        OdeKafkaProperties.class,
         KafkaProducerConfig.class,
         KafkaConsumerConfig.class,
         KafkaProperties.class,

@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners.asn1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
@@ -30,8 +32,8 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
  * processing and forwarding it to different topics based on specific criteria.
  *
  * <p>This listener is specifically designed to handle decoded data produced by the asn1_codec.
- * Upon receiving a payload, it transforms the payload and then determines the appropriate
- * Kafka topic to forward the processed data.</p>
+ * Upon receiving a payload, it transforms the payload and then determines the appropriate Kafka
+ * topic to forward the processed data.</p>
  *
  * <p>The class utilizes Spring Kafka's annotation-driven listener configuration,
  * allowing it to automatically consume messages from a configured Kafka topic.</p>
@@ -68,7 +70,8 @@ public class Asn1DecodedDataRouter {
       id = "Asn1DecodedDataRouter",
       topics = "${ode.kafka.topics.asn1.decoder-output}"
   )
-  public void listen(ConsumerRecord<String, String> consumerRecord) throws XmlUtilsException {
+  public void listen(ConsumerRecord<String, String> consumerRecord)
+      throws XmlUtilsException, JsonProcessingException {
     log.debug("Key: {} payload: {}", consumerRecord.key(), consumerRecord.value());
 
     JSONObject consumed = XmlUtils.toJSONObject(consumerRecord.value())
@@ -80,16 +83,23 @@ public class Asn1DecodedDataRouter {
             .getInt("messageId")
     );
 
+    var metadataJson = XmlUtils.toJSONObject(consumerRecord.value())
+        .getJSONObject(OdeAsn1Data.class.getSimpleName())
+        .getJSONObject(AppContext.METADATA_STRING);
     OdeLogMetadata.RecordType recordType = OdeLogMetadata.RecordType
-        .valueOf(XmlUtils.toJSONObject(consumerRecord.value())
-            .getJSONObject(OdeAsn1Data.class.getSimpleName())
-            .getJSONObject(AppContext.METADATA_STRING)
-            .getString("recordType")
-        );
+        .valueOf(metadataJson.getString("recordType"));
+
+    String streamId;
+    if (Strings.isNullOrEmpty(consumerRecord.key())
+        || "null".equalsIgnoreCase(consumerRecord.key())) {
+      streamId = metadataJson.getJSONObject("serialId").getString("streamId");
+    } else {
+      streamId = consumerRecord.key();
+    }
 
     switch (messageId) {
       case BasicSafetyMessage -> routeBSM(consumerRecord, recordType);
-      case TravelerInformation -> routeTIM(consumerRecord, recordType);
+      case TravelerInformation -> routeTIM(consumerRecord, streamId, recordType);
       case SPATMessage -> routeSPAT(consumerRecord, recordType);
       case MAPMessage -> routeMAP(consumerRecord, recordType);
       case SSMMessage -> routeSSM(consumerRecord, recordType);
@@ -156,17 +166,18 @@ public class Asn1DecodedDataRouter {
     kafkaTemplate.send(jsonTopics.getMap(), odeMapData);
   }
 
-  private void routeTIM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
-      throws XmlUtilsException {
+  private void routeTIM(ConsumerRecord<String, String> consumerRecord,
+      String streamId,
+      RecordType type) throws XmlUtilsException {
     String odeTimData =
         OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(consumerRecord.value()).toString();
-    switch (recordType) {
+    switch (type) {
       case dnMsg -> kafkaTemplate.send(jsonTopics.getDnMessage(), consumerRecord.key(), odeTimData);
       case rxMsg -> kafkaTemplate.send(jsonTopics.getRxTim(), consumerRecord.key(), odeTimData);
-      default -> log.trace("Consumed TIM data with record type: {}", recordType);
+      default -> log.trace("Consumed TIM data with record type: {}", type);
     }
     // Send all TIMs also to OdeTimJson
-    kafkaTemplate.send(jsonTopics.getTim(), consumerRecord.key(), odeTimData);
+    kafkaTemplate.send(jsonTopics.getTim(), streamId, odeTimData);
   }
 
   private void routeBSM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
