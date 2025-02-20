@@ -33,7 +33,6 @@ The pipeline automatically triggers when:
 1. **Copy Files**
    - Copies project files to the artifact staging directory
    - Excludes certain files/directories by default:
-     - `.git` directories
      - `data` directories
      - `docs` directories
      - Markdown (`.md`) files
