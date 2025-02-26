@@ -1,11 +1,17 @@
 package us.dot.its.jpo.ode.udp.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.concurrent.DefaultManagedTaskExecutor;
 import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
@@ -22,6 +28,8 @@ import us.dot.its.jpo.ode.udp.tim.TimReceiver;
 @Slf4j
 public class UdpServicesController {
 
+  private final List<ExecutorService> executors = new ArrayList<>();
+
   /**
    * Constructs a UdpServicesController to manage UDP receiver services for different message
    * types.
@@ -32,30 +40,71 @@ public class UdpServicesController {
    */
   @Autowired
   public UdpServicesController(UDPReceiverProperties udpProps,
-      RawEncodedJsonTopics rawEncodedJsonTopics,
-      KafkaTemplate<String, String> kafkaTemplate) {
-    super();
+                               RawEncodedJsonTopics rawEncodedJsonTopics,
+                               KafkaTemplate<String, String> kafkaTemplate) {
 
-    var serviceManager = new DefaultManagedTaskExecutor();
     log.debug("Starting UDP receiver services...");
 
-    serviceManager.submit(
-        new BsmReceiver(udpProps.getBsm(), kafkaTemplate, rawEncodedJsonTopics.getBsm()));
-    serviceManager.submit(
-        new TimReceiver(udpProps.getTim(), kafkaTemplate, rawEncodedJsonTopics.getTim()));
-    serviceManager.submit(
-        new SsmReceiver(udpProps.getSsm(), kafkaTemplate, rawEncodedJsonTopics.getSsm()));
-    serviceManager.submit(
-        new SrmReceiver(udpProps.getSrm(), kafkaTemplate, rawEncodedJsonTopics.getSrm()));
-    serviceManager.submit(
-        new SpatReceiver(udpProps.getSpat(), kafkaTemplate, rawEncodedJsonTopics.getSpat()));
-    serviceManager.submit(
-        new MapReceiver(udpProps.getMap(), kafkaTemplate, rawEncodedJsonTopics.getMap()));
-    serviceManager.submit(
-        new PsmReceiver(udpProps.getPsm(), kafkaTemplate, rawEncodedJsonTopics.getPsm()));
-    serviceManager.submit(
-        new GenericReceiver(udpProps.getGeneric(), kafkaTemplate, rawEncodedJsonTopics));
+    startReceiver(new BsmReceiver(udpProps.getBsm(), kafkaTemplate, rawEncodedJsonTopics.getBsm()));
+    startReceiver(new TimReceiver(udpProps.getTim(), kafkaTemplate, rawEncodedJsonTopics.getTim()));
+    startReceiver(new SsmReceiver(udpProps.getSsm(), kafkaTemplate, rawEncodedJsonTopics.getSsm()));
+    startReceiver(new SrmReceiver(udpProps.getSrm(), kafkaTemplate, rawEncodedJsonTopics.getSrm()));
+    startReceiver(new SpatReceiver(udpProps.getSpat(), kafkaTemplate, rawEncodedJsonTopics.getSpat()));
+    startReceiver(new MapReceiver(udpProps.getMap(), kafkaTemplate, rawEncodedJsonTopics.getMap()));
+    startReceiver(new PsmReceiver(udpProps.getPsm(), kafkaTemplate, rawEncodedJsonTopics.getPsm()));
+    startReceiver(new GenericReceiver(udpProps.getGeneric(), kafkaTemplate, rawEncodedJsonTopics));
 
     log.debug("UDP receiver services started.");
+  }
+
+  /**
+   * Starts a receiver in its own executor service and manages its lifecycle.
+   *
+   * @param receiver The receiver to start
+   */
+  private void startReceiver(AbstractUdpReceiverPublisher receiver) {
+    ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+      Thread thread = new Thread(r);
+      thread.setDaemon(true); // Makes thread exit when main application exits
+      return thread;
+    });
+
+    executors.add(executor);
+
+    executor.submit(() -> {
+      try {
+        while (!Thread.currentThread().isInterrupted()) {
+          receiver.run();
+        }
+      } catch (Exception e) {
+        log.error("Error in receiver {}: {}", receiver.getClass().getSimpleName(), e.getMessage(), e);
+      }
+    });
+  }
+
+  /**
+   * Gracefully shuts down all executor services and closes all receivers.
+   */
+  @PreDestroy
+  public void shutdown() {
+    log.info("Shutting down UDP services...");
+
+    // First, shutdown all executors
+    executors.forEach(executor -> {
+      try {
+        executor.shutdown();
+        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+          executor.shutdownNow();
+          if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+            log.error("Executor did not terminate");
+          }
+        }
+      } catch (InterruptedException e) {
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+    });
+
+    log.info("UDP services shutdown completed.");
   }
 }
