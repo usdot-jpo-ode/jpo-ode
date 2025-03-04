@@ -1,12 +1,8 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import io.micrometer.common.KeyValues;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,8 +14,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.micrometer.KafkaRecordSenderContext;
-import org.springframework.kafka.support.micrometer.KafkaTemplateObservationConvention;
 
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.XMLOdeObjectSerializer;
@@ -52,9 +46,7 @@ public class KafkaProducerConfig {
 
   private final KafkaProperties kafkaProperties;
   private final OdeKafkaProperties odeKafkaProperties;
-
-  private ObjectMapper mapper = new ObjectMapper();
-  JsonFactory factory = mapper.getFactory();
+  private final MeterRegistry meterRegistry;
 
   /**
    * Constructor for the KafkaProducerConfig class, which sets up the
@@ -74,9 +66,10 @@ public class KafkaProducerConfig {
    *                           infrastructure.
    */
   public KafkaProducerConfig(KafkaProperties kafkaProperties,
-      OdeKafkaProperties odeKafkaProperties) {
+      OdeKafkaProperties odeKafkaProperties, MeterRegistry meterRegistry) {
     this.kafkaProperties = kafkaProperties;
     this.odeKafkaProperties = odeKafkaProperties;
+    this.meterRegistry = meterRegistry;
   }
 
   /**
@@ -115,23 +108,7 @@ public class KafkaProducerConfig {
   public KafkaTemplate<String, String> kafkaTemplate(
       ProducerFactory<String, String> producerFactory) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics());
-    template.setObservationEnabled(true);
-    template.setObservationConvention(new KafkaTemplateObservationConvention() {
-      @Override
-      public KeyValues getLowCardinalityKeyValues(KafkaRecordSenderContext context) {
-        String originIp = null;
-        try {
-          String value = (String) context.getRecord().value();
-          JsonNode rootNode = mapper.readTree(value);
-          originIp = rootNode.get("metadata").get("originIp").asText();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-        return KeyValues.of("topic", context.getDestination(),
-            "origin_ip", originIp);
-      }
-    });
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
 
     template.setProducerListener(new LoggingProducerListener<>());
 
@@ -177,7 +154,7 @@ public class KafkaProducerConfig {
   public KafkaTemplate<String, OdeObject> odeDataKafkaTemplate(
       ProducerFactory<String, OdeObject> producerFactory) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics());
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
     template.setProducerListener(new LoggingProducerListener<>());
 
     return template;
@@ -224,7 +201,7 @@ public class KafkaProducerConfig {
   public KafkaTemplate<String, OdeBsmData> odeBsmKafkaTemplate(
       ProducerFactory<String, OdeBsmData> producerFactory) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics());
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
     template.setProducerListener(new LoggingProducerListener<>());
     return template;
   }

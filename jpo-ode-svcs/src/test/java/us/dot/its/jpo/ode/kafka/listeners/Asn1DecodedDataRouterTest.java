@@ -29,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1DecodedDataRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
@@ -53,7 +54,8 @@ import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
         Asn1CoderTopics.class,
         OdeKafkaProperties.class,
         Asn1DecodedDataRouter.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {"ode.kafka.disabled-topics="}
 )

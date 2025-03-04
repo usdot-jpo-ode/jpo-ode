@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
 import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,8 @@ class KafkaProducerConfigTest {
   @Qualifier("testOdeKafkaProperties")
   OdeKafkaProperties odeKafkaProperties;
   @Autowired
+  @Qualifier("testMeterRegistry")
+  MeterRegistry meterRegistry;
   XmlMapper xmlMapper;
 
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
@@ -165,8 +170,13 @@ class KafkaProducerConfigTest {
     }
 
     @Bean
-    public KafkaProducerConfig testKafkaProducerConfig(KafkaProperties kafkaProperties, OdeKafkaProperties testOdeKafkaProperties) {
-      return new KafkaProducerConfig(kafkaProperties, testOdeKafkaProperties);
+    public MeterRegistry testMeterRegistry() {
+        return new SimpleMeterRegistry();  // Simple in-memory registry for tests
+    }
+
+    @Bean
+    public KafkaProducerConfig testKafkaProducerConfig(KafkaProperties kafkaProperties, OdeKafkaProperties testOdeKafkaProperties, MeterRegistry meterRegistry) {
+      return new KafkaProducerConfig(kafkaProperties, testOdeKafkaProperties, meterRegistry);
     }
   }
 }

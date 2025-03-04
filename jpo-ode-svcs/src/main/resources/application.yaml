@@ -143,11 +143,15 @@ ode:
     channels:
       filtered-output: "/topic/filtered_messages"
       unfiltered-output: "/topic/unfiltered_messages"
+
 management:
-  tracing:
-    enabled: true
-    sampling:
-      probability: 1.0
-  otlp:
-    tracing:
-      endpoint: http://jaeger:4318/v1/traces
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      enabled: true

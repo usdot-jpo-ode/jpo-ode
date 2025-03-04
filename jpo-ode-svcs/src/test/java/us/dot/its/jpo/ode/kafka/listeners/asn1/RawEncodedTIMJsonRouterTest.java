@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
@@ -36,6 +37,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
         SerializationConfig.class,
         RawEncodedTIMJsonRouter.class,
         RawEncodedJsonService.class,
+        TestMetricsConfig.class,
     },
     properties = {
         "ode.kafka.topics.raw-encoded-json.tim=topic.Asn1DecoderTestTIMJSON",

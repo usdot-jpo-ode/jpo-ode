@@ -37,6 +37,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
@@ -50,6 +51,7 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
     KafkaConsumerConfig.class,
     KafkaProperties.class,
     SerializationConfig.class,
+    TestMetricsConfig.class,
 }, properties = {
     "ode.kafka.topics.pojo.bsm=topic.BSMPojo",
     "ode.kafka.topics.json.bsm=topic.BSMJson"

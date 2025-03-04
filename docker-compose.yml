@@ -2,12 +2,6 @@ include:
   - jpo-utils/docker-compose.yml
 
 services:
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "16686:16686"
-      - "4317:4317"
-      - "4318:4318"
   ode:
     profiles:
       - all
@@ -24,7 +18,7 @@ services:
           memory: 4G
     ports:
       - "8080:8080"
-      - "9090:9090"
+      - "9091:9090"
       - "46753:46753/udp"
       - "46800:46800/udp"
       - "47900:47900/udp"
@@ -64,8 +58,6 @@ services:
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://${DOCKER_HOST_IP}:4318/v1/traces
     depends_on:
       kafka:
-        condition: service_healthy
-      jaeger:
         condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode

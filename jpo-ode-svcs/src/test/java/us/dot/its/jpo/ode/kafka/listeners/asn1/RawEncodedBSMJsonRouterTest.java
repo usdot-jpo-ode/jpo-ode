@@ -23,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
@@ -34,7 +35,8 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
         KafkaConsumerConfig.class,
         RawEncodedBSMJsonRouter.class,
         RawEncodedJsonService.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {
         "ode.kafka.topics.raw-encoded-json.bsm=topic.Asn1DecoderTestBSMJSON",
