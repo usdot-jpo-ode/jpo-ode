@@ -74,9 +74,12 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     if (producerRecord.value() instanceof String) {
       String stringValue = (String) producerRecord.value();
       try {
-        JsonNode originIpNode = mapper.readTree(stringValue).get("metadata").get("originIp");
-        if (originIpNode != null) {
-          originIp = originIpNode.asText();
+        JsonNode rootNode = mapper.readTree(stringValue);
+        if (rootNode.has("metadata")) {
+          JsonNode metadataNode = rootNode.get("metadata");
+          if (metadataNode.has("originIp")) {
+            originIp = metadataNode.get("originIp").asText();
+          }
         }
       } catch (JsonProcessingException e) {
         log.error("Error processing JSON", e);
