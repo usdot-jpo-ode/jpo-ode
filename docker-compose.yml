@@ -63,7 +63,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
     healthcheck:
-      test: ["CMD", "wget" ,"--spider", "http://localhost:8080"]
+      test: [ "CMD", "wget", "--spider", "http://localhost:8080" ]
       interval: 5s
       timeout: 30s
       retries: 5
@@ -236,7 +236,7 @@ services:
         condition: service_healthy
     logging:
       options:
-        max-size: "10m" 
+        max-size: "10m"
         max-file: "5"
 
   sec:
@@ -253,14 +253,14 @@ services:
           cpus: '1'
           memory: 2G
     ports:
-     - "8090:8090"
+      - "8090:8090"
     environment:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
       SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH: ${SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH}
       SEC_USE_CERTIFICATES: ${SEC_USE_CERTIFICATES}
     logging:
       options:
-        max-size: "10m"  
+        max-size: "10m"
         max-file: "5"
   mock-signing-svc:
     build: ./jpo-security-svcs/mock-signing-svc
