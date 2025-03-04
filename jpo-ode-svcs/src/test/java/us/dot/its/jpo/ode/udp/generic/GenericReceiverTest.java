@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,11 +94,11 @@ class GenericReceiverTest {
         udpReceiverProperties.getGeneric().getReceiverPort());
 
     var consumerProps = KafkaTestUtils.consumerProps("GenericReceiverTest", "true", embeddedKafka);
-    var cf = new DefaultKafkaConsumerFactory<String, String>(consumerProps);
+    var cf = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new StringDeserializer());
     var consumer = cf.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(consumer, topics);
 
-    DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
+    final Clock prevClock = DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
 
     // Test the PSM path
     String psmFileContent = Files.readString(
@@ -171,6 +172,8 @@ class GenericReceiverTest {
 
     var srmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSrm());
     assertExpected("Produced SRM message does not match expected", srmRecord.value(), expectedSrm);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   private static void assertExpected(String failureMsg, String actual, String expected) {

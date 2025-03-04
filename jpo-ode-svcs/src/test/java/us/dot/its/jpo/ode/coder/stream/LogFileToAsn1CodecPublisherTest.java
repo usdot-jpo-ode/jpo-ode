@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*=============================================================================
  * Copyright 2018 572682
  *
  * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -20,142 +20,108 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType.bsmTx;
+import static us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType.rxMsg;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
 import org.junit.jupiter.api.Test;
-import us.dot.its.jpo.ode.coder.StringPublisher;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher.LogFileToAsn1CodecPublisherException;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.ImporterFileType;
+import us.dot.its.jpo.ode.importer.parser.FileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
+import us.dot.its.jpo.ode.importer.parser.LogFileParserFactory;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
+@ExtendWith(MockitoExtension.class)
 class LogFileToAsn1CodecPublisherTest {
 
   private static final String GZ = ".gz";
-  private static final String schemaVersion = "8";
-
-  @Tested
-  LogFileToAsn1CodecPublisher testLogFileToAsn1CodecPublisher;
-
-  @Injectable
-  StringPublisher injectableStringPublisher;
-
-  @Injectable
-  JsonTopics injectableJsonTopics;
-
-  @Injectable
-  RawEncodedJsonTopics injectableRawEncodedJsonTopics;
+  private static final String SCHEMA_VERSION = "8";
 
   @Test
-  void testPublishInit(@Mocked LogFileParser mockLogFileParser) throws Exception {
-    new Expectations() {
-      {
-        LogFileParser.factory(anyString);
-        result = mockLogFileParser;
-
-        mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-        result = ParserStatus.INIT;
-      }
-    };
-
+  void testPublishInit(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
+    var fileName = bsmTx.name() + "thisIsAFile.txt";
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-        "fileName", ImporterFileType.LOG_FILE);
+        fileName, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(fileName));
 
     assertTrue(dataList.isEmpty());
   }
 
   @Test
-  void testPublishEOF(@Mocked LogFileParser mockLogFileParser) throws Exception {
-    new Expectations() {
-      {
-        LogFileParser.factory(anyString);
-        result = mockLogFileParser;
+  void testPublishEmptyInputStreamDoesNotThrowException(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
-        mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-        result = ParserStatus.EOF;
-      }
-    };
-
+    var fileName = rxMsg.name() + "fileName";
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-        "fileName", ImporterFileType.LOG_FILE);
+        fileName, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(fileName));
 
     assertTrue(dataList.isEmpty());
   }
 
   @Test
-  void testPublishThrowsIllegalArgumentException() {
-    // If the filename does not follow expected filename pattern,
-    // IllegalArgumentException should be thrown
-    assertThrows(IllegalArgumentException.class, () -> {
-      // If the filename does not follow expected filename pattern,
-      // IllegalArgumentException should be thrown
-      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-          "fileName", ImporterFileType.LOG_FILE);
-      fail("Expected an IllegalArgumentException to be thrown");
-    });
-  }
-
-  @Test
-  void testPublishThrowsLogFileToAsn1CodecPublisherException(@Mocked LogFileParser mockLogFileParser) {
+  void testPublishThrowsLogFileToAsn1CodecPublisherException(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
-      new Expectations() {
-        {
-          LogFileParser.factory(anyString);
-          result = mockLogFileParser;
-
-          /*
-           * If the embedded parser fails to parse a log file header, it may throw an
-           * exception
-           * which is then caught by the parser and re-thrown as
-           * LogFileToAsn1CodecPublisherException.
-           * This mocked object will simulate that eventuality.
-           */
-          mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-          result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
-        }
-      };
+      var mockLogFileParser = mock(LogFileParser.class);
+      when(mockLogFileParser.parseFile(any())).thenThrow(new FileParser.FileParserException("exception msg", null));
 
       testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-          "fileName", ImporterFileType.LOG_FILE);
+          "fileName", ImporterFileType.LOG_FILE, mockLogFileParser);
       fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
     });
   }
 
   @Test
-  void testPublishDecodeFailure(@Mocked LogFileParser mockLogFileParser) throws Exception {
-    new Expectations() {
-      {
-        LogFileParser.factory(anyString);
-        result = mockLogFileParser;
+  void testPublishDecodeFailure(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate,
+      @Mock LogFileParser mockLogFileParser) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
-        mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-        result = ParserStatus.ERROR;
-      }
-    };
-
+    when(mockLogFileParser.parseFile(any())).thenReturn(FileParser.ParserStatus.ERROR);
     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-        "fileName", ImporterFileType.LOG_FILE);
+        "fileName", ImporterFileType.LOG_FILE, mockLogFileParser);
 
     assertTrue(dataList.isEmpty());
   }
 
   @Test
-  void testPublishBsmTxLogFile() throws Exception {
-
+  void testPublishBsmTxLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x00, // 1. direction
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -171,28 +137,31 @@ class LogFileToAsn1CodecPublisherTest {
         (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
     };
 
-    String filename = RecordType.bsmTx.name() + GZ;
+    String filename = bsmTx.name() + GZ;
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
+    var expectedStringToFormat = loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedBsmTxLogFileToPublish.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
       String asn1String = data.getMetadata().getAsn1();
-      var expected = String.format(
-          "{\"metadata\":{\"bsmSource\":\"EV\",\"logFileName\":\"bsmTx.gz\",\"recordType\":\"bsmTx\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false,\"asn1\":\"%s\"},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"%s\"}}}",
-          schemaVersion, asn1String, asn1String);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION, asn1String, asn1String);
       assertEquals(expected, data.toJson());
     }
   }
 
   @Test
-  void testPublishDistressNotificationLogFile() throws Exception {
-
+  void testPublishDistressNotificationLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 1.1 latitude
         (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 1.2 longitude
@@ -211,22 +180,27 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
+    var expectedStringToFormat =
+        loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedDistressNotificationLogFileToPublish.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-      var expected = String.format(
-          "{\"metadata\":{\"logFileName\":\"dnMsg.gz\",\"recordType\":\"dnMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}",
-          schemaVersion);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION);
+      assertEquals(expected, data.toJson());
     }
   }
 
   @Test
-  void testPublishDriverAlertLogFile() throws Exception {
-
+  void testPublishDriverAlertLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 1.0 latitude
         (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 1.1 longitude
@@ -245,23 +219,26 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
+    var expectedStringToFormat = loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedDriverAlertLogFileToPublish.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-      var expected = String.format(
-          "{\"metadata\":{\"logFileName\":\"driverAlert.gz\",\"recordType\":\"driverAlert\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeDriverAlertPayload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"alert\":\"Test Driver Alert\"}}",
-          schemaVersion);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION);
       assertEquals(expected, data.toJson());
     }
   }
 
   @Test
-  void testPublishRxMsgTIMLogFile() throws Exception {
-
+  void testPublishRxMsgTIMLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x01, // 1. RxSource = SAT
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -277,28 +254,31 @@ class LogFileToAsn1CodecPublisherTest {
         (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
     };
 
-    String filename = RecordType.rxMsg.name() + GZ;
+    String filename = rxMsg.name() + GZ;
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
+    var expectedStringToFormat = loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgTIMLogFileToPublish.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
       String asn1String = data.getMetadata().getAsn1();
-      var expected = String.format(
-          "{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"SAT\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"TMC_VIA_SAT\",\"sanitized\":false,\"asn1\":\"%s\"},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"%s\"}}}",
-          schemaVersion, asn1String, asn1String);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION, asn1String, asn1String);
       assertEquals(expected, data.toJson());
     }
   }
 
   @Test
-  void testPublishRxMsgBSMLogFile() throws Exception {
-
+  void testPublishRxMsgBSMLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x02, // 1. RxSource = RV
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -314,29 +294,32 @@ class LogFileToAsn1CodecPublisherTest {
         (byte) 0x11, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
     };
 
-    String filename = RecordType.rxMsg.name() + GZ;
+    String filename = rxMsg.name() + GZ;
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
+    var expectedStringToFormat = loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgBSMLogFileToPublish.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
       String asn1String = data.getMetadata().getAsn1();
-      var expected = String.format(
-          "{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false,\"asn1\":\"%s\"},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"%s\"}}}",
-          schemaVersion, asn1String, asn1String);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION, asn1String, asn1String);
       assertEquals(expected, data.toJson());
     }
   }
 
   @Test
-  void testPublishNonLearLogFile() throws Exception {
-
-    String filename = RecordType.rxMsg.name() + GZ;
+  void testPublishNonLearLogFile(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
+    String filename = rxMsg.name() + GZ;
 
     String jsonData = "{\"fakeJsonKey\":\"fakeJsonValue\"";
     byte[] buf = jsonData.getBytes();
@@ -345,17 +328,21 @@ class LogFileToAsn1CodecPublisherTest {
     /*
      * This call to publish method does not actually try to parse the data. It
      * short-circuits the parsing because
-     * currently we dont' support JSON input records. We may in the future.
+     * currently we don't support JSON input records. We may in the future.
      */
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.UNKNOWN, LogFileParserFactory.getLogFileParser(filename));
 
     assertTrue(dataList.isEmpty());
   }
 
   @Test
-  void testPublishRxMsgBSMLogFileNewLine() throws Exception {
-
+  void testPublishRxMsgBSMLogFileNewLine(
+      @Mock JsonTopics jsonTopics,
+      @Mock RawEncodedJsonTopics rawEncodedJsonTopics,
+      @Mock KafkaTemplate<String, String> kafkaTemplate) throws Exception {
+    var testLogFileToAsn1CodecPublisher = new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     byte[] buf = new byte[] {
         (byte) 0x02, // 1. RxSource = RV
         (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
@@ -372,22 +359,27 @@ class LogFileToAsn1CodecPublisherTest {
         (byte) 0x0a
     };
 
-    String filename = RecordType.rxMsg.name() + GZ;
+    String filename = rxMsg.name() + GZ;
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
-
+    List<OdeData> dataList =
+        testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
+    var expectedStringToFormat = loadResourceAsString("src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgBSMNewLine.json");
     for (OdeData data : dataList) {
       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
       String asn1String = data.getMetadata().getAsn1();
-      var expected = String.format(
-          "{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":%s,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false,\"asn1\":\"%s\"},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"%s\"}}}",
-          schemaVersion, asn1String, asn1String);
+      var expected = String.format(expectedStringToFormat, SCHEMA_VERSION, asn1String, asn1String);
       assertEquals(expected, data.toJson());
     }
+  }
+
+  private static String loadResourceAsString(String resourceName) throws IOException {
+    File file = new File(resourceName);
+    byte[] data = Files.readAllBytes(file.toPath());
+    return new String(data, StandardCharsets.UTF_8);
   }
 }

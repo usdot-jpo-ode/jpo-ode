@@ -15,7 +15,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.assertj.core.util.Arrays;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -136,11 +135,11 @@ class Asn1DecodedDataRouterTest {
       assertEquals(expectedBsm, consumedSpecific.get().value());
       assertEquals(expectedBsm, consumedBsm.get().value());
     }
+    testConsumer.close();
   }
 
   @Test
   void testAsn1DecodedDataRouterTIMDataFlow() {
-    Awaitility.setDefaultTimeout(Duration.FOREVER);
     String[] topics = Arrays.array(
         jsonTopics.getDnMessage(),
         jsonTopics.getRxTim(),
@@ -194,8 +193,8 @@ class Asn1DecodedDataRouterTest {
       var expectedTim = replaceJSONRecordType(baseExpectedTim, "dnMsg", recordType);
       assertEquals(expectedTim, consumedSpecific.get().value());
       assertEquals(expectedTim, consumedTim.get().value());
-
     }
+    testConsumer.close();
   }
 
   @Test
@@ -240,6 +239,7 @@ class Asn1DecodedDataRouterTest {
       assertEquals(expectedSpat, consumedSpat.value());
       assertEquals(expectedSpat, consumedSpecific.value());
     }
+    testConsumer.close();
   }
 
   @Test
@@ -278,6 +278,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedSsm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -316,6 +317,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedSrm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -354,6 +356,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedPsm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -392,6 +395,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedMap, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   private String loadFromResource(String resourcePath) {

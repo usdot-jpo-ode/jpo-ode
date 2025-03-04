@@ -114,5 +114,6 @@ class Asn1DecodedDataRouterApprovalTest {
       assertEquals(expectedMapData.toJson(), receivedMapData.toJson(),
           "Failed test case: " + testCase.getDescription());
     }
+    consumer.close();
   }
 }

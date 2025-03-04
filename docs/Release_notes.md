@@ -13,8 +13,20 @@ Key highlights include:
 - Updates to TIM schemas and JSON annotations for more J2735-accurate ODE processing
 
 Significant strides have been made in optimizing configurations through enhancements like the extraction of Kafka properties,
-environment variables, and Kafka topics into more streamlined Spring Configuration properties. Additionally, schema
-updates have been made to increment the version for output messages and ensure compatibility with J2735 2024.
+environment variables, and Kafka topics into more streamlined Spring Configuration properties.
+
+Schema updates have been applied to increment the version of output messages and provide partial compatibility with J2735 2024. 
+However, several limitations remain. 
+- Due to [a bug in the ASN.1 Compiler](https://github.com/usdot-fhwa-stol/usdot-asn1c/issues/2), the VehicleEventFlags bitstring has been reverted to 
+  its 2020 version. This excludes the eventJackKnife bit introduced in the 2024 revision, which will not appear in output BSMs 
+  until the issue is resolved.
+- Additionally, fields newly added in J2735 2024 to BSM-related structures are not yet supported in the ODE. These include 
+  fhwaVehicleClass, trailers, and schoolBus under SupplementalVehicleExtensions, as well as trailerPresent, pivotPoint, axles, 
+  and leanAngle under VehicleData.
+- Similarly, new fields introduced for MAPs, SPATs, and TIMs, such as roadAuthorityId and contentNew, are not currently supported 
+  in the ODE.
+- These limitations will be addressed in future updates.
+
 Developer-focused changes include revisions to the README, Makefile, and devcontainer to support smoother onboarding and
 ease of use. Other vital updates encompass new entries in the submodule compatibility guide, version upgrades, and
 bug fixes related to Kafka configurations and message handling.
@@ -61,14 +73,18 @@ Enhancements in this release:
 - [CDOT PR 152](https://github.com/CDOT-CV/jpo-ode/pull/152): TIM and Map Schema Fixes
 - [CDOT PR 153](https://github.com/CDOT-CV/jpo-ode/pull/153): Fix: producer failures
 - [CDOT PR 154](https://github.com/CDOT-CV/jpo-ode/pull/154): Fix: Use odeKafkaProperties env vars to drive producer retries
+- [CDOT PR 158](https://github.com/CDOT-CV/jpo-ode/pull/158): Release/PSM schema fix
+- [CDOT PR 160](https://github.com/CDOT-CV/jpo-ode/pull/160): Support Renamed Fields in J2735 2024 BSM Structures
+- [CDOT PR 165](https://github.com/CDOT-CV/jpo-ode/pull/165): fix: force BigDecimal serialization to NUMBER format
 - [USDOT PR 559](https://github.com/usdot-jpo-ode/jpo-ode/pull/559): Update GitHub Actions Third-Party Action Versions
 - [USDOT PR 561](https://github.com/usdot-jpo-ode/jpo-ode/pull/561): Bump ch.qos.logback:logback-core from 1.4.14 to 1.5.13 in /jpo-ode-plugins
 
 Breaking changes:
-- The major version was incremented due to breaking changes in the 2024 revision of J2735.
+- The major version was incremented to reflect breaking changes related to TIM XER encoding introduced in the 2024 revision of J2735.
 
 Known Issues:
-- No known issues at this time.
+- **VehicleEventFlags Bitstring Bug**: A bug in the ASN.1 Compiler has necessitated reverting the VehicleEventFlags bitstring to its 2020 version, which excludes the eventJackKnife bit added in the 2024 revision. As a result, this bit will not appear in output BSMs until the bug is fixed.
+- **Unsupported BSM Fields**: New fields introduced in BSM-related structures by the 2024 revision of J2735 are currently not supported in the ODE. These fields will be implemented in a future release.
 
 Version 3.0.0, released September 2024
 ----------------------------------------

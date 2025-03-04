@@ -28,6 +28,7 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 
 @SpringBootTest(
     classes = {
+        OdeKafkaProperties.class,
         KafkaProducerConfig.class,
         KafkaConsumerConfig.class,
         KafkaProperties.class,
@@ -83,5 +84,6 @@ class RawEncodedPSMJsonRouterTest {
         KafkaTestUtils.getSingleRecord(testConsumer, asn1CoderTopics.getDecoderInput());
     var odePsmData = produced.value();
     assertEquals(expectedPsm, odePsmData);
+    testConsumer.close();
   }
 }

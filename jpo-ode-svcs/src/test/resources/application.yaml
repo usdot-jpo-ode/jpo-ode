@@ -93,9 +93,6 @@ ode:
         tim: "topic.OdeRawEncodedTIMJson"
       sdx-depositor:
         input: "topic.SDWDepositorInput"
-      file:
-        filtered-output: "/topic/filtered_messages"
-        unfiltered-output: "/topic/unfiltered_messages"
   receivers:
     generic:
       buffer-size: 2000

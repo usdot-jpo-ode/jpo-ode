@@ -85,5 +85,6 @@ class RawEncodedTIMJsonRouterTest {
     var produced =
         KafkaTestUtils.getSingleRecord(testConsumer, asn1CoderTopics.getDecoderInput());
     assertEquals(expectedTim, produced.value());
+    testConsumer.close();
   }
 }

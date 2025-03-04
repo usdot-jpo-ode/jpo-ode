@@ -196,7 +196,7 @@ class TimTransmogrifierTest {
       OdeGeoRegion.GeoRegionException {
 
     Clock fixedClock = Clock.fixed(Instant.parse("2024-10-30T19:00:15.190Z"), ZoneId.of("UTC"));
-    DateTimeUtils.setClock(fixedClock);
+    final Clock prevClock = DateTimeUtils.setClock(fixedClock);
 
     SDW inputSDW = new SDW();
     inputSDW.setDeliverystart("2017-06-01T17:47:11-05:00");
@@ -230,6 +230,8 @@ class TimTransmogrifierTest {
         "<OdeAsn1Data><metadata><payloadType>us.dot.its.jpo.ode.model.OdeAsdPayload</payloadType><serialId><streamId>6c33f802-418d-4b67-89d1-326b4fc8b1e3</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>%s</odeReceivedAt><schemaVersion>%s</schemaVersion><maxDurationTime>0</maxDurationTime><sanitized>false</sanitized><request><sdw><serviceRegion><nwCorner><latitude>42.537903</latitude><longitude>-83.477903</longitude></nwCorner><seCorner><latitude>42.305753</latitude><longitude>-82.842753</longitude></seCorner></serviceRegion><ttl>thirtyminutes</ttl><deliverystart>2017-06-01T17:47:11-05:00</deliverystart><deliverystop>2018-03-01T17:47:11-05:15</deliverystop></sdw><rsus/></request><encodings><encodings><elementName>MessageFrame</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings><encodings><elementName>Ieee1609Dot2Data</elementName><elementType>Ieee1609Dot2Data</elementType><encodingRule>COER</encodingRule></encodings><encodings><elementName>AdvisorySituationData</elementName><elementType>AdvisorySituationData</elementType><encodingRule>UPER</encodingRule></encodings></encodings></metadata><payload><dataType>us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData</dataType><data><AdvisorySituationData><dialogID>156</dialogID><seqID>5</seqID><groupID>00000000</groupID><requestID>7876BA7F</requestID><recordID>00000000</recordID><timeToLive>1</timeToLive><serviceRegion><nwCorner><lat>425379030</lat><long>-834779030</long></nwCorner><seCorner><lat>423057530</lat><long>-828427530</long></seCorner></serviceRegion><asdmDetails><asdmID>7876BA7F</asdmID><asdmType>2</asdmType><distType>03</distType><startTime><year>2017</year><month>6</month><day>1</day><hour>17</hour><minute>47</minute></startTime><stopTime><year>2018</year><month>3</month><day>1</day><hour>17</hour><minute>47</minute></stopTime><advisoryMessage><Ieee1609Dot2Data><protocolVersion>3</protocolVersion><content><unsecuredData><MessageFrame><messageId>31</messageId><value><TravelerInformation/></value></MessageFrame></unsecuredData></content></Ieee1609Dot2Data></advisoryMessage></asdmDetails></AdvisorySituationData></data></payload></OdeAsn1Data>",
         DateTimeUtils.now(), schemaVersion);
     assertEquals(expected, actualXML);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test
@@ -238,7 +240,7 @@ class TimTransmogrifierTest {
       OdeGeoRegion.GeoRegionException {
 
     Clock fixedClock = Clock.fixed(Instant.parse("2024-10-30T19:36:15.170Z"), ZoneId.of("UTC"));
-    DateTimeUtils.setClock(fixedClock);
+    final Clock prevClock = DateTimeUtils.setClock(fixedClock);
 
     SDW inputSDW = new SDW();
     inputSDW.setDeliverystart("2017-06-01T17:47:11-05:00");
@@ -269,6 +271,8 @@ class TimTransmogrifierTest {
         "<OdeAsn1Data><metadata><payloadType>us.dot.its.jpo.ode.model.OdeTimPayload</payloadType><serialId><streamId>6c33f802-418d-4b67-89d1-326b4fc8b1e3</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>%s</odeReceivedAt><schemaVersion>%s</schemaVersion><maxDurationTime>0</maxDurationTime><sanitized>false</sanitized><request><sdw><serviceRegion><nwCorner><latitude>42.537903</latitude><longitude>-83.477903</longitude></nwCorner><seCorner><latitude>42.305753</latitude><longitude>-82.842753</longitude></seCorner></serviceRegion><ttl>thirtyminutes</ttl><deliverystart>2017-06-01T17:47:11-05:00</deliverystart><deliverystop>2018-03-01T17:47:11-05:15</deliverystop></sdw><rsus/></request><encodings><encodings><elementName>MessageFrame</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings></metadata><payload><data><MessageFrame><messageId>31</messageId><value><TravelerInformation/></value></MessageFrame></data><dataType>MessageFrame</dataType></payload></OdeAsn1Data>",
         DateTimeUtils.now(), schemaVersion);
     assertEquals(expected, actualXML);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   /**
@@ -295,7 +299,7 @@ class TimTransmogrifierTest {
     TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
 
     // Set the clock to a fixed instant for value comparison
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2024-11-05T16:51:14.473Z"), ZoneId.of("UTC")));
 
     // execute
@@ -307,6 +311,8 @@ class TimTransmogrifierTest {
             "\\s", "") // remove all whitespace
         .replaceAll("<false/>", "<false />"); // add space before closing tag
     Assertions.assertEquals(expectedXml, actualXML);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   @Test

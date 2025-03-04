@@ -1,0 +1,224 @@
+{
+  "metadata": {
+    "payloadType": "us.dot.its.jpo.ode.model.OdeTimPayload",
+    "serialId": {
+      "streamId": "266e6742-40fb-4c9e-a6b0-72ed2dddddfe",
+      "bundleSize": 1,
+      "bundleId": 1,
+      "recordId": 0,
+      "serialNumber": 1
+    },
+    "odeReceivedAt": "2024-12-18T20:58:49.419Z",
+    "schemaVersion": 7,
+    "maxDurationTime": 297,
+    "recordGeneratedAt": "2024-02-29T14:15:47.000Z",
+    "recordGeneratedBy": "TMC",
+    "sanitized": false,
+    "odePacketID": "03B027CF2071328E12",
+    "odeTimStartDateTime": "2024-03-08T16:37:05.414Z",
+    "request": {
+      "ode": {
+        "version": 3,
+        "verb": "POST"
+      },
+      "sdw": {
+        "serviceRegion": {
+          "nwCorner": {
+            "latitude": 38.98721843900006,
+            "longitude": -104.76767069499999
+          },
+          "seCorner": {
+            "latitude": 38.96666515900006,
+            "longitude": -104.74048299899994
+          }
+        },
+        "ttl": "oneday",
+        "recordId": "6B573067"
+      }
+    }
+  },
+  "payload": {
+    "data": {
+      "msgCnt": 1,
+      "timeStamp": 85815,
+      "packetID": "03B027CF2071328E12",
+      "urlB": "null",
+      "dataFrames": [
+        {
+          "notUsed": 0,
+          "frameType": "advisory",
+          "msgId": {
+            "roadSignID": {
+              "position": {
+                "lat": 389873128,
+                "long": -1047677947
+              },
+              "viewAngle": {
+                "from000-0to022-5degrees": true,
+                "from022-5to045-0degrees": true,
+                "from045-0to067-5degrees": true,
+                "from067-5to090-0degrees": true,
+                "from090-0to112-5degrees": true,
+                "from112-5to135-0degrees": true,
+                "from135-0to157-5degrees": true,
+                "from157-5to180-0degrees": true,
+                "from180-0to202-5degrees": true,
+                "from202-5to225-0degrees": true,
+                "from225-0to247-5degrees": true,
+                "from247-5to270-0degrees": true,
+                "from270-0to292-5degrees": true,
+                "from292-5to315-0degrees": true,
+                "from315-0to337-5degrees": true,
+                "from337-5to360-0degrees": true
+              },
+              "mutcdCode": "warning"
+            }
+          },
+          "startYear": 2024,
+          "startTime": 97477,
+          "durationTime": 297,
+          "priority": 5,
+          "notUsed1": 0,
+          "regions": [
+            {
+              "name": "I_CO-21_SAT_6B573067",
+              "id": {
+                "region": 0,
+                "id": 0
+              },
+              "anchor": {
+                "lat": 389873128,
+                "long": -1047677947
+              },
+              "laneWidth": 5000,
+              "directionality": "both",
+              "closedPath": false,
+              "direction": {
+                "from000-0to022-5degrees": false,
+                "from022-5to045-0degrees": false,
+                "from045-0to067-5degrees": false,
+                "from067-5to090-0degrees": false,
+                "from090-0to112-5degrees": false,
+                "from112-5to135-0degrees": true,
+                "from135-0to157-5degrees": false,
+                "from157-5to180-0degrees": false,
+                "from180-0to202-5degrees": false,
+                "from202-5to225-0degrees": false,
+                "from225-0to247-5degrees": false,
+                "from247-5to270-0degrees": false,
+                "from270-0to292-5degrees": false,
+                "from292-5to315-0degrees": false,
+                "from315-0to337-5degrees": false,
+                "from337-5to360-0degrees": false
+              },
+              "description": {
+                "path": {
+                  "scale": 0,
+                  "offset": {
+                    "ll": {
+                      "nodes": [
+                        {
+                          "delta": {
+                            "node-LL1": {
+                              "lon": 1240,
+                              "lat": -944
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL4": {
+                              "lon": 32814,
+                              "lat": -24978
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL3": {
+                              "lon": 22048,
+                              "lat": -16422
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL3": {
+                              "lon": 27335,
+                              "lat": -20373
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL4": {
+                              "lon": 53877,
+                              "lat": -41190
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL3": {
+                              "lon": 14301,
+                              "lat": -10738
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL4": {
+                              "lon": 33763,
+                              "lat": -25566
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL4": {
+                              "lon": 60460,
+                              "lat": -46052
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL3": {
+                              "lon": 13974,
+                              "lat": -10167
+                            }
+                          }
+                        },
+                        {
+                          "delta": {
+                            "node-LL3": {
+                              "lon": 13305,
+                              "lat": -10047
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "notUsed2": 0,
+          "notUsed3": 0,
+          "content": {
+            "workZone": [
+              {
+                "item": {
+                  "itis": 1025
+                }
+              }
+            ]
+          },
+          "url": "null"
+        }
+      ]
+    },
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.travelerinformation.TravelerInformation"
+  }
+}

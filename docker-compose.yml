@@ -49,8 +49,18 @@ services:
       DATA_SIGNING_ENABLED_SDW: ${DATA_SIGNING_ENABLED_SDW}
       DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
       KAFKA_LINGER_MS: ${KAFKA_LINGER_MS}
-      ODE_TIM_INGEST_MONITORING_ENABLED: true
-      ODE_TIM_INGEST_MONITORING_INTERVAL: 1
+      KAFKA_ACKS: ${KAFKA_ACKS}
+      KAFKA_RETRIES: ${KAFKA_RETRIES}
+      KAFKA_BATCH_SIZE: ${KAFKA_BATCH_SIZE}
+      KAFKA_BUFFER_MEMORY: ${KAFKA_BUFFER_MEMORY}
+      KAFKA_COMPRESSION_TYPE: ${KAFKA_COMPRESSION_TYPE}
+      KAFKA_KEY_SERIALIZER: ${KAFKA_KEY_SERIALIZER}
+      KAFKA_VALUE_SERIALIZER: ${KAFKA_VALUE_SERIALIZER}
+      KAFKA_PARTITIONER_CLASS: ${KAFKA_PARTITIONER_CLASS}
+      ODE_TIM_INGEST_MONITORING_ENABLED: ${ODE_TIM_INGEST_MONITORING_ENABLED}
+      ODE_TIM_INGEST_MONITORING_INTERVAL: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
+      ODE_STOMP_EXPORTER_ENABLED: ${ODE_STOMP_EXPORTER_ENABLED}
+      # Look into changing this to Prometheus
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://${DOCKER_HOST_IP}:4318/v1/traces
     depends_on:
       kafka:
@@ -98,6 +108,177 @@ services:
         condition: service_healthy
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  aem:
+    profiles:
+      - all
+      - ode_full
+      - ode_base
+      - aem
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      ACM_CONFIG_FILE: aem.properties
+      ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  ppm_bsm:
+    profiles:
+      - all
+      - ode_full
+      - ppm_bsm
+    build:
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile
+    image: jpoode_ppm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      PPM_CONFIG_FILE: ppmBsm.properties
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+    depends_on:
+      kafka:
+        condition: service_healthy
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # NOTE: This service does not spin up unless the COMPOSE_PROFILE includes "ppm_bsm_nsv"
+  ppm_bsm_nsv:
+    profiles:
+      - ppm_bsm_nsv
+    build:
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile-nsv
+      args:
+        PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_bsm:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  sdw_depositor:
+    profiles:
+      - all
+      - ode_full
+      - sdw_depositor
+    build: ./jpo-sdw-depositor
+    image: jpoode_sdwdep:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      SDW_EMAIL_LIST: ${SDW_EMAIL_LIST}
+      SDW_EMAIL_FROM: ${SDW_EMAIL_FROM}
+      SDW_API_KEY: ${SDW_API_KEY}
+      SDW_DESTINATION_URL: ${SDW_DESTINATION_URL}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SDW_SUBSCRIPTION_TOPIC: ${SDW_SUBSCRIPTION_TOPIC}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    depends_on:
+      kafka:
+        condition: service_healthy
+      ode:
+        condition: service_healthy
+    logging:
+      options:
+        max-size: "10m" 
+        max-file: "5"
+
+  sec:
+    profiles:
+      - all
+      - ode_full
+      - sec
+    build: ./jpo-security-svcs/jpo-security-svcs
+    image: jpoode_sec:latest
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    ports:
+     - "8090:8090"
+    environment:
+      SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+      SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH: ${SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH}
+      SEC_USE_CERTIFICATES: ${SEC_USE_CERTIFICATES}
+    logging:
+      options:
+        max-size: "10m"  
+        max-file: "5"
+  mock-signing-svc:
+    build: ./jpo-security-svcs/mock-signing-svc
+    profiles:
+      - all
+      - ode_full
+      - sec
+    image: jpoode_sec_mock_signing_svc:latest
+    ports:
+      - "8091:8091"
     logging:
       options:
         max-size: "10m"

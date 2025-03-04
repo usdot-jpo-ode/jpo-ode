@@ -102,9 +102,7 @@ ode:
         tim: "topic.OdeRawEncodedTIMJson"
       sdx-depositor:
         input: "topic.SDWDepositorInput"
-      file:
-        filtered-output: "/topic/filtered_messages"
-        unfiltered-output: "/topic/unfiltered_messages"
+
   receivers:
     generic:
       buffer-size: 2000
@@ -140,6 +138,11 @@ ode:
   tim-ingest-monitoring:
     tracking-enabled: ${ODE_TIM_INGEST_MONITORING_ENABLED}
     interval: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
+  stomp-exporter:
+    enabled: ${ODE_STOMP_EXPORTER_ENABLED}
+    channels:
+      filtered-output: "/topic/filtered_messages"
+      unfiltered-output: "/topic/unfiltered_messages"
 management:
   tracing:
     enabled: true

@@ -15,11 +15,9 @@ import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
 
 /**
- * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology
- * for processing TIM (Traveler Information Message) JSON data from the
- * OdeTimJson Kafka topic.
- * This class creates a K-Table that houses TMC-generated TIMs which can be
- * queried by UUID.
+ * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology for processing TIM
+ * (Traveler Information Message) JSON data from the OdeTimJson Kafka topic. This class creates a
+ * K-Table that houses TMC-generated TIMs which can be queried by UUID.
  **/
 @Slf4j
 public class OdeTimJsonTopology {
@@ -27,12 +25,13 @@ public class OdeTimJsonTopology {
   private final KafkaStreams streams;
 
   /**
-   * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka Streams
-   * topology for processing TIM JSON data.
+   * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka Streams topology for
+   * processing TIM JSON data.
    *
-   * @param odeKafkaProps the properties containing Kafka configuration, including brokers
-   *                      and optional Confluent-specific configuration for authentication.
-   * @param topic the Kafka topic from which TIM JSON data is consumed to build the topology.
+   * @param odeKafkaProps the properties containing Kafka configuration, including brokers and
+   *                      optional Confluent-specific configuration for authentication.
+   * @param topic         the Kafka topic from which TIM JSON data is consumed to build the
+   *                      topology.
    */
   public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic) {
 
@@ -52,20 +51,15 @@ public class OdeTimJsonTopology {
     streams.start();
   }
 
-  public void stop() {
-    log.info("Stopping Ode Tim Json Topology");
-    streams.close();
-  }
-
   public boolean isRunning() {
-    return streams.state().isRunningOrRebalancing();
+    return streams.state().equals(KafkaStreams.State.RUNNING);
   }
 
   /**
    * Builds a Kafka Streams topology for processing TIM JSON data.
    *
-   * @param topic the Kafka topic from which TIM JSON data is consumed and used
-   *              to build the topology.
+   * @param topic the Kafka topic from which TIM JSON data is consumed and used to build the
+   *              topology.
    * @return the constructed Kafka Streams topology.
    */
   public Topology buildTopology(String topic) {

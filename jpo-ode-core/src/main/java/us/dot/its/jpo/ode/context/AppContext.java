@@ -18,7 +18,6 @@ package us.dot.its.jpo.ode.context;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -36,28 +35,6 @@ public class AppContext {
    public static final String DATA_STRING = "data";
    public static final String ENCODINGS_STRING = "encodings";
    public static final String RECEIVEDMSGDETAILS_STRING = "receivedMessageDetails";
-   public static final String PAYLOAD_TYPE_STRING = "payloadType";
-   public static final String DATA_TYPE_STRING = "dataType";
-   public static final String SERIAL_ID_STRING = "serialId";
-   public static final String SANITIZED_STRING = "Sanitized-";
-   public static final String DEFAULT_KAFKA_PRODUCER_TYPE = "sync";
-
-   public static final int DEFAULT_SPARK_ROAD_SEGMENT_SNAPPING_TOLERANCE = 20;
-   public static final int DEFAULT_METRICS_GRAPHITE_PORT = 2003;
-   public static final int DEFAULT_METRICS_POLLING_RATE_SECONDS = 10;
-
-   // Kafka Parameters
-   public static final String KAFKA_METADATA_BROKER_LIST = "kafka.metadata.broker.list";
-   public static final String KAFKA_CONSUMER_THREADS = "kafka.consumer.threads";
-   public static final String ZK_CONNECTION_STRINGS = "zk.connection.strings";
-   public static final int DEFAULT_KAFKA_CONSUMER_THREADS = 1;
-
-   public static final String TOKEN_KEY_RSA_PEM = "token.key.rsa.pem";
-
-   public static final String METRICS_PREFIX = "metrics.prefix";
-   public static final String METRICS_POLLING_RATE_SECONDS = "metrics.polling.rate.seconds";
-   public static final String METRICS_GRAPHITE_HOST = "metrics.graphite.host";
-   public static final String METRICS_GRAPHITE_PORT = "metrics.graphite.port";
 
    private static AppContext instance = null;
 
