@@ -13,6 +13,3 @@
 [submodule "qa/test-harness/ode-output-validator-library"]
 	path = qa/test-harness/ode-output-validator-library
 	url = https://github.com/usdot-jpo-ode/ode-output-validator-library.git
-[submodule "jpo-utils"]
-	path = jpo-utils
-	url = https://github.com/CDOT-CV/jpo-utils.git
