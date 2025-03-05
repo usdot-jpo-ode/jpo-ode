@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-
 import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +39,8 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
-@EnableConfigurationProperties({KafkaProperties.class})
-@Import({KafkaProducerConfigTest.KafkaProducerConfigTestConfig.class, SerializationConfig.class})
+@EnableConfigurationProperties({ KafkaProperties.class })
+@Import({ KafkaProducerConfigTest.KafkaProducerConfigTestConfig.class, SerializationConfig.class })
 class KafkaProducerConfigTest {
 
   @Autowired
@@ -59,15 +58,13 @@ class KafkaProducerConfigTest {
 
   @Test
   void odeDataProducerFactory_shouldReturnNonNull() {
-    ProducerFactory<String, OdeObject> producerFactory =
-        kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
+    ProducerFactory<String, OdeObject> producerFactory = kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
     assertNotNull(producerFactory);
   }
 
   @Test
   void odeDataProducerFactory_shouldReturnDefaultKafkaProducerFactory() {
-    ProducerFactory<String, OdeObject> producerFactory =
-        kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
+    ProducerFactory<String, OdeObject> producerFactory = kafkaProducerConfig.odeDataProducerFactory(xmlMapper);
     assertNotNull(producerFactory);
     assertInstanceOf(DefaultKafkaProducerFactory.class, producerFactory);
   }
@@ -75,10 +72,9 @@ class KafkaProducerConfigTest {
   @Test
   void kafkaTemplateInterceptorPreventsSendingToDisabledTopics() {
     EmbeddedKafkaHolder.addTopics(odeKafkaProperties.getDisabledTopics().toArray(new String[0]));
-    var consumerProps =
-        KafkaTestUtils.consumerProps("interceptor-disabled",
-            "false",
-            embeddedKafka);
+    var consumerProps = KafkaTestUtils.consumerProps("interceptor-disabled",
+        "false",
+        embeddedKafka);
     var cf = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
     var consumer = cf.createConsumer();
@@ -91,13 +87,13 @@ class KafkaProducerConfigTest {
       stringKafkaTemplate.send(topic, "key", "value");
 
       var records = KafkaTestUtils.getEndOffsets(consumer, topic, 0);
-      // Assert that the message we attempted to send to the disabled topic was intercepted
+      // Assert that the message we attempted to send to the disabled topic was
+      // intercepted
       // and not sent
       assertTrue(records
           .entrySet()
           .stream()
-          .allMatch(e -> e.getValue() == 0L)
-      );
+          .allMatch(e -> e.getValue() == 0L));
     }
   }
 
@@ -106,14 +102,14 @@ class KafkaProducerConfigTest {
     String enabledTopic = "topic.enabled" + this.getClass().getSimpleName();
     EmbeddedKafkaHolder.addTopics(enabledTopic);
 
-    var consumerProps =
-        KafkaTestUtils.consumerProps("interceptor-enabled", "false", embeddedKafka);
+    var consumerProps = KafkaTestUtils.consumerProps("interceptor-enabled", "false", embeddedKafka);
     var cf = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
     var consumer = cf.createConsumer();
     embeddedKafka.consumeFromAnEmbeddedTopic(consumer, enabledTopic);
 
-    // Attempting to send to a topic not in the disabledTopics set with the string template
+    // Attempting to send to a topic not in the disabledTopics set with the string
+    // template
     KafkaTemplate<String, String> stringKafkaTemplate = kafkaProducerConfig.kafkaTemplate(
         kafkaProducerConfig.producerFactory());
     stringKafkaTemplate.send(enabledTopic, "key", "value");
@@ -129,8 +125,7 @@ class KafkaProducerConfigTest {
     String enabledTopic = "topic.enabled" + this.getClass().getSimpleName();
     EmbeddedKafkaHolder.addTopics(enabledTopic);
 
-    var consumerProps =
-        KafkaTestUtils.consumerProps("send-after", "false", embeddedKafka);
+    var consumerProps = KafkaTestUtils.consumerProps("send-after", "false", embeddedKafka);
     var cf = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
     var consumer = cf.createConsumer();
@@ -163,19 +158,19 @@ class KafkaProducerConfigTest {
           "topic.OdeBsmRxPojo" + uniqueSuffix,
           "topic.OdeBsmTxPojo" + uniqueSuffix,
           "topic.OdeBsmDuringEventPojo" + uniqueSuffix,
-          "topic.OdeTimBroadcastPojo" + uniqueSuffix
-      ));
+          "topic.OdeTimBroadcastPojo" + uniqueSuffix));
 
       return odeKafkaProperties;
     }
 
     @Bean
     public MeterRegistry testMeterRegistry() {
-        return new SimpleMeterRegistry();  // Simple in-memory registry for tests
+      return new SimpleMeterRegistry(); // Simple in-memory registry for tests
     }
 
     @Bean
-    public KafkaProducerConfig testKafkaProducerConfig(KafkaProperties kafkaProperties, OdeKafkaProperties testOdeKafkaProperties, MeterRegistry meterRegistry) {
+    public KafkaProducerConfig testKafkaProducerConfig(KafkaProperties kafkaProperties,
+        OdeKafkaProperties testOdeKafkaProperties, MeterRegistry meterRegistry) {
       return new KafkaProducerConfig(kafkaProperties, testOdeKafkaProperties, meterRegistry);
     }
   }

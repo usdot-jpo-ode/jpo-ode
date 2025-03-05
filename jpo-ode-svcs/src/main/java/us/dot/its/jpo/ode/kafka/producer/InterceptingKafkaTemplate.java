@@ -1,8 +1,14 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.Observation;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +18,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.lang.NonNull;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * InterceptingKafkaTemplate is an extension of the KafkaTemplate class designed
@@ -49,6 +50,20 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     super(producerFactory);
     this.disabledTopics = disabledTopics;
     this.meterRegistry = meterRegistry;
+  }
+
+  private String getHostName() {
+    try {
+      // Get hostname from environment variable if running in Kubernetes
+      String hostFromEnv = System.getenv("HOSTNAME");
+      if (hostFromEnv != null && !hostFromEnv.isEmpty()) {
+        return hostFromEnv;
+      }
+      // Fallback to system hostname for local deployments in Docker
+      return InetAddress.getLocalHost().getHostName();
+    } catch (UnknownHostException e) {
+      return "unknown";
+    }
   }
 
   /**
@@ -91,7 +106,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     if (originIp != null) {
       Counter.builder("kafka.produced.rsu.messages")
           .description("Number of produced Kafka messages by RSU")
-          .tags("topic", producerRecord.topic(), "rsu_ip", originIp)
+          .tags("topic", producerRecord.topic(), "instance", getHostName(), "rsu_ip", originIp)
           .register(meterRegistry)
           .increment();
     }
@@ -100,7 +115,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     // to for overall message
     Counter.builder("kafka.produced.messages")
         .description("Number of produced Kafka messages")
-        .tags("topic", producerRecord.topic())
+        .tags("topic", producerRecord.topic(), "instance", getHostName())
         .register(meterRegistry)
         .increment();
 

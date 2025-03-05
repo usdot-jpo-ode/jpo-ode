@@ -1,9 +1,7 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
 import io.micrometer.core.instrument.MeterRegistry;
-
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -14,7 +12,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.XMLOdeObjectSerializer;
 import us.dot.its.jpo.ode.model.OdeBsmData;
