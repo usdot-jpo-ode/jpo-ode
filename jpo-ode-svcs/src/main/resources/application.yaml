@@ -148,7 +148,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: prometheus
   metrics:
     export:
       prometheus:

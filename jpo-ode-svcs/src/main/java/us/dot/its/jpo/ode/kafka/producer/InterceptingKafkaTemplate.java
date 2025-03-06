@@ -1,14 +1,11 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.Observation;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +33,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
 
   private final Set<String> disabledTopics;
   private final MeterRegistry meterRegistry;
-
-  private ObjectMapper mapper = new ObjectMapper();
-  JsonFactory factory = mapper.getFactory();
+  private final ObjectMapper objectMapper;
 
   /**
    * Create an instance using the supplied producer factory and autoFlush false.
@@ -46,24 +41,11 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
    * @param producerFactory the producer factory.
    */
   public InterceptingKafkaTemplate(
-      ProducerFactory<K, V> producerFactory, Set<String> disabledTopics, MeterRegistry meterRegistry) {
+      ProducerFactory<K, V> producerFactory, Set<String> disabledTopics, MeterRegistry meterRegistry, ObjectMapper objectMapper) {
     super(producerFactory);
     this.disabledTopics = disabledTopics;
     this.meterRegistry = meterRegistry;
-  }
-
-  private String getHostName() {
-    try {
-      // Get hostname from environment variable if running in Kubernetes
-      String hostFromEnv = System.getenv("HOSTNAME");
-      if (hostFromEnv != null && !hostFromEnv.isEmpty()) {
-        return hostFromEnv;
-      }
-      // Fallback to system hostname for local deployments in Docker
-      return InetAddress.getLocalHost().getHostName();
-    } catch (UnknownHostException e) {
-      return "unknown";
-    }
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -86,10 +68,9 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     // For String values, extract the originIp from the JSON metadata if it is
     // present
     String originIp = null;
-    if (producerRecord.value() instanceof String) {
-      String stringValue = (String) producerRecord.value();
+    if (producerRecord.value() instanceof String stringValue) {
       try {
-        JsonNode rootNode = mapper.readTree(stringValue);
+        JsonNode rootNode = objectMapper.readTree(stringValue);
         if (rootNode.has("metadata")) {
           JsonNode metadataNode = rootNode.get("metadata");
           if (metadataNode.has("originIp")) {
@@ -106,7 +87,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     if (originIp != null) {
       Counter.builder("kafka.produced.rsu.messages")
           .description("Number of produced Kafka messages by RSU")
-          .tags("topic", producerRecord.topic(), "instance", getHostName(), "rsu_ip", originIp)
+          .tags("topic", producerRecord.topic(), "rsu_ip", originIp)
           .register(meterRegistry)
           .increment();
     }
@@ -115,7 +96,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
     // to for overall message
     Counter.builder("kafka.produced.messages")
         .description("Number of produced Kafka messages")
-        .tags("topic", producerRecord.topic(), "instance", getHostName())
+        .tags("topic", producerRecord.topic())
         .register(meterRegistry)
         .increment();
 

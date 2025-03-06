@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.kafka.producer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Map;
@@ -103,9 +104,9 @@ public class KafkaProducerConfig {
    */
   @Bean
   public KafkaTemplate<String, String> kafkaTemplate(
-      ProducerFactory<String, String> producerFactory) {
+      ProducerFactory<String, String> producerFactory, ObjectMapper objectMapper) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry, objectMapper);
 
     template.setProducerListener(new LoggingProducerListener<>());
 
@@ -149,9 +150,9 @@ public class KafkaProducerConfig {
    */
   @Bean
   public KafkaTemplate<String, OdeObject> odeDataKafkaTemplate(
-      ProducerFactory<String, OdeObject> producerFactory) {
+      ProducerFactory<String, OdeObject> producerFactory, ObjectMapper objectMapper) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry, objectMapper);
     template.setProducerListener(new LoggingProducerListener<>());
 
     return template;
@@ -196,9 +197,9 @@ public class KafkaProducerConfig {
    */
   @Bean
   public KafkaTemplate<String, OdeBsmData> odeBsmKafkaTemplate(
-      ProducerFactory<String, OdeBsmData> producerFactory) {
+      ProducerFactory<String, OdeBsmData> producerFactory, ObjectMapper objectMapper) {
     var template = new InterceptingKafkaTemplate<>(producerFactory,
-        this.odeKafkaProperties.getDisabledTopics(), meterRegistry);
+        this.odeKafkaProperties.getDisabledTopics(), meterRegistry, objectMapper);
     template.setProducerListener(new LoggingProducerListener<>());
     return template;
   }

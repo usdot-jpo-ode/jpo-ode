@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -53,6 +54,7 @@ class KafkaProducerConfigTest {
   @Qualifier("testMeterRegistry")
   MeterRegistry meterRegistry;
   XmlMapper xmlMapper;
+  ObjectMapper objectMapper = new ObjectMapper();
 
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
@@ -81,7 +83,7 @@ class KafkaProducerConfigTest {
     embeddedKafka.consumeFromEmbeddedTopics(consumer,
         odeKafkaProperties.getDisabledTopics().toArray(new String[0]));
     KafkaTemplate<String, String> stringKafkaTemplate = kafkaProducerConfig.kafkaTemplate(
-        kafkaProducerConfig.producerFactory());
+        kafkaProducerConfig.producerFactory(), objectMapper);
     // Attempting to send to a disabled topic
     for (String topic : odeKafkaProperties.getDisabledTopics()) {
       stringKafkaTemplate.send(topic, "key", "value");
@@ -111,7 +113,7 @@ class KafkaProducerConfigTest {
     // Attempting to send to a topic not in the disabledTopics set with the string
     // template
     KafkaTemplate<String, String> stringKafkaTemplate = kafkaProducerConfig.kafkaTemplate(
-        kafkaProducerConfig.producerFactory());
+        kafkaProducerConfig.producerFactory(), objectMapper);
     stringKafkaTemplate.send(enabledTopic, "key", "value");
 
     var records = KafkaTestUtils.getRecords(consumer);
@@ -132,7 +134,7 @@ class KafkaProducerConfigTest {
     embeddedKafka.consumeFromAnEmbeddedTopic(consumer, enabledTopic);
 
     KafkaTemplate<String, String> stringKafkaTemplate = kafkaProducerConfig.kafkaTemplate(
-        kafkaProducerConfig.producerFactory());
+        kafkaProducerConfig.producerFactory(), objectMapper);
     var blockedTopic = odeKafkaProperties.getDisabledTopics().iterator().next();
     stringKafkaTemplate.send(blockedTopic, "blocked", "not sent");
     stringKafkaTemplate.send(enabledTopic, "key", "value");

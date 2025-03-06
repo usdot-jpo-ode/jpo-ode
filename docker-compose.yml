@@ -79,7 +79,8 @@ services:
       - ode_full
       - ode_base
       - adm
-    image: us.gcr.io/cdot-oim-cv-dev/jpoode_acm-image:asn1_codec-develop-branch-12-16-2024t09.22mdt
+    build: ./asn1_codec
+    image: jpoode_acm:latest
     restart: ${RESTART_POLICY}
     deploy:
       resources:
