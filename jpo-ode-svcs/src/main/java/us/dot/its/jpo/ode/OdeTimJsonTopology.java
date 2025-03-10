@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode;
 
 import java.util.Properties;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -11,6 +11,8 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.Stores;
+
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
 
@@ -65,7 +67,7 @@ public class OdeTimJsonTopology {
   public Topology buildTopology(String topic) {
     StreamsBuilder builder = new StreamsBuilder();
     builder.table(topic,
-        Materialized.<String, String>as(Stores.inMemoryKeyValueStore("timjson-store")));
+        Materialized.<String, String>as(Stores.persistentKeyValueStore("timjson-store")));
     return builder.build();
   }
 
