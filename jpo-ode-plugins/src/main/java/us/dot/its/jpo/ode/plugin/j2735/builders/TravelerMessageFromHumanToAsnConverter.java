@@ -651,7 +651,7 @@ public class TravelerMessageFromHumanToAsnConverter {
     return outputNodeList;
   }
 
-  private static ObjectNode transformNodeLL(JsonNode oldNode) {
+  public static ObjectNode transformNodeLL(JsonNode oldNode) {
 
     //// EXPECTED INPUT:
 
@@ -703,7 +703,7 @@ public class TravelerMessageFromHumanToAsnConverter {
   // node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
   // node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
   // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
-  private static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
+  public static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
     long transformedLatabs = Math.abs(transformedLat);
     long transformedLonabs = Math.abs(transformedLon);
     if (((transformedLatabs & (-1 << 11)) == 0

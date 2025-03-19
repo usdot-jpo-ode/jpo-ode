@@ -482,4 +482,35 @@ class TravelerMessageFromHumanToAsnConverterTest {
     });
   }
 
+  @Test
+  void transformNodeLL_LLTypeSpecified() throws JsonUtilsException {
+    // prepare
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    node.put("nodeLong", "0.0031024");
+    node.put("nodeLat", "0.0014506");
+    node.put("delta", "node-LL3");
+
+    // execute
+    ObjectNode result = TravelerMessageFromHumanToAsnConverter.transformNodeLL(node);
+
+    // verify
+    String expectedJson = "{\"delta\":{\"node-LL3\":{\"lat\":14506,\"lon\":31024}}}";
+    ObjectNode expected = JsonUtils.toObjectNode(expectedJson);
+
+    Assertions.assertEquals(expected.toString(), result.toString());
+  }
+
+  @Test
+  void nodeOffsetPointLL_ShouldSelectNodeLL2() {
+    // prepare
+    long transformedLat = -8000L;
+    long transformedLong = -8000L;
+
+    // execute
+    String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
+
+    // verify
+    Assertions.assertEquals("node-LL2", selection);
+  }
+
 }
