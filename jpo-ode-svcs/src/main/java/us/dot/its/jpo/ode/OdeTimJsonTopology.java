@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Properties;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -18,8 +18,6 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyWindowStore;
 import org.apache.kafka.streams.state.WindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
-
-import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
 
@@ -85,8 +83,7 @@ public class OdeTimJsonTopology {
                     Materialized.<String, String, WindowStore<Bytes, byte[]>>as("timjson-windowed-store")
                             .withRetention(Duration.ofHours(1))
                             .withKeySerde(Serdes.String())
-                            .withValueSerde(Serdes.String())
-            );
+                            .withValueSerde(Serdes.String()));
 
     return builder.build();
   }
@@ -98,17 +95,17 @@ public class OdeTimJsonTopology {
    **/
   public String query(String uuid) {
     ReadOnlyWindowStore<String, String> windowStore =
-      streams.store(StoreQueryParameters.fromNameAndType("timjson-windowed-store", QueryableStoreTypes.windowStore()));
+        streams.store(StoreQueryParameters.fromNameAndType("timjson-windowed-store", QueryableStoreTypes.windowStore()));
 
     Instant now = Instant.now();
     Instant start = now.minus(Duration.ofHours(1));
     String value;
     
     try (WindowStoreIterator<String> iterator = windowStore.fetch(uuid, start, now)) {
-        value = null;
-        while (iterator.hasNext()) {
-            value = String.valueOf(iterator.next().value);
-        }
+      value = null;
+      while (iterator.hasNext()) {
+        value = String.valueOf(iterator.next().value);
+      }
     }
     
     return value;
