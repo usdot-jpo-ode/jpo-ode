@@ -77,13 +77,13 @@ public class OdeTimJsonTopology {
     KStream<String, String> timStream = builder.stream(topic);
 
     timStream.groupByKey()
-            .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofHours(1))) // 1 hour window
-            .reduce(
-                    (aggValue, newValue) -> newValue, // only keep latest value
-                    Materialized.<String, String, WindowStore<Bytes, byte[]>>as("timjson-windowed-store")
-                            .withRetention(Duration.ofHours(1))
-                            .withKeySerde(Serdes.String())
-                            .withValueSerde(Serdes.String()));
+        .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofHours(1))) // 1 hour window
+        .reduce(
+            (aggValue, newValue) -> newValue, // only keep latest value
+            Materialized.<String, String, WindowStore<Bytes, byte[]>>as("timjson-windowed-store")
+                .withRetention(Duration.ofHours(1))
+                .withKeySerde(Serdes.String())
+                .withValueSerde(Serdes.String()));
 
     return builder.build();
   }
@@ -99,15 +99,15 @@ public class OdeTimJsonTopology {
 
     Instant now = Instant.now();
     Instant start = now.minus(Duration.ofHours(1));
-    String value;
-    
+
     try (WindowStoreIterator<String> iterator = windowStore.fetch(uuid, start, now)) {
-      value = null;
       while (iterator.hasNext()) {
-        value = String.valueOf(iterator.next().value);
+        var value = String.valueOf(iterator.next().value);
+        if (value != null) {
+          return value;
+        }
       }
     }
-    
-    return value;
+    return null;
   }
 }
