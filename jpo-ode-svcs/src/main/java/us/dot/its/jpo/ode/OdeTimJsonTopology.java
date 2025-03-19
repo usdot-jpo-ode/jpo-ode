@@ -97,17 +97,8 @@ public class OdeTimJsonTopology {
     ReadOnlyWindowStore<String, String> windowStore =
         streams.store(StoreQueryParameters.fromNameAndType("timjson-windowed-store", QueryableStoreTypes.windowStore()));
 
-    Instant now = Instant.now();
-    Instant start = now.minus(Duration.ofHours(1));
-    String value;
+    Instant start = Instant.now().minus(Duration.ofHours(1));
     
-    try (WindowStoreIterator<String> iterator = windowStore.fetch(uuid, start, now)) {
-      value = null;
-      while (iterator.hasNext()) {
-        value = String.valueOf(iterator.next().value);
-      }
-    }
-    
-    return value;
+    return windowStore.fetch(uuid, start.toEpochMilli());
   }
 }
