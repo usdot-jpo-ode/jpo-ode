@@ -531,4 +531,17 @@ class TravelerMessageFromHumanToAsnConverterTest {
     Assertions.assertEquals("node-LL2", selection);
   }
 
+  @Test
+  void nodeOffsetPointLL_ShouldSelectNodeLL3() {
+    // prepare
+    long transformedLat = -13123L;
+    long transformedLong = -8192L;
+
+    // execute
+    String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
+
+    // verify
+    Assertions.assertEquals("node-LL3", selection);
+  }
+
 }
