@@ -682,7 +682,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       transformedLat = OffsetLLBuilder.offsetLL(latOffset);
       transformedLong = OffsetLLBuilder.offsetLL(longOffset);
       if (deltaText.equals("node-LL")) {
-        deltaText = nodeOffsetPointLL(transformedLat, transformedLong);
+        deltaText = determineNodeOffsetPointLLType(transformedLat, transformedLong);
       }
     } else if (NODE_LAT_LON.equals(deltaText)) {
       transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
@@ -711,7 +711,7 @@ public class TravelerMessageFromHumanToAsnConverter {
   // node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
   // node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
   // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
-  public static String nodeOffsetPointLL(long latDelta, long lonDelta) {
+  public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
@@ -1197,7 +1197,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       Long transformedLat = LongitudeBuilder.j2735Longitude(latOffset);
       ObjectNode latLong = JsonUtils.newNode().put(LON, transformedLon).put(LAT, transformedLat);
       if (deltaText.equals(NODE_XY)) {
-        innerNode.set(nodeOffsetPointLL(transformedLat, transformedLon), latLong);
+        innerNode.set(determineNodeOffsetPointLLType(transformedLat, transformedLon), latLong);
       } else {
         innerNode.set(deltaText, latLong);
       }
