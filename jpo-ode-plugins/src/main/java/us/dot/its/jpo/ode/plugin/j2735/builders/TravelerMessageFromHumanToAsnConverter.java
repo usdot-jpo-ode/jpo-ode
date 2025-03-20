@@ -695,6 +695,14 @@ public class TravelerMessageFromHumanToAsnConverter {
     return deltaNode;
   }
 
+  // Constants for bitmask shifts
+  private static final int BITMASK_11 = 11;
+  private static final int BITMASK_13 = 13;
+  private static final int BITMASK_15 = 15;
+  private static final int BITMASK_17 = 17;
+  private static final int BITMASK_21 = 21;
+  private static final int BITMASK_23 = 23;
+
   // -- Nodes with LL content Span at the equator when using a zoom of one:
   // node-LL1 Node-LL-24B, -- within +- 22.634554 meters of last node
   // node-LL2 Node-LL-28B, -- within +- 90.571389 meters of last node
@@ -703,51 +711,36 @@ public class TravelerMessageFromHumanToAsnConverter {
   // node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
   // node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
   // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
-  public static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
-    long transformedLatabs = Math.abs(transformedLat);
-    long transformedLonabs = Math.abs(transformedLon);
-    if (((transformedLatabs & (-1 << 11)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 11)) == 0))
-        && ((transformedLonabs & (-1 << 11)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 11)) == 0)))) {
-      // 11 bit value
+  public static String nodeOffsetPointLL(long latDelta, long lonDelta) {
+    long absLatDelta = Math.abs(latDelta);
+    long absLonDelta = Math.abs(lonDelta);
+
+    if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_11)) {
       return "node-LL1";
-    } else if (((transformedLatabs & (-1 << 13)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 13)) == 0))
-        && ((transformedLonabs & (-1 << 13)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 13)) == 0)))) {
-      // 13 bit value
+    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_13)) {
       return "node-LL2";
-    } else if (((transformedLatabs & (-1 << 15)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 15)) == 0))
-        && ((transformedLonabs & (-1 << 15)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 15)) == 0)))) {
-      // 15 bit value
+    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_15)) {
       return "node-LL3";
-    } else if (((transformedLatabs & (-1 << 17)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 17)) == 0))
-        && ((transformedLonabs & (-1 << 17)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 17)) == 0)))) {
-      // 17 bit value
+    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_17)) {
       return "node-LL4";
-    } else if (((transformedLatabs & (-1 << 21)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 21)) == 0))
-        && ((transformedLonabs & (-1 << 21)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 21)) == 0)))) {
-      // 21 bit value
+    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_21)) {
       return "node-LL5";
-    } else if (((transformedLatabs & (-1 << 23)) == 0
-        || (transformedLat < 0 && (transformedLatabs ^ (1 << 23)) == 0))
-        && ((transformedLonabs & (-1 << 23)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 23)) == 0)))) {
-      // 23 bit value
+    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_23)) {
       return "node-LL6";
     } else {
       throw new IllegalArgumentException(
-          "Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
-              + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
+          "Invalid node lat/long offset: " + latDelta + "/" + lonDelta
+              + ". Values must be within a range of -0.8388608/+0.8388607 degrees.");
     }
+  }
 
+  private static boolean areCoordinatesWithinBitMaskRange(long absLat, long lat, long absLon, long lon, int bitmaskShift) {
+    return isCoordinateWithinBitMaskRange(absLat, lat, bitmaskShift) && isCoordinateWithinBitMaskRange(absLon, lon, bitmaskShift);
+  }
+
+  private static boolean isCoordinateWithinBitMaskRange(long absValue, long value, int bitmaskShift) {
+    return (absValue & (-1L << bitmaskShift)) == 0
+        || (value < 0 && (absValue ^ (1L << bitmaskShift)) == 0);
   }
 
   /**
