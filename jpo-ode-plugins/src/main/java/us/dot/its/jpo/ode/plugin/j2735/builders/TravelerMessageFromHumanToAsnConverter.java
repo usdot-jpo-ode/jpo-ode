@@ -709,7 +709,7 @@ public class TravelerMessageFromHumanToAsnConverter {
   public final static long NODE_LL3_LIMIT = 32767;
   public final static long NODE_LL4_LIMIT = 131071;
   public final static long NODE_LL5_LIMIT = 2097151;
-  public final static long NODE_LL6_LIMIT = 8388607; // TODO: add note about -8388608 not being valid due to J2735
+  public final static long NODE_LL6_LIMIT = 8388607; // In J2735, the value -8388608 indicates an unknown value and is considered invalid because it falls outside the acceptable ± range.
 
   /**
    * Determines the node offset point LL type based on the latitude and longitude deltas.
