@@ -829,7 +829,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
     ObjectNode updatedNode = (ObjectNode) circle;
 
-    JsonNode centerPosition = null;
+    JsonNode centerPosition;
     if (updatedNode.has(POSITION)) {
       centerPosition = updatedNode.get(POSITION);
       updatedNode.remove(POSITION);

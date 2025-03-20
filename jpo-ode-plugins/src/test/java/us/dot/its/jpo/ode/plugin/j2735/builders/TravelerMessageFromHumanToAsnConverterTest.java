@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import java.io.IOException;
 
 import org.json.JSONObject;
 import org.json.XML;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -56,7 +54,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
   @Test
   void testAdvisoryNodeLL()
-      throws JsonProcessingException, IOException, JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
+      throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
 
     ObjectNode inputTID = JsonUtils.toObjectNode(
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":\"2017-08-03T22:25:36.297Z\",\"urlB\":\"null\",\"packetID\":\"EC9C236B0000000000\",\"dataframes\":[{\"startDateTime\":\"2017-08-02T22:25:00.000Z\",\"durationTime\":1,\"doNotUse1\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000\"}},\"priority\":\"0\",\"doNotUse2\":0,\"regions\":[{\"name\":\"Testing TIM\",\"regulatorID\":\"0\",\"segmentID\":\"33\",\"anchorPosition\":{\"latitude\":\"41.2500807\",\"longitude\":\"-111.0093847\",\"elevation\":\"2020.6969900289998\"},\"laneWidth\":\"7\",\"directionality\":\"3\",\"closedPath\":\"false\",\"description\":\"path\",\"path\":{\"scale\":\"0\",\"type\":\"ll\",\"nodes\":[{\"nodeLong\":\"0.0002047\",\"nodeLat\":\"-0.0002047\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0008191\",\"nodeLat\":\"-0.0008191\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0032767\",\"nodeLat\":\"-0.0032767\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0131071\",\"nodeLat\":\"-0.0131071\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.2097151\",\"nodeLat\":\"-0.2097151\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.8388607\",\"nodeLat\":\"-0.8388607\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0002047\",\"nodeLat\":\"-0.0002047\",\"delta\":\"node-LL1\"},{\"nodeLong\":\"0.0008191\",\"nodeLat\":\"-0.0008191\",\"delta\":\"node-LL2\"},{\"nodeLong\":\"0.0032767\",\"nodeLat\":\"-0.0032767\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0131071\",\"nodeLat\":\"-0.0131071\",\"delta\":\"node-LL4\"},{\"nodeLong\":\"0.2097151\",\"nodeLat\":\"-0.2097151\",\"delta\":\"node-LL5\"},{\"nodeLong\":\"0.8388607\",\"nodeLat\":\"-0.8388607\",\"delta\":\"node-LL6\"},{\"nodeLong\":\"-111.0093847\",\"nodeLat\":\"41.2500807\",\"delta\":\"node-LatLon\"}]},\"direction\":\"0000000000001010\"}],\"doNotUse4\":0,\"doNotUse3\":0,\"content\":\"advisory\",\"items\":[\"125\",\"some text\",\"250\",\"'98765\"],\"url\":\"null\"}]}}");
@@ -227,7 +225,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     String itisCode = "123";
     String itis = "itis";
     ObjectNode expectedItisNode = JsonUtils.newNode().put(itis, Integer.parseInt(itisCode));
-    ObjectNode expecteditem = (ObjectNode) JsonUtils.newNode().set("item", expectedItisNode);
+    ObjectNode expecteditem = JsonUtils.newNode().set("item", expectedItisNode);
 
     // build ITIS code
     JsonNode actualItem = TravelerMessageFromHumanToAsnConverter.buildItem(itisCode);
