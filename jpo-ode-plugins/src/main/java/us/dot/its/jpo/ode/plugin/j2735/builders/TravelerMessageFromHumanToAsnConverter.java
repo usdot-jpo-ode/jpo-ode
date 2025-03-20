@@ -703,78 +703,47 @@ public class TravelerMessageFromHumanToAsnConverter {
   public static final String NODE_LL5 = "node-LL5"; // Node-LL-44B, within ±23.189096 kilometers of last node
   public static final String NODE_LL6 = "node-LL6"; // Node-LL-48B, within ±92.756481 kilometers of last node
 
-  // Constants for bitmask shifts
-  private static final int BITMASK_11 = 11;
-  private static final int BITMASK_13 = 13;
-  private static final int BITMASK_15 = 15;
-  private static final int BITMASK_17 = 17;
-  private static final int BITMASK_21 = 21;
-  private static final int BITMASK_23 = 23;
+  // -- Limits for each node type
+  public final static long NODE_LL1_LIMIT = 2047;
+  public final static long NODE_LL2_LIMIT = 8191;
+  public final static long NODE_LL3_LIMIT = 32767;
+  public final static long NODE_LL4_LIMIT = 131071;
+  public final static long NODE_LL5_LIMIT = 2097151;
+  public final static long NODE_LL6_LIMIT = 8388607; // TODO: add note about -8388608 not being valid due to J2735
 
   /**
-   * Determines the node offset point LL type based on latitude and longitude deltas.
+   * Determines the node offset point LL type based on the latitude and longitude deltas.
+   * The method evaluates the absolute values of the deltas against predefined limits to determine
+   * the appropriate node type. If the deltas do not fit within any allowed ranges, an exception
+   * is thrown.
    *
-   * This method evaluates the given latitude and longitude offsets and returns a
-   * String identifier indicating the appropriate LL node type based on predefined
-   * bitmask ranges. Valid lat/lon offsets must be within specific bounds, otherwise,
-   * an exception is thrown.
-   *
-   * @param latDelta the latitude offset in long format
-   * @param lonDelta the longitude offset in long format
-   * @return a String representing the LL node type, such as "node-LL1", "node-LL2",
-   *         and so on, corresponding to the calculated offset ranges.
-   * @throws IllegalArgumentException if the provided latitude or longitude offsets
-   *                                  are out of the acceptable range.
+   * @param latDelta The latitude delta as a long value.
+   * @param lonDelta The longitude delta as a long value.
+   * @return A string representing the node offset point LL type (e.g., NODE_LL1, NODE_LL2, etc.).
+   * @throws IllegalArgumentException if latDelta or lonDelta are outside the permissible range
+   *         of -0.8388608 to +0.8388607 degrees.
    */
   public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
-    if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_11)) {
+    if (absLatDelta <= NODE_LL1_LIMIT && absLonDelta <= NODE_LL1_LIMIT) {
       return NODE_LL1;
-    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_13)) {
+    } else if (absLatDelta <= NODE_LL2_LIMIT && absLonDelta <= NODE_LL2_LIMIT) {
       return NODE_LL2;
-    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_15)) {
+    } else if (absLatDelta <= NODE_LL3_LIMIT && absLonDelta <= NODE_LL3_LIMIT) {
       return NODE_LL3;
-    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_17)) {
+    } else if (absLatDelta <= NODE_LL4_LIMIT && absLonDelta <= NODE_LL4_LIMIT) {
       return NODE_LL4;
-    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_21)) {
+    } else if (absLatDelta <= NODE_LL5_LIMIT && absLonDelta <= NODE_LL5_LIMIT) {
       return NODE_LL5;
-    } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_23)) {
+    } else if (absLatDelta <= NODE_LL6_LIMIT && absLonDelta <= NODE_LL6_LIMIT) {
       return NODE_LL6;
     } else {
       throw new IllegalArgumentException(
           "Invalid node lat/long offset: " + latDelta + "/" + lonDelta
               + ". Values must be within a range of -0.8388608/+0.8388607 degrees.");
     }
-  }
-
-  /**
-   * Determines whether the given latitude and longitude coordinates are within the range
-   * specified by the bitmask shift.
-   *
-   * @param absLat The absolute value of the latitude.
-   * @param lat The original latitude value.
-   * @param absLon The absolute value of the longitude.
-   * @param lon The original longitude value.
-   * @param bitmaskShift The bitmask shift value to use for range calculation.
-   * @return {@code true} if both the latitude and longitude coordinates are within the specified bitmask range, {@code false} otherwise.
-   */
-  private static boolean areCoordinatesWithinBitMaskRange(long absLat, long lat, long absLon, long lon, int bitmaskShift) {
-    return isCoordinateWithinBitMaskRange(absLat, lat, bitmaskShift) && isCoordinateWithinBitMaskRange(absLon, lon, bitmaskShift);
-  }
-
-  /**
-   * Determines if a given coordinate value is within the range of a bitmask shift.
-   *
-   * @param absValue The absolute value of the coordinate to be checked.
-   * @param value The original value of the coordinate.
-   * @param bitmaskShift The number of bits to shift in the bitmask operation.
-   * @return true if the coordinate value is within the defined range, false otherwise.
-   */
-  private static boolean isCoordinateWithinBitMaskRange(long absValue, long value, int bitmaskShift) {
-    return (absValue & (-1L << bitmaskShift)) == 0
-        || (value < 0 && (absValue ^ (1L << bitmaskShift)) == 0);
   }
 
   /**
