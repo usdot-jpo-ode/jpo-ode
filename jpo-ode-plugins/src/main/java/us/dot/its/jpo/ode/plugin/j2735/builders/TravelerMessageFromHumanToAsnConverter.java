@@ -671,8 +671,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
         innerNode.set(deltaText, latLong);
         latLong.put(LAT, transformedLat).put(LON, transformedLong);
-        ObjectNode deltaNode = JsonUtils.newNode().set(DELTA, innerNode);
-        return deltaNode;
+        return JsonUtils.newNode().set(DELTA, innerNode);
     }
 
     // -- Nodes with LL content Span at the equator when using a zoom of one:
@@ -1159,11 +1158,7 @@ public class TravelerMessageFromHumanToAsnConverter {
             Long transformedLon = LatitudeBuilder.j2735Latitude(lonOffset);
             Long transformedLat = LongitudeBuilder.j2735Longitude(latOffset);
             ObjectNode latLong = JsonUtils.newNode().put(LON, transformedLon).put(LAT, transformedLat);
-            if (deltaText.equals(NODE_XY)) {
-                innerNode.set(determineNodeOffsetPointLLType(transformedLat, transformedLon), latLong);
-            } else {
-                innerNode.set(deltaText, latLong);
-            }
+            innerNode.set(deltaText, latLong);
         }
 
         deltaNode.set(DELTA, innerNode);
