@@ -523,7 +523,8 @@ public class TravelerMessageFromHumanToAsnConverter {
     // anchorPosition --> anchor (optional)
     JsonNode anchorPos = region.get(ANCHOR_POSITION);
     if (anchorPos != null) {
-      region.set(ANCHOR, JsonUtils.toObjectNode(Position3DBuilder.dsrcPosition3D(Position3DBuilder.odePosition3D(region.get(ANCHOR_POSITION))).toJson()));
+      region.set(ANCHOR,
+          JsonUtils.toObjectNode(Position3DBuilder.dsrcPosition3D(Position3DBuilder.odePosition3D(region.get(ANCHOR_POSITION))).toJson()));
       region.remove(ANCHOR_POSITION);
     }
 
@@ -688,7 +689,8 @@ public class TravelerMessageFromHumanToAsnConverter {
   public final static long NODE_LL3_LIMIT = 32767;
   public final static long NODE_LL4_LIMIT = 131071;
   public final static long NODE_LL5_LIMIT = 2097151;
-  public final static long NODE_LL6_LIMIT = 8388607; // In J2735, the value -8388608 indicates an unknown value and is considered invalid because it falls outside the acceptable ± range.
+  public final static long NODE_LL6_LIMIT = 8388607;
+  // In J2735, the value -8388608 indicates an unknown value and is considered invalid because it falls outside the acceptable ± range.
 
   /**
    * Determines the node offset point LL type based on the latitude and longitude deltas.
@@ -719,7 +721,8 @@ public class TravelerMessageFromHumanToAsnConverter {
     } else if (absLatDelta <= NODE_LL6_LIMIT && absLonDelta <= NODE_LL6_LIMIT) {
       return NODE_LL6;
     } else {
-      throw new IllegalArgumentException("Invalid node lat/long offset: " + latDelta + "/" + lonDelta + ". Values must be within a range of -0.8388608/+0.8388607 degrees.");
+      throw new IllegalArgumentException(
+          "Invalid node lat/long offset: " + latDelta + "/" + lonDelta + ". Values must be within a range of -0.8388608/+0.8388607 degrees.");
     }
   }
 
@@ -1070,11 +1073,14 @@ public class TravelerMessageFromHumanToAsnConverter {
     if (oldNode.has("pathEndPointAngle")) {
       // do nothing
     } else if (oldNode.has(LANE_CROWN_POINT_CENTER)) {
-      updatedNode.put(LANE_CROWN_POINT_CENTER, RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_CENTER))));
+      updatedNode.put(LANE_CROWN_POINT_CENTER,
+          RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_CENTER))));
     } else if (oldNode.has(LANE_CROWN_POINT_LEFT)) {
-      updatedNode.put(LANE_CROWN_POINT_LEFT, RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_LEFT))));
+      updatedNode.put(LANE_CROWN_POINT_LEFT,
+          RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_LEFT))));
     } else if (oldNode.has(LANE_CROWN_POINT_RIGHT)) {
-      updatedNode.put(LANE_CROWN_POINT_RIGHT, RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_RIGHT))));
+      updatedNode.put(LANE_CROWN_POINT_RIGHT,
+          RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_RIGHT))));
     } else if (oldNode.has(LANE_ANGLE)) {
       updatedNode.put(LANE_ANGLE, MergeDivergeNodeAngleBuilder.mergeDivergeNodeAngle(JsonUtils.decimalValue(updatedNode.get(LANE_ANGLE))));
     } else if (oldNode.has(SPEED_LIMITS)) {
@@ -1190,7 +1196,8 @@ public class TravelerMessageFromHumanToAsnConverter {
     } else if ((transformed & (-1 << 16)) == 0) {
       return "node-XY6";
     } else {
-      throw new IllegalArgumentException("Invalid node X/Y offset: " + transformedX + "/" + transformedY + ". Values must be between a range of -327.68/+327.67 meters.");
+      throw new IllegalArgumentException(
+          "Invalid node X/Y offset: " + transformedX + "/" + transformedY + ". Values must be between a range of -327.68/+327.67 meters.");
     }
   }
 
@@ -1204,7 +1211,8 @@ public class TravelerMessageFromHumanToAsnConverter {
   public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) throws NoncompliantFieldsException {
     // Check and throw exception if old fields are found
     Set<String> nonCompliantFields =
-        Set.of(SSP_MSG_CONTENT, SSP_MSG_TYPES, SSP_LOCATION_RIGHTS, SSP_TIM_RIGHTS, SSP_MSG_RIGHTS_1, SSP_MSG_RIGHTS_2, NOT_USED, NOT_USED_1, NOT_USED_2, NOT_USED_3, DURATON_TIME_MISSPELLED);
+        Set.of(SSP_MSG_CONTENT, SSP_MSG_TYPES, SSP_LOCATION_RIGHTS, SSP_TIM_RIGHTS, SSP_MSG_RIGHTS_1, SSP_MSG_RIGHTS_2, NOT_USED, NOT_USED_1,
+            NOT_USED_2, NOT_USED_3, DURATON_TIME_MISSPELLED);
     ArrayList<String> violations = new ArrayList<>();
     for (String violationName : nonCompliantFields) {
       if (dataFrame.has(violationName)) {
@@ -1212,8 +1220,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
     }
     if (!violations.isEmpty()) {
-      throw new NoncompliantFieldsException(
-          String.format("Data frame contains the following old fields that are not compliant with " + "J2735 2024: [%s]. Deserialization should prevent this.", violations));
+      throw new NoncompliantFieldsException(String.format(
+          "Data frame contains the following old fields that are not compliant with " + "J2735 2024: [%s]. Deserialization should prevent this.",
+          violations));
     }
   }
 

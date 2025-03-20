@@ -55,7 +55,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
   }
 
   @Test
-  void testAdvisoryNodeLL() throws JsonProcessingException, IOException, JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
+  void testAdvisoryNodeLL()
+      throws JsonProcessingException, IOException, JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
 
     ObjectNode inputTID = JsonUtils.toObjectNode(
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":\"2017-08-03T22:25:36.297Z\",\"urlB\":\"null\",\"packetID\":\"EC9C236B0000000000\",\"dataframes\":[{\"startDateTime\":\"2017-08-02T22:25:00.000Z\",\"durationTime\":1,\"doNotUse1\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000\"}},\"priority\":\"0\",\"doNotUse2\":0,\"regions\":[{\"name\":\"Testing TIM\",\"regulatorID\":\"0\",\"segmentID\":\"33\",\"anchorPosition\":{\"latitude\":\"41.2500807\",\"longitude\":\"-111.0093847\",\"elevation\":\"2020.6969900289998\"},\"laneWidth\":\"7\",\"directionality\":\"3\",\"closedPath\":\"false\",\"description\":\"path\",\"path\":{\"scale\":\"0\",\"type\":\"ll\",\"nodes\":[{\"nodeLong\":\"0.0002047\",\"nodeLat\":\"-0.0002047\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0008191\",\"nodeLat\":\"-0.0008191\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0032767\",\"nodeLat\":\"-0.0032767\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0131071\",\"nodeLat\":\"-0.0131071\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.2097151\",\"nodeLat\":\"-0.2097151\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.8388607\",\"nodeLat\":\"-0.8388607\",\"delta\":\"node-LL\"},{\"nodeLong\":\"0.0002047\",\"nodeLat\":\"-0.0002047\",\"delta\":\"node-LL1\"},{\"nodeLong\":\"0.0008191\",\"nodeLat\":\"-0.0008191\",\"delta\":\"node-LL2\"},{\"nodeLong\":\"0.0032767\",\"nodeLat\":\"-0.0032767\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0131071\",\"nodeLat\":\"-0.0131071\",\"delta\":\"node-LL4\"},{\"nodeLong\":\"0.2097151\",\"nodeLat\":\"-0.2097151\",\"delta\":\"node-LL5\"},{\"nodeLong\":\"0.8388607\",\"nodeLat\":\"-0.8388607\",\"delta\":\"node-LL6\"},{\"nodeLong\":\"-111.0093847\",\"nodeLat\":\"41.2500807\",\"delta\":\"node-LatLon\"}]},\"direction\":\"0000000000001010\"}],\"doNotUse4\":0,\"doNotUse3\":0,\"content\":\"advisory\",\"items\":[\"125\",\"some text\",\"250\",\"'98765\"],\"url\":\"null\"}]}}");
@@ -261,7 +262,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
   }
 
   @Test
-  void testOldRegionWithShapePointSetWithComputedLanesSmall() throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
+  void testOldRegionWithShapePointSetWithComputedLanesSmall()
+      throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
     ObjectNode inputTID = JsonUtils.toObjectNode(
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataframes\":[{\"doNotUse1\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000\"}},\"startDateTime\":\"2017-12-01T17:47:11-05:00\",\"durationTime\":\"22\",\"priority\":\"0\",\"doNotUse2\":0,\"regions\":[{\"name\":\"bob\",\"regulatorID\":\"23\",\"segmentID\":\"33\",\"anchorPosition\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"laneWidth\":\"7\",\"directionality\":\"3\",\"closedPath\":\"false\",\"direction\":\"1010101010101010\",\"description\":\"oldRegion\",\"oldRegion\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"area\":{\"shapePointSet\":{\"anchor\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"laneWidth\":\"33\",\"directionality\":\"3\",\"nodeList\":{\"computed\":{\"referenceLaneId\":\"123\",\"offsetXaxis\":\"111\",\"offsetYaxis\":\"111\",\"rotateXY\":\"123.45\",\"scaleXaxis\":\"123.45\",\"scaleYaxis\":\"123.45\"}}}}}}],\"doNotUse4\":0,\"doNotUse3\":0,\"content\":\"exitService\",\"items\":[\"125\",\"some text\",\"250\",\"'98765\"],\"url\":\"null\"}]}}");
     TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(inputTID);
@@ -276,7 +278,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
   }
 
   @Test
-  void testOldRegionWithShapePointSetWithComputedLanesLarge() throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
+  void testOldRegionWithShapePointSetWithComputedLanesLarge()
+      throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
     ObjectNode inputTID = JsonUtils.toObjectNode(
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataframes\":[{\"doNotUse1\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000\"}},\"startDateTime\":\"2017-12-01T17:47:11-05:00\",\"durationTime\":\"22\",\"priority\":\"0\",\"doNotUse2\":0,\"regions\":[{\"name\":\"bob\",\"regulatorID\":\"23\",\"segmentID\":\"33\",\"anchorPosition\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"laneWidth\":\"7\",\"directionality\":\"3\",\"closedPath\":\"false\",\"direction\":\"1010101010101010\",\"description\":\"oldRegion\",\"oldRegion\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"area\":{\"shapePointSet\":{\"anchor\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"laneWidth\":\"33\",\"directionality\":\"3\",\"nodeList\":{\"computed\":{\"referenceLaneId\":\"123\",\"offsetXaxis\":\"11111\",\"offsetYaxis\":\"11111\",\"rotateXY\":\"123.45\",\"scaleXaxis\":\"123.45\",\"scaleYaxis\":\"123.45\"}}}}}}],\"doNotUse4\":0,\"doNotUse3\":0,\"content\":\"exitService\",\"items\":[\"125\",\"some text\",\"250\",\"'98765\"],\"url\":\"null\"}]}}");
     TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(inputTID);
@@ -497,7 +500,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -1500L; // within LL1 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL1", selection, "Expected node-LL1 for latitude and longitude within LL1 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL1", selection,
+        "Expected node-LL1 for latitude and longitude within LL1 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -506,7 +510,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL2", selection, "Expected node-LL2 when latitude exceeds LL1 constraints and longitude is at LL1 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL2", selection,
+        "Expected node-LL2 when latitude exceeds LL1 constraints and longitude is at LL1 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -515,7 +520,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_1_MINIMUM_MICRO_DEGREES - 1; // outside LL1 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL2", selection, "Expected node-LL2 when longitude exceeds LL1 constraints and latitude is at LL1 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL2", selection,
+        "Expected node-LL2 when longitude exceeds LL1 constraints and latitude is at LL1 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -524,7 +530,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -6000; // within LL2 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL2", selection, "Expected node-LL2 for latitude and longitude within LL2 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL2", selection,
+        "Expected node-LL2 for latitude and longitude within LL2 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -533,7 +540,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL3", selection, "Expected node-LL3 when latitude exceeds LL2 constraints and longitude is at LL2 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL3", selection,
+        "Expected node-LL3 when latitude exceeds LL2 constraints and longitude is at LL2 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -542,7 +550,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_2_MINIMUM_MICRO_DEGREES - 1; // outside LL2 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL3", selection, "Expected node-LL3 when longitude exceeds LL2 constraints and latitude is at LL2 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL3", selection,
+        "Expected node-LL3 when longitude exceeds LL2 constraints and latitude is at LL2 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -551,7 +560,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -25000; // within LL3 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL3", selection, "Expected node-LL3 for latitude and longitude within LL3 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL3", selection,
+        "Expected node-LL3 for latitude and longitude within LL3 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -560,7 +570,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL4", selection, "Expected node-LL4 when latitude exceeds LL3 constraints and longitude is at LL3 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL4", selection,
+        "Expected node-LL4 when latitude exceeds LL3 constraints and longitude is at LL3 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -569,7 +580,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_3_MINIMUM_MICRO_DEGREES - 1; // outside LL3 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL4", selection, "Expected node-LL4 when longitude exceeds LL3 constraints and latitude is at LL3 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL4", selection,
+        "Expected node-LL4 when longitude exceeds LL3 constraints and latitude is at LL3 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -578,7 +590,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -125000; // within LL4 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL4", selection, "Expected node-LL4 for latitude and longitude within LL4 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL4", selection,
+        "Expected node-LL4 for latitude and longitude within LL4 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -587,7 +600,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL5", selection, "Expected node-LL5 when latitude exceeds LL4 constraints and longitude is at LL4 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL5", selection,
+        "Expected node-LL5 when latitude exceeds LL4 constraints and longitude is at LL4 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -596,7 +610,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_4_MINIMUM_MICRO_DEGREES - 1; // outside LL4 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL5", selection, "Expected node-LL5 when longitude exceeds LL4 constraints and latitude is at LL4 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL5", selection,
+        "Expected node-LL5 when longitude exceeds LL4 constraints and latitude is at LL4 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -605,7 +620,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -2000000L; // within LL5 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL5", selection, "Expected node-LL5 for latitude and longitude within LL5 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL5", selection,
+        "Expected node-LL5 for latitude and longitude within LL5 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -614,7 +630,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL6", selection, "Expected node-LL6 when latitude exceeds LL5 constraints and longitude is at LL5 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL6", selection,
+        "Expected node-LL6 when latitude exceeds LL5 constraints and longitude is at LL5 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -623,7 +640,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = LL_5_MINIMUM_MICRO_DEGREES - 1; // outside LL5 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL6", selection, "Expected node-LL6 when longitude exceeds LL5 constraints and latitude is at LL5 boundary, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL6", selection,
+        "Expected node-LL6 when longitude exceeds LL5 constraints and latitude is at LL5 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
@@ -632,7 +650,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long transformedLong = -8000000L; // within LL6 constraints
     String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
 
-    Assertions.assertEquals("node-LL6", selection, "Expected node-LL6 for latitude and longitude within LL6 constraints, " + "but got " + selection + " instead.");
+    Assertions.assertEquals("node-LL6", selection,
+        "Expected node-LL6 for latitude and longitude within LL6 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
