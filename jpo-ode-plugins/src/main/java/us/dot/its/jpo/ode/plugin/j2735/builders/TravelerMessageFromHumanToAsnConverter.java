@@ -719,10 +719,8 @@ public class TravelerMessageFromHumanToAsnConverter {
    * bitmask ranges. Valid lat/lon offsets must be within specific bounds, otherwise,
    * an exception is thrown.
    *
-   * @param latDelta the latitude offset in long format, representing the delta
-   *                 from the base latitude.
-   * @param lonDelta the longitude offset in long format, representing the delta
-   *                 from the base longitude.
+   * @param latDelta the latitude offset in long format
+   * @param lonDelta the longitude offset in long format
    * @return a String representing the LL node type, such as "node-LL1", "node-LL2",
    *         and so on, corresponding to the calculated offset ranges.
    * @throws IllegalArgumentException if the provided latitude or longitude offsets
