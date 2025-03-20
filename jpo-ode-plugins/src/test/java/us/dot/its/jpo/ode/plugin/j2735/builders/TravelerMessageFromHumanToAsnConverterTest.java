@@ -538,7 +538,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_WhenLatOutsideLL1ConstraintAndLonAtLL1Boundary_ShouldReturnNodeLL2() {
-        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
+        long transformedLat = LL_1_MINIMUM_MICRO_DEGREES - 1; // outside LL1 constraints
         long transformedLong = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
@@ -550,7 +550,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL1ConstraintAndLatAtLL1Boundary_ShouldReturnNodeLL2() {
         long transformedLat = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
-        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
+        long transformedLong = LL_1_MINIMUM_MICRO_DEGREES - 1; // outside LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
         Assertions.assertEquals("node-LL2", selection,
@@ -571,7 +571,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_WhenLatOutsideLL2ConstraintAndLonAtLL2Boundary_ShouldReturnNodeLL3() {
-        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
+        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES - 1; // outside LL2 constraints
         long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
@@ -583,7 +583,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL2ConstraintAndLatAtLL2Boundary_ShouldReturnNodeLL3() {
         long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
-        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
+        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES - 1; // outside LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
         Assertions.assertEquals("node-LL3", selection,
@@ -604,7 +604,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_WhenLatOutsideLL3ConstraintAndLonAtLL3Boundary_ShouldReturnNodeLL4() {
-        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
+        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES - 1; // outside LL3 constraints
         long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
@@ -616,7 +616,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL3ConstraintAndLatAtLL3Boundary_ShouldReturnNodeLL4() {
         long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
-        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
+        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES - 1; // outside LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
         Assertions.assertEquals("node-LL4", selection,
@@ -637,7 +637,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_WhenLatOutsideLL4ConstraintAndLonAtLL4Boundary_ShouldReturnNodeLL5() {
-        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
+        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES - 1; // outside LL4 constraints
         long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
@@ -649,7 +649,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL4ConstraintAndLatAtLL4Boundary_ShouldReturnNodeLL5() {
         long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
-        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
+        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES - 1; // outside LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
         Assertions.assertEquals("node-LL5", selection,
@@ -670,7 +670,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_WhenLatOutsideLL5ConstraintAndLonAtLL5Boundary_ShouldReturnNodeLL6() {
-        long transformedLat = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
+        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES - 1; // outside LL5 constraints
         long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
@@ -682,7 +682,7 @@ class TravelerMessageFromHumanToAsnConverterTest {
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL5ConstraintAndLatAtLL5Boundary_ShouldReturnNodeLL6() {
         long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
-        long transformedLong = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
+        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES - 1; // outside LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
 
         Assertions.assertEquals("node-LL6", selection,
