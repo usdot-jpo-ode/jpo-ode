@@ -530,7 +530,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -1500L; // within LL1 constraints
         long transformedLong = -1500L; // within LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL1", selection);
+
+        Assertions.assertEquals("node-LL1", selection,
+            "Expected node-LL1 for latitude and longitude within LL1 constraints, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -538,7 +541,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
         long transformedLong = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL2", selection);
+
+        Assertions.assertEquals("node-LL2", selection,
+            "Expected node-LL2 when latitude exceeds LL1 constraints and longitude is at LL1 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -546,7 +552,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
         long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL2", selection);
+
+        Assertions.assertEquals("node-LL2", selection,
+            "Expected node-LL2 when longitude exceeds LL1 constraints and latitude is at LL1 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -554,7 +563,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -6000; // within LL2 constraints
         long transformedLong = -6000; // within LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL2", selection);
+
+        Assertions.assertEquals("node-LL2", selection,
+            "Expected node-LL2 for latitude and longitude within LL2 constraints, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -562,16 +574,21 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
         long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL3", selection);
-    }
 
+        Assertions.assertEquals("node-LL3", selection,
+            "Expected node-LL3 when latitude exceeds LL2 constraints and longitude is at LL2 boundary, " +
+                "but got " + selection + " instead.");
+    }
 
     @Test
     void nodeOffsetPointLL_WhenLonOutsideLL2ConstraintAndLatAtLL2Boundary_ShouldReturnNodeLL3() {
         long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
         long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL3", selection);
+
+        Assertions.assertEquals("node-LL3", selection,
+            "Expected node-LL3 when longitude exceeds LL2 constraints and latitude is at LL2 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -579,7 +596,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -25000; // within LL3 constraints
         long transformedLong = -25000; // within LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL3", selection);
+
+        Assertions.assertEquals("node-LL3", selection,
+            "Expected node-LL3 for latitude and longitude within LL3 constraints, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -587,7 +607,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
         long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL4", selection);
+
+        Assertions.assertEquals("node-LL4", selection,
+            "Expected node-LL4 when latitude exceeds LL3 constraints and longitude is at LL3 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -595,7 +618,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
         long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL4", selection);
+
+        Assertions.assertEquals("node-LL4", selection,
+            "Expected node-LL4 when longitude exceeds LL3 constraints and latitude is at LL3 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -603,7 +629,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -125000; // within LL4 constraints
         long transformedLong = -125000; // within LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL4", selection);
+
+        Assertions.assertEquals("node-LL4", selection,
+            "Expected node-LL4 for latitude and longitude within LL4 constraints, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -611,7 +640,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
         long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL5", selection);
+
+        Assertions.assertEquals("node-LL5", selection,
+            "Expected node-LL5 when latitude exceeds LL4 constraints and longitude is at LL4 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -619,7 +651,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
         long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL5", selection);
+
+        Assertions.assertEquals("node-LL5", selection,
+            "Expected node-LL5 when longitude exceeds LL4 constraints and latitude is at LL4 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -627,7 +662,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -2000000L; // within LL5 constraints
         long transformedLong = -2000000L; // within LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL5", selection);
+
+        Assertions.assertEquals("node-LL5", selection,
+            "Expected node-LL5 for latitude and longitude within LL5 constraints, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -635,7 +673,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
         long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL6", selection);
+
+        Assertions.assertEquals("node-LL6", selection,
+            "Expected node-LL6 when latitude exceeds LL5 constraints and longitude is at LL5 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -643,7 +684,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
         long transformedLong = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL6", selection);
+
+        Assertions.assertEquals("node-LL6", selection,
+            "Expected node-LL6 when longitude exceeds LL5 constraints and latitude is at LL5 boundary, " +
+                "but got " + selection + " instead.");
     }
 
     @Test
@@ -651,6 +695,10 @@ class TravelerMessageFromHumanToAsnConverterTest {
         long transformedLat = -8000000L; // within LL6 constraints
         long transformedLong = -8000000L; // within LL6 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
-        Assertions.assertEquals("node-LL6", selection);
+
+        Assertions.assertEquals("node-LL6", selection,
+            "Expected node-LL6 for latitude and longitude within LL6 constraints, " +
+                "but got " + selection + " instead.");
     }
+
 }
