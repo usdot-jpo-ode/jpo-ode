@@ -722,7 +722,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return NODE_LL6;
     } else {
       throw new IllegalArgumentException(
-          "Invalid node lat/long offset: " + latDelta + "/" + lonDelta + ". Values must be within a range of -0.8388608/+0.8388607 degrees.");
+          "Invalid node lat/long offset: " + latDelta + "/" + lonDelta + ". Values must be within a range of -0.8388607/+0.8388607 degrees.");
     }
   }
 
