@@ -708,38 +708,38 @@ public class TravelerMessageFromHumanToAsnConverter {
     long transformedLonabs = Math.abs(transformedLon);
     if (((transformedLatabs & (-1 << 11)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 11)) == 0))
-        && (transformedLonabs & (-1 << 11)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 11)) == 0))) {
+        && ((transformedLonabs & (-1 << 11)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 11)) == 0)))) {
       // 11 bit value
       return "node-LL1";
     } else if (((transformedLatabs & (-1 << 13)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 13)) == 0))
-        && (transformedLonabs & (-1 << 13)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 13)) == 0))) {
+        && ((transformedLonabs & (-1 << 13)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 13)) == 0)))) {
       // 13 bit value
       return "node-LL2";
     } else if (((transformedLatabs & (-1 << 15)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 15)) == 0))
-        && (transformedLonabs & (-1 << 15)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 15)) == 0))) {
+        && ((transformedLonabs & (-1 << 15)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 15)) == 0)))) {
       // 15 bit value
       return "node-LL3";
     } else if (((transformedLatabs & (-1 << 17)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 17)) == 0))
-        && (transformedLonabs & (-1 << 17)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 17)) == 0))) {
+        && ((transformedLonabs & (-1 << 17)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 17)) == 0)))) {
       // 17 bit value
       return "node-LL4";
     } else if (((transformedLatabs & (-1 << 21)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 21)) == 0))
-        && (transformedLonabs & (-1 << 21)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 21)) == 0))) {
+        && ((transformedLonabs & (-1 << 21)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 21)) == 0)))) {
       // 21 bit value
       return "node-LL5";
     } else if (((transformedLatabs & (-1 << 23)) == 0
         || (transformedLat < 0 && (transformedLatabs ^ (1 << 23)) == 0))
-        && (transformedLonabs & (-1 << 23)) == 0
-        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 23)) == 0))) {
+        && ((transformedLonabs & (-1 << 23)) == 0
+        || (transformedLon < 0 && ((transformedLonabs ^ (1 << 23)) == 0)))) {
       // 23 bit value
       return "node-LL6";
     } else {
