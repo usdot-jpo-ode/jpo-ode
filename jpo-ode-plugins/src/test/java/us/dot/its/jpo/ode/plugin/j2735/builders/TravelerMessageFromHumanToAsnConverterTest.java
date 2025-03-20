@@ -522,8 +522,8 @@ class TravelerMessageFromHumanToAsnConverterTest {
     long LL_2_MINIMUM_MICRO_DEGREES = -8192L;
     long LL_3_MINIMUM_MICRO_DEGREES = -32768L;
     long LL_4_MINIMUM_MICRO_DEGREES = -131072L;
-    long LL_5_MINIMUM_MICRO_DEGREES = -524288L;
-    long LL_6_MINIMUM_MICRO_DEGREES = -2097152L;
+    long LL_5_MINIMUM_MICRO_DEGREES = -2097152L;
+    long LL_6_MINIMUM_MICRO_DEGREES = -8388608L;
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL1Constraints_ShouldSelectNodeLL1() {
