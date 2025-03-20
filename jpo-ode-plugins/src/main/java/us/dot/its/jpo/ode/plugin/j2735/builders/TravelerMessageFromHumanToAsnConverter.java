@@ -1237,6 +1237,9 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Exception thrown when an invalid node latitude or longitude offset is encountered.
+   */
   public static class InvalidNodeLatLonOffsetException extends Exception {
     public InvalidNodeLatLonOffsetException(String message) {
       super(message);
