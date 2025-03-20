@@ -140,7 +140,8 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws JsonUtilsException       if there is an issue converting the JsonNode
    * @throws IllegalArgumentException if the JsonNode contains old fields that are no longer used
    */
-  public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException, NoncompliantFieldsException {
+  public static void convertTravelerInputDataToEncodableTim(JsonNode tid)
+      throws JsonUtilsException, NoncompliantFieldsException, InvalidNodeLatLonOffsetException {
     // msgCnt MsgCount,
     // timeStamp MinuteOfTheYear OPTIONAL
     // packetID UniqueMSGID OPTIONAL
@@ -170,7 +171,8 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws JsonUtilsException          if there is an issue converting the JsonNode
    * @throws NoncompliantFieldsException if the JsonNode contains old fields that are no longer used
    */
-  public static ObjectNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException, NoncompliantFieldsException {
+  public static ObjectNode transformDataFrames(JsonNode dataFrames)
+      throws JsonUtilsException, NoncompliantFieldsException, InvalidNodeLatLonOffsetException {
 
     if (dataFrames == null) {
       return JsonUtils.newNode();
@@ -198,7 +200,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws JsonUtilsException          if there is an issue converting the JsonNode
    * @throws NoncompliantFieldsException if the JsonNode contains old fields that are no longer used
    */
-  public static void replaceDataFrame(ObjectNode dataFrame) throws JsonUtilsException, NoncompliantFieldsException {
+  public static void replaceDataFrame(ObjectNode dataFrame) throws JsonUtilsException, NoncompliantFieldsException, InvalidNodeLatLonOffsetException {
 
     // INPUT
     //////
@@ -436,7 +438,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @return ObjectNode representing the transformed regions
    * @throws JsonUtilsException if there is an issue converting the JsonNode
    */
-  public static ObjectNode transformRegions(JsonNode regions) throws JsonUtilsException {
+  public static ObjectNode transformRegions(JsonNode regions) throws JsonUtilsException, InvalidNodeLatLonOffsetException {
     ArrayNode replacedRegions = JsonUtils.newNode().arrayNode();
 
     if (regions.isArray()) {
@@ -458,7 +460,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @param region ObjectNode representing the region
    * @throws JsonUtilsException if there is an issue converting the JsonNode
    */
-  public static void replaceRegion(ObjectNode region) throws JsonUtilsException {
+  public static void replaceRegion(ObjectNode region) throws JsonUtilsException, InvalidNodeLatLonOffsetException {
 
     //// EXPECTED INPUT:
     // "name": "Testing TIM",
@@ -570,7 +572,7 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
-  private static void replacePath(ObjectNode pathNode) {
+  private static void replacePath(ObjectNode pathNode) throws InvalidNodeLatLonOffsetException {
 
     //// EXPECTED INPUT:
     // "path":
@@ -605,7 +607,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
   }
 
-  private static ArrayNode transformNodeSetLL(JsonNode nodes) {
+  private static ArrayNode transformNodeSetLL(JsonNode nodes) throws InvalidNodeLatLonOffsetException {
 
     //// EXPECTED INPUT:
     // "nodes": []
@@ -632,7 +634,7 @@ public class TravelerMessageFromHumanToAsnConverter {
     return outputNodeList;
   }
 
-  public static ObjectNode transformNodeLL(JsonNode oldNode) {
+  public static ObjectNode transformNodeLL(JsonNode oldNode) throws InvalidNodeLatLonOffsetException {
 
     //// EXPECTED INPUT:
 
@@ -701,10 +703,10 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @param latDelta The latitude delta as a long value.
    * @param lonDelta The longitude delta as a long value.
    * @return A string representing the node offset point LL type (e.g., NODE_LL1, NODE_LL2, etc.).
-   * @throws IllegalArgumentException if latDelta or lonDelta are outside the permissible range
-   *                                  of -0.8388608 to +0.8388607 degrees.
+   * @throws InvalidNodeLatLonOffsetException if latDelta or lonDelta are outside the permissible range
+   *                                          of -0.8388608 to +0.8388607 degrees.
    */
-  public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) {
+  public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) throws InvalidNodeLatLonOffsetException {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
@@ -721,7 +723,7 @@ public class TravelerMessageFromHumanToAsnConverter {
     } else if (absLatDelta <= NODE_LL6_LIMIT && absLonDelta <= NODE_LL6_LIMIT) {
       return NODE_LL6;
     } else {
-      throw new IllegalArgumentException(
+      throw new InvalidNodeLatLonOffsetException(
           "Invalid node lat/long offset: " + latDelta + "/" + lonDelta + ". Values must be within a range of -0.8388607/+0.8388607 degrees.");
     }
   }
@@ -1231,6 +1233,12 @@ public class TravelerMessageFromHumanToAsnConverter {
    */
   public static class NoncompliantFieldsException extends Exception {
     public NoncompliantFieldsException(String message) {
+      super(message);
+    }
+  }
+
+  public static class InvalidNodeLatLonOffsetException extends Exception {
+    public InvalidNodeLatLonOffsetException(String message) {
       super(message);
     }
   }

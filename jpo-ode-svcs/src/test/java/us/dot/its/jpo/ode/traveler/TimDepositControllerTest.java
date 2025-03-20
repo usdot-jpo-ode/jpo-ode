@@ -116,7 +116,7 @@ class TimDepositControllerTest {
   void failedObjectNodeConversionShouldReturnConvertingError(@Capturing
                                                              TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
       throws JsonUtilsException,
-      TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException {
+      TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException, TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
 
     new Expectations() {
 
