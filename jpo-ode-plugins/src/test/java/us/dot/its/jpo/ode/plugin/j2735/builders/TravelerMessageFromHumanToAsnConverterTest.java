@@ -527,40 +527,40 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL1Constraints_ShouldSelectNodeLL1() {
-        long transformedLat = LL_1_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_1_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -1500L; // within LL1 constraints
+        long transformedLong = -1500L; // within LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL1", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatOutsideLL1ConstraintAndLonOnCusp_ShouldSelectNodeLL2() {
-        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_1_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
+        long transformedLong = LL_1_MINIMUM_MICRO_DEGREES; // on cusp of LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL2", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LonOutsideLL1ConstraintAndLatOnCusp_ShouldSelectNodeLL2() {
-        long transformedLat = LL_1_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_1_MINIMUM_MICRO_DEGREES; // on cusp of LL1 constraints
+        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // outside LL1 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL2", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL2Constraints_ShouldSelectNodeLL2() {
-        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -6000; // within LL2 constraints
+        long transformedLong = -6000; // within LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL2", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatOutsideLL2ConstraintAndLonOnCusp_ShouldSelectNodeLL3() {
-        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
+        long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // on cusp of LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL3", selection);
     }
@@ -568,88 +568,88 @@ class TravelerMessageFromHumanToAsnConverterTest {
 
     @Test
     void nodeOffsetPointLL_LonOutsideLL2ConstraintAndLatOnCusp_ShouldSelectNodeLL3() {
-        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // on cusp of LL2 constraints
+        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // outside LL2 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL3", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL3Constraints_ShouldSelectNodeLL3() {
-        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -25000; // within LL3 constraints
+        long transformedLong = -25000; // within LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL3", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatOutsideLL3ConstraintAndLonOnCusp_ShouldSelectNodeLL4() {
-        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
+        long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // on cusp of LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL4", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LonOutsideLL3ConstraintAndLatOnCusp_ShouldSelectNodeLL4() {
-        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // on cusp of LL3 constraints
+        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // outside LL3 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL4", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL4Constraints_ShouldSelectNodeLL4() {
-        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -125000; // within LL4 constraints
+        long transformedLong = -125000; // within LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL4", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatOutsideLL4ConstraintAndLonOnCusp_ShouldSelectNodeLL5() {
-        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
+        long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // on cusp of LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL5", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LonOutsideLL4ConstraintAndLatOnCusp_ShouldSelectNodeLL5() {
-        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // on cusp of LL4 constraints
+        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // outside LL4 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL5", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL5Constraints_ShouldSelectNodeLL5() {
-        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -2000000L; // within LL5 constraints
+        long transformedLong = -2000000L; // within LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL5", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatOutsideLL5ConstraintAndLonOnCusp_ShouldSelectNodeLL6() {
-        long transformedLat = LL_6_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
+        long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // on cusp of LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL6", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LonOutsideLL5ConstraintAndLatOnCusp_ShouldSelectNodeLL6() {
-        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_6_MINIMUM_MICRO_DEGREES;
+        long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // on cusp of LL5 constraints
+        long transformedLong = LL_6_MINIMUM_MICRO_DEGREES; // outside LL5 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL6", selection);
     }
 
     @Test
     void nodeOffsetPointLL_LatAndLonWithinLL6Constraints_ShouldSelectNodeLL6() {
-        long transformedLat = LL_6_MINIMUM_MICRO_DEGREES;
-        long transformedLong = LL_6_MINIMUM_MICRO_DEGREES;
+        long transformedLat = -8000000L; // within LL6 constraints
+        long transformedLong = -8000000L; // within LL6 constraints
         String selection = TravelerMessageFromHumanToAsnConverter.nodeOffsetPointLL(transformedLat, transformedLong);
         Assertions.assertEquals("node-LL6", selection);
     }
