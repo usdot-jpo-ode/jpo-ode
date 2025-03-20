@@ -695,6 +695,14 @@ public class TravelerMessageFromHumanToAsnConverter {
     return deltaNode;
   }
 
+  // -- Nodes with LL content Span at the equator when using a zoom of one:
+  public static final String NODE_LL1 = "node-LL1"; // Node-LL-24B, within ±22.634554 meters of last node
+  public static final String NODE_LL2 = "node-LL2"; // Node-LL-28B, within ±90.571389 meters of last node
+  public static final String NODE_LL3 = "node-LL3"; // Node-LL-32B, within ±362.31873 meters of last node
+  public static final String NODE_LL4 = "node-LL4"; // Node-LL-36B, within ±1.449308 kilometers of last node
+  public static final String NODE_LL5 = "node-LL5"; // Node-LL-44B, within ±23.189096 kilometers of last node
+  public static final String NODE_LL6 = "node-LL6"; // Node-LL-48B, within ±92.756481 kilometers of last node
+
   // Constants for bitmask shifts
   private static final int BITMASK_11 = 11;
   private static final int BITMASK_13 = 13;
@@ -703,30 +711,39 @@ public class TravelerMessageFromHumanToAsnConverter {
   private static final int BITMASK_21 = 21;
   private static final int BITMASK_23 = 23;
 
-  // -- Nodes with LL content Span at the equator when using a zoom of one:
-  // node-LL1 Node-LL-24B, -- within +- 22.634554 meters of last node
-  // node-LL2 Node-LL-28B, -- within +- 90.571389 meters of last node
-  // node-LL3 Node-LL-32B, -- within +- 362.31873 meters of last node
-  // node-LL4 Node-LL-36B, -- within +- 01.449308 Kmeters of last node
-  // node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
-  // node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
-  // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+  /**
+   * Determines the node offset point LL type based on latitude and longitude deltas.
+   *
+   * This method evaluates the given latitude and longitude offsets and returns a
+   * String identifier indicating the appropriate LL node type based on predefined
+   * bitmask ranges. Valid lat/lon offsets must be within specific bounds, otherwise,
+   * an exception is thrown.
+   *
+   * @param latDelta the latitude offset in long format, representing the delta
+   *                 from the base latitude.
+   * @param lonDelta the longitude offset in long format, representing the delta
+   *                 from the base longitude.
+   * @return a String representing the LL node type, such as "node-LL1", "node-LL2",
+   *         and so on, corresponding to the calculated offset ranges.
+   * @throws IllegalArgumentException if the provided latitude or longitude offsets
+   *                                  are out of the acceptable range.
+   */
   public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
     if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_11)) {
-      return "node-LL1";
+      return NODE_LL1;
     } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_13)) {
-      return "node-LL2";
+      return NODE_LL2;
     } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_15)) {
-      return "node-LL3";
+      return NODE_LL3;
     } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_17)) {
-      return "node-LL4";
+      return NODE_LL4;
     } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_21)) {
-      return "node-LL5";
+      return NODE_LL5;
     } else if (areCoordinatesWithinBitMaskRange(absLatDelta, latDelta, absLonDelta, lonDelta, BITMASK_23)) {
-      return "node-LL6";
+      return NODE_LL6;
     } else {
       throw new IllegalArgumentException(
           "Invalid node lat/long offset: " + latDelta + "/" + lonDelta
@@ -734,10 +751,29 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  /**
+   * Determines whether the given latitude and longitude coordinates are within the range
+   * specified by the bitmask shift.
+   *
+   * @param absLat The absolute value of the latitude.
+   * @param lat The original latitude value.
+   * @param absLon The absolute value of the longitude.
+   * @param lon The original longitude value.
+   * @param bitmaskShift The bitmask shift value to use for range calculation.
+   * @return {@code true} if both the latitude and longitude coordinates are within the specified bitmask range, {@code false} otherwise.
+   */
   private static boolean areCoordinatesWithinBitMaskRange(long absLat, long lat, long absLon, long lon, int bitmaskShift) {
     return isCoordinateWithinBitMaskRange(absLat, lat, bitmaskShift) && isCoordinateWithinBitMaskRange(absLon, lon, bitmaskShift);
   }
 
+  /**
+   * Determines if a given coordinate value is within the range of a bitmask shift.
+   *
+   * @param absValue The absolute value of the coordinate to be checked.
+   * @param value The original value of the coordinate.
+   * @param bitmaskShift The number of bits to shift in the bitmask operation.
+   * @return true if the coordinate value is within the defined range, false otherwise.
+   */
   private static boolean isCoordinateWithinBitMaskRange(long absValue, long value, int bitmaskShift) {
     return (absValue & (-1L << bitmaskShift)) == 0
         || (value < 0 && (absValue ^ (1L << bitmaskShift)) == 0);
