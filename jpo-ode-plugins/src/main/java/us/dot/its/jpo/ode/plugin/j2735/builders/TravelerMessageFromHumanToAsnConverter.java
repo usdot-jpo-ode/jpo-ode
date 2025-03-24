@@ -1203,6 +1203,20 @@ public class TravelerMessageFromHumanToAsnConverter {
     }
   }
 
+  private static final Set<String> nonCompliantFields = Set.of(
+      SSP_MSG_CONTENT,
+      SSP_MSG_TYPES,
+      SSP_LOCATION_RIGHTS,
+      SSP_TIM_RIGHTS,
+      SSP_MSG_RIGHTS_1,
+      SSP_MSG_RIGHTS_2,
+      NOT_USED,
+      NOT_USED_1,
+      NOT_USED_2,
+      NOT_USED_3,
+      DURATON_TIME_MISSPELLED
+  );
+
   /**
    * Ensures compliance with the J2735 2024 standard by checking
    * for old fields in the given data frame.
@@ -1212,9 +1226,6 @@ public class TravelerMessageFromHumanToAsnConverter {
    */
   public static void ensureComplianceWithJ2735Revision2024(ObjectNode dataFrame) throws NoncompliantFieldsException {
     // Check and throw exception if old fields are found
-    Set<String> nonCompliantFields =
-        Set.of(SSP_MSG_CONTENT, SSP_MSG_TYPES, SSP_LOCATION_RIGHTS, SSP_TIM_RIGHTS, SSP_MSG_RIGHTS_1, SSP_MSG_RIGHTS_2, NOT_USED, NOT_USED_1,
-            NOT_USED_2, NOT_USED_3, DURATON_TIME_MISSPELLED);
     ArrayList<String> violations = new ArrayList<>();
     for (String violationName : nonCompliantFields) {
       if (dataFrame.has(violationName)) {
