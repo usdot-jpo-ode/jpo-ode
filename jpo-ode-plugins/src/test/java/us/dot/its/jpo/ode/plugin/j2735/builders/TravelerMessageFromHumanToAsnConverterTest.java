@@ -506,196 +506,196 @@ class TravelerMessageFromHumanToAsnConverterTest {
   long LL_6_MINIMUM_MICRO_DEGREES = TravelerMessageFromHumanToAsnConverter.NODE_LL6_LIMIT * -1;
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatLonWithinLL1Constraints_ShouldReturnDetermineNodeLLType1()
+  void getNodeOffsetPointLLType_WhenLatLonWithinLL1Constraints_ShouldReturnGetNodeLLType1()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -1500L; // within LL1 constraints
     long transformedLong = -1500L; // within LL1 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL1", selection,
         "Expected node-LL1 for latitude and longitude within LL1 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL1ConstraintAndLonAtLL1Boundary_ShouldReturnDetermineNodeLLType2()
+  void getNodeOffsetPointLLType_WhenLatOutsideLL1ConstraintAndLonAtLL1Boundary_ShouldReturnGetNodeLLType2()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_1_MINIMUM_MICRO_DEGREES - 1; // outside LL1 constraints
     long transformedLong = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL2", selection,
         "Expected node-LL2 when latitude exceeds LL1 constraints and longitude is at LL1 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL1ConstraintAndLatAtLL1Boundary_ShouldReturnDetermineNodeLLType2()
+  void getNodeOffsetPointLLType_WhenLonOutsideLL1ConstraintAndLatAtLL1Boundary_ShouldReturnGetNodeLLType2()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_1_MINIMUM_MICRO_DEGREES; // at LL1 boundary
     long transformedLong = LL_1_MINIMUM_MICRO_DEGREES - 1; // outside LL1 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL2", selection,
         "Expected node-LL2 when longitude exceeds LL1 constraints and latitude is at LL1 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatAndLonWithinLL2Constraints_ShouldReturnDetermineNodeLLType2()
+  void getNodeOffsetPointLLType_WhenLatAndLonWithinLL2Constraints_ShouldReturnGetNodeLLType2()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -6000; // within LL2 constraints
     long transformedLong = -6000; // within LL2 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL2", selection,
         "Expected node-LL2 for latitude and longitude within LL2 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL2ConstraintAndLonAtLL2Boundary_ShouldReturnDetermineNodeLLType3()
+  void getNodeOffsetPointLLType_WhenLatOutsideLL2ConstraintAndLonAtLL2Boundary_ShouldReturnGetNodeLLType3()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_2_MINIMUM_MICRO_DEGREES - 1; // outside LL2 constraints
     long transformedLong = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL3", selection,
         "Expected node-LL3 when latitude exceeds LL2 constraints and longitude is at LL2 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL2ConstraintAndLatAtLL2Boundary_ShouldReturnDetermineNodeLLType3()
+  void getNodeOffsetPointLLType_WhenLonOutsideLL2ConstraintAndLatAtLL2Boundary_ShouldReturnGetNodeLLType3()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_2_MINIMUM_MICRO_DEGREES; // at LL2 boundary
     long transformedLong = LL_2_MINIMUM_MICRO_DEGREES - 1; // outside LL2 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL3", selection,
         "Expected node-LL3 when longitude exceeds LL2 constraints and latitude is at LL2 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatAndLonWithinLL3Constraints_ShouldReturnDetermineNodeLLType3()
+  void getNodeOffsetPointLLType_WhenLatAndLonWithinLL3Constraints_ShouldReturnGetNodeLLType3()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -25000; // within LL3 constraints
     long transformedLong = -25000; // within LL3 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL3", selection,
         "Expected node-LL3 for latitude and longitude within LL3 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL3ConstraintAndLonAtLL3Boundary_ShouldReturnDetermineNodeLLType4()
+  void getNodeOffsetPointLLType_WhenLatOutsideLL3ConstraintAndLonAtLL3Boundary_ShouldReturnGetNodeLLType4()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_3_MINIMUM_MICRO_DEGREES - 1; // outside LL3 constraints
     long transformedLong = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL4", selection,
         "Expected node-LL4 when latitude exceeds LL3 constraints and longitude is at LL3 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL3ConstraintAndLatAtLL3Boundary_ShouldReturnDetermineNodeLLType4()
+  void getNodeOffsetPointLLType_WhenLonOutsideLL3ConstraintAndLatAtLL3Boundary_ShouldReturnGetNodeLLType4()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_3_MINIMUM_MICRO_DEGREES; // at LL3 boundary
     long transformedLong = LL_3_MINIMUM_MICRO_DEGREES - 1; // outside LL3 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL4", selection,
         "Expected node-LL4 when longitude exceeds LL3 constraints and latitude is at LL3 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatAndLonWithinLL4Constraints_ShouldReturnDetermineNodeLLType4()
+  void getNodeOffsetPointLLType_WhenLatAndLonWithinLL4Constraints_ShouldReturnGetNodeLLType4()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -125000; // within LL4 constraints
     long transformedLong = -125000; // within LL4 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL4", selection,
         "Expected node-LL4 for latitude and longitude within LL4 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL4ConstraintAndLonAtLL4Boundary_ShouldReturnDetermineNodeLLType5()
+  void getNodeOffsetPointLLType_WhenLatOutsideLL4ConstraintAndLonAtLL4Boundary_ShouldReturnGetNodeLLType5()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_4_MINIMUM_MICRO_DEGREES - 1; // outside LL4 constraints
     long transformedLong = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL5", selection,
         "Expected node-LL5 when latitude exceeds LL4 constraints and longitude is at LL4 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL4ConstraintAndLatAtLL4Boundary_ShouldReturnDetermineNodeLLType5()
+  void getNodeOffsetPointLLType_WhenLonOutsideLL4ConstraintAndLatAtLL4Boundary_ShouldReturnGetNodeLLType5()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_4_MINIMUM_MICRO_DEGREES; // at LL4 boundary
     long transformedLong = LL_4_MINIMUM_MICRO_DEGREES - 1; // outside LL4 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL5", selection,
         "Expected node-LL5 when longitude exceeds LL4 constraints and latitude is at LL4 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatAndLonWithinLL5Constraints_ShouldReturnDetermineNodeLLType5()
+  void getNodeOffsetPointLLType_WhenLatAndLonWithinLL5Constraints_ShouldReturnGetNodeLLType5()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -2000000L; // within LL5 constraints
     long transformedLong = -2000000L; // within LL5 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL5", selection,
         "Expected node-LL5 for latitude and longitude within LL5 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL5ConstraintAndLonAtLL5Boundary_ShouldReturnDetermineNodeLLType6()
+  void getNodeOffsetPointLLType_WhenLatOutsideLL5ConstraintAndLonAtLL5Boundary_ShouldReturnGetNodeLLType6()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_5_MINIMUM_MICRO_DEGREES - 1; // outside LL5 constraints
     long transformedLong = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL6", selection,
         "Expected node-LL6 when latitude exceeds LL5 constraints and longitude is at LL5 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL5ConstraintAndLatAtLL5Boundary_ShouldReturnDetermineNodeLLType6()
+  void getNodeOffsetPointLLType_WhenLonOutsideLL5ConstraintAndLatAtLL5Boundary_ShouldReturnGetNodeLLType6()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = LL_5_MINIMUM_MICRO_DEGREES; // at LL5 boundary
     long transformedLong = LL_5_MINIMUM_MICRO_DEGREES - 1; // outside LL5 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL6", selection,
         "Expected node-LL6 when longitude exceeds LL5 constraints and latitude is at LL5 boundary, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatAndLonWithinLL6Constraints_ShouldReturnDetermineNodeLLType6()
+  void getNodeOffsetPointLLType_WhenLatAndLonWithinLL6Constraints_ShouldReturnGetNodeLLType6()
       throws TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     long transformedLat = -8000000L; // within LL6 constraints
     long transformedLong = -8000000L; // within LL6 constraints
-    String selection = TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+    String selection = TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
 
     Assertions.assertEquals("node-LL6", selection,
         "Expected node-LL6 for latitude and longitude within LL6 constraints, " + "but got " + selection + " instead.");
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLatOutsideLL6ConstraintAndLonAtLL6Boundary_ShouldThrowException() {
+  void getNodeOffsetPointLLType_WhenLatOutsideLL6ConstraintAndLonAtLL6Boundary_ShouldThrowException() {
     long transformedLat = LL_6_MINIMUM_MICRO_DEGREES - 1; // outside LL6 constraints
     long transformedLong = LL_6_MINIMUM_MICRO_DEGREES; // at LL6 boundary
     assertThrows(TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException.class, () -> {
-      TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+      TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
     });
   }
 
   @Test
-  void determineNodeOffsetPointLLType_WhenLonOutsideLL6ConstraintAndLatAtLL6Boundary_ShouldThrowException() {
+  void getNodeOffsetPointLLType_WhenLonOutsideLL6ConstraintAndLatAtLL6Boundary_ShouldThrowException() {
     long transformedLat = LL_6_MINIMUM_MICRO_DEGREES; // at LL6 boundary
     long transformedLong = LL_6_MINIMUM_MICRO_DEGREES - 1; // outside LL6 constraints
     assertThrows(TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException.class, () -> {
-      TravelerMessageFromHumanToAsnConverter.determineNodeOffsetPointLLType(transformedLat, transformedLong);
+      TravelerMessageFromHumanToAsnConverter.getNodeOffsetPointLLType(transformedLat, transformedLong);
     });
   }
 }

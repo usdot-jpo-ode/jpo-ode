@@ -665,7 +665,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       transformedLat = OffsetLLBuilder.offsetLL(latOffset);
       transformedLong = OffsetLLBuilder.offsetLL(longOffset);
       if (deltaText.equals("node-LL")) {
-        deltaText = determineNodeOffsetPointLLType(transformedLat, transformedLong);
+        deltaText = getNodeOffsetPointLLType(transformedLat, transformedLong);
       }
     } else if (NODE_LAT_LON.equals(deltaText)) {
       transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
@@ -706,7 +706,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws InvalidNodeLatLonOffsetException if latDelta or lonDelta are outside the permissible range
    *                                          of -0.8388608 to +0.8388607 degrees.
    */
-  public static String determineNodeOffsetPointLLType(long latDelta, long lonDelta) throws InvalidNodeLatLonOffsetException {
+  public static String getNodeOffsetPointLLType(long latDelta, long lonDelta) throws InvalidNodeLatLonOffsetException {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
