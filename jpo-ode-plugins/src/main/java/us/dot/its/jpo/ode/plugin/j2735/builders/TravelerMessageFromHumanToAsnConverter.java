@@ -634,7 +634,7 @@ public class TravelerMessageFromHumanToAsnConverter {
     return outputNodeList;
   }
 
-  public static ObjectNode transformNodeLL(JsonNode oldNode) throws InvalidNodeLatLonOffsetException {
+  protected static ObjectNode transformNodeLL(JsonNode oldNode) throws InvalidNodeLatLonOffsetException {
 
     //// EXPECTED INPUT:
 
@@ -678,20 +678,20 @@ public class TravelerMessageFromHumanToAsnConverter {
   }
 
   // -- Nodes with LL content Span at the equator when using a zoom of one:
-  public static final String NODE_LL1 = "node-LL1"; // Node-LL-24B, within ±22.634554 meters of last node
-  public static final String NODE_LL2 = "node-LL2"; // Node-LL-28B, within ±90.571389 meters of last node
-  public static final String NODE_LL3 = "node-LL3"; // Node-LL-32B, within ±362.31873 meters of last node
-  public static final String NODE_LL4 = "node-LL4"; // Node-LL-36B, within ±1.449308 kilometers of last node
-  public static final String NODE_LL5 = "node-LL5"; // Node-LL-44B, within ±23.189096 kilometers of last node
-  public static final String NODE_LL6 = "node-LL6"; // Node-LL-48B, within ±92.756481 kilometers of last node
+  protected static final String NODE_LL1 = "node-LL1"; // Node-LL-24B, within ±22.634554 meters of last node
+  protected static final String NODE_LL2 = "node-LL2"; // Node-LL-28B, within ±90.571389 meters of last node
+  protected static final String NODE_LL3 = "node-LL3"; // Node-LL-32B, within ±362.31873 meters of last node
+  protected static final String NODE_LL4 = "node-LL4"; // Node-LL-36B, within ±1.449308 kilometers of last node
+  protected static final String NODE_LL5 = "node-LL5"; // Node-LL-44B, within ±23.189096 kilometers of last node
+  protected static final String NODE_LL6 = "node-LL6"; // Node-LL-48B, within ±92.756481 kilometers of last node
 
   // -- Limits for each node type
-  public final static long NODE_LL1_LIMIT = 2047;
-  public final static long NODE_LL2_LIMIT = 8191;
-  public final static long NODE_LL3_LIMIT = 32767;
-  public final static long NODE_LL4_LIMIT = 131071;
-  public final static long NODE_LL5_LIMIT = 2097151;
-  public final static long NODE_LL6_LIMIT = 8388607;
+  protected final static long NODE_LL1_LIMIT = 2047;
+  protected final static long NODE_LL2_LIMIT = 8191;
+  protected final static long NODE_LL3_LIMIT = 32767;
+  protected final static long NODE_LL4_LIMIT = 131071;
+  protected final static long NODE_LL5_LIMIT = 2097151;
+  protected final static long NODE_LL6_LIMIT = 8388607;
   // In J2735, the value -8388608 indicates an unknown value and is considered invalid because it falls outside the acceptable ± range.
 
   /**
@@ -706,7 +706,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    * @throws InvalidNodeLatLonOffsetException if latDelta or lonDelta are outside the permissible range
    *                                          of -0.8388608 to +0.8388607 degrees.
    */
-  public static String getNodeOffsetPointLLType(long latDelta, long lonDelta) throws InvalidNodeLatLonOffsetException {
+  protected static String getNodeOffsetPointLLType(long latDelta, long lonDelta) throws InvalidNodeLatLonOffsetException {
     long absLatDelta = Math.abs(latDelta);
     long absLonDelta = Math.abs(lonDelta);
 
