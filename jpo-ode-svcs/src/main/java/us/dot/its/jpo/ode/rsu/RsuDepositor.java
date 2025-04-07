@@ -23,7 +23,6 @@ import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -93,9 +92,7 @@ public class RsuDepositor extends Thread {
                   dataSigningEnabled);
               httpResponseStatus = getResponseStatus(rsuResponse, curRsu);
             } catch (IOException | ParseException e) {
-              String msg = "Exception caught in TIM RSU deposit loop.";
-              EventLogger.logger.error(msg, e);
-              log.error(msg, e);
+              log.error("Exception caught in TIM RSU deposit loop", e);
               httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
             }
 

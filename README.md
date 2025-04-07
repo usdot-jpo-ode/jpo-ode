@@ -509,7 +509,8 @@ This section outlines the software technology stacks of the ODE.
 - [Logback](https://logback.qos.ch/)
 - [SNMP4J](https://www.snmp4j.org/)
 - [JUnit](https://junit.org)
-- [JMockit](http://jmockit.github.io/)
+- [JMockit - deprecated in favor of Mockito](http://jmockit.github.io/)
+- [Mockito](https://github.com/mockito/mockito)
 - [Stomp Websocket](http://jmesnil.net/stomp-websocket)
 
 ### Web UI

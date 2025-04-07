@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.kafka.listeners.asn1;
+package us.dot.its.jpo.ode.kafka.listeners.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
