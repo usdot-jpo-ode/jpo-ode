@@ -3,11 +3,21 @@ package us.dot.its.jpo.ode.kafka.listeners.asn1;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessage;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeMapDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdePsmDataCreatorHelper;
@@ -23,6 +33,7 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdePsmData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -81,7 +92,7 @@ public class Asn1DecodedDataRouter {
       topics = "${ode.kafka.topics.asn1.decoder-output}"
   )
   public void listen(ConsumerRecord<String, String> consumerRecord)
-      throws XmlUtilsException, JsonProcessingException, Asn1DecodedDataRouterException {
+      throws XmlUtilsException, JsonProcessingException, Asn1DecodedDataRouterException, JsonMappingException, JsonProcessingException, IOException {
     log.debug("Key: {} payload: {}", consumerRecord.key(), consumerRecord.value());
 
     JSONObject consumed = XmlUtils.toJSONObject(consumerRecord.value())
@@ -128,13 +139,13 @@ public class Asn1DecodedDataRouter {
   }
 
   private void routePSM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
-      throws XmlUtils.XmlUtilsException {
-    String odePsmData = OdePsmDataCreatorHelper.createOdePsmData(consumerRecord.value()).toString();
+      throws XmlUtils.XmlUtilsException, JsonMappingException, JsonProcessingException, IOException {
+    OdePsmData odePsmData = OdePsmDataCreatorHelper.createOdePsmData(consumerRecord.value());
     if (recordType == RecordType.psmTx) {
-      kafkaTemplate.send(pojoTopics.getTxPsm(), consumerRecord.key(), odePsmData);
+      kafkaTemplate.send(pojoTopics.getTxPsm(), consumerRecord.key(), odePsmData.toString());
     }
     // Send all PSMs also to OdePsmJson
-    kafkaTemplate.send(jsonTopics.getPsm(), consumerRecord.key(), odePsmData);
+    kafkaTemplate.send(jsonTopics.getPsm(), consumerRecord.key(), odePsmData.toString());
   }
 
   private void routeSRM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)

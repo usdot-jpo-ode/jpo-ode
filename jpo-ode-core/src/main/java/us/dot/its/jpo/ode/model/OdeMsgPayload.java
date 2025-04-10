@@ -15,75 +15,34 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-public class OdeMsgPayload extends OdeObject {
-  public static final String PAYLOAD_STRING = "payload";
-  public static final String DATA_STRING = "data";
-  private static final long serialVersionUID = -7711340868799607662L;
+import lombok.Data;
+import us.dot.its.jpo.ode.util.JsonUtils;
+
+@Data
+public class OdeMsgPayload<T> {
+    public static final String PAYLOAD_STRING = "payload";
+    public static final String DATA_STRING = "data";
 
     private String dataType;
-    private OdeObject data;
+    private T data;
     
     public OdeMsgPayload() {
        super();
     }
 
-    public OdeMsgPayload(OdeObject data) {
+    public OdeMsgPayload(T data) {
         super();
         this.dataType = data.getClass().getName();
         this.data = data;
     }
 
-    public OdeMsgPayload(String dataType, OdeObject data) {
+    public OdeMsgPayload(String dataType, T data) {
         super();
         this.dataType = dataType;
         this.data = data;
     }
 
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public OdeObject getData() {
-        return data;
-    }
-
-    public void setData(OdeObject data) {
-        this.data = data;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((data == null) ? 0 : data.hashCode());
-        result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OdeMsgPayload other = (OdeMsgPayload) obj;
-        if (data == null) {
-            if (other.data != null)
-                return false;
-        } else if (!data.equals(other.data))
-            return false;
-        if (dataType == null) {
-            if (other.dataType != null)
-                return false;
-        } else if (!dataType.equals(other.dataType))
-            return false;
-        return true;
-    }
-
+    public String toJson() {
+        return JsonUtils.toJson(this, false);
+     }
 }

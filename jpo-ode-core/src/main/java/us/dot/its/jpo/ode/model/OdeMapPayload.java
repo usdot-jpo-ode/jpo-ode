@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735MAP;
 
-public class OdeMapPayload extends OdeMsgPayload {
+public class OdeMapPayload extends OdeMsgPayload<OdeObject> {
 
 	   /**
 	 * 

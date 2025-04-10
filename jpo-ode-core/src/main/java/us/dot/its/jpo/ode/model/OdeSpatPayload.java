@@ -20,7 +20,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SPAT;
  * the License.
  ******************************************************************************/
 
-public class OdeSpatPayload extends OdeMsgPayload {
+public class OdeSpatPayload extends OdeMsgPayload<OdeObject> {
 
 	   /**
 	 * 

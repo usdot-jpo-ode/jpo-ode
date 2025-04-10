@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SSM;
 
-public class OdeSsmPayload extends OdeMsgPayload {
+public class OdeSsmPayload extends OdeMsgPayload<OdeObject> {
 
     public OdeSsmPayload() {
         this(new J2735SSM());

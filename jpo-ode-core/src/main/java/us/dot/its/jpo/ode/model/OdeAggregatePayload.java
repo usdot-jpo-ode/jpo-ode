@@ -15,7 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-public class OdeAggregatePayload extends OdeMsgPayload {
+public class OdeAggregatePayload extends OdeMsgPayload<OdeObject> {
 
     private static final long serialVersionUID = 7061315628111448390L;
 

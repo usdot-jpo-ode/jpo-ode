@@ -16,7 +16,8 @@
             "name": "Launch ODE",
             "request": "launch",
             "mainClass": "us.dot.its.jpo.ode.OdeSvcsApplication",
-            "projectName": "jpo-ode-svcs"
+            "projectName": "jpo-ode-svcs",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

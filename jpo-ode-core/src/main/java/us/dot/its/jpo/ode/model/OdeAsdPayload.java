@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.model;
 
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 
-public class OdeAsdPayload extends OdeMsgPayload {
+public class OdeAsdPayload extends OdeMsgPayload<OdeObject> {
 
     private static final long serialVersionUID = 7061315628111448390L;
 

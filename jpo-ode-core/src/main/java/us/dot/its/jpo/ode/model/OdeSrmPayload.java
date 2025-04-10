@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
 
-public class OdeSrmPayload extends OdeMsgPayload {
+public class OdeSrmPayload extends OdeMsgPayload<OdeObject> {
 
     private static final long serialVersionUID = 1L;
 

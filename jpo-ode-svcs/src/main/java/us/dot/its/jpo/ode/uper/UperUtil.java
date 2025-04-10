@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
@@ -104,7 +105,8 @@ public class UperUtil {
   public static String determineMessageType(OdeMsgPayload payload) {
     String messageType = "";
     try {
-      JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
+      OdeObject odeObject = (OdeObject)payload.getData();
+      JSONObject payloadJson = JsonUtils.toJSONObject(odeObject.toJson());
       String hexString = payloadJson.getString("bytes").toLowerCase();
       messageType = determineHexPacketType(hexString);
 

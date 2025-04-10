@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
-public class OdeBsmPayload extends OdeMsgPayload {
+public class OdeBsmPayload extends OdeMsgPayload<OdeObject> {
 
     private static final long serialVersionUID = 7061315628111448390L;
 
