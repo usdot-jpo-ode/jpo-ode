@@ -143,3 +143,15 @@ ode:
     channels:
       filtered-output: "/topic/filtered_messages"
       unfiltered-output: "/topic/unfiltered_messages"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      enabled: true

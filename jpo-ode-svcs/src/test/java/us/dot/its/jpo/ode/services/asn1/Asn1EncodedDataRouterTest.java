@@ -59,6 +59,7 @@ import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.http.WebClientConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestKafkaStreamsConfig;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
@@ -94,7 +95,8 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
         SecurityServicesProperties.class,
         RsuProperties.class,
         Asn1EncodedDataRouterTest.MockSecurityServicesClient.class,
-        WebClientConfig.class
+        WebClientConfig.class,
+        TestMetricsConfig.class,
     }
 )
 @EnableConfigurationProperties
