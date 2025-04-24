@@ -54,8 +54,6 @@ services:
       ODE_TIM_INGEST_MONITORING_ENABLED: ${ODE_TIM_INGEST_MONITORING_ENABLED}
       ODE_TIM_INGEST_MONITORING_INTERVAL: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
       ODE_STOMP_EXPORTER_ENABLED: ${ODE_STOMP_EXPORTER_ENABLED}
-      # Look into changing this to Prometheus
-      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://${DOCKER_HOST_IP}:4318/v1/traces
     depends_on:
       kafka:
         condition: service_healthy
