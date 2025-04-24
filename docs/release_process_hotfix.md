@@ -34,6 +34,7 @@ After the hotfix branch is created and the code changes are merged, project refe
 3. Tag docker images with the version number of each app. (e.g. 1.0.0)
 4. Tag docker images with year, month, and day of hotfix. (e.g. 2024-04-01)
 5. Tag docker images with 'latest' tag for the most recent release.
+6. Tag docker images with `(year)-(quarter)` to indicate the quarter of the release. (e.g. 2024-Q2)
 
 #### Housekeeping
 1. Merge master branches into develop branches for each affected project & verify that CI/CD passes.

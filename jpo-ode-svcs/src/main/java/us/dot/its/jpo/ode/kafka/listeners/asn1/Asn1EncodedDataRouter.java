@@ -14,7 +14,7 @@
  * the License.
  ******************************************************************************/
 
-package us.dot.its.jpo.ode.services.asn1;
+package us.dot.its.jpo.ode.kafka.listeners.asn1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
-import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -143,7 +142,7 @@ public class Asn1EncodedDataRouter {
     JSONObject consumedObj = XmlUtils.toJSONObject(consumerRecord.value())
         .getJSONObject(OdeAsn1Data.class.getSimpleName());
 
-    JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+    JSONObject metadata = consumedObj.getJSONObject(OdeMsgMetadata.METADATA_STRING);
 
     if (!metadata.has(TimTransmogrifier.REQUEST_STRING)) {
       throw new Asn1EncodedDataRouterException(
@@ -153,7 +152,7 @@ public class Asn1EncodedDataRouter {
       );
     }
 
-    JSONObject payloadData = consumedObj.getJSONObject(AppContext.PAYLOAD_STRING).getJSONObject(AppContext.DATA_STRING);
+    JSONObject payloadData = consumedObj.getJSONObject(OdeMsgPayload.PAYLOAD_STRING).getJSONObject(OdeMsgPayload.DATA_STRING);
     ServiceRequest request = getServiceRequest(metadata);
     log.debug("Mapped to object ServiceRequest: {}", request);
 
@@ -329,7 +328,7 @@ public class Asn1EncodedDataRouter {
     OdeMsgPayload payload = new OdeAsdPayload(asd);
 
     var payloadNode = (ObjectNode) mapper.readTree(payload.toJson());
-    payloadNode.set(AppContext.DATA_STRING, advisorySituationDataNode);
+    payloadNode.set(OdeMsgPayload.DATA_STRING, advisorySituationDataNode);
 
     OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
     var metadataNode = (ObjectNode) mapper.readTree(metadata.toJson());
@@ -338,16 +337,16 @@ public class Asn1EncodedDataRouter {
 
     ArrayNode encodings = buildEncodings();
     var embeddedEncodings = xmlMapper.createObjectNode();
-    embeddedEncodings.set(AppContext.ENCODINGS_STRING, encodings);
+    embeddedEncodings.set(OdeMsgMetadata.ENCODINGS_STRING, encodings);
 
-    metadataNode.set(AppContext.ENCODINGS_STRING, embeddedEncodings);
+    metadataNode.set(OdeMsgMetadata.ENCODINGS_STRING, embeddedEncodings);
 
     ObjectNode message = mapper.createObjectNode();
-    message.set(AppContext.METADATA_STRING, metadataNode);
-    message.set(AppContext.PAYLOAD_STRING, payloadNode);
+    message.set(OdeMsgMetadata.METADATA_STRING, metadataNode);
+    message.set(OdeMsgPayload.PAYLOAD_STRING, payloadNode);
 
     ObjectNode root = mapper.createObjectNode();
-    root.set(AppContext.ODE_ASN1_DATA, message);
+    root.set(OdeAsn1Data.ODE_ASN1_DATA, message);
 
     var outputXml = xmlMapper.writeValueAsString(root)
         .replace("<ObjectNode>", "")

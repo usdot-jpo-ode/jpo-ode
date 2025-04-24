@@ -14,7 +14,7 @@
  * the License.
  ******************************************************************************/
 
-package us.dot.its.jpo.ode.services.json;
+package us.dot.its.jpo.ode.kafka.listeners.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

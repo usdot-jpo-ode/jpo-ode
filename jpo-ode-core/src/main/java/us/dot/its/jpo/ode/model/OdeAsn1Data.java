@@ -16,7 +16,8 @@
 package us.dot.its.jpo.ode.model;
 
 public class OdeAsn1Data extends OdeData {
-   private static final long serialVersionUID = 8844322473807845737L;
+  public static final String ODE_ASN1_DATA = "OdeAsn1Data";
+  private static final long serialVersionUID = 8844322473807845737L;
 
    public OdeAsn1Data() {
       super();

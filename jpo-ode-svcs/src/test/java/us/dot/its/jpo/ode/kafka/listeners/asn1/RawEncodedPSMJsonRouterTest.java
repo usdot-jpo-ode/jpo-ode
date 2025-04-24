@@ -22,6 +22,8 @@ import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedPSMJsonRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;

@@ -27,6 +27,7 @@ COPY ./scripts/startup_jpoode.sh /home
 
 RUN apk --no-cache add openssh  \
     && apk --no-cache add openrc  \
-    && rc-update add sshd
+    && rc-update add sshd \
+    && apk add libstdc++
 
 ENTRYPOINT ["sh", "/home/startup_jpoode.sh"]

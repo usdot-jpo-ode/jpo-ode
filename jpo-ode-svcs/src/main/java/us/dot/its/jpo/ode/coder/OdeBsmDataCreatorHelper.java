@@ -17,11 +17,10 @@ package us.dot.its.jpo.ode.coder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -36,10 +35,10 @@ public class OdeBsmDataCreatorHelper {
    public static OdeBsmData createOdeBsmData(String consumedData) throws XmlUtilsException {
       ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-      JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+      JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
       if (metadataNode instanceof ObjectNode) {
          ObjectNode object = (ObjectNode) metadataNode;
-         object.remove(AppContext.ENCODINGS_STRING);
+         object.remove(OdeMsgMetadata.ENCODINGS_STRING);
       }
       
       OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
