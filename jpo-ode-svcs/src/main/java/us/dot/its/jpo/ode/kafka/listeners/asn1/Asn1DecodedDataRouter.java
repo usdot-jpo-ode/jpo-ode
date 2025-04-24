@@ -49,14 +49,23 @@ public class Asn1DecodedDataRouter {
   private final KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate;
 
   /**
+   * Exception for Asn1DecodedDataRouter specific failures.
+   */
+  public static class Asn1DecodedDataRouterException extends Exception {
+    public Asn1DecodedDataRouterException(String string) {
+      super(string);
+    }
+  }
+
+  /**
    * Constructs an instance of Asn1DecodedDataRouter.
    *
    * @param kafkaTemplate the KafkaTemplate used for sending messages to Kafka topics.
    */
   public Asn1DecodedDataRouter(KafkaTemplate<String, String> kafkaTemplate,
-      KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate,
-      PojoTopics pojoTopics,
-      JsonTopics jsonTopics) {
+                               KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate,
+                               PojoTopics pojoTopics,
+                               JsonTopics jsonTopics) {
     this.kafkaTemplate = kafkaTemplate;
     this.bsmDataKafkaTemplate = bsmDataKafkaTemplate;
     this.pojoTopics = pojoTopics;
@@ -72,15 +81,23 @@ public class Asn1DecodedDataRouter {
       topics = "${ode.kafka.topics.asn1.decoder-output}"
   )
   public void listen(ConsumerRecord<String, String> consumerRecord)
-      throws XmlUtilsException, JsonProcessingException {
+      throws XmlUtilsException, JsonProcessingException, Asn1DecodedDataRouterException {
     log.debug("Key: {} payload: {}", consumerRecord.key(), consumerRecord.value());
 
     JSONObject consumed = XmlUtils.toJSONObject(consumerRecord.value())
         .getJSONObject(OdeAsn1Data.class.getSimpleName());
+
+    JSONObject payloadData = consumed.getJSONObject(OdeMsgPayload.PAYLOAD_STRING).getJSONObject(OdeMsgPayload.DATA_STRING);
+
+    if (payloadData.has("code")) {
+      throw new Asn1DecodedDataRouterException(
+          String.format("Error processing decoded message with code %s and message %s", payloadData.getString("code"),
+              payloadData.has("message") ? payloadData.getString("message") : "NULL")
+      );
+    }
+
     J2735DSRCmsgID messageId = J2735DSRCmsgID.valueOf(
-        consumed.getJSONObject(OdeMsgPayload.PAYLOAD_STRING)
-            .getJSONObject(OdeMsgPayload.DATA_STRING)
-            .getJSONObject("MessageFrame")
+        payloadData.getJSONObject("MessageFrame")
             .getInt("messageId")
     );
 
@@ -168,8 +185,8 @@ public class Asn1DecodedDataRouter {
   }
 
   private void routeTIM(ConsumerRecord<String, String> consumerRecord,
-      String streamId,
-      RecordType type) throws XmlUtilsException {
+                        String streamId,
+                        RecordType type) throws XmlUtilsException {
     String odeTimData =
         OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(consumerRecord.value()).toString();
     switch (type) {
@@ -188,13 +205,10 @@ public class Asn1DecodedDataRouter {
     // NOTE: These three flows in the switch statement are all disabled in all known environments via the disabled-topics configuration settings.
     // We may consider removing this code completely in the future.
     switch (recordType) {
-      case bsmLogDuringEvent ->
-          bsmDataKafkaTemplate.send(pojoTopics.getBsmDuringEvent(), consumerRecord.key(),
-              odeBsmData);
-      case rxMsg ->
-          bsmDataKafkaTemplate.send(pojoTopics.getRxBsm(), consumerRecord.key(), odeBsmData);
-      case bsmTx ->
-          bsmDataKafkaTemplate.send(pojoTopics.getTxBsm(), consumerRecord.key(), odeBsmData);
+      case bsmLogDuringEvent -> bsmDataKafkaTemplate.send(pojoTopics.getBsmDuringEvent(), consumerRecord.key(),
+          odeBsmData);
+      case rxMsg -> bsmDataKafkaTemplate.send(pojoTopics.getRxBsm(), consumerRecord.key(), odeBsmData);
+      case bsmTx -> bsmDataKafkaTemplate.send(pojoTopics.getTxBsm(), consumerRecord.key(), odeBsmData);
       default -> log.trace("Consumed BSM data with record type: {}", recordType);
     }
     // Send all BSMs also to OdeBsmPojo

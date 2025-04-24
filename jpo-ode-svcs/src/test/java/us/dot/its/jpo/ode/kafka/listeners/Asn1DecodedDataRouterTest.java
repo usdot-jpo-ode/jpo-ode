@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -398,6 +399,27 @@ class Asn1DecodedDataRouterTest {
       }
     }
     testConsumer.close();
+  }
+
+  @Test
+  void testAsn1DecodedDataRouterException() {
+    String baseTestData =
+        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-failed-encoding.xml");
+
+    var uniqueKey = UUID.randomUUID().toString();
+    ConsumerRecord<String, String> consumedRecord = new ConsumerRecord<>(
+        asn1CoderTopics.getDecoderOutput(), 0, 0L, uniqueKey, baseTestData);
+
+    Asn1DecodedDataRouter router = new Asn1DecodedDataRouter(kafkaStringTemplate,
+        null, pojoTopics, jsonTopics);
+
+    Exception exception = assertThrows(Asn1DecodedDataRouter.Asn1DecodedDataRouterException.class, () -> {
+      router.listen(consumedRecord);
+    });
+
+    assertEquals("Error processing decoded message with code INVALID_DATA_TYPE_ERROR and message " +
+        "failed ASN.1 binary decoding of element MessageFrame: more data expected. Successfully decoded 0 bytes.",
+        exception.getMessage());
   }
 
   private String loadFromResource(String resourcePath) {
