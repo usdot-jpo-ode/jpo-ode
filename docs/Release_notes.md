@@ -5,12 +5,11 @@ Version 4.1.0, released January 2025
 ----------------------------------------
 ### **Summary**
 This release finishes up the Spring Kafka migration with several classes and data flow diagram updates. Unused code has been removed to reduce 
-maintenance overhead, and continuous integration has been configured via Azure Pipelines. Docker Compose has been updated with all required 
-ODE variables to ensure smoother builds and testing. Quarterly release and hotfix documentation have been revised, and full Git history is 
-now included in Azure Artifacts for improved traceability. Reliability has been enhanced through fixes to UDP receiver thread management, 
-resolution of a K-Table memory leak, and correction of NodeLL type selection for latitude/longitude offsets to prevent encoding failures. 
-Error handling has been added to the ASN.1 decoded data router. Finally, a custom Micrometer message-count metric has been introduced to 
-provide real-time insights into message volumes.
+maintenance overhead and Docker Compose has been updated with all required ODE variables to ensure smoother builds and testing. Quarterly release 
+and hotfix documentation have been revised, and full Git history is now included in Azure Artifacts for improved traceability. Reliability has 
+been enhanced through fixes to UDP receiver thread management, resolution of a K-Table memory leak, and correction of NodeLL type selection for 
+latitude/longitude offsets to prevent encoding failures. Error handling has been added to the ASN.1 decoded data router. Finally, a custom 
+Micrometer message-count metric has been introduced to provide real-time insights into message volumes.
 
 Enhancements in this release:
 - [CDOT PR 138](https://github.com/CDOT-CV/jpo-ode/pull/138): Migrate Asn1EncodedDataRouter to use Spring Kafka
@@ -22,10 +21,8 @@ Enhancements in this release:
 - [CDOT PR 173](https://github.com/CDOT-CV/jpo-ode/pull/173): Fix: Reset clock to previous state after test runs using DateTimeUtils.setClock
 - [CDOT PR 174](https://github.com/CDOT-CV/jpo-ode/pull/174): Refactor: migrate ImporterProcessor to Spring Kafka
 - [CDOT PR 175](https://github.com/CDOT-CV/jpo-ode/pull/175): Chore: delete unused code
-- [CDOT PR 176](https://github.com/CDOT-CV/jpo-ode/pull/176): Set up CI with Azure Pipelines
 - [CDOT PR 177](https://github.com/CDOT-CV/jpo-ode/pull/177): Adding Missing ODE Variables to Docker Compose
 - [CDOT PR 178](https://github.com/CDOT-CV/jpo-ode/pull/178): Update Quarterly Release and Hotfix Documentation
-- [CDOT PR 179](https://github.com/CDOT-CV/jpo-ode/pull/179): Include Git History in Azure Artifacts
 - [CDOT PR 180](https://github.com/CDOT-CV/jpo-ode/pull/180): Fix: UDP Receiver thread management
 - [CDOT PR 181](https://github.com/CDOT-CV/jpo-ode/pull/181): Chore: Delete unused code, update Data Flow Diagrams after Spring Kafka Migration complete
 - [CDOT PR 182](https://github.com/CDOT-CV/jpo-ode/pull/182): Custom Micrometer Metric Message Counter
