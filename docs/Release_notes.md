@@ -4,17 +4,22 @@ JPO-ODE Release Notes
 Version 4.1.0, released January 2025
 ----------------------------------------
 ### **Summary**
-This release finishes up the Spring Kafka migration with the Asn1EncodedDataRouter, ImporterProcessor, and data flow diagram updates. Unused code 
-has been removed to reduce maintenance overhead, and continuous integration has been configured via Azure Pipelines. Docker Compose has been 
-updated with all required ODE variables to ensure smoother builds and testing. Quarterly release and hotfix documentation have been revised, 
-and full Git history is now included in Azure Artifacts for improved traceability. Reliability has been enhanced through fixes to UDP receiver 
-thread management, resolution of a K-Table memory leak, and correction of NodeLL type selection for latitude/longitude offsets to prevent 
-encoding failures. Error handling has been added to the ASN.1 decoded data router. Finally, a custom Micrometer message-count metric has 
-been introduced to provide real-time insights into message volumes.
+This release finishes up the Spring Kafka migration with several classes and data flow diagram updates. Unused code has been removed to reduce 
+maintenance overhead, and continuous integration has been configured via Azure Pipelines. Docker Compose has been updated with all required 
+ODE variables to ensure smoother builds and testing. Quarterly release and hotfix documentation have been revised, and full Git history is 
+now included in Azure Artifacts for improved traceability. Reliability has been enhanced through fixes to UDP receiver thread management, 
+resolution of a K-Table memory leak, and correction of NodeLL type selection for latitude/longitude offsets to prevent encoding failures. 
+Error handling has been added to the ASN.1 decoded data router. Finally, a custom Micrometer message-count metric has been introduced to 
+provide real-time insights into message volumes.
 
 Enhancements in this release:
 - [CDOT PR 138](https://github.com/CDOT-CV/jpo-ode/pull/138): Migrate Asn1EncodedDataRouter to use Spring Kafka
+- [CDOT PR 139](https://github.com/CDOT-CV/jpo-ode/pull/139): Migrate TimDepositController to use Spring Kafka
+- [CDOT PR 155](https://github.com/CDOT-CV/jpo-ode/pull/155): Migrate ToJsonController to Spring Kafka
+- [CDOT PR 156](https://github.com/CDOT-CV/jpo-ode/pull/156): Migrate StompStringExporter to Spring Kafka
+- [CDOT PR 157](https://github.com/CDOT-CV/jpo-ode/pull/157): PSM Schema Fix
 - [CDOT PR 162](https://github.com/CDOT-CV/jpo-ode/pull/162): Refactor: FileParser and related implementations in preparation for migration to Spring Kafka
+- [CDOT PR 173](https://github.com/CDOT-CV/jpo-ode/pull/173): Fix: Reset clock to previous state after test runs using DateTimeUtils.setClock
 - [CDOT PR 174](https://github.com/CDOT-CV/jpo-ode/pull/174): Refactor: migrate ImporterProcessor to Spring Kafka
 - [CDOT PR 175](https://github.com/CDOT-CV/jpo-ode/pull/175): Chore: delete unused code
 - [CDOT PR 176](https://github.com/CDOT-CV/jpo-ode/pull/176): Set up CI with Azure Pipelines
