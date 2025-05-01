@@ -11,7 +11,7 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>jpo-ode-4.0.0</tag>
+    <tag>jpo-ode-4.1.0</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
