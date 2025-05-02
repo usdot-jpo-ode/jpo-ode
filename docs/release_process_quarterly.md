@@ -211,10 +211,18 @@ None
     - [ ] test generator command line tool can generate messages
 
 ### 3. Project Reference Updates & Release Creation
-
+    - [ ] Update Gradle build version number
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-runtime/gradle.build'
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-j2735-2024/gradle.build'
+    - [ ] Udate Maven build version number
+        - [ ] Update version number in 'jpo-asn-pojos/pom.xml'
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-runtime/pom.xml'
+        - [ ] Update version number in `jpo-asn-pojos/jpo-asn-j2735-2024/pom.xml`
+    - [ ] Merge the 'release/(year)-(quarter)' branch into the 'master' branch of the 'jpo-asn-pojos' project, and create a release and git tag with the version number of the release. (i.e. jpo-asn-pojos-x.x.x)
+    - [ ] Merge 'master' branch into 'develop' branch & verify that CI/CD passes.
 
 ### 4. DockerHub Image Testing
-Not applicable (the project doesn't have a dockerhub image)
+Not applicable
 
 ## jpo-ode
 ### Prerequisites
@@ -266,6 +274,7 @@ Not applicable (the project doesn't have a dockerhub image)
         - [ ] Navigate to the jpo-security-svcs directory and run `git checkout tags/jpo-security-svcs-x.x.x` to update the submodule reference.
         - [ ] Navigate to the jpo-sdw-depositor directory and run `git checkout tags/jpo-sdw-depositor-x.x.x` to update the submodule reference.
         - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference. 
+        - [ ] Navigate to the jpo-asn-pojos directory and run 'git checkout 'jpo-asn-pojos-x.x.x' to update the submodule reference.
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
