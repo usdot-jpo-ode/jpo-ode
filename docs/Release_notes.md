@@ -1,7 +1,7 @@
 JPO-ODE Release Notes
 ----------------------------
 
-Version 4.1.0, released January 2025
+Version 4.1.0, released May 2025
 ----------------------------------------
 ### **Summary**
 This release finishes up the Spring Kafka migration with several classes and data flow diagram updates. Unused code has been removed to reduce 
