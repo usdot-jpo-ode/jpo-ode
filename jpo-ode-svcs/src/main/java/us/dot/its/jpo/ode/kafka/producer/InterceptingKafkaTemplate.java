@@ -78,7 +78,7 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
           }
         }
       } catch (JsonProcessingException e) {
-        log.error("Error processing JSON", e);
+        log.info("Produced message is not JSON or originIp is not present");
       }
     }
 
