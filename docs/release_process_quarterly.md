@@ -7,13 +7,14 @@ The order of project releases is as follows:
 3. [jpo-security-svcs](#jpo-security-svcs)
 4. [jpo-sdw-depositor](#jpo-sdw-depositor)
 5. [jpo-utils](#jpo-utils)
-6. [jpo-ode](#jpo-ode)
-7. [jpo-geojsonconverter](#jpo-geojsonconverter)
-8. [jpo-conflictmonitor](#jpo-conflictmonitor)
-9. [jpo-conflictvisualizer](#jpo-conflictvisualizer)
-10. [jpo-deduplicator](#jpo-deduplicator)
-11. [jpo-cvmanager](#jpo-cvmanager)
-12. [jpo-s3-deposit](#jpo-s3-deposit)
+6. [jpo-asn-pojos](#jpo-asn-pojos)
+7. [jpo-ode](#jpo-ode)
+8. [jpo-geojsonconverter](#jpo-geojsonconverter)
+9. [jpo-conflictmonitor](#jpo-conflictmonitor)
+10. [jpo-conflictvisualizer](#jpo-conflictvisualizer)
+11. [jpo-deduplicator](#jpo-deduplicator)
+12. [jpo-cvmanager](#jpo-cvmanager)
+13. [jpo-s3-deposit](#jpo-s3-deposit)
 
 ## asn1_codec
 ### Prerequisites
@@ -190,6 +191,39 @@ None
     - [ ] jpo-kafka-connect image runs successfully
         - [ ] Verify all connectors are created using connect rest api
 
+## jpo-asn-pojos
+### Prerequisites
+None
+
+### 1. Code Ready & Release Notes
+    - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory in this repo
+    - [ ] Code changes for release are merged into `develop` in the `jpo-asn-pojos` repo
+    - [ ] A new branch `release/(year)-(quarter)` is created from `develop` in the `jpo-asn-pojos` repo
+
+### 2. Preliminary Testing
+    - [ ] code compiles
+        - gradle build
+            - [ ] `jpo-asn-j2735-2024` subproject builds via gradle
+            - [ ] `jpo-asn-test-generator` subproject build via gradle
+        - maven build:
+            - [ ] `jpo-asn-j2735-2024` subproject builds via maven
+    - [ ] unit tests pass
+    - [ ] test generator command line tool can generate messages
+
+### 3. Project Reference Updates & Release Creation
+    - [ ] Update Gradle build version number
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-runtime/gradle.build'
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-j2735-2024/gradle.build'
+    - [ ] Udate Maven build version number
+        - [ ] Update version number in 'jpo-asn-pojos/pom.xml'
+        - [ ] Update version number in 'jpo-asn-pojos/jpo-asn-runtime/pom.xml'
+        - [ ] Update version number in `jpo-asn-pojos/jpo-asn-j2735-2024/pom.xml`
+    - [ ] Merge the 'release/(year)-(quarter)' branch into the 'master' branch of the 'jpo-asn-pojos' project, and create a release and git tag with the version number of the release. (i.e. jpo-asn-pojos-x.x.x)
+    - [ ] Merge 'master' branch into 'develop' branch & verify that CI/CD passes.
+
+### 4. DockerHub Image Testing
+Not applicable
+
 ## jpo-ode
 ### Prerequisites
     - [ ] asn1_codec release completed
@@ -197,6 +231,7 @@ None
     - [ ] jpo-security-svcs release completed
     - [ ] jpo-sdw-depositor release completed
     - [ ] jpo-utils release completed
+    - [ ] jpo-asn-pojos release completed
 
 #### Dependency Types
 | Dependency | Type |
@@ -206,6 +241,7 @@ None
 | jpo-security-svcs | Git Submodule |
 | jpo-sdw-depositor | Git Submodule |
 | jpo-utils | Git Submodule |
+| jp-asn-pojos | Git Submodule |
 
 ### 1. Code Ready & Release Notes
     - [ ] Release notes drafted & added to `Release_notes.md` file in `docs` directory
@@ -238,6 +274,7 @@ None
         - [ ] Navigate to the jpo-security-svcs directory and run `git checkout tags/jpo-security-svcs-x.x.x` to update the submodule reference.
         - [ ] Navigate to the jpo-sdw-depositor directory and run `git checkout tags/jpo-sdw-depositor-x.x.x` to update the submodule reference.
         - [ ] Navigate to the jpo-utils directory and run `git checkout tags/jpo-utils-x.x.x` to update the submodule reference. 
+        - [ ] Navigate to the jpo-asn-pojos directory and run 'git checkout 'jpo-asn-pojos-x.x.x' to update the submodule reference.
         - [ ] Commit these changes to the `release/(year)-(quarter)` branch & push the changes to the remote repository.
         - [ ] Ensure these changes pass CI/CD checks before continuing.
     - [ ] Merge `release/(year)-(quarter)` branch into `master` branch for the jpo-ode project, and create a release with the version number of the release. (e.g. jpo-ode-x.x.x)
