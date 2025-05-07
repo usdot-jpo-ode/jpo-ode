@@ -274,6 +274,12 @@ public class TimDepositController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    } catch (TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException e) {
+        String errMsg = "Invalid node lat/lon offset in TIM: " + e.getMessage();
+        log.error(errMsg);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     try {
