@@ -1,0 +1,157 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeTimPayload",
+    "serialId" : {
+      "streamId" : "641d0725-a9d3-4556-accb-00ba6d3d35da",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 30,
+    "recordGeneratedAt" : "2024-05-10T19:01:22.000Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "odePacketID" : "123451234512345123",
+    "odeTimStartDateTime" : "2024-05-13T20:30:05.014Z",
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "rsus" : [ {
+        "rsuTarget" : "172.0.0.1",
+        "rsuUsername" : "myusername",
+        "rsuPassword" : "*",
+        "rsuRetries" : 3,
+        "rsuTimeout" : 5000,
+        "rsuIndex" : 7,
+        "snmpProtocol" : "NTCIP1218"
+      } ],
+      "snmp" : {
+        "rsuid" : "83",
+        "msgid" : 31,
+        "mode" : 1,
+        "channel" : 183,
+        "interval" : 2000,
+        "deliverystart" : "2024-05-13T14:30:00Z",
+        "deliverystop" : "2024-05-13T22:30:00Z",
+        "enable" : 1,
+        "status" : 4
+      }
+    }
+  },
+  "payload" : {
+    "data" : {
+      "msgCnt" : 1,
+      "timeStamp" : 188341,
+      "packetID" : "123451234512345123",
+      "urlB" : "null",
+      "dataFrames" : [ {
+        "doNotUse1" : 0,
+        "frameType" : "advisory",
+        "msgId" : {
+          "roadSignID" : {
+            "position" : {
+              "lat" : 301234560,
+              "long" : -1001234500
+            },
+            "viewAngle" : {
+              "from000-0to022-5degrees" : true,
+              "from022-5to045-0degrees" : true,
+              "from045-0to067-5degrees" : true,
+              "from067-5to090-0degrees" : true,
+              "from090-0to112-5degrees" : true,
+              "from112-5to135-0degrees" : true,
+              "from135-0to157-5degrees" : true,
+              "from157-5to180-0degrees" : true,
+              "from180-0to202-5degrees" : true,
+              "from202-5to225-0degrees" : true,
+              "from225-0to247-5degrees" : true,
+              "from247-5to270-0degrees" : true,
+              "from270-0to292-5degrees" : true,
+              "from292-5to315-0degrees" : true,
+              "from315-0to337-5degrees" : true,
+              "from337-5to360-0degrees" : true
+            },
+            "mutcdCode" : "warning"
+          }
+        },
+        "startYear" : 2024,
+        "startTime" : 192750,
+        "durationTime" : 30,
+        "priority" : 5,
+        "doNotUse2" : 0,
+        "regions" : [ {
+          "name" : "I_myroute_RSU_172.0.0.1",
+          "id" : {
+            "region" : 0,
+            "id" : 0
+          },
+          "anchor" : {
+            "lat" : 301234560,
+            "long" : -1001234500
+          },
+          "laneWidth" : 5000,
+          "directionality" : "both",
+          "closedPath" : false,
+          "direction" : {
+            "from000-0to022-5degrees" : false,
+            "from022-5to045-0degrees" : false,
+            "from045-0to067-5degrees" : false,
+            "from067-5to090-0degrees" : false,
+            "from090-0to112-5degrees" : false,
+            "from112-5to135-0degrees" : false,
+            "from135-0to157-5degrees" : false,
+            "from157-5to180-0degrees" : false,
+            "from180-0to202-5degrees" : false,
+            "from202-5to225-0degrees" : false,
+            "from225-0to247-5degrees" : false,
+            "from247-5to270-0degrees" : true,
+            "from270-0to292-5degrees" : false,
+            "from292-5to315-0degrees" : false,
+            "from315-0to337-5degrees" : false,
+            "from337-5to360-0degrees" : false
+          },
+          "description" : {
+            "path" : {
+              "scale" : 0,
+              "offset" : {
+                "ll" : {
+                  "nodes" : [ {
+                    "delta" : {
+                      "node-LL1" : {
+                        "lon" : 0,
+                        "lat" : 0
+                      }
+                    }
+                  }, {
+                    "delta" : {
+                      "node-LL1" : {
+                        "lon" : 0,
+                        "lat" : 0
+                      }
+                    }
+                  } ]
+                }
+              }
+            }
+          }
+        } ],
+        "doNotUse3" : 0,
+        "doNotUse4" : 0,
+        "content" : {
+          "workZone" : [ {
+            "item" : {
+              "itis" : 771
+            }
+          } ]
+        },
+        "url" : "null"
+      } ]
+    },
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.travelerinformation.TravelerInformation"
+  }
+}

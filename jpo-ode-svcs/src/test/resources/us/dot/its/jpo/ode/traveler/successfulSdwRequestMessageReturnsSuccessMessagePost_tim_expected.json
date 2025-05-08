@@ -1,0 +1,172 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeTimPayload",
+    "serialId" : {
+      "streamId" : "325fba48-8fb4-4663-bab6-9daabc30ebfa",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 1440,
+    "recordGeneratedAt" : "2020-04-30T14:24:11.581Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "odePacketID" : "67AEF692F8BB63067D",
+    "odeTimStartDateTime" : "2020-04-30T14:23:59.497Z",
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "sdw" : {
+        "serviceRegion" : {
+          "nwCorner" : {
+            "latitude" : 41.715253,
+            "longitude" : -106.229851
+          },
+          "seCorner" : {
+            "latitude" : 40.227193,
+            "longitude" : -104.620706
+          }
+        },
+        "ttl" : "oneday",
+        "recordId" : "9044E029"
+      }
+    }
+  },
+  "payload" : {
+    "data" : {
+      "msgCnt" : 1,
+      "timeStamp" : 173664,
+      "packetID" : "67AEF692F8BB63067D",
+      "urlB" : "null",
+      "dataFrames" : [ {
+        "doNotUse1" : 0,
+        "frameType" : "advisory",
+        "msgId" : {
+          "roadSignID" : {
+            "position" : {
+              "lat" : 406047600,
+              "long" : -1050013900
+            },
+            "viewAngle" : {
+              "from000-0to022-5degrees" : true,
+              "from022-5to045-0degrees" : true,
+              "from045-0to067-5degrees" : true,
+              "from067-5to090-0degrees" : true,
+              "from090-0to112-5degrees" : true,
+              "from112-5to135-0degrees" : true,
+              "from135-0to157-5degrees" : true,
+              "from157-5to180-0degrees" : true,
+              "from180-0to202-5degrees" : true,
+              "from202-5to225-0degrees" : true,
+              "from225-0to247-5degrees" : true,
+              "from247-5to270-0degrees" : true,
+              "from270-0to292-5degrees" : true,
+              "from292-5to315-0degrees" : true,
+              "from315-0to337-5degrees" : true,
+              "from337-5to360-0degrees" : true
+            },
+            "mutcdCode" : "warning"
+          }
+        },
+        "startYear" : 2020,
+        "startTime" : 173663,
+        "durationTime" : 1440,
+        "priority" : 5,
+        "doNotUse2" : 0,
+        "regions" : [ {
+          "name" : "I_I 25_SAT-1CEE1793",
+          "id" : {
+            "region" : 0,
+            "id" : 0
+          },
+          "anchor" : {
+            "lat" : 406047600,
+            "long" : -1050013900
+          },
+          "laneWidth" : 32700,
+          "directionality" : "both",
+          "closedPath" : false,
+          "direction" : {
+            "from000-0to022-5degrees" : true,
+            "from022-5to045-0degrees" : false,
+            "from045-0to067-5degrees" : false,
+            "from067-5to090-0degrees" : false,
+            "from090-0to112-5degrees" : false,
+            "from112-5to135-0degrees" : false,
+            "from135-0to157-5degrees" : false,
+            "from157-5to180-0degrees" : false,
+            "from180-0to202-5degrees" : false,
+            "from202-5to225-0degrees" : false,
+            "from225-0to247-5degrees" : false,
+            "from247-5to270-0degrees" : false,
+            "from270-0to292-5degrees" : false,
+            "from292-5to315-0degrees" : false,
+            "from315-0to337-5degrees" : false,
+            "from337-5to360-0degrees" : true
+          },
+          "description" : {
+            "path" : {
+              "scale" : 0,
+              "offset" : {
+                "xy" : {
+                  "nodes" : [ {
+                    "delta" : {
+                      "node-LatLon" : {
+                        "lon" : -1050012800,
+                        "lat" : 406190100
+                      }
+                    }
+                  }, {
+                    "delta" : {
+                      "node-LatLon" : {
+                        "lon" : -1050009700,
+                        "lat" : 406334900
+                      }
+                    }
+                  }, {
+                    "delta" : {
+                      "node-LatLon" : {
+                        "lon" : -1050008600,
+                        "lat" : 406480600
+                      }
+                    }
+                  }, {
+                    "delta" : {
+                      "node-LatLon" : {
+                        "lon" : -1050009200,
+                        "lat" : 406625700
+                      }
+                    }
+                  }, {
+                    "delta" : {
+                      "node-LatLon" : {
+                        "lon" : -1050008000,
+                        "lat" : 406769500
+                      }
+                    }
+                  } ]
+                }
+              }
+            }
+          }
+        } ],
+        "doNotUse3" : 0,
+        "doNotUse4" : 0,
+        "content" : {
+          "advisory" : [ {
+            "item" : {
+              "itis" : 5127
+            }
+          } ]
+        },
+        "url" : "null"
+      } ]
+    },
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.travelerinformation.TravelerInformation"
+  }
+}

@@ -16,7 +16,9 @@
 package us.dot.its.jpo.ode.model;
 
 public class OdeMsgPayload extends OdeObject {
-    private static final long serialVersionUID = -7711340868799607662L;
+  public static final String PAYLOAD_STRING = "payload";
+  public static final String DATA_STRING = "data";
+  private static final long serialVersionUID = -7711340868799607662L;
 
     private String dataType;
     private OdeObject data;

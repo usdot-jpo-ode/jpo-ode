@@ -4,7 +4,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
   </parent>
   <artifactId>jpo-ode-svcs</artifactId>
   <packaging>jar</packaging>
@@ -78,6 +78,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <version>3.0.0</version>
@@ -112,12 +128,12 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-core</artifactId>
-      <version>4.0.0</version>
+      <version>4.1.0</version>
     </dependency>
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
-      <version>4.0.0</version>
+      <version>4.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

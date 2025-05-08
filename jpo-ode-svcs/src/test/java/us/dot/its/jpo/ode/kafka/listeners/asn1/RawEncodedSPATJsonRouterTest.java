@@ -22,6 +22,9 @@ import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedSPATJsonRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
@@ -34,7 +37,8 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
         RawEncodedSPATJsonRouter.class,
         RawEncodedJsonService.class,
         KafkaConsumerConfig.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {
         "ode.kafka.topics.raw-encoded-json.spat=topic.Asn1DecoderTestSPATJSON",
@@ -85,5 +89,6 @@ class RawEncodedSPATJsonRouterTest {
     assert inputStream != null;
     var expectedSpat = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals(expectedSpat, consumedSpat.value());
+    testConsumer.close();
   }
 }

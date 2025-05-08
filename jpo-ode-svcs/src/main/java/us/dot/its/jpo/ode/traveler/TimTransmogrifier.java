@@ -3,11 +3,10 @@ package us.dot.its.jpo.ode.traveler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
@@ -134,7 +133,7 @@ public class TimTransmogrifier {
       }
 
       ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
-      payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
+      payloadObj.set(OdeMsgPayload.DATA_STRING, dataBodyObj);
 
       // Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
@@ -158,11 +157,11 @@ public class TimTransmogrifier {
       convertEncodingsArray(asd, metaObject);
 
       ObjectNode message = JsonUtils.newNode();
-      message.set(AppContext.METADATA_STRING, metaObject);
-      message.set(AppContext.PAYLOAD_STRING, payloadObj);
+      message.set(OdeMsgMetadata.METADATA_STRING, metaObject);
+      message.set(OdeMsgPayload.PAYLOAD_STRING, payloadObj);
 
       ObjectNode root = JsonUtils.newNode();
-      root.set(AppContext.ODE_ASN1_DATA, message);
+      root.set(OdeAsn1Data.ODE_ASN1_DATA, message);
 
       // Convert to XML
       String outputXml = XmlUtils.toXmlStatic(root);
@@ -197,8 +196,8 @@ public class TimTransmogrifier {
    private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject)
          throws JsonUtilsException {
       ArrayNode encodings = buildEncodings(asd);
-      ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
-      metaObject.set(AppContext.ENCODINGS_STRING, enc);
+      ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(OdeMsgMetadata.ENCODINGS_STRING, encodings);
+      metaObject.set(OdeMsgMetadata.ENCODINGS_STRING, enc);
    }
 
    private static void convertRsusArray(ObjectNode request) {

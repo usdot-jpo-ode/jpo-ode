@@ -1,0 +1,111 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeMsgPayload",
+    "serialId" : {
+      "streamId" : "342c192a-8613-4c94-835f-da33f0019aad",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 1440,
+    "recordGeneratedAt" : "2020-04-30T14:24:11.581Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "odePacketID" : "67AEF692F8BB63067D",
+    "odeTimStartDateTime" : "2020-04-30T14:23:59.497Z",
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "sdw" : {
+        "serviceRegion" : {
+          "nwCorner" : {
+            "latitude" : 41.715253,
+            "longitude" : -106.229851
+          },
+          "seCorner" : {
+            "latitude" : 40.227193,
+            "longitude" : -104.620706
+          }
+        },
+        "ttl" : "oneday",
+        "recordId" : "9044E029"
+      }
+    }
+  },
+  "payload" : {
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage",
+    "data" : {
+      "msgCnt" : 1,
+      "timeStamp" : "2020-04-30T14:24:11.581Z",
+      "packetID" : "67AEF692F8BB63067D",
+      "urlB" : "null",
+      "dataframes" : [ {
+        "doNotUse1" : 0,
+        "frameType" : "advisory",
+        "msgId" : {
+          "roadSignID" : {
+            "position" : {
+              "latitude" : 40.60476,
+              "longitude" : -105.00139
+            },
+            "viewAngle" : "1111111111111111",
+            "mutcdCode" : "warning"
+          }
+        },
+        "startDateTime" : "2020-04-30T14:23:59.497Z",
+        "durationTime" : 1440,
+        "priority" : 5,
+        "doNotUse2" : 0,
+        "regions" : [ {
+          "name" : "I_I 25_SAT-1CEE1793",
+          "regulatorID" : 0,
+          "segmentID" : 0,
+          "anchorPosition" : {
+            "latitude" : 40.60476,
+            "longitude" : -105.00139
+          },
+          "laneWidth" : 327,
+          "directionality" : "3",
+          "closedPath" : false,
+          "direction" : "1000000000000001",
+          "description" : "path",
+          "path" : {
+            "scale" : 0,
+            "type" : "xy",
+            "nodes" : [ {
+              "delta" : "node-LatLon",
+              "nodeLat" : 40.61901,
+              "nodeLong" : -105.00128
+            }, {
+              "delta" : "node-LatLon",
+              "nodeLat" : 40.63349,
+              "nodeLong" : -105.00097
+            }, {
+              "delta" : "node-LatLon",
+              "nodeLat" : 40.64806,
+              "nodeLong" : -105.00086
+            }, {
+              "delta" : "node-LatLon",
+              "nodeLat" : 40.66257,
+              "nodeLong" : -105.00092
+            }, {
+              "delta" : "node-LatLon",
+              "nodeLat" : 40.67695,
+              "nodeLong" : -105.0008
+            } ]
+          }
+        } ],
+        "doNotUse3" : 0,
+        "doNotUse4" : 0,
+        "content" : "advisory",
+        "items" : [ "5127" ],
+        "url" : "null"
+      } ]
+    }
+  }
+}

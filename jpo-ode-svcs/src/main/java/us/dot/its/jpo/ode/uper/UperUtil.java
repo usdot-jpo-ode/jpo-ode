@@ -38,7 +38,7 @@ public class UperUtil {
     int startIndex = findValidStartFlagLocation(hexString, payloadStartFlag);
     if (startIndex == -1) {
       throw new StartFlagNotFoundException(
-          "Start flag" + payloadStartFlag + " not found in message");
+          "Start flag '%s' not found in message".formatted(payloadStartFlag));
     }
     return hexString.substring(startIndex);
   }

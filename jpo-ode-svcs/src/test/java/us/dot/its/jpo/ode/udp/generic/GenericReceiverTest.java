@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
@@ -37,7 +39,8 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
         OdeKafkaProperties.class,
         UDPReceiverProperties.class,
         KafkaProducerConfig.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {
         "ode.receivers.generic.receiver-port=15460",
@@ -93,11 +96,11 @@ class GenericReceiverTest {
         udpReceiverProperties.getGeneric().getReceiverPort());
 
     var consumerProps = KafkaTestUtils.consumerProps("GenericReceiverTest", "true", embeddedKafka);
-    var cf = new DefaultKafkaConsumerFactory<String, String>(consumerProps);
+    var cf = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new StringDeserializer());
     var consumer = cf.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(consumer, topics);
 
-    DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
+    final Clock prevClock = DateTimeUtils.setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
 
     // Test the PSM path
     String psmFileContent = Files.readString(
@@ -171,6 +174,8 @@ class GenericReceiverTest {
 
     var srmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSrm());
     assertExpected("Produced SRM message does not match expected", srmRecord.value(), expectedSrm);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
   private static void assertExpected(String failureMsg, String actual, String expected) {

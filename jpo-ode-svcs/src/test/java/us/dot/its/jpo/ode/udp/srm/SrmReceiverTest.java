@@ -26,6 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
@@ -40,7 +41,8 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
         OdeKafkaProperties.class,
         UDPReceiverProperties.class,
         KafkaProducerConfig.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {
         "ode.receivers.srm.receiver-port=15459",
@@ -69,7 +71,7 @@ class SrmReceiverTest {
   void testRun() throws Exception {
     EmbeddedKafkaHolder.addTopics(rawEncodedJsonTopics.getSrm());
 
-    DateTimeUtils.setClock(
+    final Clock prevClock = DateTimeUtils.setClock(
         Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));
 
     SrmReceiver srmReceiver = new SrmReceiver(
@@ -106,5 +108,7 @@ class SrmReceiverTest {
     producedJson.getJSONObject("metadata").remove("serialId");
 
     assertEquals(expectedJson.toString(2), producedJson.toString(2));
+
+    DateTimeUtils.setClock(prevClock);
   }
 }

@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -15,7 +16,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.assertj.core.util.Arrays;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -30,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1DecodedDataRouter;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
@@ -54,7 +55,8 @@ import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
         Asn1CoderTopics.class,
         OdeKafkaProperties.class,
         Asn1DecodedDataRouter.class,
-        SerializationConfig.class
+        SerializationConfig.class,
+        TestMetricsConfig.class,
     },
     properties = {"ode.kafka.disabled-topics="}
 )
@@ -136,11 +138,11 @@ class Asn1DecodedDataRouterTest {
       assertEquals(expectedBsm, consumedSpecific.get().value());
       assertEquals(expectedBsm, consumedBsm.get().value());
     }
+    testConsumer.close();
   }
 
   @Test
   void testAsn1DecodedDataRouterTIMDataFlow() {
-    Awaitility.setDefaultTimeout(Duration.FOREVER);
     String[] topics = Arrays.array(
         jsonTopics.getDnMessage(),
         jsonTopics.getRxTim(),
@@ -194,8 +196,8 @@ class Asn1DecodedDataRouterTest {
       var expectedTim = replaceJSONRecordType(baseExpectedTim, "dnMsg", recordType);
       assertEquals(expectedTim, consumedSpecific.get().value());
       assertEquals(expectedTim, consumedTim.get().value());
-
     }
+    testConsumer.close();
   }
 
   @Test
@@ -240,6 +242,7 @@ class Asn1DecodedDataRouterTest {
       assertEquals(expectedSpat, consumedSpat.value());
       assertEquals(expectedSpat, consumedSpecific.value());
     }
+    testConsumer.close();
   }
 
   @Test
@@ -278,6 +281,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedSsm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -316,6 +320,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedSrm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -354,6 +359,7 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedPsm, consumedSpecific.value());
       }
     }
+    testConsumer.close();
   }
 
   @Test
@@ -392,6 +398,28 @@ class Asn1DecodedDataRouterTest {
         assertEquals(expectedMap, consumedSpecific.value());
       }
     }
+    testConsumer.close();
+  }
+
+  @Test
+  void testAsn1DecodedDataRouterException() {
+    String baseTestData =
+        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-failed-encoding.xml");
+
+    var uniqueKey = UUID.randomUUID().toString();
+    ConsumerRecord<String, String> consumedRecord = new ConsumerRecord<>(
+        asn1CoderTopics.getDecoderOutput(), 0, 0L, uniqueKey, baseTestData);
+
+    Asn1DecodedDataRouter router = new Asn1DecodedDataRouter(kafkaStringTemplate,
+        null, pojoTopics, jsonTopics);
+
+    Exception exception = assertThrows(Asn1DecodedDataRouter.Asn1DecodedDataRouterException.class, () -> {
+      router.listen(consumedRecord);
+    });
+
+    assertEquals("Error processing decoded message with code INVALID_DATA_TYPE_ERROR and message " +
+        "failed ASN.1 binary decoding of element MessageFrame: more data expected. Successfully decoded 0 bytes.",
+        exception.getMessage());
   }
 
   private String loadFromResource(String resourcePath) {
