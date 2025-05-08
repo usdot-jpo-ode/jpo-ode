@@ -215,7 +215,7 @@ class TimDepositControllerTest {
   void failedObjectNodeConversionShouldReturnConvertingError(@Capturing
                                                              TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
       throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException,
-      IOException {
+      IOException, TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
     // prepare
     odeKafkaProperties.setDisabledTopics(Set.of());
     pojoTopics.setTimBroadcast(
