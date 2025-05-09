@@ -18,4 +18,4 @@
 	url = https://github.com/CDOT-CV/jpo-utils.git
 [submodule "jpo-asn-pojos"]
 	path = jpo-asn-pojos
-	url = https://github.com/CDOT-CV/jpo-asn-pojos.git
+	url = https://github.com/usdot-jpo-ode/jpo-asn-pojos.git
