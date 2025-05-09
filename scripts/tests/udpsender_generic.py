@@ -12,7 +12,7 @@ TIM_MESSAGE = "005f498718cca69ec1a04600000100105d9b46ec5be401003a010381004003808
 BAD_MESSAGE = "0000badc0de0000000000000000000000000000000"
 
 # Currently set to oim-dev environment's ODE
-UDP_IP = os.getenv('DOCKER_HOST_IP', 'localhost')  # Default to localhost if env var not set
+UDP_IP = os.getenv('DOCKER_HOST_IP')
 UDP_PORT = 44990
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
