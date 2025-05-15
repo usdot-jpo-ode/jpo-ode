@@ -8,9 +8,6 @@
         </encoder>
     </appender>
 
-    <logger name="us.dot.its.jpo.ode.kafka.listeners.asn1" level="DEBUG"/>
-    <logger name="us.dot.its.jpo.ode.coder" level="DEBUG"/>
-
     <root level="WARN">
         <appender-ref ref="STDOUT"/>
     </root>

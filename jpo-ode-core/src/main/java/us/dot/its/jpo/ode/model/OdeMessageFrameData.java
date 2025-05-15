@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-
-public class OdeMessageFrameData extends OdeData<OdeMessageFramePayload> {
+public class OdeMessageFrameData extends OdeData<OdeMsgMetadata, OdeMessageFramePayload> {
 
   public OdeMessageFrameData(OdeMsgMetadata metadata, OdeMessageFramePayload payload) {
     super(metadata, payload);

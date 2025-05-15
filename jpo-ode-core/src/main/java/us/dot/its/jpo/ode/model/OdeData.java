@@ -22,17 +22,18 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonPropertyOrder({ "metadata", "payload" })
-public class OdeData<TPayload extends OdeMsgPayload<?>> extends OdeObject implements OdeFilterable {
+public class OdeData<TMetadata extends OdeMsgMetadata, 
+   TPayload extends OdeMsgPayload<?>> extends OdeObject implements OdeFilterable {
     private static final long serialVersionUID = -7711340868799607662L;
 
-    private OdeMsgMetadata metadata;
+    private TMetadata metadata;
     private TPayload payload;
 
     public OdeData() {
         super();
     }
 
-    public OdeData(OdeMsgMetadata metadata, TPayload payload) {
+    public OdeData(TMetadata metadata, TPayload payload) {
         super();
         this.metadata = metadata;
         this.payload = payload;
