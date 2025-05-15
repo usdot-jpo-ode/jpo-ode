@@ -51,7 +51,8 @@ public class JsonUtils {
 
    private static final ObjectMapper mapper;
    private static final ObjectMapper mapper_noNulls;
-
+   private static final ObjectMapper mapper_plain;
+   
    private JsonUtils() {
    }
 
@@ -68,6 +69,8 @@ public class JsonUtils {
       // Ensure BigDecimals are serialized consistently as numbers not strings
       mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
       mapper_noNulls.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
+
+      mapper_plain = new ObjectMapper();
    }
 
    public static String toJson(Object o, boolean verbose) {
@@ -203,5 +206,9 @@ public class JsonUtils {
          result = v.decimalValue();
       }
       return result;
+   }
+
+   public static ObjectMapper getPlainMapper() {
+      return mapper_plain;
    }
 }
