@@ -4,4 +4,5 @@
         "name": "testConfig",
         // "vmArgs": ["-javaagent:/root/.m2/repository/org/jmockit/jmockit/1.49/jmockit-1.49.jar"]
     },
+    "java.debug.settings.onBuildFailureProceed": true,
 }

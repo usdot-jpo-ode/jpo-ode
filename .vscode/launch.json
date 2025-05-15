@@ -13,11 +13,12 @@
         },
         {
             "type": "java",
-            "name": "Launch ODE",
+            "name": "Debug ODE",
             "request": "launch",
             "mainClass": "us.dot.its.jpo.ode.OdeSvcsApplication",
             "projectName": "jpo-ode-svcs",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "preLaunchTask": "run-kafka_full-adm-aem"
         }
     ]
 }

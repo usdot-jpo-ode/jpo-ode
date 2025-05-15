@@ -15,4 +15,5 @@ public class RawEncodedJsonTopics {
     private String srm;
     private String ssm;
     private String tim;
+    private String sdsm;
 }

@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
 import us.dot.its.jpo.ode.udp.psm.PsmReceiver;
+import us.dot.its.jpo.ode.udp.sdsm.SdsmReceiver;
 import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
 import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
 import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
@@ -52,6 +53,7 @@ public class UdpServicesController {
     startReceiver(new SpatReceiver(udpProps.getSpat(), kafkaTemplate, rawEncodedJsonTopics.getSpat()));
     startReceiver(new MapReceiver(udpProps.getMap(), kafkaTemplate, rawEncodedJsonTopics.getMap()));
     startReceiver(new PsmReceiver(udpProps.getPsm(), kafkaTemplate, rawEncodedJsonTopics.getPsm()));
+    startReceiver(new SdsmReceiver(udpProps.getSdsm(), kafkaTemplate, rawEncodedJsonTopics.getSdsm()));
     startReceiver(new GenericReceiver(udpProps.getGeneric(), kafkaTemplate, rawEncodedJsonTopics));
 
     log.debug("UDP receiver services started.");

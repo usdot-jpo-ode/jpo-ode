@@ -18,6 +18,7 @@ public class UDPReceiverProperties {
     private ReceiverProperties srm;
     private ReceiverProperties ssm;
     private ReceiverProperties tim;
+    private ReceiverProperties sdsm;
 
     @Data
     public static class ReceiverProperties {

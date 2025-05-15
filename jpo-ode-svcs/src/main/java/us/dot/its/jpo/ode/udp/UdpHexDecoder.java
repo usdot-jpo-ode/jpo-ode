@@ -12,6 +12,7 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMapMetadata;
 import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdePsmMetadata;
 import us.dot.its.jpo.ode.model.OdePsmMetadata.PsmSource;
@@ -28,6 +29,7 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 
 /**
  * The `UdpHexDecoder` class provides functionalities to decode UDP DatagramPackets into specific
@@ -302,6 +304,11 @@ public class UdpHexDecoder {
     return JsonUtils.toJson(new OdeAsn1Data(psmMetadata, psmPayload), false);
   }
 
+  public static String buildJsonSdsmFromPacket(DatagramPacket packet)
+      throws InvalidPayloadException {
+        return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SDSM, RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU), false);
+  }
+
   /**
    * Given a buffer containing the full payload, this method retrieves and returns only the relevant
    * bytes of the message, excluding any padded bytes.
@@ -316,4 +323,35 @@ public class UdpHexDecoder {
     System.arraycopy(buffer, offset, relevantPayload, 0, length);
     return relevantPayload;
   }
+
+  public static String buildJsonMessageFrameFromPacket(DatagramPacket packet,
+      SupportedMessageType messageType, RecordType recordType, Source source, GeneratedBy generatedBy)
+        throws InvalidPayloadException {
+    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, messageType, recordType, source, generatedBy), false);
+  }
+
+  public static OdeAsn1Data buildAsn1DataFromPacket(DatagramPacket packet,
+      SupportedMessageType messageType, RecordType recordType, Source source, GeneratedBy generatedBy)
+      throws InvalidPayloadException {
+
+    String senderIp = packet.getAddress().getHostAddress();
+    int senderPort = packet.getPort();
+    log.debug("Packet received from {}:{}", senderIp, senderPort);
+
+    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
+    OdeAsn1Payload payload = getPayloadHexString(packet, messageType);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata(payload);
+
+    // Add header data for the decoding process
+    metadata.setOdeReceivedAt(DateTimeUtils.now());
+
+    metadata.setOriginIp(senderIp);
+    metadata.setSource(source);
+    metadata.setRecordType(recordType);
+    metadata.setRecordGeneratedBy(generatedBy);
+    metadata.setSecurityResultCode(SecurityResultCode.success);
+
+    return new OdeAsn1Data(metadata, payload);
+  }
+  
 }

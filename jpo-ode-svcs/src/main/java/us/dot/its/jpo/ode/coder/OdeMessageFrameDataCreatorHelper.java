@@ -21,14 +21,9 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 public class OdeMessageFrameDataCreatorHelper {
 
   public static OdeMessageFrameData createOdeMessageFrameData(String consumedData) throws JsonProcessingException {
-    log.debug("createOdeMessageFrameData");
     ObjectNode consumed = XmlUtils.getPlainXmlMapper().readValue(consumedData, ObjectNode.class);
-    log.debug("consumed");
-
     JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
-    log.debug("got metadata node");
     if (metadataNode instanceof ObjectNode object) {
-      log.debug("metadata node is object");
       object.remove(OdeMsgMetadata.ENCODINGS_STRING);
 
       //Spat header file does not have a location and use predefined set required RxSource
@@ -47,30 +42,19 @@ public class OdeMessageFrameDataCreatorHelper {
     }
 
     OdeMessageFrameMetadata metadata = XmlUtils.getPlainXmlMapper().convertValue(metadataNode, OdeMessageFrameMetadata.class);
-    log.debug("got messageframe metadata");
 
     if(metadataNode.findValue("certPresent") != null) {
       boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
       metadata.setCertPresent(isCertPresent);
     }
-    log.debug("after cert check");
 
     if (metadata.getSchemaVersion() <= 4) {
       metadata.setReceivedMessageDetails(null);
     }
 
-    log.debug("after schema version check");
-
-
     JsonNode messageFrameNode = consumed.findValue("MessageFrame");
-    log.debug("got messageframe node");
-
     MessageFrame<?> messageFrame = XmlUtils.getPlainXmlMapper().convertValue(messageFrameNode, MessageFrame.class);
-
-    log.debug("got message frame");
-
     OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
-    log.debug("got payload");
     return new OdeMessageFrameData(metadata, payload);
   }
 
