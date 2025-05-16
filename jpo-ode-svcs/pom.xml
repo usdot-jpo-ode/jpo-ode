@@ -165,6 +165,12 @@
       <artifactId>jpo-asn-j2735-2024</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>net.javacrumbs.json-unit</groupId>
+      <artifactId>json-unit</artifactId>
+      <version>4.1.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>${project.artifactId}</finalName>

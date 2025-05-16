@@ -8,7 +8,8 @@
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["adm", "aem", "kafka_full"]
+          "profiles": ["adm", "aem", "kafka_full"],
+          "removeOrphans": true
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"
