@@ -1,0 +1,41 @@
+{
+  "metadata" : {
+    "payloadType" : "us.dot.its.jpo.ode.model.OdeTimPayload",
+    "serialId" : {
+      "streamId" : "06378c9f-c6b1-4bd0-813d-f4e71aea7759",
+      "bundleSize" : 1,
+      "bundleId" : 0,
+      "recordId" : 0,
+      "serialNumber" : 0
+    },
+    "odeReceivedAt" : "2018-03-13T01:07:11.120Z",
+    "schemaVersion" : 8,
+    "maxDurationTime" : 0,
+    "recordGeneratedAt" : "2017-03-13T01:07:11.000Z",
+    "recordGeneratedBy" : "TMC",
+    "sanitized" : false,
+    "request" : {
+      "ode" : {
+        "version" : 3,
+        "verb" : "POST"
+      },
+      "rsus" : [ ],
+      "snmp" : {
+        "msgid" : 0,
+        "mode" : 0,
+        "channel" : 0,
+        "interval" : 0,
+        "enable" : 0,
+        "status" : 0
+      }
+    }
+  },
+  "payload" : {
+    "data" : {
+      "msgCnt" : 13,
+      "timeStamp" : 102607,
+      "dataFrames" : [ ]
+    },
+    "dataType" : "us.dot.its.jpo.ode.plugin.j2735.travelerinformation.TravelerInformation"
+  }
+}

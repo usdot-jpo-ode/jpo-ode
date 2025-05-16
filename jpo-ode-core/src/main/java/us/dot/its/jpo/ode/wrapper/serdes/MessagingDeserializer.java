@@ -16,8 +16,10 @@
 
 package us.dot.its.jpo.ode.wrapper.serdes;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
-import us.dot.its.jpo.ode.util.SerializationUtils;
 
 /**
  * MessagingDeserializer is a generic base class implementing the Kafka Deserializer interface to
@@ -25,20 +27,29 @@ import us.dot.its.jpo.ode.util.SerializationUtils;
  *
  * <p>This class uses a generic type parameter, allowing it to handle deserialization
  * of various types. Internal deserialization is performed using an instance of the
- * SerializationUtils class, which leverages Kryo for efficient object deserialization.</p>
- *
- * <p>The class is declared as sealed, restricting which other classes can directly extend it. It
- * will soon be marked as final to prevent incorrect usage through unnecessary subtyping</p>
+ * {@link Kryo} class for efficient object deserialization.</p>
  *
  * @param <T> the type of data to be deserialized
  */
-public sealed class MessagingDeserializer<T> implements Deserializer<T>
-    permits OdeBsmDeserializer {
+@Slf4j
+public final class MessagingDeserializer<T> implements Deserializer<T> {
 
-  SerializationUtils<T> deserializer = new SerializationUtils<>();
+  private final Kryo kryo = new Kryo();
 
   @Override
   public T deserialize(String topic, byte[] data) {
-    return deserializer.deserialize(data);
+    if (data == null || data.length == 0) {
+      log.debug("Null or empty data passed to deserializer for topic {}. Returning null.", topic);
+      return null;
+    }
+
+    Input input = new Input(data);
+    // We are certain that the return value can be cast to the generic type T, so we can safely suppress the unchecked warning
+    @SuppressWarnings("unchecked")
+    T object = (T) kryo.readClassAndObject(input);
+    input.close();
+
+    log.debug("Deserialized data of type {} from {} bytes.", object.getClass().getName(), data.length);
+    return object;
   }
 }

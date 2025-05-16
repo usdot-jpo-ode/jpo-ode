@@ -11,12 +11,12 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>jpo-ode-4.0.0</tag>
+    <tag>jpo-ode-4.1.0</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
-  <version>4.0.0</version>
+  <version>4.1.0</version>
   <packaging>pom</packaging>
   <modules>
     <module>jpo-ode-common</module>
@@ -134,6 +134,13 @@
             <compilerArgs>
               <arg>-Xlint:deprecation</arg>
             </compilerArgs>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+              </path>
+            </annotationProcessorPaths>
           </configuration>
         </plugin>
         <plugin>

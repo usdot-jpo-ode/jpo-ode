@@ -27,13 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
@@ -47,18 +47,14 @@ import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
-import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.security.SecurityServicesProperties;
-import us.dot.its.jpo.ode.traveler.TimTransmogrifier.TimTransmogrifierException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 /**
  * The REST controller for handling TIM creation requests.
@@ -80,10 +76,8 @@ public class TimDepositController {
   private final SerialId serialIdJ2735;
   private final SerialId serialIdOde;
 
-  private final MessageProducer<String, String> stringMsgProducer;
-  private final MessageProducer<String, OdeObject> timProducer;
-
-  private final boolean dataSigningEnabledSDW;
+  private final KafkaTemplate<String, String> kafkaTemplate;
+  private final KafkaTemplate<String, OdeObject> timDataKafkaTemplate;
 
   /**
    * Unique exception for the TimDepositController to handle error state responses to the client.
@@ -102,12 +96,13 @@ public class TimDepositController {
    * Spring Autowired constructor for the REST controller to properly initialize.
    */
   @Autowired
-  public TimDepositController(OdeKafkaProperties odeKafkaProperties,
-                              Asn1CoderTopics asn1CoderTopics,
+  public TimDepositController(Asn1CoderTopics asn1CoderTopics,
                               PojoTopics pojoTopics,
                               JsonTopics jsonTopics,
                               TimIngestTrackerProperties ingestTrackerProperties,
-                              SecurityServicesProperties securityServicesProperties) {
+                              SecurityServicesProperties securityServicesProperties,
+                              KafkaTemplate<String, String> kafkaTemplate,
+                              KafkaTemplate<String, OdeObject> timDataKafkaTemplate) {
     super();
 
     this.asn1CoderTopics = asn1CoderTopics;
@@ -116,22 +111,14 @@ public class TimDepositController {
     this.serialIdJ2735 = new SerialId();
     this.serialIdOde = new SerialId();
 
-    this.stringMsgProducer =
-        MessageProducer.defaultStringMessageProducer(odeKafkaProperties.getBrokers(),
-            odeKafkaProperties.getKafkaType(), odeKafkaProperties.getDisabledTopics());
-    this.timProducer = new MessageProducer<>(odeKafkaProperties.getBrokers(),
-        odeKafkaProperties.getKafkaType(), null,
-        OdeTimSerializer.class.getName(), odeKafkaProperties.getDisabledTopics());
-
-    this.dataSigningEnabledSDW = securityServicesProperties.getIsSdwSigningEnabled();
+    this.kafkaTemplate = kafkaTemplate;
+    this.timDataKafkaTemplate = timDataKafkaTemplate;
 
     // start the TIM ingest monitoring service if enabled
     if (ingestTrackerProperties.isTrackingEnabled()) {
       log.info("TIM ingest monitoring enabled.");
 
-      ScheduledExecutorService scheduledExecutorService =
-          Executors
-              .newSingleThreadScheduledExecutor();
+      ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
       scheduledExecutorService.scheduleAtFixedRate(
           new TimIngestWatcher(ingestTrackerProperties.getInterval()),
@@ -148,6 +135,7 @@ public class TimDepositController {
    *
    * @param jsonString The value of the JSON message
    * @param verb       The HTTP verb being requested
+   *
    * @return The request completion status
    */
   public synchronized ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
@@ -247,10 +235,10 @@ public class TimDepositController {
     }
 
     OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
-    timProducer.send(pojoTopics.getTimBroadcast(), null, odeTimData);
+    timDataKafkaTemplate.send(pojoTopics.getTimBroadcast(), serialIdJ2735.getStreamId(), odeTimData);
 
     String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
-    stringMsgProducer.send(jsonTopics.getTimBroadcast(), null, obfuscatedTimData);
+    kafkaTemplate.send(jsonTopics.getTimBroadcast(), serialIdJ2735.getStreamId(), obfuscatedTimData);
 
     // Now that the message has been published to OdeBroadcastTim topic, it should
     // be
@@ -286,44 +274,38 @@ public class TimDepositController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    } catch (TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException e) {
+        String errMsg = "Invalid node lat/lon offset in TIM: " + e.getMessage();
+        log.error(errMsg);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     try {
       String xmlMsg;
-      DdsAdvisorySituationData asd = null;
-      if (!this.dataSigningEnabledSDW) {
-        // We need to send data UNSECURED, so we should try to build the ASD as well as
-        // MessageFrame
-        asd = TimTransmogrifier.buildASD(odeTID.getRequest());
-      }
-      xmlMsg = TimTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
-      if (xmlMsg != null) {
-        log.debug("XML representation: {}", xmlMsg);
+      xmlMsg = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialIdJ2735);
+      log.debug("XML representation: {}", xmlMsg);
 
-        // Convert XML into ODE TIM JSON object and obfuscate RSU password
-        OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(
-            xmlMsg, timMetadata);
+      // Convert XML into ODE TIM JSON object and obfuscate RSU password
+      OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(
+          xmlMsg, timMetadata);
 
-        String j2735Tim =
-            odeTimObj
-                .toString();
+      String j2735Tim = odeTimObj.toString();
 
-
-        String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
-        // publish Broadcast TIM to a J2735 compliant topic.
-        stringMsgProducer.send(jsonTopics.getJ2735TimBroadcast(), null, obfuscatedJ2735Tim);
-        // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
-        stringMsgProducer.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(),
-            obfuscatedJ2735Tim); // Write XML to the encoder input topic at the end to ensure the correct order
-        // of operations to pair
-        // each message to an OdeTimJson streamId key
-        stringMsgProducer.send(asn1CoderTopics.getEncoderInput(), null, xmlMsg);
-      }
+      String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
+      // publish Broadcast TIM to a J2735 compliant topic.
+      kafkaTemplate.send(jsonTopics.getJ2735TimBroadcast(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+      // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
+      kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+      // Write XML to the encoder input topic at the end to ensure the correct order
+      // of operations to pair
+      // each message to an OdeTimJson streamId key
+      kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
 
       serialIdOde.increment();
       serialIdJ2735.increment();
-    } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException
-             | TimTransmogrifierException e) {
+    } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException e) {
       String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -338,6 +320,7 @@ public class TimDepositController {
    * Update an already-deposited TIM.
    *
    * @param jsonString TIM in JSON
+   *
    * @return list of success/failures
    */
   @PutMapping(value = "/tim", produces = "application/json")
@@ -351,6 +334,7 @@ public class TimDepositController {
    * Deposit a new TIM.
    *
    * @param jsonString TIM in JSON
+   *
    * @return list of success/failures
    */
   @PostMapping(value = "/tim", produces = "application/json")

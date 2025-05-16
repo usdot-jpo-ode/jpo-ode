@@ -80,8 +80,8 @@ public class OdeRequest extends BaseRequest {
    }
 
    public static String buildRequestId(OdeRequest odeRequest) {
-      return AppContext.getInstance().getParam(AppContext.ODE_HOSTNAME) + odeRequest.getClass().getSimpleName()
-            + String.valueOf(odeRequest.hashCode());
+      return AppContext.getInstance().getHostId() + odeRequest.getClass().getSimpleName()
+            + odeRequest.hashCode();
    }
 
    public String getId() {

@@ -18,7 +18,7 @@ services:
           memory: 4G
     ports:
       - "8080:8080"
-      - "9090:9090"
+      - "9091:9090"
       - "46753:46753/udp"
       - "46800:46800/udp"
       - "47900:47900/udp"
@@ -46,12 +46,14 @@ services:
       KAFKA_ACKS: ${KAFKA_ACKS}
       KAFKA_RETRIES: ${KAFKA_RETRIES}
       KAFKA_BATCH_SIZE: ${KAFKA_BATCH_SIZE}
+      KAFKA_BUFFER_MEMORY: ${KAFKA_BUFFER_MEMORY}
       KAFKA_COMPRESSION_TYPE: ${KAFKA_COMPRESSION_TYPE}
       KAFKA_KEY_SERIALIZER: ${KAFKA_KEY_SERIALIZER}
       KAFKA_VALUE_SERIALIZER: ${KAFKA_VALUE_SERIALIZER}
       KAFKA_PARTITIONER_CLASS: ${KAFKA_PARTITIONER_CLASS}
       ODE_TIM_INGEST_MONITORING_ENABLED: ${ODE_TIM_INGEST_MONITORING_ENABLED}
       ODE_TIM_INGEST_MONITORING_INTERVAL: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
+      ODE_STOMP_EXPORTER_ENABLED: ${ODE_STOMP_EXPORTER_ENABLED}
     depends_on:
       kafka:
         condition: service_healthy
@@ -59,7 +61,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
     healthcheck:
-      test: ["CMD", "wget" ,"--spider", "http://localhost:8080"]
+      test: [ "CMD", "wget", "--spider", "http://localhost:8080" ]
       interval: 5s
       timeout: 30s
       retries: 5
@@ -233,7 +235,7 @@ services:
         condition: service_healthy
     logging:
       options:
-        max-size: "10m" 
+        max-size: "10m"
         max-file: "5"
 
   sec:
@@ -241,7 +243,7 @@ services:
       - all
       - ode_full
       - sec
-    build: ./jpo-security-svcs
+    build: ./jpo-security-svcs/jpo-security-svcs
     image: jpoode_sec:latest
     restart: ${RESTART_POLICY}
     deploy:
@@ -250,10 +252,25 @@ services:
           cpus: '1'
           memory: 2G
     ports:
-     - "8090:8090"
+      - "8090:8090"
     environment:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+      SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH: ${SEC_CRYPTO_SERVICE_ENDPOINT_SIGN_PATH}
+      SEC_USE_CERTIFICATES: ${SEC_USE_CERTIFICATES}
     logging:
       options:
-        max-size: "10m"  
+        max-size: "10m"
+        max-file: "5"
+  mock-signing-svc:
+    build: ./jpo-security-svcs/mock-signing-svc
+    profiles:
+      - all
+      - ode_full
+      - sec
+    image: jpoode_sec_mock_signing_svc:latest
+    ports:
+      - "8091:8091"
+    logging:
+      options:
+        max-size: "10m"
         max-file: "5"

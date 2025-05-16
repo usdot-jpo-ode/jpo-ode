@@ -12,7 +12,9 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeMapData;
+import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
 
 /**
  * Configures Kafka consumer settings and provides various consumer factories and listener container
@@ -102,6 +104,43 @@ public class KafkaConsumerConfig {
     ConcurrentKafkaListenerContainerFactory<String, OdeMapData> factory =
         new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(odeMapDataConsumerFactory());
+    return factory;
+  }
+
+  /**
+   * Creates a Kafka {@link ConsumerFactory} for consuming messages with keys of type {@link String}
+   * and values of type {@link OdeMapData}. This method utilizes a {@link StringDeserializer} for
+   * deserializing the key and a {@link MessagingDeserializer} for deserializing values of type
+   * {@link OdeMapData}.
+   *
+   * <p>The consumer factory is configured using Kafka properties, which are retrieved from the
+   * application's configuration settings.
+   *
+   * @return a configured {@link ConsumerFactory} for {@link String} keys and {@link OdeMapData}
+   *      values.
+   */
+  @Bean
+  public ConsumerFactory<String, OdeBsmData> odeBsmDataConsumerFactory() {
+    return new DefaultKafkaConsumerFactory<>(
+        getKafkaConsumerProperties(),
+        new StringDeserializer(),
+        new MessagingDeserializer<>()
+    );
+  }
+
+  /**
+   * Creates and configures a ConcurrentKafkaListenerContainerFactory for consuming Kafka messages
+   * with keys of type String and values of type OdeMapData. The factory is configured with a
+   * consumer factory provided by the odeMapDataConsumerFactory method.
+   *
+   * @return a configured ConcurrentKafkaListenerContainerFactory instance for processing Kafka
+   *      messages with keys of type String and values of type OdeMapData.
+   */
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, OdeBsmData> odeBsmDataConsumerListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, OdeBsmData> factory =
+        new ConcurrentKafkaListenerContainerFactory<>();
+    factory.setConsumerFactory(odeBsmDataConsumerFactory());
     return factory;
   }
 

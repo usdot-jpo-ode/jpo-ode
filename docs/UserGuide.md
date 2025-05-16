@@ -365,16 +365,10 @@ for more information on how to use the application.yaml file and how to override
 
 #### 6.6.5 - ODE Logging Properties
 
-ODE produces two log files:
+ODE produces to an application log file for overall application health and behavior monitoring.
 
-1.  The application log file: for overall application health monitoring
-
-2.  Events log file: for tracking and monitoring major data events such
-    as the flow of data files through the system
-
-The configuration of the loggers is done via _logback.xml_ file. The
-default logback.xml is located in the _src/main/resources_ directory of
-the source code as well as in the _BOOT-INF\\classes\\_ directory of the
+The configuration of the logger is done via the [_logback.xml_](/jpo-ode-svcs/src/main/resources/logback.xml) file. 
+Once the service is built, the logging configuration is located in the _BOOT-INF\\classes\\_ directory of the
 executable jar file. To modify the default values, you can modify the
 source _src/main/resources/logback.xml_ file before building the
 software or place a different _logback.xml_ file with the modified
@@ -845,14 +839,14 @@ Ode provides two methods of accepting data from field devices:
 
 -   File copy: described in section 7.1
 
--   RESTful API: upload described in section 7.2
+-   RESTful API: upload described in section 8.2
 
 ODE provides several methods for the TMC applications (or any ODE client
 application) to send and receive data to and from the ODE
 
--   RESTful API: upload described in section 7.2
+-   RESTful API: upload described in section 8.2
 
--   Streaming API: described in section 7.3.
+-   Streaming API: described in section 8.3.
 
 All of the above interfaces can be secured using SSL encryption.
 
@@ -1013,7 +1007,7 @@ two distinct but dependent interfaces.
 
 2.  Clients may Interface directly with ODE through ODE provided
     WebSocket interface as defined by RFC 6455
-    (<http://tools.ietf.org/html/rfc6455> ). See section 7.3.2 for
+    (<http://tools.ietf.org/html/rfc6455> ). See section 8.3.1 for
     details.
 
 <a name="direct-kafka-interface"></a>

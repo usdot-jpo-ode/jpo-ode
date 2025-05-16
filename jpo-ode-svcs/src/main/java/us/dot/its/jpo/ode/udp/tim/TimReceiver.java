@@ -52,9 +52,10 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
         socket.receive(packet);
         if (packet.getLength() > 0) {
 
-          String timJson = UdpHexDecoder.buildJsonTimFromPacket(packet);
+          var tim = UdpHexDecoder.buildTimFromPacket(packet);
+          var timJson = tim.toJson();
           if (timJson != null) {
-            timPublisher.send(publishTopic, timJson);
+            timPublisher.send(publishTopic, tim.getMetadata().getSerialId().toString(), timJson);
           }
         }
       } catch (InvalidPayloadException e) {

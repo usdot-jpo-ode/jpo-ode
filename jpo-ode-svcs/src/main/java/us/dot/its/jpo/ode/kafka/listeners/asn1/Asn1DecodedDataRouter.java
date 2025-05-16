@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners.asn1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
@@ -13,13 +15,14 @@ import us.dot.its.jpo.ode.coder.OdeSpatDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSrmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
-import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -30,8 +33,8 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
  * processing and forwarding it to different topics based on specific criteria.
  *
  * <p>This listener is specifically designed to handle decoded data produced by the asn1_codec.
- * Upon receiving a payload, it transforms the payload and then determines the appropriate
- * Kafka topic to forward the processed data.</p>
+ * Upon receiving a payload, it transforms the payload and then determines the appropriate Kafka
+ * topic to forward the processed data.</p>
  *
  * <p>The class utilizes Spring Kafka's annotation-driven listener configuration,
  * allowing it to automatically consume messages from a configured Kafka topic.</p>
@@ -46,14 +49,23 @@ public class Asn1DecodedDataRouter {
   private final KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate;
 
   /**
+   * Exception for Asn1DecodedDataRouter specific failures.
+   */
+  public static class Asn1DecodedDataRouterException extends Exception {
+    public Asn1DecodedDataRouterException(String string) {
+      super(string);
+    }
+  }
+
+  /**
    * Constructs an instance of Asn1DecodedDataRouter.
    *
    * @param kafkaTemplate the KafkaTemplate used for sending messages to Kafka topics.
    */
   public Asn1DecodedDataRouter(KafkaTemplate<String, String> kafkaTemplate,
-      KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate,
-      PojoTopics pojoTopics,
-      JsonTopics jsonTopics) {
+                               KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate,
+                               PojoTopics pojoTopics,
+                               JsonTopics jsonTopics) {
     this.kafkaTemplate = kafkaTemplate;
     this.bsmDataKafkaTemplate = bsmDataKafkaTemplate;
     this.pojoTopics = pojoTopics;
@@ -68,28 +80,44 @@ public class Asn1DecodedDataRouter {
       id = "Asn1DecodedDataRouter",
       topics = "${ode.kafka.topics.asn1.decoder-output}"
   )
-  public void listen(ConsumerRecord<String, String> consumerRecord) throws XmlUtilsException {
+  public void listen(ConsumerRecord<String, String> consumerRecord)
+      throws XmlUtilsException, JsonProcessingException, Asn1DecodedDataRouterException {
     log.debug("Key: {} payload: {}", consumerRecord.key(), consumerRecord.value());
 
     JSONObject consumed = XmlUtils.toJSONObject(consumerRecord.value())
         .getJSONObject(OdeAsn1Data.class.getSimpleName());
+
+    JSONObject payloadData = consumed.getJSONObject(OdeMsgPayload.PAYLOAD_STRING).getJSONObject(OdeMsgPayload.DATA_STRING);
+
+    if (payloadData.has("code")) {
+      throw new Asn1DecodedDataRouterException(
+          String.format("Error processing decoded message with code %s and message %s", payloadData.getString("code"),
+              payloadData.has("message") ? payloadData.getString("message") : "NULL")
+      );
+    }
+
     J2735DSRCmsgID messageId = J2735DSRCmsgID.valueOf(
-        consumed.getJSONObject(AppContext.PAYLOAD_STRING)
-            .getJSONObject(AppContext.DATA_STRING)
-            .getJSONObject("MessageFrame")
+        payloadData.getJSONObject("MessageFrame")
             .getInt("messageId")
     );
 
+    var metadataJson = XmlUtils.toJSONObject(consumerRecord.value())
+        .getJSONObject(OdeAsn1Data.class.getSimpleName())
+        .getJSONObject(OdeMsgMetadata.METADATA_STRING);
     OdeLogMetadata.RecordType recordType = OdeLogMetadata.RecordType
-        .valueOf(XmlUtils.toJSONObject(consumerRecord.value())
-            .getJSONObject(OdeAsn1Data.class.getSimpleName())
-            .getJSONObject(AppContext.METADATA_STRING)
-            .getString("recordType")
-        );
+        .valueOf(metadataJson.getString("recordType"));
+
+    String streamId;
+    if (Strings.isNullOrEmpty(consumerRecord.key())
+        || "null".equalsIgnoreCase(consumerRecord.key())) {
+      streamId = metadataJson.getJSONObject("serialId").getString("streamId");
+    } else {
+      streamId = consumerRecord.key();
+    }
 
     switch (messageId) {
       case BasicSafetyMessage -> routeBSM(consumerRecord, recordType);
-      case TravelerInformation -> routeTIM(consumerRecord, recordType);
+      case TravelerInformation -> routeTIM(consumerRecord, streamId, recordType);
       case SPATMessage -> routeSPAT(consumerRecord, recordType);
       case MAPMessage -> routeMAP(consumerRecord, recordType);
       case SSMMessage -> routeSSM(consumerRecord, recordType);
@@ -156,31 +184,31 @@ public class Asn1DecodedDataRouter {
     kafkaTemplate.send(jsonTopics.getMap(), odeMapData);
   }
 
-  private void routeTIM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
-      throws XmlUtilsException {
+  private void routeTIM(ConsumerRecord<String, String> consumerRecord,
+                        String streamId,
+                        RecordType type) throws XmlUtilsException {
     String odeTimData =
         OdeTimDataCreatorHelper.createOdeTimDataFromDecoded(consumerRecord.value()).toString();
-    switch (recordType) {
+    switch (type) {
       case dnMsg -> kafkaTemplate.send(jsonTopics.getDnMessage(), consumerRecord.key(), odeTimData);
       case rxMsg -> kafkaTemplate.send(jsonTopics.getRxTim(), consumerRecord.key(), odeTimData);
-      default -> log.trace("Consumed TIM data with record type: {}", recordType);
+      default -> log.trace("Consumed TIM data with record type: {}", type);
     }
     // Send all TIMs also to OdeTimJson
-    kafkaTemplate.send(jsonTopics.getTim(), consumerRecord.key(), odeTimData);
+    kafkaTemplate.send(jsonTopics.getTim(), streamId, odeTimData);
   }
 
   private void routeBSM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
       throws XmlUtils.XmlUtilsException {
     // ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the "recordType"
     OdeBsmData odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(consumerRecord.value());
+    // NOTE: These three flows in the switch statement are all disabled in all known environments via the disabled-topics configuration settings.
+    // We may consider removing this code completely in the future.
     switch (recordType) {
-      case bsmLogDuringEvent ->
-          bsmDataKafkaTemplate.send(pojoTopics.getBsmDuringEvent(), consumerRecord.key(),
-              odeBsmData);
-      case rxMsg ->
-          bsmDataKafkaTemplate.send(pojoTopics.getRxBsm(), consumerRecord.key(), odeBsmData);
-      case bsmTx ->
-          bsmDataKafkaTemplate.send(pojoTopics.getTxBsm(), consumerRecord.key(), odeBsmData);
+      case bsmLogDuringEvent -> bsmDataKafkaTemplate.send(pojoTopics.getBsmDuringEvent(), consumerRecord.key(),
+          odeBsmData);
+      case rxMsg -> bsmDataKafkaTemplate.send(pojoTopics.getRxBsm(), consumerRecord.key(), odeBsmData);
+      case bsmTx -> bsmDataKafkaTemplate.send(pojoTopics.getTxBsm(), consumerRecord.key(), odeBsmData);
       default -> log.trace("Consumed BSM data with record type: {}", recordType);
     }
     // Send all BSMs also to OdeBsmPojo

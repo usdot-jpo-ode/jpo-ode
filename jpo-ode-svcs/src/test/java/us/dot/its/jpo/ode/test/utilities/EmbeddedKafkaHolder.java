@@ -58,7 +58,12 @@ public final class EmbeddedKafkaHolder {
    * @param topics one or more topic names to be added to the embedded Kafka broker
    */
   public static void addTopics(String... topics) {
+    var existingTopics = embeddedKafka.getTopics();
     for (String topic : topics) {
+      if (existingTopics.contains(topic)) {
+        log.debug("topic {} already exists in embedded kafka broker. Skipping creation", topic);
+        continue;
+      }
       NewTopic newTopic = new NewTopic(topic, 1, (short) 1);
       try {
         embeddedKafka.addTopics(newTopic);
