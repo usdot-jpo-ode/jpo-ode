@@ -50,7 +50,8 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
         "ode.kafka.topics.raw-encoded-json.spat=topic.GenericReceiverTestSPAT",
         "ode.kafka.topics.raw-encoded-json.ssm=topic.GenericReceiverTestSSM",
         "ode.kafka.topics.raw-encoded-json.tim=topic.GenericReceiverTestTIM",
-        "ode.kafka.topics.raw-encoded-json.srm=topic.GenericReceiverTestSRM"
+        "ode.kafka.topics.raw-encoded-json.srm=topic.GenericReceiverTestSRM",
+        "ode.kafka.topics.raw-encoded-json.sdsm=topic.GenericReceiverTestSDSM"
     }
 )
 @ContextConfiguration(classes = {
@@ -80,7 +81,8 @@ class GenericReceiverTest {
         rawEncodedJsonTopics.getSpat(),
         rawEncodedJsonTopics.getSsm(),
         rawEncodedJsonTopics.getTim(),
-        rawEncodedJsonTopics.getSrm()
+        rawEncodedJsonTopics.getSrm(),
+        rawEncodedJsonTopics.getSdsm()
     };
     EmbeddedKafkaHolder.addTopics(topics);
 
@@ -163,6 +165,7 @@ class GenericReceiverTest {
     var timRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getTim());
     assertExpected("Produced TIM message does not match expected", timRecord.value(), expectedTim);
 
+    // Test the SRM path
     String srmFileContent = Files.readString(
         Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/srm/SrmReceiverTest_ValidData.txt")
     );
@@ -174,6 +177,18 @@ class GenericReceiverTest {
 
     var srmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSrm());
     assertExpected("Produced SRM message does not match expected", srmRecord.value(), expectedSrm);
+
+    // Test the SDSM path
+    String sdsmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm.txt")
+    );
+    String expectedSdsm = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm_expected.json")
+    );
+    udpClient.send(sdsmFileContent);
+
+    var sdsmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSdsm());
+    assertExpected("Produced SDSM message does not match expected", sdsmRecord.value(), expectedSdsm);
 
     DateTimeUtils.setClock(prevClock);
   }

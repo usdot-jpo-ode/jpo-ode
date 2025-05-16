@@ -2,7 +2,7 @@
   "metadata": {
     "bsmSource": "EV",
     "logFileName": "",
-    "recordType": "bsmLogDuringEvent",
+    "recordType": "bsmTx",
     "securityResultCode": "success",
     "receivedMessageDetails": {
       "locationData": {
@@ -45,18 +45,15 @@
           "elevation": 1440.9
         },
         "accelSet": {
-          "accelLat": 0.00,
+          "accelLat": 0.0,
           "accelLong": 0.27,
-          "accelVert": 0.00,
-          "accelYaw": 0.00
+          "accelVert": 0.0,
+          "accelYaw": 0.0
         },
-        "accuracy": {
-          "semiMajor": 9.30,
-          "semiMinor": 12.05
-        },
+        "accuracy": { "semiMajor": 9.3, "semiMinor": 12.05 },
         "transmission": "UNAVAILABLE",
         "speed": 0.28,
-        "heading": 313.2500,
+        "heading": 313.25,
         "brakes": {
           "wheelBrakes": {
             "leftFront": false,
@@ -71,12 +68,122 @@
           "brakeBoost": "unavailable",
           "auxBrakes": "unavailable"
         },
-        "size": {
-          "width": 190,
-          "length": 570
-        }
+        "size": { "width": 190, "length": 570 }
       },
-      "partII": []
+      "partII": [
+        {
+          "id": "VehicleSafetyExtensions",
+          "value": {
+            "pathHistory": {
+              "crumbData": [
+                {
+                  "elevationOffset": -0.6,
+                  "latOffset": -0.0000113,
+                  "lonOffset": 0.0000181,
+                  "timeOffset": 1.9
+                },
+                {
+                  "elevationOffset": -2.3,
+                  "latOffset": -0.000031,
+                  "lonOffset": 0.0000472,
+                  "timeOffset": 6.1
+                },
+                {
+                  "elevationOffset": -1.4,
+                  "latOffset": -0.0000103,
+                  "lonOffset": 0.0000636,
+                  "timeOffset": 15.7
+                },
+                {
+                  "elevationOffset": -1.3,
+                  "latOffset": -0.0000052,
+                  "lonOffset": 0.0000615,
+                  "timeOffset": 18.7
+                },
+                {
+                  "elevationOffset": -1.7,
+                  "latOffset": 0.0000614,
+                  "lonOffset": 0.000115,
+                  "timeOffset": 25.89
+                },
+                {
+                  "elevationOffset": 0.7,
+                  "latOffset": 0.0001878,
+                  "lonOffset": 0.0002503,
+                  "timeOffset": 39.59
+                },
+                {
+                  "elevationOffset": 3.1,
+                  "latOffset": 0.0002333,
+                  "lonOffset": 0.0002816,
+                  "timeOffset": 45.39
+                },
+                {
+                  "elevationOffset": 3.9,
+                  "latOffset": 0.0002187,
+                  "lonOffset": 0.0002952,
+                  "timeOffset": 49.59
+                },
+                {
+                  "elevationOffset": 4.6,
+                  "latOffset": 0.0001976,
+                  "lonOffset": 0.0002721,
+                  "timeOffset": 56.99
+                },
+                {
+                  "elevationOffset": 8.4,
+                  "latOffset": 0.0001891,
+                  "lonOffset": 0.0003655,
+                  "timeOffset": 60.5
+                },
+                {
+                  "elevationOffset": 13.7,
+                  "latOffset": 0.0002022,
+                  "lonOffset": 0.0004886,
+                  "timeOffset": 63.49
+                },
+                {
+                  "elevationOffset": 14.4,
+                  "latOffset": 0.0001973,
+                  "lonOffset": 0.0004861,
+                  "timeOffset": 67.6
+                },
+                {
+                  "elevationOffset": 14.4,
+                  "latOffset": 0.0001795,
+                  "lonOffset": 0.0004815,
+                  "timeOffset": 72.7
+                },
+                {
+                  "elevationOffset": 13.5,
+                  "latOffset": 0.000171,
+                  "lonOffset": 0.0004749,
+                  "timeOffset": 75.7
+                },
+                {
+                  "elevationOffset": 12.1,
+                  "latOffset": 0.0001609,
+                  "lonOffset": 0.0004566,
+                  "timeOffset": 78.8
+                }
+              ]
+            },
+            "pathPrediction": { "confidence": 0.0, "radiusOfCurve": 0.0 }
+          }
+        },
+        {
+          "id": "SupplementalVehicleExtensions",
+          "value": {
+            "classDetails": {
+              "fuelType": "unknownFuel",
+              "hpmsType": "none",
+              "keyType": 0,
+              "role": "basicVehicle"
+            },
+            "vehicleData": { "height": 1.9 }
+          }
+        }
+      ]
     },
     "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm"
   }

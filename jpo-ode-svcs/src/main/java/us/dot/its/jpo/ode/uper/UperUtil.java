@@ -141,6 +141,8 @@ public class UperUtil {
         findValidStartFlagLocation(hexString, SupportedMessageType.PSM.getStartFlag()));
     flagIndexes.put("SRM",
         findValidStartFlagLocation(hexString, SupportedMessageType.SRM.getStartFlag()));
+    flagIndexes.put("SDSM",
+        findValidStartFlagLocation(hexString, SupportedMessageType.SDSM.getStartFlag()));
 
     int lowestIndex = Integer.MAX_VALUE;
     String messageType = "";

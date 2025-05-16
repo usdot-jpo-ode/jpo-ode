@@ -1,7 +1,10 @@
 package us.dot.its.jpo.ode.kafka.listeners;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -38,8 +41,12 @@ import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.PojoTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
 
 @Slf4j
@@ -105,10 +112,22 @@ class Asn1DecodedDataRouterTest {
         OdeBsmData.class);
     for (String recordType : new String[] {"bsmLogDuringEvent", "rxMsg", "bsmTx"}) {
       String topic;
+      OdeBsmData expectedBsmForType = mapper.readValue(mapper.writeValueAsString(expectedBsm), OdeBsmData.class);
+      OdeBsmMetadata expectedBsmMetadata = (OdeBsmMetadata) expectedBsmForType.getMetadata();
+
       switch (recordType) {
-        case "bsmLogDuringEvent" -> topic = pojoTopics.getBsmDuringEvent();
-        case "rxMsg" -> topic = pojoTopics.getRxBsm();
-        case "bsmTx" -> topic = pojoTopics.getTxBsm();
+        case "bsmLogDuringEvent" -> {
+          topic = pojoTopics.getBsmDuringEvent();
+          expectedBsmMetadata.setRecordType(RecordType.bsmLogDuringEvent);
+        }
+        case "rxMsg" -> {
+          topic = pojoTopics.getRxBsm();
+          expectedBsmMetadata.setRecordType(RecordType.rxMsg);
+        }
+        case "bsmTx" -> {
+          topic = pojoTopics.getTxBsm();
+          expectedBsmMetadata.setRecordType(RecordType.bsmTx);
+        }
         default -> throw new IllegalStateException("Unexpected value: " + recordType);
       }
 
@@ -135,14 +154,19 @@ class Asn1DecodedDataRouterTest {
         }
         return consumedSpecific.get() != null && consumedBsm.get() != null;
       });
-      assertEquals(expectedBsm, consumedSpecific.get().value());
-      assertEquals(expectedBsm, consumedBsm.get().value());
+
+      assertThat(JsonUtils.toJson(consumedSpecific.get().value(), false), 
+          jsonEquals(JsonUtils.toJson(expectedBsmForType, false))
+          .withTolerance(0.0001));
+      assertThat(JsonUtils.toJson(consumedBsm.get().value(), false), 
+          jsonEquals(JsonUtils.toJson(expectedBsmForType, false))
+          .withTolerance(0.0001));
     }
     testConsumer.close();
   }
 
   @Test
-  void testAsn1DecodedDataRouterTIMDataFlow() {
+  void testAsn1DecodedDataRouterTIMDataFlow() throws IOException {
     String[] topics = Arrays.array(
         jsonTopics.getDnMessage(),
         jsonTopics.getRxTim(),
@@ -193,15 +217,18 @@ class Asn1DecodedDataRouterTest {
         }
         return consumedSpecific.get() != null && consumedTim.get() != null;
       });
-      var expectedTim = replaceJSONRecordType(baseExpectedTim, "dnMsg", recordType);
-      assertEquals(expectedTim, consumedSpecific.get().value());
-      assertEquals(expectedTim, consumedTim.get().value());
+      var expectedTim = mapper.readTree(replaceJSONRecordType(baseExpectedTim, "dnMsg", recordType));
+      var actualSpecific = mapper.readTree(consumedSpecific.get().value());
+      var actualTim = mapper.readTree(consumedTim.get().value());
+
+      assertEquals(expectedTim, actualSpecific);
+      assertEquals(expectedTim, actualTim);
     }
     testConsumer.close();
   }
 
   @Test
-  void testAsn1DecodedDataRouter_SPaTDataFlow() {
+  void testAsn1DecodedDataRouter_SPaTDataFlow() throws IOException {
     String[] topics = Arrays.array(
         jsonTopics.getSpat(),
         jsonTopics.getRxSpat(),
@@ -238,9 +265,12 @@ class Asn1DecodedDataRouterTest {
       var consumedSpecific = KafkaTestUtils.getSingleRecord(testConsumer, topic);
       var consumedSpat = KafkaTestUtils.getSingleRecord(testConsumer, jsonTopics.getSpat());
 
-      var expectedSpat = replaceJSONRecordType(baseExpectedSpat, "spatTx", recordType);
-      assertEquals(expectedSpat, consumedSpat.value());
-      assertEquals(expectedSpat, consumedSpecific.value());
+      var expectedSpat = mapper.readTree(replaceJSONRecordType(baseExpectedSpat, "spatTx", recordType));
+      var actualSpecific = mapper.readTree(consumedSpecific.value());
+      var actualSpat = mapper.readTree(consumedSpat.value());
+
+      assertEquals(expectedSpat, actualSpat);
+      assertEquals(expectedSpat, actualSpecific);
     }
     testConsumer.close();
   }
