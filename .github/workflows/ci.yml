@@ -33,7 +33,11 @@ jobs:
           distribution: "temurin"
       - name: Debug Info
         run: |
-          find . -name "SdsmReceiverTest_ValidSdsm_expected.json"
+          find . -iname "SdsmReceiverTest_Valid*_expected.json"
+          echo "Listing test directory contents:"
+          ls -R jpo-ode-svcs/src/test/resources/us/dot/its/jpo/ode/udp
+          echo "Listing all test files:"
+          find . -type f -path "*/src/test/resources/us/dot/its/jpo/ode/udp/*"
       - name: Run Sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
