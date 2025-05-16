@@ -16,10 +16,12 @@
 package us.dot.its.jpo.ode.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @JsonPropertyOrder({ "metadata", "payload" })
 public class OdeData<TMetadata extends OdeMsgMetadata, 

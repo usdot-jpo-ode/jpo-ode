@@ -129,8 +129,8 @@ public class Asn1DecodedDataRouter {
       case "travelerInformation" -> routeTIM(consumerRecord, streamId, recordType);
       case "signalPhaseAndTimingMessage" -> routeSPAT(consumerRecord, recordType);
       case "mapData" -> routeMAP(consumerRecord, recordType);
-      case "signalRequestMessage" -> routeSSM(consumerRecord, recordType);
-      case "roadSideAlertMessage" -> routeSRM(consumerRecord, recordType);
+      case "signalStatusMessage" -> routeSSM(consumerRecord, recordType);
+      case "signalRequestMessage" -> routeSRM(consumerRecord, recordType);
       case "personalSafetyMessage" -> routePSM(consumerRecord, recordType);
       case "sensorDataSharingMessage" -> routeMessageFrame(consumerRecord, jsonTopics.getSdsm());
       case null, default -> log.warn("Unknown message type: {}", messageName);
