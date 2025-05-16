@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'jpo-ode-*'
+  release:
+    types: [published]
 
 jobs:
   build:
