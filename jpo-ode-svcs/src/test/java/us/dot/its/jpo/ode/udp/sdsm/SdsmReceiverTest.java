@@ -104,9 +104,9 @@ class SdsmReceiverTest {
       executorService.submit(sdsmReceiver);
 
       String fileContent = Files.readString(Paths.get(
-          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm.txt"));
+          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt"));
       String expected = Files.readString(Paths.get(
-          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm_expected.json"));
+          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM_expected.json"));
 
       TestUDPClient udpClient = new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort());
       udpClient.send(fileContent);
