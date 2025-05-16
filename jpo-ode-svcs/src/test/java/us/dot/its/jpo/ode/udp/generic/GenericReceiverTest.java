@@ -180,10 +180,10 @@ class GenericReceiverTest {
 
     // Test the SDSM path
     String sdsmFileContent = Files.readString(
-        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm.txt")
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt")
     );
     String expectedSdsm = Files.readString(
-        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSdsm_expected.json")
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM_expected.json")
     );
     udpClient.send(sdsmFileContent);
 
