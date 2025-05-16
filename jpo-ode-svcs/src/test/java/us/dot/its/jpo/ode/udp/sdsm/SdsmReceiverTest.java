@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Clock;
@@ -13,6 +12,7 @@ import java.time.ZoneOffset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +72,19 @@ class SdsmReceiverTest {
   RawEncodedJsonTopics rawEncodedJsonTopics;
 
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
+
+  private ExecutorService executorService;
+  private SdsmReceiver sdsmReceiver;
+  
+  @AfterEach
+  void cleanup() {
+    if (executorService != null) {
+      executorService.shutdown();
+    }
+    if (sdsmReceiver != null) {
+      sdsmReceiver.setStopped(true);
+    }
+  }
 
   @Test
   void testRun() throws Exception {
