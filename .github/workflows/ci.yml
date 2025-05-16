@@ -31,6 +31,9 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+      - name: Debug Info
+        run: |
+          find . -name "SdsmReceiverTest_ValidSdsm_expected.json"
       - name: Run Sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
