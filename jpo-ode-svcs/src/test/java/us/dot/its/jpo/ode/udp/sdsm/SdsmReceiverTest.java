@@ -51,7 +51,7 @@ import org.apache.kafka.clients.admin.NewTopic;
         TestMetricsConfig.class,
     },
     properties = {
-        "ode.receivers.sdsm.receiver-port=12412",
+        "ode.receivers.sdsm.receiver-port=12413",
         "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"
     }
 )
