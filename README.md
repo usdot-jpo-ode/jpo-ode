@@ -92,6 +92,7 @@ Supported message types:
 - SRM
 - SSM
 - PSM
+- SDSM
 
 1. Navigate to the [UDP sender Python scripts](<./scripts/tests/>) in the project.
 2. Ensure the environment variable "DOCKER_HOST_IP" has been set in the shell that will be running the script. This must be set to the same IP that the ODE deployments are using.
