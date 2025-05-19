@@ -15,28 +15,53 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+/**
+ * Specialized payload container for ASN.1 encoded ODE messages.
+ * Extends OdeMsgPayload to handle ASN.1 specific data.
+ */
 public class OdeAsn1Payload extends OdeMsgPayload<OdeObject> {
    private static final long serialVersionUID = -7540671640610460741L;
 
-    public OdeAsn1Payload() {
+   public OdeAsn1Payload() {
       super();
    }
 
+   /**
+    * Constructs an ASN.1 payload with the given ODE object data.
+    *
+    * @param data the ODE object containing ASN.1 data
+    */
    public OdeAsn1Payload(OdeObject data) {
       super(data);
    }
 
+   /**
+    * Constructs an ASN.1 payload with specified data type and ODE object.
+    *
+    * @param dataType the type of the ASN.1 data
+    * @param data     the ODE object containing ASN.1 data
+    */
    public OdeAsn1Payload(String dataType, OdeObject data) {
       super(dataType, data);
    }
 
+   /**
+    * Constructs an ASN.1 payload from hex-encoded byte array.
+    *
+    * @param bytes the hex-encoded byte array containing ASN.1 data
+    */
    public OdeAsn1Payload(OdeHexByteArray bytes) {
-        super(bytes);
-        this.setData(bytes);
-    }
+      super(bytes);
+      this.setData(bytes);
+   }
 
-    public OdeAsn1Payload(byte[] bytes) {
-       this(new OdeHexByteArray(bytes));
+   /**
+    * Constructs an ASN.1 payload from raw bytes.
+    *
+    * @param bytes the raw byte array containing ASN.1 data
+    */
+   public OdeAsn1Payload(byte[] bytes) {
+      this(new OdeHexByteArray(bytes));
    }
 
 }

@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.udp.sdsm;
 
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,19 +42,16 @@ import org.apache.kafka.clients.admin.NewTopic;
 
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties
-@SpringBootTest(
-    classes = {
-        OdeKafkaProperties.class,
-        UDPReceiverProperties.class,
-        KafkaProducerConfig.class,
-        SerializationConfig.class,
-        TestMetricsConfig.class,
-    },
-    properties = {
-        "ode.receivers.sdsm.receiver-port=12413",
-        "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"
-    }
-)
+@SpringBootTest(classes = {
+    OdeKafkaProperties.class,
+    UDPReceiverProperties.class,
+    KafkaProducerConfig.class,
+    SerializationConfig.class,
+    TestMetricsConfig.class,
+}, properties = {
+    "ode.receivers.sdsm.receiver-port=12413",
+    "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"
+})
 @ContextConfiguration(classes = {
     UDPReceiverProperties.class,
     RawEncodedJsonTopics.class, KafkaProperties.class
@@ -75,7 +72,7 @@ class SdsmReceiverTest {
 
   private ExecutorService executorService;
   private SdsmReceiver sdsmReceiver;
-  
+
   @AfterEach
   void cleanup() {
     if (executorService != null) {
@@ -134,4 +131,3 @@ class SdsmReceiverTest {
     }
   }
 }
-

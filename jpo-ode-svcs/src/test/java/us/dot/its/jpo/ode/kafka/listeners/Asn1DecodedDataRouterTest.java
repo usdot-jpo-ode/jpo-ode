@@ -1,10 +1,9 @@
 package us.dot.its.jpo.ode.kafka.listeners;
 
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -43,30 +42,26 @@ import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
 
 @Slf4j
-@SpringBootTest(
-    classes = {
-        KafkaProperties.class,
-        PojoTopics.class,
-        JsonTopics.class,
-        Asn1CoderTopics.class,
-        KafkaConsumerConfig.class,
-        KafkaProducerConfig.class,
-        RawEncodedJsonTopics.class,
-        Asn1CoderTopics.class,
-        OdeKafkaProperties.class,
-        Asn1DecodedDataRouter.class,
-        SerializationConfig.class,
-        TestMetricsConfig.class,
-    },
-    properties = {"ode.kafka.disabled-topics="}
-)
+@SpringBootTest(classes = {
+    KafkaProperties.class,
+    PojoTopics.class,
+    JsonTopics.class,
+    Asn1CoderTopics.class,
+    KafkaConsumerConfig.class,
+    KafkaProducerConfig.class,
+    RawEncodedJsonTopics.class,
+    Asn1CoderTopics.class,
+    OdeKafkaProperties.class,
+    Asn1DecodedDataRouter.class,
+    SerializationConfig.class,
+    TestMetricsConfig.class,
+}, properties = { "ode.kafka.disabled-topics=" })
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {
     UDPReceiverProperties.class, OdeKafkaProperties.class,
@@ -93,8 +88,7 @@ class Asn1DecodedDataRouterTest {
         pojoTopics.getBsm(),
         pojoTopics.getBsmDuringEvent(),
         pojoTopics.getRxBsm(),
-        pojoTopics.getTxBsm()
-    );
+        pojoTopics.getTxBsm());
     EmbeddedKafkaHolder.addTopics(topics);
 
     var consumerProps = KafkaTestUtils.consumerProps(
@@ -105,12 +99,11 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String decodedBsmXml =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-bsm.xml");
+    String decodedBsmXml = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-bsm.xml");
     OdeBsmData expectedBsm = mapper.readValue(
         new File("src/test/resources/us/dot/its/jpo/ode/services/asn1/expected-bsm.json"),
         OdeBsmData.class);
-    for (String recordType : new String[] {"bsmLogDuringEvent", "rxMsg", "bsmTx"}) {
+    for (String recordType : new String[] { "bsmLogDuringEvent", "rxMsg", "bsmTx" }) {
       String topic;
       OdeBsmData expectedBsmForType = mapper.readValue(mapper.writeValueAsString(expectedBsm), OdeBsmData.class);
       OdeBsmMetadata expectedBsmMetadata = (OdeBsmMetadata) expectedBsmForType.getMetadata();
@@ -135,8 +128,7 @@ class Asn1DecodedDataRouterTest {
       var uniqueKey = UUID.randomUUID().toString();
       kafkaStringTemplate.send(asn1CoderTopics.getDecoderOutput(), uniqueKey, inputData);
 
-      AtomicReference<ConsumerRecord<String, OdeBsmData>> consumedSpecific =
-          new AtomicReference<>();
+      AtomicReference<ConsumerRecord<String, OdeBsmData>> consumedSpecific = new AtomicReference<>();
       AtomicReference<ConsumerRecord<String, OdeBsmData>> consumedBsm = new AtomicReference<>();
       Awaitility.await().until(() -> {
         var records = KafkaTestUtils.getRecords(testConsumer);
@@ -155,12 +147,12 @@ class Asn1DecodedDataRouterTest {
         return consumedSpecific.get() != null && consumedBsm.get() != null;
       });
 
-      assertThat(JsonUtils.toJson(consumedSpecific.get().value(), false), 
+      assertThat(JsonUtils.toJson(consumedSpecific.get().value(), false),
           jsonEquals(JsonUtils.toJson(expectedBsmForType, false))
-          .withTolerance(0.0001));
-      assertThat(JsonUtils.toJson(consumedBsm.get().value(), false), 
+              .withTolerance(0.0001));
+      assertThat(JsonUtils.toJson(consumedBsm.get().value(), false),
           jsonEquals(JsonUtils.toJson(expectedBsmForType, false))
-          .withTolerance(0.0001));
+              .withTolerance(0.0001));
     }
     testConsumer.close();
   }
@@ -170,12 +162,10 @@ class Asn1DecodedDataRouterTest {
     String[] topics = Arrays.array(
         jsonTopics.getDnMessage(),
         jsonTopics.getRxTim(),
-        jsonTopics.getTim()
-    );
+        jsonTopics.getTim());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-tim.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-tim.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "timDecoderTest", "false", embeddedKafka);
@@ -185,9 +175,8 @@ class Asn1DecodedDataRouterTest {
 
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedTim =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-tim.json");
-    for (String recordType : new String[] {"dnMsg", "rxMsg"}) {
+    String baseExpectedTim = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-tim.json");
+    for (String recordType : new String[] { "dnMsg", "rxMsg" }) {
       String topic;
       switch (recordType) {
         case "rxMsg" -> topic = jsonTopics.getRxTim();
@@ -233,12 +222,10 @@ class Asn1DecodedDataRouterTest {
         jsonTopics.getSpat(),
         jsonTopics.getRxSpat(),
         jsonTopics.getDnMessage(),
-        pojoTopics.getTxSpat()
-    );
+        pojoTopics.getTxSpat());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-spat.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-spat.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "spatDecoderTest", "false", embeddedKafka);
@@ -247,9 +234,8 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedSpat =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-spat.json");
-    for (String recordType : new String[] {"spatTx", "rxMsg", "dnMsg"}) {
+    String baseExpectedSpat = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-spat.json");
+    for (String recordType : new String[] { "spatTx", "rxMsg", "dnMsg" }) {
       String topic;
       switch (recordType) {
         case "rxMsg" -> topic = jsonTopics.getRxSpat();
@@ -279,12 +265,10 @@ class Asn1DecodedDataRouterTest {
   void testAsn1DecodedDataRouter_SSMDataFlow() {
     String[] topics = Arrays.array(
         jsonTopics.getSsm(),
-        pojoTopics.getSsm()
-    );
+        pojoTopics.getSsm());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-ssm.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-ssm.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "ssmDecoderTest", "false", embeddedKafka);
@@ -293,9 +277,8 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedSsm =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-ssm.json");
-    for (String recordType : new String[] {"ssmTx", "unsupported"}) {
+    String baseExpectedSsm = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-ssm.json");
+    for (String recordType : new String[] { "ssmTx", "unsupported" }) {
 
       String inputData = replaceRecordType(baseTestData, "ssmTx", recordType);
       var uniqueKey = UUID.randomUUID().toString();
@@ -318,12 +301,10 @@ class Asn1DecodedDataRouterTest {
   void testAsn1DecodedDataRouter_SRMDataFlow() {
     String[] topics = Arrays.array(
         jsonTopics.getSrm(),
-        pojoTopics.getTxSrm()
-    );
+        pojoTopics.getTxSrm());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-srm.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-srm.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "srmDecoderTest", "false", embeddedKafka);
@@ -332,9 +313,8 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedSrm =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-srm.json");
-    for (String recordType : new String[] {"srmTx", "unsupported"}) {
+    String baseExpectedSrm = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-srm.json");
+    for (String recordType : new String[] { "srmTx", "unsupported" }) {
 
       String inputData = replaceRecordType(baseTestData, "srmTx", recordType);
       var uniqueKey = UUID.randomUUID().toString();
@@ -357,12 +337,10 @@ class Asn1DecodedDataRouterTest {
   void testAsn1DecodedDataRouter_PSMDataFlow() {
     String[] topics = Arrays.array(
         jsonTopics.getPsm(),
-        pojoTopics.getTxPsm()
-    );
+        pojoTopics.getTxPsm());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-psm.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-psm.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "psmDecoderTest", "false", embeddedKafka);
@@ -371,9 +349,8 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedPsm =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-psm.json");
-    for (String recordType : new String[] {"psmTx", "unsupported"}) {
+    String baseExpectedPsm = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-psm.json");
+    for (String recordType : new String[] { "psmTx", "unsupported" }) {
 
       String inputData = replaceRecordType(baseTestData, "psmTx", recordType);
       var uniqueKey = UUID.randomUUID().toString();
@@ -396,12 +373,10 @@ class Asn1DecodedDataRouterTest {
   void testAsn1DecodedDataRouter_MAPDataFlow() {
     String[] topics = Arrays.array(
         jsonTopics.getMap(),
-        pojoTopics.getTxMap()
-    );
+        pojoTopics.getTxMap());
     EmbeddedKafkaHolder.addTopics(topics);
 
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-map.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-map.xml");
 
     var consumerProps = KafkaTestUtils.consumerProps(
         "mapDecoderTest", "false", embeddedKafka);
@@ -410,9 +385,8 @@ class Asn1DecodedDataRouterTest {
     var testConsumer = consumerFactory.createConsumer();
     embeddedKafka.consumeFromEmbeddedTopics(testConsumer, topics);
 
-    String baseExpectedMap =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-map.json");
-    for (String recordType : new String[] {"mapTx", "unsupported"}) {
+    String baseExpectedMap = loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-map.json");
+    for (String recordType : new String[] { "mapTx", "unsupported" }) {
 
       String inputData = replaceRecordType(baseTestData, "mapTx", recordType);
       var uniqueKey = UUID.randomUUID().toString();
@@ -433,8 +407,7 @@ class Asn1DecodedDataRouterTest {
 
   @Test
   void testAsn1DecodedDataRouterException() {
-    String baseTestData =
-        loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-failed-encoding.xml");
+    String baseTestData = loadFromResource("us/dot/its/jpo/ode/services/asn1/decoder-output-failed-encoding.xml");
 
     var uniqueKey = UUID.randomUUID().toString();
     ConsumerRecord<String, String> consumedRecord = new ConsumerRecord<>(

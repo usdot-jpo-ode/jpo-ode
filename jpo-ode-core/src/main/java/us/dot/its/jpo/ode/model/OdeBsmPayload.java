@@ -21,25 +21,25 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class OdeBsmPayload extends OdeMsgPayload<OdeObject> {
 
-    private static final long serialVersionUID = 7061315628111448390L;
+  private static final long serialVersionUID = 7061315628111448390L;
 
-    public OdeBsmPayload() {
-        this(new J2735Bsm());
-    }
+  public OdeBsmPayload() {
+    this(new J2735Bsm());
+  }
 
-    @JsonCreator
-    public OdeBsmPayload( @JsonProperty("data") J2735Bsm bsm) {
-        super(bsm);
-        this.setData(bsm);
-    }
+  @JsonCreator
+  public OdeBsmPayload(@JsonProperty("data") J2735Bsm bsm) {
+    super(bsm);
+    this.setData(bsm);
+  }
 
-    @JsonProperty("data")
-    public J2735Bsm getBsm() {
-        return (J2735Bsm) getData();
-    }
+  @JsonProperty("data")
+  public J2735Bsm getBsm() {
+    return (J2735Bsm) getData();
+  }
 
-    public void setBsm(J2735Bsm bsm) {
-        setData(bsm);
-    }
+  public void setBsm(J2735Bsm bsm) {
+    setData(bsm);
+  }
 
 }
