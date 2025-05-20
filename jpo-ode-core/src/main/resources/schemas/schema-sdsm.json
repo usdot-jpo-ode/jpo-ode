@@ -1147,13 +1147,33 @@
                                         "sourceID": {
                                             "$ref": "#/definitions/TemporaryID"
                                         }
-                                    }
+                                    },
+                                    "required": [
+                                        "equipmentType",
+                                        "msgCnt",
+                                        "objects",
+                                        "refPos",
+                                        "refPosXYConf",
+                                        "sDSMTimeStamp",
+                                        "sourceID"
+                                    ]
                                 }
-                            }
+                            },
+                            "required": [
+                                "SensorDataSharingMessage"
+                            ]
                         }
-                    }
+                    },
+                    "required": [
+                        "messageId",
+                        "value"
+                    ]
                 }
-            }
+            },
+            "required": [
+                "dataType",
+                "data"
+            ]
         }
     }
 }
