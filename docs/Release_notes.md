@@ -1,6 +1,14 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 4.1.1, released May 2025
+----------------------------------------
+### **Summary**
+This release fixes a bug with the artifact-publish.yml workflow where it failed to trigger on the release creation.
+
+Enhancements in this release:
+- [USDOT PR 577](https://github.com/usdot-jpo-ode/jpo-ode/pull/577): Fix GitHub Artifacts Build
+
 Version 4.1.0, released May 2025
 ----------------------------------------
 ### **Summary**
