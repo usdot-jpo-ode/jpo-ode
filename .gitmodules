@@ -15,7 +15,7 @@
 	url = https://github.com/usdot-jpo-ode/ode-output-validator-library.git
 [submodule "jpo-utils"]
 	path = jpo-utils
-	url = https://github.com/CDOT-CV/jpo-utils.git
+	url = https://github.com/usdot-jpo-ode/jpo-utils.git
 [submodule "jpo-asn-pojos"]
 	path = jpo-asn-pojos
 	url = https://github.com/usdot-jpo-ode/jpo-asn-pojos.git
