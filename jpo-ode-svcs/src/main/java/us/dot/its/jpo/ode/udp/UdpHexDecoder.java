@@ -13,6 +13,7 @@ import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMapMetadata;
 import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdePsmMetadata;
 import us.dot.its.jpo.ode.model.OdePsmMetadata.PsmSource;
@@ -29,7 +30,6 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 
 /**
  * The `UdpHexDecoder` class provides functionalities to decode UDP DatagramPackets into specific
@@ -37,11 +37,13 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
  * packet payloads into ASN.1 payloads for various message types such as MAP, SPAT, TIM, BSM, SSM,
  * SRM, and PSM.
  *
- * <p>The class logs details about the packet's origin and ensures the payload contains the correct
+ * <p>
+ * The class logs details about the packet's origin and ensures the payload contains the correct
  * message type start flag. It provides methods to build JSON objects encapsulating metadata about
  * each packet's origin, source, record type, and security information.
  *
- * <p>Note that this class cannot be instantiated.
+ * <p>
+ * Note that this class cannot be instantiated.
  */
 @Slf4j
 public class UdpHexDecoder {
@@ -55,15 +57,14 @@ public class UdpHexDecoder {
    * {@link OdeAsn1Payload} object. The method validates that the payload contains the necessary
    * start flag for the specified message type.
    *
-   * @param packet  the DatagramPacket containing the data
+   * @param packet the DatagramPacket containing the data
    * @param msgType the type of message expected in the payload
    * @return the extracted OdeAsn1Payload from the packet
    * @throws InvalidPayloadException if the payload is null or does not contain the expected start
-   *                                 flag
+   *         flag
    */
   public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet,
-                                                   SupportedMessageType msgType)
-      throws InvalidPayloadException {
+      SupportedMessageType msgType) throws InvalidPayloadException {
     // retrieve the buffer from the packet
     byte[] buffer = packet.getData();
     if (buffer == null) {
@@ -151,8 +152,8 @@ public class UdpHexDecoder {
   }
 
   /**
-   * Converts the data from the given {@link DatagramPacket} into a TIM
-   * message. It extracts metadata and payload, then structures them into an {@link OdeAsn1Data} object
+   * Converts the data from the given {@link DatagramPacket} into a TIM message. It extracts
+   * metadata and payload, then structures them into an {@link OdeAsn1Data} object
    *
    * @param packet the DatagramPacket containing the TIM data
    * @return an {@link OdeAsn1Data} object representing the TIM message
@@ -199,9 +200,8 @@ public class UdpHexDecoder {
     bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
 
     ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-    OdeLogMsgMetadataLocation locationData =
-        new OdeLogMsgMetadataLocation("unavailable", "unavailable", "unavailable", "unavailable",
-            "unavailable");
+    OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation("unavailable",
+        "unavailable", "unavailable", "unavailable", "unavailable");
     receivedMessageDetails.setRxSource(RxSource.RSU);
     receivedMessageDetails.setLocationData(locationData);
     bsmMetadata.setReceivedMessageDetails(receivedMessageDetails);
@@ -306,7 +306,8 @@ public class UdpHexDecoder {
 
   public static String buildJsonSdsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-        return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SDSM, RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU), false);
+    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SDSM,
+        RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU), false);
   }
 
   /**
@@ -325,14 +326,26 @@ public class UdpHexDecoder {
   }
 
   public static String buildJsonMessageFrameFromPacket(DatagramPacket packet,
-      SupportedMessageType messageType, RecordType recordType, Source source, GeneratedBy generatedBy)
-        throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, messageType, recordType, source, generatedBy), false);
+      SupportedMessageType messageType, RecordType recordType, Source source,
+      GeneratedBy generatedBy) throws InvalidPayloadException {
+    return JsonUtils.toJson(
+        buildAsn1DataFromPacket(packet, messageType, recordType, source, generatedBy), false);
   }
 
+  /**
+   * Builds an ASN.1 data object from a given DatagramPacket.
+   *
+   * @param packet The DatagramPacket containing the data
+   * @param messageType The type of message to be decoded
+   * @param recordType The type of record to be set in the metadata
+   * @param source The source of the message
+   * @param generatedBy The entity that generated the message
+   * @return The ASN.1 data object
+   * @throws InvalidPayloadException if the payload extraction fails
+   */
   public static OdeAsn1Data buildAsn1DataFromPacket(DatagramPacket packet,
-      SupportedMessageType messageType, RecordType recordType, Source source, GeneratedBy generatedBy)
-      throws InvalidPayloadException {
+      SupportedMessageType messageType, RecordType recordType, Source source,
+      GeneratedBy generatedBy) throws InvalidPayloadException {
 
     String senderIp = packet.getAddress().getHostAddress();
     int senderPort = packet.getPort();
@@ -353,5 +366,5 @@ public class UdpHexDecoder {
 
     return new OdeAsn1Data(metadata, payload);
   }
-  
+
 }

@@ -52,7 +52,7 @@ import us.dot.its.jpo.ode.wrapper.serdes.MessagingDeserializer;
     classes = {KafkaProperties.class, PojoTopics.class, JsonTopics.class, Asn1CoderTopics.class,
         KafkaConsumerConfig.class, KafkaProducerConfig.class, RawEncodedJsonTopics.class,
         Asn1CoderTopics.class, OdeKafkaProperties.class, Asn1DecodedDataRouter.class,
-        SerializationConfig.class, TestMetricsConfig.class,},
+        SerializationConfig.class, TestMetricsConfig.class},
     properties = {"ode.kafka.disabled-topics="})
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {UDPReceiverProperties.class, OdeKafkaProperties.class,

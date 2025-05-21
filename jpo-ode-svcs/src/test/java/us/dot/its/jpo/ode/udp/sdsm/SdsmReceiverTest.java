@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
@@ -38,24 +38,15 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-import org.apache.kafka.clients.admin.NewTopic;
-
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties
-@SpringBootTest(classes = {
-    OdeKafkaProperties.class,
-    UDPReceiverProperties.class,
-    KafkaProducerConfig.class,
-    SerializationConfig.class,
-    TestMetricsConfig.class,
-}, properties = {
-    "ode.receivers.sdsm.receiver-port=12413",
-    "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"
-})
-@ContextConfiguration(classes = {
-    UDPReceiverProperties.class,
-    RawEncodedJsonTopics.class, KafkaProperties.class
-})
+@SpringBootTest(
+    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class,
+        SerializationConfig.class, TestMetricsConfig.class,},
+    properties = {"ode.receivers.sdsm.receiver-port=12413",
+        "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"})
+@ContextConfiguration(
+    classes = {UDPReceiverProperties.class, RawEncodedJsonTopics.class, KafkaProperties.class})
 @DirtiesContext
 class SdsmReceiverTest {
 
@@ -91,8 +82,8 @@ class SdsmReceiverTest {
       // Ignore as we're only ensuring topics exist
     }
 
-    final Clock prevClock = DateTimeUtils.setClock(
-        Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
+    final Clock prevClock = DateTimeUtils
+        .setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
 
     try {
       SdsmReceiver sdsmReceiver = new SdsmReceiver(udpReceiverProperties.getSdsm(), kafkaTemplate,
@@ -100,16 +91,16 @@ class SdsmReceiverTest {
       ExecutorService executorService = Executors.newCachedThreadPool();
       executorService.submit(sdsmReceiver);
 
-      String fileContent = Files.readString(Paths.get(
-          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt"));
+      String fileContent = Files.readString(Paths
+          .get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt"));
       String expected = Files.readString(Paths.get(
           "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM_expected.json"));
 
-      TestUDPClient udpClient = new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort());
+      TestUDPClient udpClient =
+          new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort());
       udpClient.send(fileContent);
 
-      var consumerProps = KafkaTestUtils.consumerProps(
-          "SdsmReceiverTest", "true", embeddedKafka);
+      var consumerProps = KafkaTestUtils.consumerProps("SdsmReceiverTest", "true", embeddedKafka);
       var cf = new DefaultKafkaConsumerFactory<Integer, String>(consumerProps);
       var consumer = cf.createConsumer();
       embeddedKafka.consumeFromAnEmbeddedTopic(consumer, rawEncodedJsonTopics.getSdsm());
@@ -125,7 +116,8 @@ class SdsmReceiverTest {
       expectedJson.getJSONObject("metadata").remove("serialId");
       producedJson.getJSONObject("metadata").remove("serialId");
 
-      assertThat(JsonUtils.toJson(producedJson, false), jsonEquals(JsonUtils.toJson(expectedJson, false)));
+      assertThat(JsonUtils.toJson(producedJson, false),
+          jsonEquals(JsonUtils.toJson(expectedJson, false)));
     } finally {
       DateTimeUtils.setClock(prevClock);
     }

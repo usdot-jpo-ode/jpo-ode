@@ -3,10 +3,16 @@ package us.dot.its.jpo.ode.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Represents the metadata of a message frame.
+ */
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class OdeMessageFrameMetadata extends OdeLogMetadata {
 
+  /**
+   * Enum representing the source of a message frame.
+   */
   public enum Source {
     RSU, V2X, MMITSS, EV, RV, unknown
   }

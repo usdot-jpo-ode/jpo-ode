@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+/**
+ * Represents the data of a message frame.
+ */
 public class OdeMessageFrameData extends OdeData<OdeMsgMetadata, OdeMessageFramePayload> {
 
   public OdeMessageFrameData(OdeMsgMetadata metadata, OdeMessageFramePayload payload) {
