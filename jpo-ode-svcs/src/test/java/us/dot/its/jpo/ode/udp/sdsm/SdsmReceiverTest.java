@@ -42,7 +42,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 @EnableConfigurationProperties
 @SpringBootTest(
     classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class,
-        SerializationConfig.class, TestMetricsConfig.class,},
+        SerializationConfig.class, TestMetricsConfig.class},
     properties = {"ode.receivers.sdsm.receiver-port=12413",
         "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"})
 @ContextConfiguration(
