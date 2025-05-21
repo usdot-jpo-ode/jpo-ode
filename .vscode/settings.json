@@ -3,6 +3,5 @@
   "java.debug.settings.onBuildFailureProceed": true,
   "editor.tabSize": 2,
   "java.checkstyle.configuration": "${workspaceFolder}\\checkstyle.xml",
-  "java.format.settings.url": ".vscode/java-formatter.xml",
-  "editor.formatOnSave": true
+  "java.format.settings.url": ".vscode/java-formatter.xml"
 }

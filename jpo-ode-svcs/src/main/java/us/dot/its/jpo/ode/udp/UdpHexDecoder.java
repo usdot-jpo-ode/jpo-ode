@@ -37,13 +37,11 @@ import us.dot.its.jpo.ode.util.JsonUtils;
  * packet payloads into ASN.1 payloads for various message types such as MAP, SPAT, TIM, BSM, SSM,
  * SRM, and PSM.
  *
- * <p>
- * The class logs details about the packet's origin and ensures the payload contains the correct
+ * <p>The class logs details about the packet's origin and ensures the payload contains the correct
  * message type start flag. It provides methods to build JSON objects encapsulating metadata about
  * each packet's origin, source, record type, and security information.
  *
- * <p>
- * Note that this class cannot be instantiated.
+ * <p>Note that this class cannot be instantiated.
  */
 @Slf4j
 public class UdpHexDecoder {
