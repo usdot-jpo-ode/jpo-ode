@@ -1,21 +1,28 @@
 package us.dot.its.jpo.ode.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the OdeMessageFrameData class.
+ */
 public class OdeMessageFrameDataTest {
 
   private static final String SAMPLE_SDSM_FILE = "src/test/resources/json/sample-sdsm.json";
   private final ObjectMapper objectMapper = new ObjectMapper();
 
+  /**
+   * Test proper serialization and deserialization of SDSM data.
+
+   * @throws IOException if there is an error reading the test file
+   */
   @Test
   public void testSdsmSerializationDeserialization() throws IOException {
     // Read the sample JSON file
