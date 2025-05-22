@@ -31,7 +31,7 @@
     <asn1>0029250A010C0C0A301FA04EDB8816396666F30C34000A00002C43E94BBA4200020002EC00280002</asn1>
     <source>RSU</source>
     <originIp>127.0.0.1</originIp>
-    <certPresent>false</certPresent>
+    <isCertPresent>false</isCertPresent>
   </metadata>
   <payload>
     <dataType>MessageFrame</dataType>
