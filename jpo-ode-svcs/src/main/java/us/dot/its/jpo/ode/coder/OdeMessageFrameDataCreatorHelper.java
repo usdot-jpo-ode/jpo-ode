@@ -39,7 +39,7 @@ public class OdeMessageFrameDataCreatorHelper {
     if (metadataNode instanceof ObjectNode object) {
       object.remove(OdeMsgMetadata.ENCODINGS_STRING);
 
-      // Spat header file does not have a location and use predefined set required RxSource
+      // Header file does not have a location and use predefined set required RxSource
       ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
       receivedMessageDetails.setRxSource(RxSource.NA);
 
