@@ -3,7 +3,17 @@ LABEL org.opencontainers.image.authors="583114@bah.com"
 
 WORKDIR /home
 
-# Copy only the files needed to avoid putting all sorts of junk from your local env on to the image
+COPY ./jpo-asn-pojos/pom.xml ./jpo-asn-pojos/
+
+COPY ./jpo-asn-pojos/jpo-asn-runtime/pom.xml ./jpo-asn-pojos/jpo-asn-runtime/
+COPY ./jpo-asn-pojos/jpo-asn-runtime/src ./jpo-asn-pojos/jpo-asn-runtime/src
+
+COPY ./jpo-asn-pojos/jpo-asn-j2735-2024/pom.xml ./jpo-asn-pojos/jpo-asn-j2735-2024/
+COPY ./jpo-asn-pojos/jpo-asn-j2735-2024/src ./jpo-asn-pojos/jpo-asn-j2735-2024/src
+
+# First build and install the jpo-asn-pojos modules
+RUN cd jpo-asn-pojos && mvn clean install -DskipTests
+
 COPY ./pom.xml ./
 COPY ./jpo-ode-common/pom.xml ./jpo-ode-common/
 COPY ./jpo-ode-common/src ./jpo-ode-common/src
@@ -14,7 +24,8 @@ COPY ./jpo-ode-core/src ./jpo-ode-core/src/
 COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/
 COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 
-RUN mvn clean package -DskipTests
+# Then build the rest of the project
+RUN mvn -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 

@@ -48,6 +48,7 @@ public class XmlUtils {
 
   private XmlMapper xmlMapper = new XmlMapper();
   private static XmlMapper staticXmlMapper = new XmlMapper();
+  private static final XmlMapper plainXmlMapper = new XmlMapper();
 
   static {
     var builder = new Builder(staticXmlMapper);
@@ -251,6 +252,10 @@ public class XmlUtils {
 
   public static XmlMapper getStaticXmlMapper() {
     return staticXmlMapper;
+  }
+
+  public static XmlMapper getPlainXmlMapper() {
+    return plainXmlMapper;
   }
 
 }

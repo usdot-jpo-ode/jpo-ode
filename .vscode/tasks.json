@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "run-kafka_full-adm-aem",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true,
+          "profiles": ["adm", "aem", "kafka_full"],
+          "removeOrphans": true
+        },
+        "files": ["${workspaceFolder}/docker-compose.yml"],
+        "envFile": "${workspaceFolder}/.env"
+      }
+    }
+  ]
+}

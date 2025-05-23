@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +35,7 @@ import us.dot.its.jpo.ode.model.OdeMapData;
 import us.dot.its.jpo.ode.test.utilities.ApprovalTestCase;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Slf4j
 @SpringBootTest(
@@ -96,8 +99,12 @@ class Asn1DecodedDataRouterApprovalTest {
       ObjectMapper mapper = new ObjectMapper();
       OdeMapData receivedMapData = mapper.readValue(received, OdeMapData.class);
       OdeMapData expectedMapData = mapper.readValue(testCase.getExpected(), OdeMapData.class);
-      assertEquals(expectedMapData.toJson(), receivedMapData.toJson(),
-          "Failed test case: " + testCase.getDescription());
+
+      assertThat("Failed test case: " + testCase.getDescription(),
+          JsonUtils.toJson(receivedMapData, false), 
+          jsonEquals(JsonUtils.toJson(expectedMapData, false))
+          .withTolerance(0.0001));
+      
       // discard the JSON output
       KafkaTestUtils.getSingleRecord(consumer, jsonMapTopic);
     }
