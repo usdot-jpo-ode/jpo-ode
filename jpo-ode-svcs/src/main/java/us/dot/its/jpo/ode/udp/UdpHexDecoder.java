@@ -302,6 +302,14 @@ public class UdpHexDecoder {
     return JsonUtils.toJson(new OdeAsn1Data(psmMetadata, psmPayload), false);
   }
 
+  /**
+   * Converts the data from the given {@link DatagramPacket} into a JSON string representing a PSM
+   * message. It extracts metadata and payload, then structures them into a JSON format.
+   *
+   * @param packet the DatagramPacket containing the SDSM data
+   * @return a JSON string representing the SDSM message
+   * @throws InvalidPayloadException if the payload extraction fails
+   */
   public static String buildJsonSdsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
     return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SDSM,
@@ -321,13 +329,6 @@ public class UdpHexDecoder {
     byte[] relevantPayload = new byte[length];
     System.arraycopy(buffer, offset, relevantPayload, 0, length);
     return relevantPayload;
-  }
-
-  public static String buildJsonMessageFrameFromPacket(DatagramPacket packet,
-      SupportedMessageType messageType, RecordType recordType, Source source,
-      GeneratedBy generatedBy) throws InvalidPayloadException {
-    return JsonUtils.toJson(
-        buildAsn1DataFromPacket(packet, messageType, recordType, source, generatedBy), false);
   }
 
   /**
