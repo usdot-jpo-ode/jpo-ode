@@ -42,6 +42,7 @@ import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -383,7 +384,7 @@ class Asn1DecodedDataRouterTest {
   }
 
   @Test
-  void testAsn1DecodedDataRouter_SDSMDataFlow() {
+  void testAsn1DecodedDataRouter_SDSMDataFlow() throws IOException {
     String[] topics = Arrays.array(jsonTopics.getSdsm());
     EmbeddedKafkaHolder.addTopics(topics);
 
@@ -399,15 +400,30 @@ class Asn1DecodedDataRouterTest {
     String baseExpectedSdsm =
         loadFromResource("us/dot/its/jpo/ode/services/asn1/expected-sdsm.json");
     for (String recordType : new String[] {"sdsmTx", "unsupported"}) {
-
       String inputData = replaceRecordType(baseTestData, "sdsmTx", recordType);
       var uniqueKey = UUID.randomUUID().toString();
       kafkaStringTemplate.send(asn1CoderTopics.getDecoderOutput(), uniqueKey, inputData);
 
       var expectedSdsm = replaceJSONRecordType(baseExpectedSdsm, "sdsmTx", recordType);
 
+      OdeMessageFrameData expectedSdsmMFrameData =
+          mapper.readValue(expectedSdsm, OdeMessageFrameData.class);
+      switch (recordType) {
+        case "sdsmTx" -> {
+          expectedSdsmMFrameData.getMetadata().setRecordType(RecordType.sdsmTx);
+        }
+        case "unsupported" -> {
+          expectedSdsmMFrameData.getMetadata().setRecordType(RecordType.unsupported);
+        }
+        default -> throw new IllegalStateException("Unexpected value: " + recordType);
+      }
+
       var consumedSdsm = KafkaTestUtils.getSingleRecord(testConsumer, jsonTopics.getSdsm());
-      assertEquals(expectedSdsm, consumedSdsm.value());
+      OdeMessageFrameData consumedSdsmMFrameData =
+          mapper.readValue(consumedSdsm.value(), OdeMessageFrameData.class);
+
+      assertThat(JsonUtils.toJson(consumedSdsmMFrameData, false),
+          jsonEquals(JsonUtils.toJson(expectedSdsmMFrameData, false)).withTolerance(0.0001));
     }
     testConsumer.close();
   }

@@ -131,19 +131,19 @@ public class Asn1DecodedDataRouter {
       case "signalRequestMessage" -> routeSRM(consumerRecord, recordType);
       case "personalSafetyMessage" -> routePSM(consumerRecord, recordType);
       case "sensorDataSharingMessage" -> routeMessageFrame(consumerRecord, jsonTopics.getSdsm());
-      case null, default -> log.warn("Unknown message type: {}", messageName);
+      default -> log.warn("Unknown message type: {}", messageName);
     }
   }
 
   private void routePSM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)
       throws XmlUtils.XmlUtilsException, JsonMappingException, JsonProcessingException,
       IOException {
-    OdePsmData odePsmData = OdePsmDataCreatorHelper.createOdePsmData(consumerRecord.value());
+    String odePsmData = OdePsmDataCreatorHelper.createOdePsmData(consumerRecord.value()).toString();
     if (recordType == RecordType.psmTx) {
-      kafkaTemplate.send(pojoTopics.getTxPsm(), consumerRecord.key(), odePsmData.toString());
+      kafkaTemplate.send(pojoTopics.getTxPsm(), consumerRecord.key(), odePsmData);
     }
     // Send all PSMs also to OdePsmJson
-    kafkaTemplate.send(jsonTopics.getPsm(), consumerRecord.key(), odePsmData.toString());
+    kafkaTemplate.send(jsonTopics.getPsm(), consumerRecord.key(), odePsmData);
   }
 
   private void routeSRM(ConsumerRecord<String, String> consumerRecord, RecordType recordType)

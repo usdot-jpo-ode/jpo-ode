@@ -56,11 +56,6 @@ public class OdeMessageFrameDataCreatorHelper {
     OdeMessageFrameMetadata metadata =
         XmlUtils.getPlainXmlMapper().convertValue(metadataNode, OdeMessageFrameMetadata.class);
 
-    if (metadataNode.findValue("certPresent") != null) {
-      boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
-      metadata.setCertPresent(isCertPresent);
-    }
-
     if (metadata.getSchemaVersion() <= 4) {
       metadata.setReceivedMessageDetails(null);
     }

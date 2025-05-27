@@ -102,11 +102,10 @@ public class UperUtil {
    *
    * @param payload The OdeMsgPayload to check the content of.
    */
-  public static String determineMessageType(OdeMsgPayload payload) {
+  public static String determineMessageType(OdeMsgPayload<OdeObject> payload) {
     String messageType = "";
     try {
-      OdeObject odeObject = (OdeObject) payload.getData();
-      JSONObject payloadJson = JsonUtils.toJSONObject(odeObject.toJson());
+      JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
       String hexString = payloadJson.getString("bytes").toLowerCase();
       messageType = determineHexPacketType(hexString);
 
