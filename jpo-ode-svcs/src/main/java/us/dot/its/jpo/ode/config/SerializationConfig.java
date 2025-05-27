@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,8 @@ public class SerializationConfig {
         .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     // Ensure BigDecimals are serialized consistently as numbers not strings
     mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
+    // Only serialize non-empty fields (no nulls or empty strings)
+    mapper.setSerializationInclusion(Include.NON_EMPTY);
     return mapper;
   }
 
