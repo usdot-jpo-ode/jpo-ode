@@ -38,8 +38,8 @@ public class SerializationConfig {
         .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     // Ensure BigDecimals are serialized consistently as numbers not strings
     mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));
-    // Only serialize non-empty fields (no nulls or empty strings)
-    mapper.setSerializationInclusion(Include.NON_EMPTY);
+    // Only serialize non-null fields
+    mapper.setSerializationInclusion(Include.NON_NULL);
     return mapper;
   }
 
