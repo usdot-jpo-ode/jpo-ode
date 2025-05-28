@@ -45,7 +45,10 @@ import us.dot.its.jpo.ode.importer.parser.LogFileParserFactory;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +63,7 @@ class LogFileToAsn1CodecPublisherTest {
     var testLogFileToAsn1CodecPublisher =
         new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
     var fileName = bsmTx.name() + "thisIsAFile.txt";
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])), fileName,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(fileName));
 
@@ -75,7 +78,7 @@ class LogFileToAsn1CodecPublisherTest {
         new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
     var fileName = rxMsg.name() + "fileName";
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])), fileName,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(fileName));
 
@@ -109,7 +112,7 @@ class LogFileToAsn1CodecPublisherTest {
         new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics);
 
     when(mockLogFileParser.parseFile(any())).thenReturn(FileParser.ParserStatus.ERROR);
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(
         new BufferedInputStream(new ByteArrayInputStream(new byte[0])), "fileName",
         ImporterFileType.LOG_FILE, mockLogFileParser);
 
@@ -139,12 +142,12 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedBsmTxLogFileToPublish.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
@@ -178,12 +181,12 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedDistressNotificationLogFileToPublish.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
@@ -216,12 +219,12 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedDriverAlertLogFileToPublish.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
@@ -255,12 +258,12 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgTIMLogFileToPublish.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
@@ -295,12 +298,12 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
 
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgBSMLogFileToPublish.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
@@ -329,7 +332,7 @@ class LogFileToAsn1CodecPublisherTest {
      * parsing because currently we don't support JSON input records. We may in the future.
      */
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.UNKNOWN, LogFileParserFactory.getLogFileParser(filename));
 
     assertTrue(dataList.isEmpty());
@@ -358,11 +361,11 @@ class LogFileToAsn1CodecPublisherTest {
 
     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-    List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
     var expectedStringToFormat = loadResourceAsString(
         "src/test/resources/us.dot.its.jpo.ode.coder/expectedRxMsgBSMNewLine.json");
-    for (OdeData data : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> data : dataList) {
       assertTrue(DateTimeUtils.difference(
           DateTimeUtils.isoDateTime(data.getMetadata().getRecordGeneratedAt()),
           DateTimeUtils.nowZDT()) > 0);
