@@ -58,4 +58,15 @@ public class SerializationConfig {
     builder.defaultUseWrapper(true);
     return builder.build();
   }
+
+
+  @Bean("simpleObjectMapper")
+  public ObjectMapper simpleObjectMapper() {
+    return new ObjectMapper();
+  }
+
+  @Bean("simpleXmlMapper")
+  public XmlMapper simpleXmlMapper() {
+    return new XmlMapper();
+  }
 }

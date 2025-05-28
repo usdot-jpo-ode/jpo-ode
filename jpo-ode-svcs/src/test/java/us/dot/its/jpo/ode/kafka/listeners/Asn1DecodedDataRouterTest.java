@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -70,6 +71,10 @@ class Asn1DecodedDataRouterTest {
   JsonTopics jsonTopics;
   @Autowired
   Asn1CoderTopics asn1CoderTopics;
+  @Autowired
+  private ObjectMapper simpleObjectMapper;
+  @Autowired
+  private XmlMapper simpleXmlMapper;
 
   ObjectMapper mapper = new ObjectMapper();
 
@@ -438,7 +443,7 @@ class Asn1DecodedDataRouterTest {
         new ConsumerRecord<>(asn1CoderTopics.getDecoderOutput(), 0, 0L, uniqueKey, baseTestData);
 
     Asn1DecodedDataRouter router =
-        new Asn1DecodedDataRouter(kafkaStringTemplate, null, pojoTopics, jsonTopics);
+        new Asn1DecodedDataRouter(kafkaStringTemplate, null, pojoTopics, jsonTopics, simpleObjectMapper, simpleXmlMapper);
 
     Exception exception =
         assertThrows(Asn1DecodedDataRouter.Asn1DecodedDataRouterException.class, () -> {

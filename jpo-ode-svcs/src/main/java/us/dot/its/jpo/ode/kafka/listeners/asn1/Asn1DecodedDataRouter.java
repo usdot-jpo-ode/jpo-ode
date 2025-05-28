@@ -2,11 +2,14 @@ package us.dot.its.jpo.ode.kafka.listeners.asn1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -57,6 +60,8 @@ public class Asn1DecodedDataRouter {
   private final JsonTopics jsonTopics;
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate;
+  private final ObjectMapper simpleObjectMapper;
+  private final XmlMapper simpleXmlMapper;
 
   /**
    * Exception for Asn1DecodedDataRouter specific failures.
@@ -74,11 +79,14 @@ public class Asn1DecodedDataRouter {
    */
   public Asn1DecodedDataRouter(KafkaTemplate<String, String> kafkaTemplate,
       KafkaTemplate<String, OdeBsmData> bsmDataKafkaTemplate, PojoTopics pojoTopics,
-      JsonTopics jsonTopics) {
+      JsonTopics jsonTopics, @Qualifier("simpleObjectMapper") ObjectMapper simpleObjectMapper,
+      @Qualifier("simpleXmlMapper") XmlMapper simpleXmlMapper) {
     this.kafkaTemplate = kafkaTemplate;
     this.bsmDataKafkaTemplate = bsmDataKafkaTemplate;
     this.pojoTopics = pojoTopics;
     this.jsonTopics = jsonTopics;
+    this.simpleObjectMapper = simpleObjectMapper;
+    this.simpleXmlMapper = simpleXmlMapper;
   }
 
   /**
@@ -230,7 +238,10 @@ public class Asn1DecodedDataRouter {
       throws XmlUtils.XmlUtilsException, IOException {
     log.debug("routeMessageFrame to topics: {}", String.join(", ", topics));
     OdeMessageFrameData odeMessageFrameData =
-        OdeMessageFrameDataCreatorHelper.createOdeMessageFrameData(consumerRecord.value());
+        OdeMessageFrameDataCreatorHelper.createOdeMessageFrameData(
+            consumerRecord.value(), 
+            simpleObjectMapper, 
+            simpleXmlMapper);
     String dataStr = JsonUtils.toJson(odeMessageFrameData, false);
     for (String topic : topics) {
       kafkaTemplate.send(topic, consumerRecord.key(), dataStr);
