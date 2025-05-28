@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 
 /**
@@ -39,24 +37,13 @@ public class OdeMessageFrameDataCreatorHelper {
     ObjectNode consumed = simpleXmlMapper.readValue(consumedData, ObjectNode.class);
     JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
     if (metadataNode instanceof ObjectNode object) {
-      object.remove(OdeMsgMetadata.ENCODINGS_STRING);
-
-      // Header file does not have a location and use predefined set required RxSource
-      ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-      receivedMessageDetails.setRxSource(RxSource.NA);
-
-      JsonNode jsonNode;
-      try {
-        jsonNode = simpleObjectMapper.readTree(receivedMessageDetails.toJson());
-        object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
-      } catch (IOException e) {
-        log.error("Failed to parse receivedMessageDetails", e);
-        throw new RuntimeException(e);
-      }
+      object.remove(OdeMsgMetadata.ENCODINGS_STRING);      
     }
 
     OdeMessageFrameMetadata metadata =
-        simpleXmlMapper.convertValue(metadataNode, OdeMessageFrameMetadata.class);
+          simpleXmlMapper.convertValue(metadataNode, OdeMessageFrameMetadata.class);
+    // Header file does not have a location and use predefined set required RxSource
+    metadata.getReceivedMessageDetails().setRxSource(RxSource.NA);
 
     if (metadata.getSchemaVersion() <= 4) {
       metadata.setReceivedMessageDetails(null);
