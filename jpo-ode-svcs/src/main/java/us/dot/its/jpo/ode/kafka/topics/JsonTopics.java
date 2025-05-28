@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration class for JSON-formatted Kafka topics. Prefix: ode.kafka.topics.json
+ * Configuration class for JSON-formatted Kafka topics.
  */
 @Configuration
 @ConfigurationProperties(prefix = "ode.kafka.topics.json")

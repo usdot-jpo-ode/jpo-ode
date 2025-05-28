@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration class for raw encoded JSON Kafka topics. Prefix: ode.kafka.topics.raw-encoded-json
+ * Configuration class for raw encoded JSON Kafka topics.
  */
 @Configuration
 @ConfigurationProperties(prefix = "ode.kafka.topics.raw-encoded-json")

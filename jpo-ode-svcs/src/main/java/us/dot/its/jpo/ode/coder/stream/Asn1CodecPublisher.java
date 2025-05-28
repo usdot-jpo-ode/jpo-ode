@@ -23,6 +23,9 @@ import us.dot.its.jpo.ode.importer.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParserFactory;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
 
 /**
  * The Asn1CodecPublisher interface defines a method for processing and publishing
@@ -30,6 +33,7 @@ import us.dot.its.jpo.ode.model.OdeData;
  */
 public interface Asn1CodecPublisher {
 
-  List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType, LogFileParser fileParser)
+  List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> publish(BufferedInputStream bis, 
+      String fileName, ImporterFileType fileType, LogFileParser fileParser)
       throws LogFileToAsn1CodecPublisherException, LogFileParserFactory.LogFileParserFactoryException;
 }
