@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
 
 /**
  * The PsmReceiver class extends AbstractUdpReceiverPublisher and is responsible for receiving UDP
- * packets containing PSM (Position & Status Message) data, decoding them from their hex
+ * packets containing PSM (Personal Safety Message) data, decoding them from their hex
  * representation to JSON format, and then publishing the JSON data to a Kafka topic.
  *
  * </p>
@@ -24,7 +24,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
   private final String publishTopic;
 
   /**
-   * Constructs a PsmReceiver object that listens for UDP packets containing Position & Status
+   * Constructs a PsmReceiver object that listens for UDP packets containing Personal Safety
    * Message (PSM) data, decodes them, and publishes the decoded JSON data to a specified Kafka
    * topic.
    *

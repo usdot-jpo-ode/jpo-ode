@@ -220,9 +220,11 @@
                     <vehicleData>
                       <height>38</height>
                     </vehicleData>
-                    <weatherProbe>
-                      <airTemp>191</airTemp>
-                    </weatherProbe>
+                    <doNotUse2>
+                      <weatherProbe>
+                        <airTemp>191</airTemp>
+                      </weatherProbe>
+                    </doNotUse2>
                   </SupplementalVehicleExtensions>
                 </partII-Value>
               </BSMpartIIExtension>

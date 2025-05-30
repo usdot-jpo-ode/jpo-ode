@@ -40,6 +40,7 @@ import us.dot.its.jpo.ode.model.OdeDriverAlertData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeSpatMetadata;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -112,11 +113,12 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
    * @throws LogFileToAsn1CodecPublisherException               if an error occurs while parsing or publishing the data
    * @throws LogFileParserFactory.LogFileParserFactoryException if an error occurs while creating the file parser
    */
-  public List<OdeData> publish(BufferedInputStream inputStream, String fileName, ImporterFileType fileType, LogFileParser fileParser)
+  public List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> publish(BufferedInputStream inputStream, String fileName, 
+      ImporterFileType fileType, LogFileParser fileParser)
       throws LogFileToAsn1CodecPublisherException, LogFileParserFactory.LogFileParserFactoryException {
     ParserStatus status;
 
-    List<OdeData> dataList = new ArrayList<>();
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList = new ArrayList<>();
     if (fileType == ImporterFileType.LOG_FILE) {
 
       do {
@@ -138,11 +140,11 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
     return dataList;
   }
 
-  private void addDataToList(List<OdeData> dataList, LogFileParser fileParser) {
+  private void addDataToList(List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList, LogFileParser fileParser) {
 
-    OdeData odeData;
+    OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> odeData;
 
-    OdeMsgPayload payload;
+    OdeMsgPayload<OdeObject> payload;
     OdeLogMetadata metadata;
     if (isDriverAlertRecord(fileParser)) {
       payload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
@@ -179,12 +181,12 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
     return fileParser instanceof SpatLogFileParser;
   }
 
-  private void publishList(List<OdeData> dataList, LogFileParser fileParser) {
+  private void publishList(List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList, LogFileParser fileParser) {
     serialId.setBundleSize(dataList.size());
 
-    for (OdeData odeData : dataList) {
+    for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> odeData : dataList) {
       OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
-      OdeMsgPayload msgPayload = odeData.getPayload();
+      OdeMsgPayload<OdeObject> msgPayload = odeData.getPayload();
       msgMetadata.setSerialId(serialId);
 
       if (isDriverAlertRecord(fileParser)) {

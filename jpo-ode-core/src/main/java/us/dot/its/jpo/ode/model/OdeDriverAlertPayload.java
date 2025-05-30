@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.model;
 /**
  * Created by anthonychen on 11/4/17.
  */
-public class OdeDriverAlertPayload extends OdeMsgPayload {
+public class OdeDriverAlertPayload extends OdeMsgPayload<OdeObject> {
 
    private static final long serialVersionUID = 7061315628111448390L;
    private String alert;
