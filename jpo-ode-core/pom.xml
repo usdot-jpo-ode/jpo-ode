@@ -96,6 +96,11 @@
       <version>1.0.76</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>usdot.jpo.asn</groupId>
+      <artifactId>jpo-asn-j2735-2024</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 
 </project>

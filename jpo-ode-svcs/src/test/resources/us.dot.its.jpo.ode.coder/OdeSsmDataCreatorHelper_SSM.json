@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "logFileName": "",
+    "recordType": "ssmTx",
+    "securityResultCode": "success",
+    "receivedMessageDetails": {
+      "rxSource": "NA"
+    },
+    "payloadType": "us.dot.its.jpo.ode.model.OdeSsmPayload",
+    "serialId": {
+      "streamId": "75b0ddae-5f6e-403d-ae9d-ec41080bb500",
+      "bundleSize": 1,
+      "bundleId": 0,
+      "recordId": 0,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2024-11-11T21:42:11.755Z",
+    "schemaVersion": 7,
+    "maxDurationTime": 0,
+    "recordGeneratedAt": "",
+    "recordGeneratedBy": "RSU",
+    "sanitized": false,
+    "odePacketID": "",
+    "odeTimStartDateTime": "",
+    "asn1": "001E2366CF218CA0B40010BD4C2896A131B71C0450201685AD512AACB3B0105010402E4C6A805000",
+    "originIp": "172.18.0.1",
+    "ssmSource": "RSU"
+  },
+  "payload": {
+    "data": {
+      "timeStamp": 446241,
+      "second": 36000,
+      "sequenceNumber": 90,
+      "status": {
+        "signalStatus": [
+          {
+            "sequenceNumber": 2,
+            "id": {
+              "id": 12115
+            },
+            "sigStatus": {
+              "signalStatusPackage": [
+                {
+                  "requester": {
+                    "id": {
+                      "stationID": 2823581127
+                    },
+                    "request": 1,
+                    "sequenceNumber": 10,
+                    "role": "publicTransport"
+                  },
+                  "inboundOn": {
+                    "lane": 5
+                  },
+                  "duration": 41323,
+                  "status": "rejected"
+                },
+                {
+                  "requester": {
+                    "id": {
+                      "stationID": 1435923970
+                    },
+                    "request": 10,
+                    "sequenceNumber": 1,
+                    "role": "publicTransport"
+                  },
+                  "inboundOn": {
+                    "lane": 5
+                  },
+                  "duration": 51597,
+                  "status": "rejected"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735SSM"
+  }
+}

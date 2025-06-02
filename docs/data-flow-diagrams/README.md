@@ -144,3 +144,9 @@ see [Overview Data Flow 1 (Tim Depositor Controller)](#overview-data-flow-1-tim-
 2. The [RawEncodedPSMJsonRouter](/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/kafka/listeners/asn1/RawEncodedPSMJsonRouter.java) processes messages from the OdeRawEncodedPSMJson topic and pushes the PSM to the Asn1DecoderInput topic. Any remaining signed IEEE 1609.2 headers are removed at this point.
 3. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) consumes from the Asn1DecoderInput topic, decodes the PSM, and pushes it to the Asn1DecoderOutput topic.
 4. The [Asn1DecodedDataRouter](/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/kafka/listeners/asn1/Asn1DecodedDataRouter.java) consumes from the Asn1DecoderOutput topic and pushes the PSM to the OdePsmTxPojo and OdePsmJson topics.
+
+### SDSM Data Flow
+1. The SDSM comes in through the [SdsmReceiver](/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiver.java) class and is pushed to the OdeRawEncodedSDSMJson topic. Any IEEE 1609.3 or unsigned IEEE 1609.2 headers are stripped at this point.
+2. The [RawEncodedSDSMJsonRouter](/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/kafka/listeners/json/RawEncodedSDSMJsonRouter.java) consumes messages from the OdeRawEncodedSDSMJson topic and pushes the SDSM to the Asn1DecoderInput topic. Any remaining signed IEEE 1609.2 headers are removed at this point.
+3. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) consumes from the Asn1DecoderInput topic, decodes the SDSM, and pushes it to the Asn1DecoderOutput topic.
+4. The [Asn1DecodedDataRouter](/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/kafka/listeners/asn1/Asn1DecodedDataRouter.java) consumes from the Asn1DecoderOutput topic and pushes the SDSM to the OdeSdsmJson topic.

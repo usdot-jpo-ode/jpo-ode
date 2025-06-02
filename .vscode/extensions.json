@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "redhat.vscode-xml",
+    "vscjava.vscode-java-pack",
+    "shengchen.vscode-checkstyle",
+    "redhat.java",
+    "vmware.vscode-boot-dev-pack",
+    "ms-azuretools.vscode-docker"
+  ]
+}

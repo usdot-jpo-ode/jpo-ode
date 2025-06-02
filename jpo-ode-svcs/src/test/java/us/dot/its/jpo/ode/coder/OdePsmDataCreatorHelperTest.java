@@ -2,29 +2,35 @@ package us.dot.its.jpo.ode.coder;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.junit.Test;
-
 import us.dot.its.jpo.ode.model.OdePsmData;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
+/**
+ * Unit tests for the OdePsmDataCreatorHelper class.
+ */
 public class OdePsmDataCreatorHelperTest {
-    @Test
-	public void testConstructor() {
-		OdePsmDataCreatorHelper helper = new OdePsmDataCreatorHelper();
-		assertNotNull(helper);
-	}
 
-	@Test
-	public void testCreateOdeSrmData() {
-		String consumedData = "<OdeAsn1Data><metadata><logFileName/><recordType>psmTx</recordType><securityResultCode>success</securityResultCode><receivedMessageDetails/><encodings><encodings><elementName>unsecuredData</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings><payloadType>us.dot.its.jpo.ode.model.OdeAsn1Payload</payloadType><serialId><streamId>884b5a67-b92b-4b54-a6cd-456d342d6916</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>2023-09-21T16:57:41.776089Z</odeReceivedAt><schemaVersion>6</schemaVersion><maxDurationTime>0</maxDurationTime><recordGeneratedAt/><recordGeneratedBy/><sanitized>false</sanitized><odePacketID/><odeTimStartDateTime/><psmSource>RSU</psmSource><originIp>192.168.32.1</originIp></metadata><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageId>32</messageId><value><PersonalSafetyMessage><basicType><aPEDESTRIAN/></basicType><secMark>3564</secMark><msgCnt>26</msgCnt><id>24779D7E</id><position><lat>402397377</lat><long>-742761437</long></position><accuracy><semiMajor>20</semiMajor><semiMinor>20</semiMinor><orientation>8191</orientation></accuracy><speed>0</speed><heading>8898</heading></PersonalSafetyMessage></value></MessageFrame></data></payload></OdeAsn1Data>";
+  /**
+   * Tests the constructor creates a valid instance.
+   */
+  @Test
+  public void testConstructor() {
+    OdePsmDataCreatorHelper helper = new OdePsmDataCreatorHelper();
+    assertNotNull(helper);
+  }
 
-		OdePsmData psmData;
-		try {
-			psmData = OdePsmDataCreatorHelper.createOdePsmData(consumedData);
-			assertNotNull(psmData);
-		} catch (XmlUtilsException e) {
-			e.printStackTrace();
-		}
+  /**
+   * Tests PSM data creation from XML string input.
+   */
+  @Test
+  public void testCreateOdePsmData() throws Exception {
+    String xmlData = Files.readString(
+        Paths.get("src/test/resources/us.dot.its.jpo.ode.coder/OdePsmDataCreatorHelper_PSM.xml"));
+    String consumedData = new String(xmlData);
 
-	}
+    OdePsmData psmData = OdePsmDataCreatorHelper.createOdePsmData(consumedData);
+    assertNotNull(psmData);
+  }
 }

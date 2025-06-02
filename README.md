@@ -92,6 +92,7 @@ Supported message types:
 - SRM
 - SSM
 - PSM
+- SDSM
 
 1. Navigate to the [UDP sender Python scripts](<./scripts/tests/>) in the project.
 2. Ensure the environment variable "DOCKER_HOST_IP" has been set in the shell that will be running the script. This must be set to the same IP that the ODE deployments are using.
@@ -213,6 +214,7 @@ The ODE software system consists of the following modules hosted in separate Git
 | [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)               | public     | ASN.1 Encoder/Decoder module                                                                           |
 | [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs) | public     | Provides cryptographic services.                                                                       |
 | [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor) | public     | SDW depositor service. Optional, can be enabled by using the `COMPOSE_PROFILES` environmental variable |
+| [jpo-asn-pojos](https://github.com/usdot-jpo-ode/jpo-asn-pojos)         | public     | ASN.1 POJOs for J2735 messages.                                                                        |
 
 You may download the stable, default branch for ALL of these dependencies by using the following recursive git clone command:
 
@@ -238,9 +240,6 @@ The above steps to pull the code from GitHub repository pulls it from the defaul
 **Note**: These commands can also be performed using the provided script `update_branch`.
 
 ```bash
-# Backup user provided source or configuration files used by submodules
-cp asn1_codec/asn1c_combined/J2735_201603DA.ASN .
-
 # Run the following commands to reset existing branch
 git reset --hard
 git submodule foreach --recursive git reset --hard
@@ -251,9 +250,6 @@ git pull origin <branch_name>
 
 # The next command wipes out all of the submodules and re-initializes them.
 git submodule deinit -f . && git submodule update --recursive --init
-
-# Restore user provided source or configuration files used by submodules
-cp ./J2735_201603DA.ASN asn1_codec/asn1c_combined/
 ```
 
 </p>
@@ -633,6 +629,8 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
   - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
 - SDW Depositor Module on GitHub (public)
   - <https://github.com/usdot-jpo-ode/jpo-sdw-depositor>
+- ASN.1 POJOs for J2735 messages (public)
+  - <https://github.com/usdot-jpo-ode/jpo-asn-pojos>
 - ODE Output Validatory Library (public)
   - https://github.com/usdot-jpo-ode/ode-output-validator-library
 

@@ -1,0 +1,1179 @@
+{
+    "type": "object",
+    "description": "ASN.1 SEQUENCE Type",
+    "definitions": {
+        "Acceleration": {
+            "type": "integer",
+            "minimum": -2000,
+            "maximum": 2001,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Acceleration",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "AccelerationConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "accl-100-00",
+                "accl-010-00",
+                "accl-005-00",
+                "accl-001-00",
+                "accl-000-10",
+                "accl-000-05",
+                "accl-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.ProbeVehicleData.AccelerationConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "AccelerationSet4Way": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "$ref": "#/definitions/Acceleration"
+                },
+                "long": {
+                    "$ref": "#/definitions/Acceleration"
+                },
+                "vert": {
+                    "$ref": "#/definitions/VerticalAcceleration"
+                },
+                "yaw": {
+                    "$ref": "#/definitions/YawRate"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.AccelerationSet4Way",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "AngularVelocity": {
+            "type": "object",
+            "properties": {
+                "pitchRate": {
+                    "$ref": "#/definitions/PitchRate"
+                },
+                "rollRate": {
+                    "$ref": "#/definitions/RollRate"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.AngularVelocity",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "AngularVelocityConfidence": {
+            "type": "object",
+            "properties": {
+                "pitchRateConfidence": {
+                    "$ref": "#/definitions/PitchRateConfidence"
+                },
+                "rollRateConfidence": {
+                    "$ref": "#/definitions/RollRateConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.AngularVelocityConfidence",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "AnimalPropelledType": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "otherTypes",
+                "animalMounted",
+                "animalDrawnCarriage"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.AnimalPropelledType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "Attachment": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "stroller",
+                "bicycleTrailer",
+                "cart",
+                "wheelchair",
+                "otherWalkAssistAttachments",
+                "pet"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.Attachment",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "AttachmentRadius": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.AttachmentRadius",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "Attitude": {
+            "type": "object",
+            "properties": {
+                "pitch": {
+                    "$ref": "#/definitions/PitchDetected"
+                },
+                "roll": {
+                    "$ref": "#/definitions/RollDetected"
+                },
+                "yaw": {
+                    "$ref": "#/definitions/YawDetected"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.Attitude",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "AttitudeConfidence": {
+            "type": "object",
+            "properties": {
+                "pitchConfidence": {
+                    "$ref": "#/definitions/HeadingConfidence"
+                },
+                "rollConfidence": {
+                    "$ref": "#/definitions/HeadingConfidence"
+                },
+                "yawConfidence": {
+                    "$ref": "#/definitions/HeadingConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.AttitudeConfidence",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "BasicVehicleClass": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.BasicVehicleClass",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "ClassificationConfidence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 101,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ClassificationConfidence",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DDateTime": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "$ref": "#/definitions/DDay"
+                },
+                "hour": {
+                    "$ref": "#/definitions/DHour"
+                },
+                "minute": {
+                    "$ref": "#/definitions/DMinute"
+                },
+                "month": {
+                    "$ref": "#/definitions/DMonth"
+                },
+                "offset": {
+                    "$ref": "#/definitions/DOffset"
+                },
+                "second": {
+                    "$ref": "#/definitions/DSecond"
+                },
+                "year": {
+                    "$ref": "#/definitions/DYear"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DDateTime",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "DDay": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DDay",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DHour": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DHour",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DMinute": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 60,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DMinute",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DMonth": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DMonth",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DOffset": {
+            "type": "integer",
+            "minimum": -840,
+            "maximum": 840,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DOffset",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DSecond": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DSecond",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DYear": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4095,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.DYear",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "DetectedObjectCommonData": {
+            "type": "object",
+            "properties": {
+                "accCfdX": {
+                    "$ref": "#/definitions/AccelerationConfidence"
+                },
+                "accCfdY": {
+                    "$ref": "#/definitions/AccelerationConfidence"
+                },
+                "accCfdYaw": {
+                    "$ref": "#/definitions/YawRateConfidence"
+                },
+                "accCfdZ": {
+                    "$ref": "#/definitions/AccelerationConfidence"
+                },
+                "accel4way": {
+                    "$ref": "#/definitions/AccelerationSet4Way"
+                },
+                "heading": {
+                    "$ref": "#/definitions/Heading"
+                },
+                "headingConf": {
+                    "$ref": "#/definitions/HeadingConfidence"
+                },
+                "measurementTime": {
+                    "$ref": "#/definitions/MeasurementTimeOffset"
+                },
+                "objType": {
+                    "$ref": "#/definitions/ObjectType"
+                },
+                "objTypeCfd": {
+                    "$ref": "#/definitions/ClassificationConfidence"
+                },
+                "objectID": {
+                    "$ref": "#/definitions/ObjectID"
+                },
+                "pos": {
+                    "$ref": "#/definitions/PositionOffsetXYZ"
+                },
+                "posConfidence": {
+                    "$ref": "#/definitions/PositionConfidenceSet"
+                },
+                "speed": {
+                    "$ref": "#/definitions/Speed"
+                },
+                "speedConfidence": {
+                    "$ref": "#/definitions/SpeedConfidence"
+                },
+                "speedConfidenceZ": {
+                    "$ref": "#/definitions/SpeedConfidence"
+                },
+                "speedZ": {
+                    "$ref": "#/definitions/Speed"
+                },
+                "timeConfidence": {
+                    "$ref": "#/definitions/TimeConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedObjectCommonData",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "DetectedObjectData": {
+            "type": "object",
+            "properties": {
+                "detObjCommon": {
+                    "$ref": "#/definitions/DetectedObjectCommonData"
+                },
+                "detObjOptData": {
+                    "$ref": "#/definitions/DetectedObjectOptionalData"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedObjectData",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "DetectedObjectOptionalData": {
+            "type": "object",
+            "properties": {
+                "detObst": {
+                    "$ref": "#/definitions/DetectedObstacleData"
+                },
+                "detVRU": {
+                    "$ref": "#/definitions/DetectedVRUData"
+                },
+                "detVeh": {
+                    "$ref": "#/definitions/DetectedVehicleData"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedObjectOptionalData"
+        },
+        "DetectedObstacleData": {
+            "type": "object",
+            "properties": {
+                "obstSize": {
+                    "$ref": "#/definitions/ObstacleSize"
+                },
+                "obstSizeConfidence": {
+                    "$ref": "#/definitions/ObstacleSizeConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedObstacleData",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "DetectedVRUData": {
+            "type": "object",
+            "properties": {
+                "attachment": {
+                    "$ref": "#/definitions/Attachment"
+                },
+                "basicType": {
+                    "$ref": "#/definitions/PersonalDeviceUserType"
+                },
+                "propulsion": {
+                    "$ref": "#/definitions/PropelledInformation"
+                },
+                "radius": {
+                    "$ref": "#/definitions/AttachmentRadius"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedVRUData",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "DetectedVehicleData": {
+            "type": "object",
+            "properties": {
+                "classConf": {
+                    "$ref": "#/definitions/ClassificationConfidence"
+                },
+                "height": {
+                    "$ref": "#/definitions/VehicleHeight"
+                },
+                "lights": {
+                    "$ref": "#/definitions/ExteriorLights"
+                },
+                "size": {
+                    "$ref": "#/definitions/VehicleSize"
+                },
+                "vehAngVel": {
+                    "$ref": "#/definitions/AngularVelocity"
+                },
+                "vehAngVelConfidence": {
+                    "$ref": "#/definitions/AngularVelocityConfidence"
+                },
+                "vehAttitude": {
+                    "$ref": "#/definitions/Attitude"
+                },
+                "vehAttitudeConfidence": {
+                    "$ref": "#/definitions/AttitudeConfidence"
+                },
+                "vehicleClass": {
+                    "$ref": "#/definitions/BasicVehicleClass"
+                },
+                "vehicleSizeConfidence": {
+                    "$ref": "#/definitions/VehicleSizeConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedVehicleData",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "Elevation": {
+            "type": "integer",
+            "minimum": -4096,
+            "maximum": 61439,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Elevation",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "ElevationConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "elev-500-00",
+                "elev-200-00",
+                "elev-100-00",
+                "elev-050-00",
+                "elev-020-00",
+                "elev-010-00",
+                "elev-005-00",
+                "elev-002-00",
+                "elev-001-00",
+                "elev-000-50",
+                "elev-000-20",
+                "elev-000-10",
+                "elev-000-05",
+                "elev-000-02",
+                "elev-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.ElevationConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "EquipmentType": {
+            "type": "string",
+            "enum": [
+                "unknown",
+                "rsu",
+                "obu",
+                "vru"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.EquipmentType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "ExteriorLights": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{4,4}$",
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.ExteriorLights",
+            "description": "ASN.1 BIT STRING Type"
+        },
+        "Heading": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 28800,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Heading",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "HeadingConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "prec10deg",
+                "prec05deg",
+                "prec01deg",
+                "prec0-1deg",
+                "prec0-05deg",
+                "prec0-01deg",
+                "prec0-0125deg"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.HeadingConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "HumanPropelledType": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "otherTypes",
+                "onFoot",
+                "skateboard",
+                "pushOrKickScooter",
+                "wheelchair"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.HumanPropelledType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "Latitude": {
+            "type": "integer",
+            "minimum": -900000000,
+            "maximum": 900000001,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Latitude",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "Longitude": {
+            "type": "integer",
+            "minimum": -1799999999,
+            "maximum": 1800000001,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Longitude",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "MeasurementTimeOffset": {
+            "type": "integer",
+            "minimum": -1500,
+            "maximum": 1500,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.MeasurementTimeOffset",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "MotorizedPropelledType": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "otherTypes",
+                "wheelChair",
+                "bicycle",
+                "scooter",
+                "selfBalancingDevice"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.MotorizedPropelledType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "MsgCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 127,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.MsgCount",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "ObjectDistance": {
+            "type": "integer",
+            "minimum": -32767,
+            "maximum": 32767,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ObjectDistance",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "ObjectID": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ObjectID",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "ObjectType": {
+            "type": "string",
+            "enum": [
+                "unknown",
+                "vehicle",
+                "vru",
+                "animal"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ObjectType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "ObstacleSize": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "$ref": "#/definitions/SizeValue"
+                },
+                "length": {
+                    "$ref": "#/definitions/SizeValue"
+                },
+                "width": {
+                    "$ref": "#/definitions/SizeValue"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ObstacleSize",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "ObstacleSizeConfidence": {
+            "type": "object",
+            "properties": {
+                "heightConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                },
+                "lengthConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                },
+                "widthConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.ObstacleSizeConfidence",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "PersonalDeviceUserType": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "aPEDESTRIAN",
+                "aPEDALCYCLIST",
+                "aPUBLICSAFETYWORKER",
+                "anANIMAL"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalDeviceUserType",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "PitchDetected": {
+            "type": "integer",
+            "minimum": -7200,
+            "maximum": 7200,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.PitchDetected",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "PitchRate": {
+            "type": "integer",
+            "minimum": -32767,
+            "maximum": 32767,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.PitchRate",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "PitchRateConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "degSec-100-00",
+                "degSec-010-00",
+                "degSec-005-00",
+                "degSec-001-00",
+                "degSec-000-10",
+                "degSec-000-05",
+                "degSec-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.PitchRateConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "Position3D": {
+            "type": "object",
+            "properties": {
+                "elevation": {
+                    "$ref": "#/definitions/Elevation"
+                },
+                "lat": {
+                    "$ref": "#/definitions/Latitude"
+                },
+                "long": {
+                    "$ref": "#/definitions/Longitude"
+                },
+                "regional": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Reg_Position3D"
+                    },
+                    "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Position3D$SequenceOfRegional"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Position3D",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "PositionConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "a500m",
+                "a200m",
+                "a100m",
+                "a50m",
+                "a20m",
+                "a10m",
+                "a5m",
+                "a2m",
+                "a1m",
+                "a50cm",
+                "a20cm",
+                "a10cm",
+                "a5cm",
+                "a2cm",
+                "a1cm"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.PositionConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "PositionConfidenceSet": {
+            "type": "object",
+            "properties": {
+                "elevation": {
+                    "$ref": "#/definitions/ElevationConfidence"
+                },
+                "pos": {
+                    "$ref": "#/definitions/PositionConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.PositionConfidenceSet",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "PositionOffsetXYZ": {
+            "type": "object",
+            "properties": {
+                "offsetX": {
+                    "$ref": "#/definitions/ObjectDistance"
+                },
+                "offsetY": {
+                    "$ref": "#/definitions/ObjectDistance"
+                },
+                "offsetZ": {
+                    "$ref": "#/definitions/ObjectDistance"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.PositionOffsetXYZ",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "PositionalAccuracy": {
+            "type": "object",
+            "properties": {
+                "orientation": {
+                    "$ref": "#/definitions/SemiMajorAxisOrientation"
+                },
+                "semiMajor": {
+                    "$ref": "#/definitions/SemiMajorAxisAccuracy"
+                },
+                "semiMinor": {
+                    "$ref": "#/definitions/SemiMinorAxisAccuracy"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.PositionalAccuracy",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "PropelledInformation": {
+            "type": "object",
+            "properties": {
+                "animal": {
+                    "$ref": "#/definitions/AnimalPropelledType"
+                },
+                "human": {
+                    "$ref": "#/definitions/HumanPropelledType"
+                },
+                "motor": {
+                    "$ref": "#/definitions/MotorizedPropelledType"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PropelledInformation"
+        },
+        "Reg_Position3D": {
+            "type": "object",
+            "properties": {
+                "regExtValue": {
+                    "title": "java.lang.Object"
+                },
+                "regionId": {
+                    "$ref": "#/definitions/RegionId"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.REGION.Reg_Position3D",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "RegionId": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.RegionId",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "RollDetected": {
+            "type": "integer",
+            "minimum": -14400,
+            "maximum": 14400,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.RollDetected",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "RollRate": {
+            "type": "integer",
+            "minimum": -32767,
+            "maximum": 32767,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.RollRate",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "RollRateConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "degSec-100-00",
+                "degSec-010-00",
+                "degSec-005-00",
+                "degSec-001-00",
+                "degSec-000-10",
+                "degSec-000-05",
+                "degSec-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.RollRateConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "SemiMajorAxisAccuracy": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.SemiMajorAxisAccuracy",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "SemiMajorAxisOrientation": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.SemiMajorAxisOrientation",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "SemiMinorAxisAccuracy": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.SemiMinorAxisAccuracy",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "SizeValue": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1023,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SizeValue",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "SizeValueConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "size-100-00",
+                "size-050-00",
+                "size-020-00",
+                "size-010-00",
+                "size-005-00",
+                "size-002-00",
+                "size-001-00",
+                "size-000-50",
+                "size-000-20",
+                "size-000-10",
+                "size-000-05",
+                "size-000-02",
+                "size-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SizeValueConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "Speed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8191,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.Speed",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "SpeedConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "prec100ms",
+                "prec10ms",
+                "prec5ms",
+                "prec1ms",
+                "prec0-1ms",
+                "prec0-05ms",
+                "prec0-01ms"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.SpeedConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "TemporaryID": {
+            "type": "string",
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.TemporaryID"
+        },
+        "TimeConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "time-100-000",
+                "time-050-000",
+                "time-020-000",
+                "time-010-000",
+                "time-002-000",
+                "time-001-000",
+                "time-000-500",
+                "time-000-200",
+                "time-000-100",
+                "time-000-050",
+                "time-000-020",
+                "time-000-010",
+                "time-000-005",
+                "time-000-002",
+                "time-000-001",
+                "time-000-000-5",
+                "time-000-000-2",
+                "time-000-000-1",
+                "time-000-000-05",
+                "time-000-000-02",
+                "time-000-000-01",
+                "time-000-000-005",
+                "time-000-000-002",
+                "time-000-000-001",
+                "time-000-000-000-5",
+                "time-000-000-000-2",
+                "time-000-000-000-1",
+                "time-000-000-000-05",
+                "time-000-000-000-02",
+                "time-000-000-000-01",
+                "time-000-000-000-005",
+                "time-000-000-000-002",
+                "time-000-000-000-001",
+                "time-000-000-000-000-5",
+                "time-000-000-000-000-2",
+                "time-000-000-000-000-1",
+                "time-000-000-000-000-05",
+                "time-000-000-000-000-02",
+                "time-000-000-000-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.TimeConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        },
+        "VehicleHeight": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 127,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.VehicleHeight",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "VehicleLength": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4095,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.VehicleLength",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "VehicleSize": {
+            "type": "object",
+            "properties": {
+                "length": {
+                    "$ref": "#/definitions/VehicleLength"
+                },
+                "width": {
+                    "$ref": "#/definitions/VehicleWidth"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.VehicleSize",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "VehicleSizeConfidence": {
+            "type": "object",
+            "properties": {
+                "vehicleHeightConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                },
+                "vehicleLengthConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                },
+                "vehicleWidthConfidence": {
+                    "$ref": "#/definitions/SizeValueConfidence"
+                }
+            },
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.VehicleSizeConfidence",
+            "description": "ASN.1 SEQUENCE Type"
+        },
+        "VehicleWidth": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1023,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.VehicleWidth",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "VerticalAcceleration": {
+            "type": "integer",
+            "minimum": -127,
+            "maximum": 127,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.VerticalAcceleration",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "YawDetected": {
+            "type": "integer",
+            "minimum": -14400,
+            "maximum": 14400,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.YawDetected",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "YawRate": {
+            "type": "integer",
+            "minimum": -32767,
+            "maximum": 32767,
+            "title": "us.dot.its.jpo.asn.j2735.r2024.Common.YawRate",
+            "description": "ASN.1 INTEGER Type"
+        },
+        "YawRateConfidence": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "degSec-100-00",
+                "degSec-010-00",
+                "degSec-005-00",
+                "degSec-001-00",
+                "degSec-000-10",
+                "degSec-000-05",
+                "degSec-000-01"
+            ],
+            "title": "us.dot.its.jpo.asn.j2735.r2024.ProbeVehicleData.YawRateConfidence",
+            "description": "ASN.1 ENUMERATED Type"
+        }
+    },
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "originIp": {
+                    "type": "string"
+                },
+                "logFileName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string",
+                    "enum": [
+                        "sdsmTx"
+                    ]
+                },
+                "securityResultCode": {
+                    "type": "string"
+                },
+                "receivedMessageDetails": {
+                    "type": "object",
+                    "properties": {
+                        "locationData": {
+                            "type": "null"
+                        },
+                        "rxSource": {
+                            "type": "string",
+                            "enum": [
+                                "RSU",
+                                "SAT",
+                                "RV",
+                                "SNMP",
+                                "NA",
+                                "UNKNOWN"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "rxSource"
+                    ]
+                },
+                "encodings": {
+                    "type": "null"
+                },
+                "payloadType": {
+                    "type": "string"
+                },
+                "serialId": {
+                    "type": "object",
+                    "properties": {
+                        "streamId": {
+                            "type": "string"
+                        },
+                        "bundleSize": {
+                            "type": "integer"
+                        },
+                        "bundleId": {
+                            "type": "integer"
+                        },
+                        "recordId": {
+                            "type": "integer"
+                        },
+                        "serialNumber": {
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "streamId",
+                        "bundleSize",
+                        "bundleId",
+                        "recordId",
+                        "serialNumber"
+                    ]
+                },
+                "odeReceivedAt": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "type": "integer"
+                },
+                "maxDurationTime": {
+                    "type": "integer"
+                },
+                "odePacketID": {
+                    "type": "string"
+                },
+                "odeTimStartDateTime": {
+                    "type": "string"
+                },
+                "recordGeneratedAt": {
+                    "type": "string"
+                },
+                "recordGeneratedBy": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "enum": [
+                        "TMC",
+                        "OBU",
+                        "RSU",
+                        "TMC_VIA_SAT",
+                        "TMC_VIA_SNMP",
+                        "UNKNOWN",
+                        null
+                    ]
+                },
+                "sanitized": {
+                    "type": "boolean"
+                },
+                "asn1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "originIp",
+                "logFileName",
+                "recordType",
+                "receivedMessageDetails",
+                "payloadType",
+                "serialId",
+                "odeReceivedAt",
+                "schemaVersion",
+                "maxDurationTime",
+                "odePacketID",
+                "odeTimStartDateTime",
+                "recordGeneratedAt",
+                "sanitized",
+                "asn1"
+            ]
+        },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "messageId": {
+                            "type": "integer"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "SensorDataSharingMessage": {
+                                    "type": "object",
+                                    "properties": {
+                                        "equipmentType": {
+                                            "$ref": "#/definitions/EquipmentType"
+                                        },
+                                        "msgCnt": {
+                                            "$ref": "#/definitions/MsgCount"
+                                        },
+                                        "objects": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/DetectedObjectData"
+                                            },
+                                            "title": "us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.DetectedObjectList"
+                                        },
+                                        "refPos": {
+                                            "$ref": "#/definitions/Position3D"
+                                        },
+                                        "refPosElConf": {
+                                            "$ref": "#/definitions/ElevationConfidence"
+                                        },
+                                        "refPosXYConf": {
+                                            "$ref": "#/definitions/PositionalAccuracy"
+                                        },
+                                        "sDSMTimeStamp": {
+                                            "$ref": "#/definitions/DDateTime"
+                                        },
+                                        "sourceID": {
+                                            "$ref": "#/definitions/TemporaryID"
+                                        }
+                                    },
+                                    "required": [
+                                        "equipmentType",
+                                        "msgCnt",
+                                        "objects",
+                                        "refPos",
+                                        "refPosXYConf",
+                                        "sDSMTimeStamp",
+                                        "sourceID"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "SensorDataSharingMessage"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "messageId",
+                        "value"
+                    ]
+                }
+            },
+            "required": [
+                "dataType",
+                "data"
+            ]
+        }
+    }
+}

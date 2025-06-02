@@ -5,23 +5,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+/**
+ * Configuration properties for UDP receivers.
+ */
 @Configuration
 @ConfigurationProperties(prefix = "ode.receivers")
 @Data
 @Primary
 public class UDPReceiverProperties {
-    private ReceiverProperties generic;
-    private ReceiverProperties bsm;
-    private ReceiverProperties map;
-    private ReceiverProperties psm;
-    private ReceiverProperties spat;
-    private ReceiverProperties srm;
-    private ReceiverProperties ssm;
-    private ReceiverProperties tim;
+  private ReceiverProperties generic;
+  private ReceiverProperties bsm;
+  private ReceiverProperties map;
+  private ReceiverProperties psm;
+  private ReceiverProperties spat;
+  private ReceiverProperties srm;
+  private ReceiverProperties ssm;
+  private ReceiverProperties tim;
+  private ReceiverProperties sdsm;
 
-    @Data
-    public static class ReceiverProperties {
-        private int receiverPort;
-        private int bufferSize;
-    }
+  /**
+   * Configuration properties for a specific receiver.
+   */
+  @Data
+  public static class ReceiverProperties {
+    private int receiverPort;
+    private int bufferSize;
+  }
 }

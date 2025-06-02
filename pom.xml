@@ -23,6 +23,7 @@
     <module>jpo-ode-plugins</module>
     <module>jpo-ode-core</module>
     <module>jpo-ode-svcs</module>
+    <module>jpo-asn-pojos</module>
   </modules>
 
   <properties>

@@ -68,6 +68,7 @@ ode:
         srm: "topic.OdeSrmJson"
         ssm: "topic.OdeSsmJson"
         tim: "topic.OdeTimJson"
+        sdsm: "topic.OdeSdsmJson"
         driver-alert: "topic.OdeDriverAlertJson"
         tim-broadcast: "topic.OdeTimBroadcastJson"
         bsm-filtered: "topic.FilteredOdeBsmJson"
@@ -100,6 +101,7 @@ ode:
         srm: "topic.OdeRawEncodedSRMJson"
         ssm: "topic.OdeRawEncodedSSMJson"
         tim: "topic.OdeRawEncodedTIMJson"
+        sdsm: "topic.OdeRawEncodedSDSMJson"
       sdx-depositor:
         input: "topic.SDWDepositorInput"
 
@@ -128,6 +130,9 @@ ode:
     tim:
       buffer-size: 2048
       receiver-port: 47900
+    sdsm:
+      buffer-size: 500
+      receiver-port: 44950
   file-importer:
     buffer-size: 500
     backup-dir: "backup"
@@ -149,9 +154,10 @@ management:
     web:
       exposure:
         include: prometheus
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
+  metrics:
     tags:
       enabled: true

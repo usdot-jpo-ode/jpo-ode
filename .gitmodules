@@ -16,3 +16,6 @@
 [submodule "jpo-utils"]
 	path = jpo-utils
 	url = https://github.com/usdot-jpo-ode/jpo-utils.git
+[submodule "jpo-asn-pojos"]
+	path = jpo-asn-pojos
+	url = https://github.com/usdot-jpo-ode/jpo-asn-pojos.git
