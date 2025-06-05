@@ -445,7 +445,6 @@ public class Asn1EncodedDataRouter {
     try {
       log.debug("Publishing message for round 2 encoding");
       String asdPackagedTim = packageSignedTimIntoAsd(request, encodedTimWithoutHeaders);
-      // log.debug("ASD Packaged TIM for round 2 encoding: {}", asdPackagedTim);
       kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
     } catch (Exception e) {
       log.error("Error packaging ASD for round 2 encoding", e);
