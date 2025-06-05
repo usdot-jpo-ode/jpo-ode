@@ -263,7 +263,11 @@ public class Asn1EncodedDataRouter {
 
     sendToRsus(request, encodedTimWithoutHeaders);
     depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders);
-    publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    if (dataSigningEnabledSDW) {
+      publishForSecondEncoding(request, bytesToSend);
+    } else {
+      publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    }
   }
 
   private void depositToTimCertExpirationTopic(JSONObject metadataJson, SignatureResultModel signedResponse, int maxDurationTime) {
