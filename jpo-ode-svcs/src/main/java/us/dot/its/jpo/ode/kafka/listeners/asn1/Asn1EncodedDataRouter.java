@@ -263,7 +263,11 @@ public class Asn1EncodedDataRouter {
 
     sendToRsus(request, encodedTimWithoutHeaders);
     depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders);
-    publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    if (dataSigningEnabledSDW) {
+      publishForSecondEncoding(request, bytesToSend);
+    } else {
+      publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    }
   }
 
   private void depositToTimCertExpirationTopic(JSONObject metadataJson, SignatureResultModel signedResponse, int maxDurationTime) {
@@ -441,6 +445,7 @@ public class Asn1EncodedDataRouter {
     try {
       log.debug("Publishing message for round 2 encoding");
       String asdPackagedTim = packageSignedTimIntoAsd(request, encodedTimWithoutHeaders);
+      // log.debug("ASD Packaged TIM for round 2 encoding: {}", asdPackagedTim);
       kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
     } catch (Exception e) {
       log.error("Error packaging ASD for round 2 encoding", e);
