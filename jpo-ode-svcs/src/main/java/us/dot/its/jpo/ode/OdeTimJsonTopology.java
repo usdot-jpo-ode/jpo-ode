@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode;
 
-import java.time.Duration;
-import java.time.Instant;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
@@ -11,51 +11,57 @@ import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
-import org.apache.kafka.streams.state.ReadOnlyWindowStore;
-import org.apache.kafka.streams.state.WindowStore;
-import org.apache.kafka.streams.state.WindowStoreIterator;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
-
 /**
- * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology for processing TIM
- * (Traveler Information Message) JSON data from the OdeTimJson Kafka topic. This class creates a
- * K-Table that houses TMC-generated TIMs which can be queried by UUID.
+ * The OdeTimJsonTopology class sets up and manages a Kafka Streams topology for
+ * processing TIM (Traveler Information Message) JSON data from the OdeTimJson
+ * Kafka topic. This class creates a K-Table that houses TMC-generated TIMs
+ * which can be queried by UUID.
  **/
 @Slf4j
 public class OdeTimJsonTopology {
 
   private final KafkaStreams streams;
+  private final KafkaTemplate<String, String> tombstonePublisher;
+
+  private String topic;
 
   /**
-   * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka Streams topology for
-   * processing TIM JSON data.
+   * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka
+   * Streams topology for processing TIM JSON data.
    *
-   * @param odeKafkaProps the properties containing Kafka configuration, including brokers and
-   *                      optional Confluent-specific configuration for authentication.
-   * @param topic         the Kafka topic from which TIM JSON data is consumed to build the
-   *                      topology.
+   * @param odeKafkaProps the properties containing Kafka configuration, including
+   *                      brokers and optional Confluent-specific configuration
+   *                      for authentication.
+   * @param topic         the Kafka topic from which TIM JSON data is consumed to
+   *                      build the topology.
    */
-  public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic) {
+  public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic,
+      KafkaTemplate<String, String> template) {
+    // The container name in Docker or pod name in Kubernetes
+    String hostname = System.getenv("HOSTNAME") != null ? "-" + System.getenv("HOSTNAME") : "";
 
     Properties streamsProperties = new Properties();
-    streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "KeyedOdeTimJson");
     streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, odeKafkaProps.getBrokers());
     streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
     streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-    streamsProperties.put(StreamsConfig.WINDOW_SIZE_MS_CONFIG, 3600 * 1000L); // 1 hour retention
+    streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "ode-tim-json-topology" + hostname);
 
     if ("CONFLUENT".equals(odeKafkaProps.getKafkaType())) {
       streamsProperties.putAll(odeKafkaProps.getConfluent().buildConfluentProperties());
     }
-    streams = new KafkaStreams(buildTopology(topic), streamsProperties);
-    streams.setStateListener((newState, oldState) ->
-        log.info("Transitioning from {} to {}", oldState, newState)
-    );
+
+    this.topic = topic;
+    this.tombstonePublisher = template;
+    streams = new KafkaStreams(buildTopology(), streamsProperties);
+    streams.setStateListener(
+        (newState, oldState) -> log.info("Transitioning from {} to {}", oldState, newState));
     streams.start();
   }
 
@@ -66,48 +72,73 @@ public class OdeTimJsonTopology {
   /**
    * Builds a Kafka Streams topology for processing TIM JSON data.
    *
-   * @param topic the Kafka topic from which TIM JSON data is consumed and used to build the
-   *              topology.
    * @return the constructed Kafka Streams topology.
    */
-  public Topology buildTopology(String topic) {
+  public Topology buildTopology() {
     StreamsBuilder builder = new StreamsBuilder();
+    ObjectMapper objectMapper = new ObjectMapper();
 
-    // Create a windowed store with a retention period of 1 hour
-    KStream<String, String> timStream = builder.stream(topic);
-
-    timStream.groupByKey()
-        .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofHours(1))) // 1 hour window
-        .reduce(
-            (aggValue, newValue) -> newValue, // only keep latest value
-            Materialized.<String, String, WindowStore<Bytes, byte[]>>as("timjson-windowed-store")
-                .withRetention(Duration.ofHours(1))
-                .withKeySerde(Serdes.String())
+    // Read as KStream, filter to only include TMC generated messages, then convert
+    // to KTable
+    builder.stream(this.topic, Consumed.with(Serdes.String(), Serdes.String()))
+        .filter((key, value) -> {
+          try {
+            // Null values are tombstones, which are needed to remove entries from the
+            // KTable
+            if (value == null) {
+              return true;
+            }
+            // Parse the JSON and check if the message was generated by the TMC
+            JsonNode nodeMetadata = objectMapper.readTree(value).get("metadata");
+            boolean isTMCGenerated = "TMC".equals(nodeMetadata.get("recordGeneratedBy").asText());
+            log.debug("TMC Generated: {}, Key: {}", isTMCGenerated, key);
+            return isTMCGenerated;
+          } catch (Exception e) {
+            // Don't include unexpected JSON formats in the KTable
+            // This is only intended to be a graceful handling of unexpected JSON so logging
+            // is set to debug
+            log.debug("TIM topology failed to parse JSON for key {}: {}", key, e.getMessage());
+            return false;
+          }
+        }).toTable(
+            Materialized.<String, String, org.apache.kafka.streams.state.KeyValueStore<Bytes, byte[]>>as(
+                "timjson-ktable-store").withKeySerde(Serdes.String())
                 .withValueSerde(Serdes.String()));
 
     return builder.build();
   }
 
   /**
-   * Query the windowed store by a specified UUID.
+   * Query the KTable store by a specified UUID.
    *
    * @param uuid The specified UUID to query for.
    **/
   public String query(String uuid) {
-    ReadOnlyWindowStore<String, String> windowStore =
-        streams.store(StoreQueryParameters.fromNameAndType("timjson-windowed-store", QueryableStoreTypes.windowStore()));
+    try {
+      ReadOnlyKeyValueStore<String, String> keyValueStore = streams
+          .store(StoreQueryParameters.fromNameAndType("timjson-ktable-store",
+              QueryableStoreTypes.keyValueStore()));
+      String value = keyValueStore.get(uuid);
 
-    Instant now = Instant.now();
-    Instant start = now.minus(Duration.ofHours(1));
-
-    try (WindowStoreIterator<String> iterator = windowStore.fetch(uuid, start, now)) {
-      while (iterator.hasNext()) {
-        var value = String.valueOf(iterator.next().value);
-        if (value != null) {
-          return value;
-        }
+      if (value == null) {
+        log.warn("No value found for UUID in TIM topology k-table: {}", uuid);
+        return null;
       }
+
+      // Push a tombstone (null value) for this key to the topic to remove it from the
+      // KTable
+      tombstonePublisher.send(this.topic, uuid, null).whenCompleteAsync((result, error) -> {
+        if (error != null) {
+          log.error("Failed to send TIM topology tombstone for key {}: {}", uuid, error.getMessage());
+        } else {
+          log.debug("TIM topology tombstone sent for key {}", uuid);
+        }
+      });
+
+      return value;
+    } catch (Exception e) {
+      log.error("Error querying or removing UUID {} from TIM topology k-table: {}", uuid, e.getMessage(), e);
+      return null;
     }
-    return null;
   }
 }
