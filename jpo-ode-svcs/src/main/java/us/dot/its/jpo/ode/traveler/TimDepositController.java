@@ -207,7 +207,7 @@ public class TimDepositController {
       timMetadata.setMaxDurationTime(maxDurationTime);
       timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
     }
-    // Setting the SerialId to OdeBradcastTim serialId to be changed to
+    // Setting the SerialId to OdeBroadcastTim serialId to be changed to
     // J2735BroadcastTim serialId after the message has been published to
     // OdeTimBrodcast topic
     final SerialId serialIdOde = new SerialId();
