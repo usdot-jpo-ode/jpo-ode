@@ -52,12 +52,12 @@ public class BoundedMemoryRocksDBConfig implements RocksDBConfigSetter {
         RocksDB.loadLibrary();
 
         // Initialize properties from env variables
-        TOTAL_OFF_HEAP_MEMORY = getEnvLong("ROCKSDB_TOTAL_OFF_HEAP_MEMORY", 128 * MB);
-        INDEX_FILTER_BLOCK_RATIO = getEnvDouble("ROCKSDB_INDEX_FILTER_BLOCK_RATIO", 0.1);
-        TOTAL_MEMTABLE_MEMORY = getEnvLong("ROCKSDB_TOTAL_MEMTABLE_MEMORY", 64 * MB);
-        BLOCK_SIZE = getEnvLong("ROCKSDB_BLOCK_SIZE", 4 * KB);
-        N_MEMTABLES = getEnvInt("ROCKSDB_N_MEMTABLES", 2);
-        MEMTABLE_SIZE = getEnvLong("ROCKSDB_MEMTABLE_SIZE", 16 * MB);
+        TOTAL_OFF_HEAP_MEMORY = getEnvLong("ODE_ROCKSDB_TOTAL_OFF_HEAP_MEMORY", 128 * MB);
+        INDEX_FILTER_BLOCK_RATIO = getEnvDouble("ODE_ROCKSDB_INDEX_FILTER_BLOCK_RATIO", 0.1);
+        TOTAL_MEMTABLE_MEMORY = getEnvLong("ODE_ROCKSDB_TOTAL_MEMTABLE_MEMORY", 64 * MB);
+        BLOCK_SIZE = getEnvLong("ODE_ROCKSDB_BLOCK_SIZE", 4 * KB);
+        N_MEMTABLES = getEnvInt("ODE_ROCKSDB_N_MEMTABLES", 2);
+        MEMTABLE_SIZE = getEnvLong("ODE_ROCKSDB_MEMTABLE_SIZE", 16 * MB);
 
         log.info("Initialized BoundedMemoryRocksDBConfig.  TOTAL_OFF_HEAP_MEMORY = {}, INDEX_FILTER_BLOCK_RATIO = {}," +
                 " TOTAL_MEMTABLE_MEMORY = {}, BLOCK_SIZE = {}, N_MEMTABLES = {}, MEMTABLE_SIZE = {}",
