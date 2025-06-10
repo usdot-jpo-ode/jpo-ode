@@ -5,7 +5,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
   </parent>
 
   <artifactId>jpo-ode-core</artifactId>
@@ -23,12 +23,12 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-common</artifactId>
-      <version>4.1.1</version>
+      <version>4.1.2</version>
     </dependency>
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
-      <version>4.1.1</version>
+      <version>4.1.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
