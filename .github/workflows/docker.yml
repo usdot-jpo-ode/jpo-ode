@@ -1,0 +1,10 @@
+name: CI Docker build
+
+on:
+  push:
+    branches-ignore: [ master, develop, release/* ]
+  pull_request:
+
+jobs:
+  build:
+    uses: usdot-jpo-ode/actions/.github/workflows/docker.yml@main
