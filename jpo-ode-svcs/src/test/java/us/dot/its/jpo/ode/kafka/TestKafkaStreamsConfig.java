@@ -30,11 +30,13 @@ public class TestKafkaStreamsConfig {
    * @return the initialized instance of OdeTimJsonTopology.
    */
   @Bean
-  public OdeTimJsonTopology odeTimJsonTopology(OdeKafkaProperties odeKafkaProperties,
+  public OdeTimJsonTopology odeTimJsonTopology(
       @Value("${ode.kafka.topics.json.tim}") String timTopic,
+      @Value("${ode.kafka.topics.json.tim-ktable}") String timKTableTopic,
+      OdeKafkaProperties odeKafkaProperties,
       KafkaTemplate<String, String> kafkaTemplate) {
     EmbeddedKafkaHolder.addTopics(timTopic);
-    var topology = new OdeTimJsonTopology(odeKafkaProperties, timTopic, kafkaTemplate);
+    var topology = new OdeTimJsonTopology(odeKafkaProperties, timTopic, timKTableTopic, kafkaTemplate);
     Awaitility.await().until(topology::isRunning);
     return topology;
   }

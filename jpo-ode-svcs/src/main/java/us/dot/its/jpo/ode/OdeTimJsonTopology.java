@@ -13,6 +13,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -36,6 +37,7 @@ public class OdeTimJsonTopology {
   private final KafkaTemplate<String, String> tombstonePublisher;
 
   private String topic;
+  private String ktableTopic;
 
   /**
    * Constructs an instance of OdeTimJsonTopology to set up and manage a Kafka
@@ -46,25 +48,25 @@ public class OdeTimJsonTopology {
    *                      for authentication.
    * @param topic         the Kafka topic from which TIM JSON data is consumed to
    *                      build the topology.
+   * @param ktableTopic   the Kafka topic used for the KTable, which stores TIM
+   *                      JSON messages keyed by their UUID.
    * @param template      The KafkaTemplate used to publish tombstone messages to
    *                      the topic.
    */
-  public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic,
+  public OdeTimJsonTopology(OdeKafkaProperties odeKafkaProps, String topic, String ktableTopic,
       KafkaTemplate<String, String> template) {
-    // The container name in Docker or pod name in Kubernetes
-    String hostname = System.getenv("HOSTNAME") != null ? "-" + System.getenv("HOSTNAME") : "";
-
     Properties streamsProperties = new Properties();
     streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, odeKafkaProps.getBrokers());
     streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
     streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-    streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "ode-tim-json-topology" + hostname);
+    streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "ode-tim-json-topology");
 
     if ("CONFLUENT".equals(odeKafkaProps.getKafkaType())) {
       streamsProperties.putAll(odeKafkaProps.getConfluent().buildConfluentProperties());
     }
 
     this.topic = topic;
+    this.ktableTopic = ktableTopic;
     this.tombstonePublisher = template;
     streams = new KafkaStreams(buildTopology(), streamsProperties);
     streams.setStateListener(
@@ -85,8 +87,8 @@ public class OdeTimJsonTopology {
     StreamsBuilder builder = new StreamsBuilder();
     ObjectMapper objectMapper = new ObjectMapper();
 
-    // Read as KStream, filter to only include TMC generated messages, then convert
-    // to KTable
+    // Read as KStream, filter to only include TMC generated messages, then write to
+    // new topic
     builder.stream(this.topic, Consumed.with(Serdes.String(), Serdes.String()))
         .filter((key, value) -> {
           try {
@@ -107,10 +109,14 @@ public class OdeTimJsonTopology {
             log.debug("TIM topology failed to parse JSON for key {}: {}", key, e.getMessage());
             return false;
           }
-        }).toTable(
-            Materialized.<String, String, org.apache.kafka.streams.state.KeyValueStore<Bytes, byte[]>>as(
-                "timjson-ktable-store").withKeySerde(Serdes.String())
-                .withValueSerde(Serdes.String()));
+        }).to(ktableTopic);
+
+    // Create a global KTable from the filtered topic, keyed by UUID. This allows
+    // for multi-instance deployments
+    builder.globalTable(ktableTopic,
+        Consumed.with(Serdes.String(), Serdes.String()),
+        Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as("timjson-ktable-store")
+            .withKeySerde(Serdes.String()).withValueSerde(Serdes.String()));
 
     return builder.build();
   }
@@ -132,9 +138,9 @@ public class OdeTimJsonTopology {
         return null;
       }
 
-      // Push a tombstone (null value) for this key to the topic to remove it from the
-      // KTable
-      tombstonePublisher.send(this.topic, uuid, null).whenCompleteAsync((result, error) -> {
+      // Push a tombstone (null value) for this key to the ktableTopic to remove it
+      // from the KTable
+      tombstonePublisher.send(this.ktableTopic, uuid, null).whenCompleteAsync((result, error) -> {
         if (error != null) {
           log.error("Failed to send TIM topology tombstone for key {}: {}", uuid, error.getMessage());
         } else {

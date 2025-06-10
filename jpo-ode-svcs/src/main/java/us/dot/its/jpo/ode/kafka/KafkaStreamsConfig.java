@@ -15,8 +15,10 @@ public class KafkaStreamsConfig {
 
   @Bean
   public OdeTimJsonTopology odeTimJsonTopology(
-      @Value("${ode.kafka.topics.json.tim}") String timTopic, OdeKafkaProperties odeKafkaProperties,
+      @Value("${ode.kafka.topics.json.tim}") String timTopic,
+      @Value("${ode.kafka.topics.json.tim-ktable}") String timKTableTopic,
+      OdeKafkaProperties odeKafkaProperties,
       KafkaTemplate<String, String> kafkaTemplate) {
-    return new OdeTimJsonTopology(odeKafkaProperties, timTopic, kafkaTemplate);
+    return new OdeTimJsonTopology(odeKafkaProperties, timTopic, timKTableTopic, kafkaTemplate);
   }
 }
