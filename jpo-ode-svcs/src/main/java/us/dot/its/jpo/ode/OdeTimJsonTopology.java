@@ -65,6 +65,9 @@ public class OdeTimJsonTopology {
       streamsProperties.putAll(odeKafkaProps.getConfluent().buildConfluentProperties());
     }
 
+    // Configure RocksDB memory usage
+    streamsProperties.put(StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG, BoundedMemoryRocksDBConfig.class);
+
     this.topic = topic;
     this.ktableTopic = ktableTopic;
     this.tombstonePublisher = template;
@@ -130,11 +133,27 @@ public class OdeTimJsonTopology {
     try {
       ReadOnlyKeyValueStore<String, String> keyValueStore = streams
           .store(StoreQueryParameters.fromNameAndType("timjson-ktable-store",
-              QueryableStoreTypes.keyValueStore()));
+          QueryableStoreTypes.keyValueStore()));
       String value = keyValueStore.get(uuid);
 
+      int retries = 5;
+      int retryDelayMs = 100;
+      int attempt = 0;
+      // Retry offset in case the KTable is not yet populated with the UUID
+      while (value == null && attempt < retries) {
+        log.debug("No value found for UUID in TIM topology k-table: {}, retrying... (attempt {}/{})", uuid, attempt + 1, retries);
+        try {
+          Thread.sleep(retryDelayMs);
+        } catch (InterruptedException ie) {
+          Thread.currentThread().interrupt();
+          break;
+        }
+        value = keyValueStore.get(uuid);
+        attempt++;
+      }
+
       if (value == null) {
-        log.warn("No value found for UUID in TIM topology k-table: {}", uuid);
+        log.warn("No value found for UUID in TIM topology k-table after {} retries: {}", retries, uuid);
         return null;
       }
 
