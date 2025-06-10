@@ -1,17 +1,21 @@
 /*******************************************************************************
  * Copyright 2018 572682.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at</p>
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * </p>
  *
- *   <p>http://www.apache.org/licenses/LICENSE-2.0</p>
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * </p>
  *
- * <p>Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.</p>
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * </p>
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.traveler;
@@ -73,14 +77,12 @@ public class TimDepositController {
   private final PojoTopics pojoTopics;
   private final JsonTopics jsonTopics;
 
-  private final SerialId serialIdJ2735;
-  private final SerialId serialIdOde;
-
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final KafkaTemplate<String, OdeObject> timDataKafkaTemplate;
 
   /**
-   * Unique exception for the TimDepositController to handle error state responses to the client.
+   * Unique exception for the TimDepositController to handle error state responses
+   * to the client.
    */
   public static class TimDepositControllerException extends Exception {
 
@@ -96,20 +98,16 @@ public class TimDepositController {
    * Spring Autowired constructor for the REST controller to properly initialize.
    */
   @Autowired
-  public TimDepositController(Asn1CoderTopics asn1CoderTopics,
-                              PojoTopics pojoTopics,
-                              JsonTopics jsonTopics,
-                              TimIngestTrackerProperties ingestTrackerProperties,
-                              SecurityServicesProperties securityServicesProperties,
-                              KafkaTemplate<String, String> kafkaTemplate,
-                              KafkaTemplate<String, OdeObject> timDataKafkaTemplate) {
+  public TimDepositController(Asn1CoderTopics asn1CoderTopics, PojoTopics pojoTopics,
+      JsonTopics jsonTopics, TimIngestTrackerProperties ingestTrackerProperties,
+      SecurityServicesProperties securityServicesProperties,
+      KafkaTemplate<String, String> kafkaTemplate,
+      KafkaTemplate<String, OdeObject> timDataKafkaTemplate) {
     super();
 
     this.asn1CoderTopics = asn1CoderTopics;
     this.pojoTopics = pojoTopics;
     this.jsonTopics = jsonTopics;
-    this.serialIdJ2735 = new SerialId();
-    this.serialIdOde = new SerialId();
 
     this.kafkaTemplate = kafkaTemplate;
     this.timDataKafkaTemplate = timDataKafkaTemplate;
@@ -122,8 +120,7 @@ public class TimDepositController {
 
       scheduledExecutorService.scheduleAtFixedRate(
           new TimIngestWatcher(ingestTrackerProperties.getInterval()),
-          ingestTrackerProperties.getInterval(),
-          ingestTrackerProperties.getInterval(),
+          ingestTrackerProperties.getInterval(), ingestTrackerProperties.getInterval(),
           java.util.concurrent.TimeUnit.SECONDS);
     } else {
       log.info("TIM ingest monitoring disabled.");
@@ -144,24 +141,20 @@ public class TimDepositController {
       String errMsg = "Empty request.";
       log.error(errMsg);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     OdeTravelerInputData odeTID;
     ServiceRequest request;
     try {
       // Convert JSON to POJO
-      odeTID =
-          (OdeTravelerInputData) JsonUtils.jacksonFromJson(jsonString,
-              OdeTravelerInputData.class,
-              true);
+      odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(jsonString,
+          OdeTravelerInputData.class, true);
       if (odeTID == null) {
         String errMsg = "Malformed or non-compliant JSON syntax.";
         log.error(errMsg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(
-                JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+            .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
       request = odeTID.getRequest();
@@ -179,14 +172,12 @@ public class TimDepositController {
       String errMsg = "Missing or invalid argument: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (JsonUtilsException e) {
       String errMsg = "Malformed or non-compliant JSON syntax.";
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     // Add metadata to message and publish to kafka
@@ -207,8 +198,8 @@ public class TimDepositController {
         try {
           latestStartDateTime = (latestStartDateTime == null || (latestStartDateTime != null
               && latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())))
-              ? dateFormat.parse(dataFrameItem.getStartDateTime())
-              : latestStartDateTime);
+                  ? dateFormat.parse(dataFrameItem.getStartDateTime())
+                  : latestStartDateTime);
         } catch (ParseException e) {
           log.error("Invalid dateTime parse: ", e);
         }
@@ -216,41 +207,41 @@ public class TimDepositController {
       timMetadata.setMaxDurationTime(maxDurationTime);
       timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
     }
-    // Setting the SerialId to OdeBradcastTim serialId to be changed to
+    // Setting the SerialId to OdeBroadcastTim serialId to be changed to
     // J2735BroadcastTim serialId after the message has been published to
     // OdeTimBrodcast topic
+    final SerialId serialIdOde = new SerialId();
     timMetadata.setSerialId(serialIdOde);
     timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
 
     try {
       timMetadata.setRecordGeneratedAt(
-          DateTimeUtils.isoDateTime(
-              DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+          DateTimeUtils.isoDateTime(DateTimeUtils.isoDateTime(tim.getTimeStamp())));
     } catch (DateTimeParseException e) {
       String errMsg = "Invalid timestamp in tim record: " + tim.getTimeStamp();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
-    timDataKafkaTemplate.send(pojoTopics.getTimBroadcast(), serialIdJ2735.getStreamId(), odeTimData);
+    final SerialId serialIdJ2735 = new SerialId();
+    timDataKafkaTemplate.send(pojoTopics.getTimBroadcast(), serialIdJ2735.getStreamId(),
+        odeTimData);
 
     String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
-    kafkaTemplate.send(jsonTopics.getTimBroadcast(), serialIdJ2735.getStreamId(), obfuscatedTimData);
+    kafkaTemplate.send(jsonTopics.getTimBroadcast(), serialIdJ2735.getStreamId(),
+        obfuscatedTimData);
 
     // Now that the message has been published to OdeBroadcastTim topic, it should
-    // be
-    // changed to J2735BroadcastTim serialId
+    // be changed to J2735BroadcastTim serialId
     timMetadata.setSerialId(serialIdJ2735);
 
     // Short circuit
     // If the TIM has no RSU/SNMP or SDW structures, we are done
     if ((request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
-      String warningMsg =
-          "Warning: TIM contains no RSU, SNMP, or SDW fields."
-              + " Message only published to broadcast streams.";
+      String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields."
+          + " Message only published to broadcast streams.";
       log.warn(warningMsg);
       return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
     }
@@ -272,14 +263,12 @@ public class TimDepositController {
       String errMsg = "Non-compliant fields in TIM: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException e) {
-        String errMsg = "Invalid node lat/lon offset in TIM: " + e.getMessage();
-        log.error(errMsg);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(
-                JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      String errMsg = "Invalid node lat/lon offset in TIM: " + e.getMessage();
+      log.error(errMsg);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
     try {
@@ -288,19 +277,18 @@ public class TimDepositController {
       log.debug("XML representation: {}", xmlMsg);
 
       // Convert XML into ODE TIM JSON object and obfuscate RSU password
-      OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(
-          xmlMsg, timMetadata);
+      OdeTimData odeTimObj = OdeTimDataCreatorHelper.createOdeTimDataFromCreator(xmlMsg, timMetadata);
 
       String j2735Tim = odeTimObj.toString();
 
       String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
       // publish Broadcast TIM to a J2735 compliant topic.
-      kafkaTemplate.send(jsonTopics.getJ2735TimBroadcast(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+      kafkaTemplate.send(jsonTopics.getJ2735TimBroadcast(), serialIdJ2735.getStreamId(),
+          obfuscatedJ2735Tim);
       // publish J2735 TIM also to general un-filtered TIM topic with streamID as key
       kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
       // Write XML to the encoder input topic at the end to ensure the correct order
-      // of operations to pair
-      // each message to an OdeTimJson streamId key
+      // of operations to pair each message to an OdeTimJson streamId key
       kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
 
       serialIdOde.increment();

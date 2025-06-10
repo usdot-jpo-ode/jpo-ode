@@ -1,6 +1,15 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 4.1.2, released June 2025
+----------------------------------------
+### **Summary**
+This release fixes bugs found with the Asn1EncodedDataRouter, OdeTimJsonTopology and the TimDepositController.
+
+Enhancements in this release:
+- [USDOT PR 582](https://github.com/usdot-jpo-ode/jpo-ode/pull/582): Fix Signature Header Stripping
+- [CDOT PR 199](https://github.com/CDOT-CV/jpo-ode/pull/199): TIM KTable and TimDepositController UUID Fix
+
 Version 4.1.1, released May 2025
 ----------------------------------------
 ### **Summary**
