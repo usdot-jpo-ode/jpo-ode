@@ -2,7 +2,7 @@ name: DockerHub Build and Push
 
 on:
   push:
-    branches: [ master, develop, release/*, feature/update_docker_workflows ]
+    branches: [ master, develop, release/*]
     tags:     [ "*" ] 
   workflow_dispatch:
   
@@ -10,7 +10,7 @@ jobs:
   publish:
     uses: usdot-jpo-ode/actions/.github/workflows/dockerhub.yml@main
     with:
-      image: saikrishnabairamoni/v2xhub
+      image: usdotjpoode/jpo-ode
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN:   ${{ secrets.DOCKERHUB_TOKEN }}
