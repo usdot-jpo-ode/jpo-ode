@@ -76,6 +76,7 @@ ode:
         tim-filtered: "topic.FilteredOdeTimJson"
         tim-tmc-filtered: "topic.OdeTimJsonTMCFiltered"
         tim-cert-expiration: "topic.OdeTIMCertExpirationTimeJson"
+        tim-ktable: "topic.OdeTimKTableJson"
         dn-message: "topic.OdeDNMsgJson"
         rx-tim: "topic.OdeTimRxJson"
         rx-spat: "topic.OdeSpatRxJson"
