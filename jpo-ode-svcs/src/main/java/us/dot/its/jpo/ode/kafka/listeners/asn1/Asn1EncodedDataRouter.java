@@ -60,8 +60,9 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 /**
- * The Asn1EncodedDataRouter is responsible for routing encoded TIM messages that are consumed from
- * the Kafka topic.Asn1EncoderOutput topic and decide whether to route to the SDX or an RSU.
+ * The Asn1EncodedDataRouter is responsible for routing encoded TIM messages
+ * that are consumed from the Kafka topic.Asn1EncoderOutput topic and decide
+ * whether to route to the SDX or an RSU.
  **/
 @Component
 @Slf4j
@@ -94,24 +95,25 @@ public class Asn1EncodedDataRouter {
   private final boolean dataSigningEnabledRSU;
 
   /**
-   * Instantiates the Asn1EncodedDataRouter to actively consume from Kafka and route the encoded TIM
-   * messages to the SDX and RSUs.
+   * Instantiates the Asn1EncodedDataRouter to actively consume from Kafka and
+   * route the encoded TIM messages to the SDX and RSUs.
    *
    * @param asn1CoderTopics            The specified ASN1 Coder topics
    * @param jsonTopics                 The specified JSON topics to write to
    * @param securityServicesProperties The security services properties to use
-   * @param mapper                     The ObjectMapper used for serialization/deserialization
+   * @param mapper                     The ObjectMapper used for
+   *                                   serialization/deserialization
    **/
   public Asn1EncodedDataRouter(Asn1CoderTopics asn1CoderTopics,
-                               JsonTopics jsonTopics,
-                               SecurityServicesProperties securityServicesProperties,
-                               OdeTimJsonTopology odeTimJsonTopology,
-                               RsuDepositor rsuDepositor,
-                               SecurityServicesClient securityServicesClient,
-                               KafkaTemplate<String, String> kafkaTemplate,
-                               @Value("${ode.kafka.topics.sdx-depositor.input}") String sdxDepositTopic,
-                               ObjectMapper mapper,
-                               XmlMapper xmlMapper) {
+      JsonTopics jsonTopics,
+      SecurityServicesProperties securityServicesProperties,
+      OdeTimJsonTopology odeTimJsonTopology,
+      RsuDepositor rsuDepositor,
+      SecurityServicesClient securityServicesClient,
+      KafkaTemplate<String, String> kafkaTemplate,
+      @Value("${ode.kafka.topics.sdx-depositor.input}") String sdxDepositTopic,
+      ObjectMapper mapper,
+      XmlMapper xmlMapper) {
     super();
 
     this.asn1CoderTopics = asn1CoderTopics;
@@ -133,8 +135,8 @@ public class Asn1EncodedDataRouter {
   /**
    * Listens for messages from the specified Kafka topic and processes them.
    *
-   * @param consumerRecord The Kafka consumer record containing the key and value of the consumed
-   *                       message.
+   * @param consumerRecord The Kafka consumer record containing the key and value
+   *                       of the consumed message.
    */
   @KafkaListener(id = "Asn1EncodedDataRouter", topics = "${ode.kafka.topics.asn1.encoder-output}")
   public void listen(ConsumerRecord<String, String> consumerRecord)
@@ -145,14 +147,13 @@ public class Asn1EncodedDataRouter {
     JSONObject metadata = consumedObj.getJSONObject(OdeMsgMetadata.METADATA_STRING);
 
     if (!metadata.has(TimTransmogrifier.REQUEST_STRING)) {
-      throw new Asn1EncodedDataRouterException(
-          String.format("Invalid or missing '%s' object in the encoder response. Unable to process record with offset '%s'",
-              TimTransmogrifier.REQUEST_STRING,
-              consumerRecord.offset())
-      );
+      throw new Asn1EncodedDataRouterException(String.format(
+          "Invalid or missing '%s' object in the encoder response. Unable to process record with offset '%s'",
+          TimTransmogrifier.REQUEST_STRING, consumerRecord.offset()));
     }
 
-    JSONObject payloadData = consumedObj.getJSONObject(OdeMsgPayload.PAYLOAD_STRING).getJSONObject(OdeMsgPayload.DATA_STRING);
+    JSONObject payloadData = consumedObj.getJSONObject(OdeMsgPayload.PAYLOAD_STRING)
+        .getJSONObject(OdeMsgPayload.DATA_STRING);
     ServiceRequest request = getServiceRequest(metadata);
     log.debug("Mapped to object ServiceRequest: {}", request);
 
@@ -163,14 +164,16 @@ public class Asn1EncodedDataRouter {
 
       log.error("ASN.1 encoding failed with code {} and message {}.", code, message);
       throw new Asn1EncodedDataRouterException(
-          "ASN.1 encoding failed for offset %d with code %s and message %s.".formatted(consumerRecord.offset(), code, message));
+          "ASN.1 encoding failed for offset %d with code %s and message %s."
+              .formatted(consumerRecord.offset(), code, message));
     }
     if (!payloadData.has(ADVISORY_SITUATION_DATA_STRING)) {
       processUnsignedMessage(request, metadata, payloadData);
     } else if (request.getSdw() != null) {
       processDoubleEncodedMessage(request, payloadData);
     } else {
-      log.warn("Received encoded AdvisorySituationData message without SDW data. This should never happen.");
+      log.warn(
+          "Received encoded AdvisorySituationData message without SDW data. This should never happen.");
     }
   }
 
@@ -185,10 +188,10 @@ public class Asn1EncodedDataRouter {
   }
 
   /**
-   * When receiving the 'rsus' in xml, since there is only one 'rsu' and
-   * there is no construct for array in xml, the rsus does not translate
-   * to an array of 1 element. This method, resolves this issue.
-   * Note: the code modifies the request object in place.
+   * When receiving the 'rsus' in xml, since there is only one 'rsu' and there is
+   * no construct for array in xml, the rsus does not translate to an array of 1
+   * element. This method, resolves this issue. Note: the code modifies the
+   * request object in place.
    */
   private void processRsusIfPresent(JSONObject request) {
     final String RSUS_KEY = TimTransmogrifier.RSUS_STRING;
@@ -231,30 +234,31 @@ public class Asn1EncodedDataRouter {
   }
 
   // If SDW in metadata and ASD in body (double encoding complete) -> send to SDX
-  private void processDoubleEncodedMessage(ServiceRequest request, JSONObject dataObj) throws JsonProcessingException {
+  private void processDoubleEncodedMessage(ServiceRequest request, JSONObject dataObj)
+      throws JsonProcessingException {
     depositToSdx(request, dataObj.getJSONObject(ADVISORY_SITUATION_DATA_STRING).getString(BYTES));
   }
 
-  private void processUnsignedMessage(ServiceRequest request,
-                                      JSONObject metadataJson,
-                                      JSONObject payloadJson) {
+  private void processUnsignedMessage(ServiceRequest request, JSONObject metadataJson,
+      JSONObject payloadJson) {
     log.info("Processing unsigned message.");
     JSONObject messageFrameJson = payloadJson.getJSONObject(MESSAGE_FRAME);
     var hexEncodedTimBytes = messageFrameJson.getString(BYTES);
     String bytesToSend;
-    if ((dataSigningEnabledRSU || dataSigningEnabledSDW) && (request.getSdw() != null || request.getRsus() != null)) {
+    if ((dataSigningEnabledRSU || dataSigningEnabledSDW)
+        && (request.getSdw() != null || request.getRsus() != null)) {
       log.debug("Signing encoded TIM message...");
       String base64EncodedTim = CodecUtils.toBase64(CodecUtils.fromHex(hexEncodedTimBytes));
 
       // get max duration time and convert from minutes to milliseconds
       // (unsigned integer valid 0 to 2^32-1 in units of milliseconds) from metadata
-      int maxDurationTime = Integer.parseInt(metadataJson.get("maxDurationTime").toString())
-          * 60 * 1000;
+      int maxDurationTime = Integer.parseInt(metadataJson.get("maxDurationTime").toString()) * 60 * 1000;
       var signedResponse = securityServicesClient.signMessage(base64EncodedTim, maxDurationTime);
       depositToTimCertExpirationTopic(metadataJson, signedResponse, maxDurationTime);
       bytesToSend = signedResponse.getHexEncodedMessageSigned();
     } else {
-      log.debug("Signing not enabled or no SDW or RSU data detected. Sending encoded TIM message without signing...");
+      log.debug(
+          "Signing not enabled or no SDW or RSU data detected. Sending encoded TIM message without signing...");
       bytesToSend = hexEncodedTimBytes;
     }
 
@@ -263,10 +267,15 @@ public class Asn1EncodedDataRouter {
 
     sendToRsus(request, encodedTimWithoutHeaders);
     depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders);
-    publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    if (dataSigningEnabledSDW) {
+      publishForSecondEncoding(request, bytesToSend);
+    } else {
+      publishForSecondEncoding(request, encodedTimWithoutHeaders);
+    }
   }
 
-  private void depositToTimCertExpirationTopic(JSONObject metadataJson, SignatureResultModel signedResponse, int maxDurationTime) {
+  private void depositToTimCertExpirationTopic(JSONObject metadataJson,
+      SignatureResultModel signedResponse, int maxDurationTime) {
     String packetId = metadataJson.getString("odePacketID");
     String timStartDateTime = metadataJson.getString("odeTimStartDateTime");
     JSONObject timWithExpiration = new JSONObject();
@@ -280,38 +289,39 @@ public class Asn1EncodedDataRouter {
     kafkaTemplate.send(jsonTopics.getTimCertExpiration(), timWithExpiration.toString());
   }
 
-  private void depositToSdx(ServiceRequest request, String asdBytes) throws JsonProcessingException {
-    SDXDeposit sdxDeposit = new SDXDeposit(
-        request.getSdw().getEstimatedRemovalDate(),
-        asdBytes
-    );
+  private void depositToSdx(ServiceRequest request, String asdBytes)
+      throws JsonProcessingException {
+    SDXDeposit sdxDeposit = new SDXDeposit(request.getSdw().getEstimatedRemovalDate(), asdBytes);
     kafkaTemplate.send(this.sdxDepositTopic, mapper.writeValueAsString(sdxDeposit));
   }
 
   /**
-   * Constructs an XML representation of an Advisory Situation Data (ASD) message containing a
-   * Traveler Information Message (TIM). Processes the provided service request and signed
-   * message to create and structure the ASD before converting it to an XML string output.
+   * Constructs an XML representation of an Advisory Situation Data (ASD) message
+   * containing a Traveler Information Message (TIM). Processes the provided
+   * service request and signed message to create and structure the ASD before
+   * converting it to an XML string output.
    *
-   * @param request   the service request object containing meta information, service region,
-   *                  delivery time, and other necessary data for ASD creation.
-   * @param signedMsg the signed Traveler Information Message (TIM) to be included in the ASD.
+   * @param request   the service request object containing meta information,
+   *                  service region, delivery time, and other necessary data for
+   *                  ASD creation.
+   * @param signedMsg the signed Traveler Information Message (TIM) to be included
+   *                  in the ASD.
    *
-   * @return a String containing the fully crafted ASD message in XML format. Returns null if the
-   *     message could not be constructed due to exceptions.
+   * @return a String containing the fully crafted ASD message in XML format.
+   *         Returns null if the message could not be constructed due to
+   *         exceptions.
    */
-  private String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) throws JsonProcessingException, ParseException {
+  private String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg)
+      throws JsonProcessingException, ParseException {
     SDW sdw = request.getSdw();
     DdsAdvisorySituationData asd;
 
-    byte sendToRsu =
-        request.getRsus() != null ? DdsAdvisorySituationData.RSU : DdsAdvisorySituationData.NONE;
+    byte sendToRsu = request.getRsus() != null ? DdsAdvisorySituationData.RSU : DdsAdvisorySituationData.NONE;
     byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
 
     asd = new DdsAdvisorySituationData()
         .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
-        .setTimeToLive(sdw.getTtl())
-        .setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId())
+        .setTimeToLive(sdw.getTtl()).setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId())
         .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, null);
 
     var asdJson = (ObjectNode) mapper.readTree(asd.toJson());
@@ -348,16 +358,15 @@ public class Asn1EncodedDataRouter {
     ObjectNode root = mapper.createObjectNode();
     root.set(OdeAsn1Data.ODE_ASN1_DATA, message);
 
-    var outputXml = xmlMapper.writeValueAsString(root)
-        .replace("<ObjectNode>", "")
-        .replace("</ObjectNode>", "");
+    var outputXml = xmlMapper.writeValueAsString(root).replace("<ObjectNode>", "").replace("</ObjectNode>", "");
     log.debug("Fully crafted ASD to be encoded: {}", outputXml);
     return outputXml;
   }
 
   private ArrayNode buildEncodings() throws JsonProcessingException {
     ArrayNode encodings = mapper.createArrayNode();
-    var encoding = new Asn1Encoding(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING, EncodingRule.UPER);
+    var encoding = new Asn1Encoding(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING,
+        EncodingRule.UPER);
     encodings.add(mapper.readTree(mapper.writeValueAsString(encoding)));
     return encodings;
   }
@@ -372,32 +381,35 @@ public class Asn1EncodedDataRouter {
   }
 
   private void setRequiredExpiryDate(DateTimeFormatter dateFormat, String timStartDateTime,
-                                     int maxDurationTime, JSONObject timWithExpiration) {
+      int maxDurationTime, JSONObject timWithExpiration) {
     try {
       var timStartLocalDate = LocalDateTime.ofInstant(Instant.parse(timStartDateTime), ZoneId.of("UTC"));
       var expiryDate = timStartLocalDate.plus(maxDurationTime, ChronoUnit.MILLIS);
       timWithExpiration.put("requiredExpirationDate", expiryDate.format(dateFormat));
     } catch (Exception e) {
-      log.error("Unable to parse requiredExpirationDate. Setting requiredExpirationDate to 'null'", e);
+      log.error("Unable to parse requiredExpirationDate. Setting requiredExpirationDate to 'null'",
+          e);
       timWithExpiration.put("requiredExpirationDate", "null");
     }
   }
 
-  private void setExpiryDate(SignatureResultModel signedResponse,
-                             JSONObject timWithExpiration,
-                             DateTimeFormatter dateFormat) {
+  private void setExpiryDate(SignatureResultModel signedResponse, JSONObject timWithExpiration,
+      DateTimeFormatter dateFormat) {
     try {
       var messageExpiryMillis = signedResponse.getMessageExpiry() * 1000;
       var expiryDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(messageExpiryMillis), ZoneId.of("UTC"));
       timWithExpiration.put("expirationDate", expiryDate.format(dateFormat));
     } catch (Exception e) {
-      log.error("Unable to get expiration date from signed messages response. Setting expirationData to 'null'", e);
+      log.error(
+          "Unable to get expiration date from signed messages response. Setting expirationData to 'null'",
+          e);
       timWithExpiration.put("expirationDate", "null");
     }
   }
 
   /**
-   * Strips header from unsigned message (all bytes before the TIM start flag hex value).
+   * Strips header from unsigned message (all bytes before the TIM start flag hex
+   * value).
    */
   private String stripHeader(String encodedUnsignedTim) {
     int index = encodedUnsignedTim.indexOf(SupportedMessageType.TIM.getStartFlag().toUpperCase());
