@@ -1,0 +1,11 @@
+# This workflow will only build for Pull Requests which are opened, changed , merged 
+name: Docker build
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [feature/update_docker_workflows]
+
+jobs:
+  build:
+    uses: usdot-jpo-ode/actions/.github/workflows/docker.yml@main
