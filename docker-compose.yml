@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
     ports:
       - "8080:8080"
@@ -55,12 +55,12 @@ services:
       ODE_TIM_INGEST_MONITORING_ENABLED: ${ODE_TIM_INGEST_MONITORING_ENABLED}
       ODE_TIM_INGEST_MONITORING_INTERVAL: ${ODE_TIM_INGEST_MONITORING_INTERVAL}
       ODE_STOMP_EXPORTER_ENABLED: ${ODE_STOMP_EXPORTER_ENABLED}
-      ODE_ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY}
-      ODE_ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO}
-      ODE_ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY}
-      ODE_ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE}
-      ODE_ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES}
-      ODE_ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE}
+      ODE_ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ODE_ROCKSDB_TOTAL_OFF_HEAP_MEMORY}
+      ODE_ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ODE_ROCKSDB_INDEX_FILTER_BLOCK_RATIO}
+      ODE_ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ODE_ROCKSDB_TOTAL_MEMTABLE_MEMORY}
+      ODE_ROCKSDB_BLOCK_SIZE: ${ODE_ROCKSDB_BLOCK_SIZE}
+      ODE_ROCKSDB_N_MEMTABLES: ${ODE_ROCKSDB_N_MEMTABLES}
+      ODE_ROCKSDB_MEMTABLE_SIZE: ${ODE_ROCKSDB_MEMTABLE_SIZE}
     depends_on:
       kafka:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "http://localhost:8080" ]
+      test: ["CMD", "wget", "--spider", "http://localhost:8080"]
       interval: 5s
       timeout: 30s
       retries: 5
@@ -90,7 +90,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -123,7 +123,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -157,7 +157,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -193,7 +193,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -222,7 +222,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -256,7 +256,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     ports:
       - "8090:8090"
