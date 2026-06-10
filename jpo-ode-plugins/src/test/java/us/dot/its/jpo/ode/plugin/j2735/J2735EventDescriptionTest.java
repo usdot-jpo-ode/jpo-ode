@@ -15,19 +15,15 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
-import mockit.Tested;
-
 public class J2735EventDescriptionTest {
 
-   @Tested
-   J2735EventDescription ed;
+   J2735EventDescription ed = new J2735EventDescription();
 
    @Test
    public void testGettersAndSetters() {

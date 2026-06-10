@@ -18,13 +18,11 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.util.ArrayList;
 import java.util.List;
-import mockit.Tested;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class J2735TrailerDataTest {
-  @Tested
-  J2735TrailerData td;
+  J2735TrailerData td = new J2735TrailerData();
 
   @Test
   void testGettersAndSetters() {

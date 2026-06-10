@@ -15,22 +15,23 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import mockit.Capturing;
-import mockit.Expectations;
 import us.dot.its.jpo.ode.plugin.j2735.J2735WiperSet;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -278,20 +279,16 @@ public class WeatherProbeBuilderTest {
    }
 
    @Test
-   public void testRainRates(@Capturing WiperSetBuilder capturingWiperSetBuilder) {
+   public void testRainRates() {
+      try (MockedStatic<WiperSetBuilder> wiperStatic = Mockito.mockStatic(WiperSetBuilder.class)) {
+         wiperStatic.when(() -> WiperSetBuilder.genericWiperSet(any(JsonNode.class)))
+               .thenReturn(new J2735WiperSet());
 
-      new Expectations() {
-         {
-            WiperSetBuilder.genericWiperSet((JsonNode) any);
-            result = new J2735WiperSet();
-         }
-      };
+         ObjectNode testInput = JsonUtils.newNode();
+         JsonUtils.addNode(testInput, "rainRates", JsonUtils.newNode());
 
-      ObjectNode testInput = JsonUtils.newNode();
-      JsonUtils.addNode(testInput, "rainRates", JsonUtils.newNode());
-
-      assertNotNull(WeatherProbeBuilder.genericWeatherProbe(testInput).getRainRates());
-
+         assertNotNull(WeatherProbeBuilder.genericWeatherProbe(testInput).getRainRates());
+      }
    }
 
    @Test

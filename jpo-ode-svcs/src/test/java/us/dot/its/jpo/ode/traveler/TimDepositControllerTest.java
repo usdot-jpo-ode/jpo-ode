@@ -26,14 +26,15 @@
  import java.time.Instant;
  import java.time.ZoneId;
  import java.util.Set;
- import mockit.Capturing;
- import mockit.Expectations;
  import org.apache.commons.io.IOUtils;
  import org.apache.kafka.clients.consumer.Consumer;
  import org.apache.kafka.common.serialization.StringDeserializer;
  import org.json.JSONObject;
  import org.junit.jupiter.api.Assertions;
  import org.junit.jupiter.api.Test;
+ import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.Mockito.mockStatic;
+ import org.mockito.MockedStatic;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
  import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,6 +46,7 @@
  import org.springframework.kafka.test.context.EmbeddedKafka;
  import org.springframework.kafka.test.utils.KafkaTestUtils;
  import org.springframework.test.annotation.DirtiesContext;
+ import org.springframework.test.context.ContextConfiguration;
  import org.springframework.test.context.TestPropertySource;
  import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
  import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -95,7 +97,7 @@
 
    @Autowired
    EmbeddedKafkaBroker embeddedKafka;
- 
+
    @Test
    void nullRequestShouldReturnEmptyError() {
      TimDepositController testTimDepositController =
@@ -173,8 +175,7 @@
    }
  
    @Test
-   void failedObjectNodeConversionShouldReturnConvertingError(
-         @Capturing TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
+   void failedObjectNodeConversionShouldReturnConvertingError()
        throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException,
        IOException, TravelerMessageFromHumanToAsnConverter.InvalidNodeLatLonOffsetException {
      // prepare
@@ -185,32 +186,29 @@
          new TimDepositController(asn1CoderTopics, jsonTopics,
              timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
              simpleXmlMapper);
-     new Expectations() {
- 
-       {
-         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(
-             (JsonNode) any);
-         result = new JsonUtilsException("testException123", null);
-       }
-     };
-     String requestBody =
-         "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
- 
-     // execute
-     ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
-     // verify
-     String expectedResponseBody =
-         "{\"error\":\"Error converting to encodable TravelerInputData.\"}";
-     Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
-     // cleanup
-     DateTimeUtils.setClock(prevClock);
+     try (MockedStatic<TravelerMessageFromHumanToAsnConverter> converterStatic =
+              mockStatic(TravelerMessageFromHumanToAsnConverter.class)) {
+       converterStatic.when(() ->
+           TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(any(JsonNode.class)))
+           .thenThrow(new JsonUtilsException("testException123", null));
+
+       String requestBody =
+           "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+
+       // execute
+       ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
+
+       // verify
+       String expectedResponseBody =
+           "{\"error\":\"Error converting to encodable TravelerInputData.\"}";
+       Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
+     } finally {
+       DateTimeUtils.setClock(prevClock);
+     }
    }
  
    @Test
-   void failedXmlConversionShouldReturnConversionError(
-       @Capturing TimTransmogrifier capturingTimTransmogrifier)
+   void failedXmlConversionShouldReturnConversionError()
        throws XmlUtils.XmlUtilsException, JsonUtilsException {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
@@ -220,25 +218,26 @@
          new TimDepositController(asn1CoderTopics, jsonTopics,
              timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
              simpleXmlMapper);
- 
-     new Expectations() {
-       {
-         TimTransmogrifier.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any,
-             (OdeMsgMetadata) any, (SerialId) any);
-         result = new XmlUtils.XmlUtilsException("testException123", null);
-       }
-     };
-     String requestBody =
-         "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
- 
-     // execute
-     ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
-     // // verify
-     String expectedResponseBody =
-         "{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}";
-     Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
-     DateTimeUtils.setClock(prevClock);
+
+     try (MockedStatic<TimTransmogrifier> transmogrifierStatic =
+              mockStatic(TimTransmogrifier.class, org.mockito.Mockito.CALLS_REAL_METHODS)) {
+       transmogrifierStatic.when(() ->
+           TimTransmogrifier.convertToXml(any(), any(), any(), any()))
+           .thenThrow(new XmlUtils.XmlUtilsException("testException123", null));
+
+       String requestBody =
+           "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+
+       // execute
+       ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
+
+       // verify
+       String expectedResponseBody =
+           "{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}";
+       Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
+     } finally {
+       DateTimeUtils.setClock(prevClock);
+     }
    }
  
    @Test
