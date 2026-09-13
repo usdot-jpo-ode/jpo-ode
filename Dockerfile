@@ -26,20 +26,9 @@ COPY ./jpo-ode-core/src ./jpo-ode-core/src/
 COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/
 COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 
-# Then build the rest of the project. GitHub Packages requires credentials even for public Maven
-# packages; the token is a BuildKit secret and is removed in the same layer.
-RUN --mount=type=secret,id=github_token,required=false \
-    if [ -f /run/secrets/github_token ]; then \
-      token="$(cat /run/secrets/github_token)"; \
-      printf '%s\n' \
-        '<settings><servers><server><id>github-ffm</id>' \
-        "<username>${GITHUB_ACTOR}</username><password>${token}</password>" \
-        '</server></servers></settings>' > /tmp/ffm-settings.xml; \
-      mvn -s /tmp/ffm-settings.xml -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests; \
-      status=$?; rm -f /tmp/ffm-settings.xml; exit $status; \
-    else \
-      mvn -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests; \
-    fi
+# Then build the rest of the project. The FFMLib dependency and its native libraries are resolved
+# from Maven Central.
+RUN mvn -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests
 
 FROM eclipse-temurin:25-jre-noble
 
@@ -48,7 +37,7 @@ WORKDIR /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
-COPY --from=builder /home/jpo-ode-svcs/target/ffmlib-native/native/linux-x86_64/libasnapplication.so /home/libs/libasnapplication.so
+COPY --from=builder /home/jpo-ode-svcs/target/libs/libasnapplication.so /home/libs/libasnapplication.so
 COPY ./scripts/startup_jpoode.sh /home
 
 RUN apt-get update \

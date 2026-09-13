@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import j2735ffm.Asn1Codec;
+import j2735ffm.MessageFrameCodec;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +12,10 @@ public class Asn1CodecConfiguration {
   /** Creates the native codec from the configured FFMLib library. */
   @Bean
   @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
-  public Asn1Codec asn1Codec(FfmlibProperties properties) {
+  public MessageFrameCodec messageFrameCodec(FfmlibProperties properties) {
     java.nio.file.Path nativeLibrary = FfmlibNativeLibraryLoader.resolve(
         properties.getNativeLibraryPath());
-    return new Asn1Codec(
+    return new MessageFrameCodec(
         properties.getTextBufferSize(),
         properties.getUperBufferSize(),
         properties.getErrorBufferSize(),

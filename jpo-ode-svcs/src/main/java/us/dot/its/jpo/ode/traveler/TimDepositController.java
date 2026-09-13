@@ -294,14 +294,18 @@ public class TimDepositController {
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
-    } catch (j2735ffm.Asn1CodecException e) {
-      String errMsg = "Error encoding TIM with FFM: " + e.getNativeError();
+    } catch (RuntimeException e) {
+      String nativeError = e.getCause() instanceof j2735ffm.ConvertException convertException
+          ? convertException.getMessage()
+          : e.getMessage();
+      String errMsg = "Error encoding TIM with FFM: " + nativeError;
       log.error(errMsg, e);
-      boolean requestFailure = e.getNativeError().startsWith("INVALID_ARGUMENT")
-          || e.getNativeError().startsWith("MALFORMED_INPUT")
-          || e.getNativeError().startsWith("TRUNCATED_INPUT")
-          || e.getNativeError().startsWith("CONSTRAINT_INVALID")
-          || e.getNativeError().startsWith("UNKNOWN_PDU");
+      boolean requestFailure = nativeError != null
+          && (nativeError.startsWith("INVALID_ARGUMENT")
+              || nativeError.startsWith("MALFORMED_INPUT")
+              || nativeError.startsWith("TRUNCATED_INPUT")
+              || nativeError.startsWith("CONSTRAINT_INVALID")
+              || nativeError.startsWith("UNKNOWN_PDU"));
       return ResponseEntity.status(requestFailure ? HttpStatus.BAD_REQUEST
               : HttpStatus.INTERNAL_SERVER_ERROR)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));

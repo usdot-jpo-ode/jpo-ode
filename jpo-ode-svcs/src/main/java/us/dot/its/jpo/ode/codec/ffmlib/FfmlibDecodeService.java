@@ -7,7 +7,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.net.DatagramPacket;
-import java.util.HexFormat;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -285,34 +284,9 @@ public class FfmlibDecodeService {
       return encoded;
     }
 
-    String xer = codec().decodeToXer(encoded, IEEE_PDU, j2735ffm.AsnEncoding.COER);
-    try {
-      JsonNode ieee = simpleXmlMapper.readTree(xer);
-      JsonNode content = ieee.path("content");
-      JsonNode unsecured;
-      if (content.has("signedData")) {
-        JsonNode signed = content.path("signedData");
-        applySignedMetadata(metadata, signed);
-        unsecured = signed.path("tbsData").path("payload").path("data")
-            .path("content").path("unsecuredData");
-      } else if (content.has("unsecuredData")) {
-        metadata.setCertPresent(false);
-        unsecured = content.path("unsecuredData");
-      } else if (content.has("encryptedData")) {
-        throw new IllegalArgumentException(
-            "Encrypted Ieee1609Dot2Data cannot be decoded without decryption");
-      } else {
-        throw new IllegalArgumentException(
-            "Ieee1609Dot2Data has no inline unsecuredData payload; external payloads are unsupported");
-      }
-      if (!unsecured.isTextual() || unsecured.textValue().isBlank()) {
-        throw new IllegalArgumentException(
-            "Ieee1609Dot2Data has no inline unsecuredData payload; external payloads are unsupported");
-      }
-      return HexFormat.of().parseHex(unsecured.textValue().replaceAll("\\s", ""));
-    } catch (JsonProcessingException error) {
-      throw new IllegalArgumentException("Unable to parse Ieee1609Dot2Data XER", error);
-    }
+    throw new UnsupportedOperationException(
+        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 2.1.0-beta1; "
+            + "use external codec mode for signed messages");
   }
 
   private void applySignedMetadata(OdeMessageFrameMetadata metadata, JsonNode signed) {

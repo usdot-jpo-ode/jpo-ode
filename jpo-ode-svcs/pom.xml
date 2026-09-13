@@ -164,9 +164,9 @@
       <version>1.2.0</version>
     </dependency>
     <dependency>
-      <groupId>usdot.jpo.ode</groupId>
+      <groupId>com.neaeraconsulting</groupId>
       <artifactId>j2735-2024-ffm-lib</artifactId>
-      <version>3.0.0</version>
+      <version>2.1.0-beta1</version>
     </dependency>
     <dependency>
       <groupId>net.javacrumbs.json-unit</groupId>
@@ -205,43 +205,43 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-ffmlib-native-linux-x86_64</id>
+            <id>copy-ffmlib-native-linux-x86_64</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>unpack</goal>
+              <goal>copy</goal>
             </goals>
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>usdot.jpo.ode</groupId>
+                  <groupId>com.neaeraconsulting</groupId>
                   <artifactId>j2735-2024-ffm-lib</artifactId>
-                  <version>3.0.0</version>
+                  <version>2.1.0-beta1</version>
                   <classifier>linux-x86_64</classifier>
-                  <type>jar</type>
+                  <type>so</type>
+                  <destFileName>libasnapplication.so</destFileName>
                 </artifactItem>
               </artifactItems>
-              <includes>native/linux-x86_64/libasnapplication.so</includes>
-              <outputDirectory>${project.build.directory}/ffmlib-native</outputDirectory>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
             </configuration>
           </execution>
           <execution>
-            <id>unpack-ffmlib-native-windows-x86_64</id>
+            <id>copy-ffmlib-native-windows-x86_64</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>unpack</goal>
+              <goal>copy</goal>
             </goals>
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>usdot.jpo.ode</groupId>
+                  <groupId>com.neaeraconsulting</groupId>
                   <artifactId>j2735-2024-ffm-lib</artifactId>
-                  <version>3.0.0</version>
+                  <version>2.1.0-beta1</version>
                   <classifier>windows-x86_64</classifier>
-                  <type>jar</type>
+                  <type>dll</type>
+                  <destFileName>asnapplication.dll</destFileName>
                 </artifactItem>
               </artifactItems>
-              <includes>native/windows-x86_64/asnapplication.dll</includes>
-              <outputDirectory>${project.build.directory}/ffmlib-native</outputDirectory>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
             </configuration>
           </execution>
         </executions>

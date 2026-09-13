@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Configuration properties for the FFMLib in-process ASN.1 codec.
  *
- * <p>Native {@code Asn1Codec} buffer parameters map to:
+ * <p>Native {@code MessageFrameCodec} buffer parameters map to:
  * <ul>
  *   <li>{@code textBufferSize} — XER/JER text buffer (needed for both encode and decode)</li>
  *   <li>{@code uperBufferSize} — UPER binary buffer</li>

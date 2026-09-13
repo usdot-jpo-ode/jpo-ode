@@ -127,9 +127,9 @@ public class FfmlibEncodeService {
     }
     byte[] encoded;
     if (advisory.has("Ieee1609Dot2Data")) {
-      String xer = simpleXmlMapper.writer().withRootName("Ieee1609Dot2Data")
-          .writeValueAsString(advisory.path("Ieee1609Dot2Data"));
-      encoded = codec().encodeFromXer(xer, "Ieee1609Dot2Data", AsnEncoding.COER);
+      throw new UnsupportedOperationException(
+          "Signed IEEE 1609.2 advisory messages are not supported by j2735-2024-ffm-lib "
+              + "2.1.0-beta1; use external codec mode for signed messages");
     } else if (advisory.has(MESSAGE_FRAME)) {
       MessageFrame<?> frame = simpleXmlMapper.convertValue(
           advisory.path(MESSAGE_FRAME), MessageFrame.class);
