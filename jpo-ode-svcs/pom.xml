@@ -205,10 +205,10 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-ffmlib-native-linux-x86_64</id>
+            <id>unpack-ffmlib-native-linux-x86_64</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>copy</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
               <artifactItems>
@@ -217,18 +217,18 @@
                   <artifactId>j2735-2024-ffm-lib</artifactId>
                   <version>3.0.0</version>
                   <classifier>linux-x86_64</classifier>
-                  <type>so</type>
-                  <destFileName>libasnapplication.so</destFileName>
+                  <type>jar</type>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includes>native/linux-x86_64/libasnapplication.so</includes>
+              <outputDirectory>${project.build.directory}/ffmlib-native</outputDirectory>
             </configuration>
           </execution>
           <execution>
-            <id>copy-ffmlib-native-windows-x86_64</id>
+            <id>unpack-ffmlib-native-windows-x86_64</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>copy</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
               <artifactItems>
@@ -237,11 +237,11 @@
                   <artifactId>j2735-2024-ffm-lib</artifactId>
                   <version>3.0.0</version>
                   <classifier>windows-x86_64</classifier>
-                  <type>dll</type>
-                  <destFileName>asnapplication.dll</destFileName>
+                  <type>jar</type>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includes>native/windows-x86_64/asnapplication.dll</includes>
+              <outputDirectory>${project.build.directory}/ffmlib-native</outputDirectory>
             </configuration>
           </execution>
         </executions>

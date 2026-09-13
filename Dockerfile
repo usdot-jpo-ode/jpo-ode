@@ -48,7 +48,7 @@ WORKDIR /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
-COPY --from=builder /home/jpo-ode-svcs/target/libs/libasnapplication.so /home/libs/libasnapplication.so
+COPY --from=builder /home/jpo-ode-svcs/target/ffmlib-native/native/linux-x86_64/libasnapplication.so /home/libs/libasnapplication.so
 COPY ./scripts/startup_jpoode.sh /home
 
 RUN apt-get update \
