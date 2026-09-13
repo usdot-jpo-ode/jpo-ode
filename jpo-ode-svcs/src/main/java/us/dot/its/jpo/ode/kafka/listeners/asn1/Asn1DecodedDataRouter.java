@@ -26,6 +26,13 @@ public class Asn1DecodedDataRouter {
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final XmlMapper xmlMapper;
 
+  /**
+   * Constructs the external ADM output router.
+   *
+   * @param kafkaTemplate Kafka producer
+   * @param topics decoded JSON topic names
+   * @param xmlMapper XML mapper for decoder output
+   */
   public Asn1DecodedDataRouter(
       KafkaTemplate<String, String> kafkaTemplate,
       JsonTopics topics,

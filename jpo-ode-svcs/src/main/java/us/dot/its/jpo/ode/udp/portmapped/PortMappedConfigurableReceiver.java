@@ -18,6 +18,13 @@ public class PortMappedConfigurableReceiver extends GenericReceiver {
 
   private final PortMappedIngestConfig.PortMappedIngestSource ingestConfig;
 
+  /**
+   * Constructs a port-mapped receiver with an overridden source address.
+   *
+   * @param props UDP receiver properties
+   * @param decodeService FFMLib decode service
+   * @param ingestConfig port-mapped ingest source configuration
+   */
   public PortMappedConfigurableReceiver(ReceiverProperties props,
       FfmlibDecodeService decodeService,
       PortMappedIngestConfig.PortMappedIngestSource ingestConfig) {
