@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,44 +15,41 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.pdm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.snmp4j.ScopedPDU;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import us.dot.its.jpo.ode.pdm.PdmUtil;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PdmUtilTest {
 
-   @Injectable
-   RSU mockRSU;
-   @Mocked
+   @Mock
    J2735ProbeDataManagment mockPdm;
-   @Mocked
-   ScopedPDU mockScopedPDU;
 
    @Test
-   public void createPDUshouldNotReturnNUll(@Mocked J2735VehicleStatusRequest vehicleStatusRequest) {
+   public void createPDUshouldNotReturnNUll() {
+      J2735VehicleStatusRequest vehicleStatusRequest = Mockito.mock(J2735VehicleStatusRequest.class);
       J2735VehicleStatusRequest[] vehicleStatusRequestList = { vehicleStatusRequest };
-      new Expectations() {
-         {
-            mockPdm.getVehicleStatusRequestList();
-            result = vehicleStatusRequestList;
-         }
-      };
+      when(mockPdm.getVehicleStatusRequestList()).thenReturn(vehicleStatusRequestList);
+
       ScopedPDU result = PdmUtil.createPDU(mockPdm);
       assertNotNull(result);
    }

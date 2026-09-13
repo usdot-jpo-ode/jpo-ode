@@ -15,21 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
-
-//@RunWith(JMockit.class)
 public class J2735ProbeDataManagmentTest {
 
-    @Tested
-    J2735ProbeDataManagment testPDM;
+    J2735ProbeDataManagment testPDM = new J2735ProbeDataManagment();
 
     @Test
     public void testSettersAndGetters() {

@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
@@ -47,6 +47,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.stereotype.Service;
@@ -71,7 +72,6 @@ import us.dot.its.jpo.ode.rsu.RsuProperties;
 import us.dot.its.jpo.ode.security.SecurityServicesClient;
 import us.dot.its.jpo.ode.security.SecurityServicesProperties;
 import us.dot.its.jpo.ode.security.models.SignatureResultModel;
-import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 
 @Slf4j
 @SpringBootTest(
@@ -82,7 +82,11 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
         "ode.kafka.topics.json.tim-tmc-filtered=topic.Asn1EncodedDataRouterTestTimTmcFiltered",
         "ode.kafka.topics.asn1.encoder-input=topic.Asn1EncodedDataRouterTestEncoderInput",
         "ode.kafka.topics.asn1.encoder-output=topic.Asn1EncodedDataRouterTestEncoderOutput",
-        "ode.kafka.topics.sdx-depositor.input=topic.Asn1EncodedDataRouterTestSDXDepositor"
+        "ode.kafka.topics.sdx-depositor.input=topic.Asn1EncodedDataRouterTestSDXDepositor",
+        "ode.kafka.topics.json.tim=topic.OdeTimJson",
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "ode.kafka.brokers=${spring.embedded.kafka.brokers}",
+        "ode.kafka.topics.json.tim-ktable=topic.OdeTimJsonKTable"
     },
     classes = {
         OdeKafkaProperties.class,
@@ -102,9 +106,22 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 @EnableConfigurationProperties
 @DirtiesContext
 @ActiveProfiles("test")
+@EmbeddedKafka(
+    partitions = 1,
+    topics = {
+        "topic.Asn1EncodedDataRouterTestTimCertExpiration",
+        "topic.Asn1EncodedDataRouterTestTimTmcFiltered",
+        "topic.Asn1EncodedDataRouterTestEncoderInput",
+        "topic.Asn1EncodedDataRouterTestEncoderOutput",
+        "topic.Asn1EncodedDataRouterTestSDXDepositor",
+        "topic.OdeTimJson",
+        "topic.OdeTimJsonKTable"
+    }
+)
 class Asn1EncodedDataRouterTest {
 
-  private final EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
+  @Autowired
+  private EmbeddedKafkaBroker embeddedKafka;
   @Autowired
   Asn1CoderTopics asn1CoderTopics;
   @Autowired
@@ -142,11 +159,12 @@ class Asn1EncodedDataRouterTest {
   private static String loadResourceString(String name)
       throws IOException {
     String resourcePackagePath = "us/dot/its/jpo/ode/services/asn1/";
-    InputStream inputStream;
-    inputStream = Asn1EncodedDataRouterTest.class.getClassLoader()
-        .getResourceAsStream(resourcePackagePath + name);
-    assert inputStream != null;
-    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+    try (InputStream inputStream = Asn1EncodedDataRouterTest.class.getClassLoader()
+        .getResourceAsStream(resourcePackagePath + name)) {
+
+      assert inputStream != null;
+      return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+    }
   }
 
   @Test
@@ -156,7 +174,6 @@ class Asn1EncodedDataRouterTest {
         jsonTopics.getTimTmcFiltered(),
         sdxDepositorTopic
     };
-    EmbeddedKafkaHolder.addTopics(topicsForConsumption);
 
     securityServicesProperties.setIsSdwSigningEnabled(true);
     Asn1EncodedDataRouter encoderRouter = new Asn1EncodedDataRouter(
@@ -206,12 +223,6 @@ class Asn1EncodedDataRouterTest {
 
   @Test
   void processUnsignedMessageSDWOnly() throws IOException {
-    String[] topicsForConsumption = {
-        asn1CoderTopics.getEncoderInput(),
-        jsonTopics.getTimCertExpiration(),
-        jsonTopics.getTimTmcFiltered()
-    };
-    EmbeddedKafkaHolder.addTopics(topicsForConsumption);
 
     securityServicesProperties.setIsSdwSigningEnabled(true);
     securityServicesProperties.setIsRsuSigningEnabled(true);
@@ -243,7 +254,7 @@ class Asn1EncodedDataRouterTest {
     Awaitility.await().until(completableFuture::isDone);
 
     var consumerProps = KafkaTestUtils.consumerProps(
-        "processUnsignedMessageSDWOnly", "false", embeddedKafka);
+        embeddedKafka, "processUnsignedMessageSDWOnly", false);
     var consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
 
@@ -297,12 +308,6 @@ class Asn1EncodedDataRouterTest {
 
   @Test
   void processUnsignedMessageWithRsus() throws IOException {
-    String[] topicsForConsumption = {
-        asn1CoderTopics.getEncoderInput(),
-        jsonTopics.getTimCertExpiration(),
-        jsonTopics.getTimTmcFiltered()
-    };
-    EmbeddedKafkaHolder.addTopics(topicsForConsumption);
 
     securityServicesProperties.setIsSdwSigningEnabled(true);
     securityServicesProperties.setIsRsuSigningEnabled(true);
@@ -334,7 +339,7 @@ class Asn1EncodedDataRouterTest {
     Awaitility.await().until(completableFuture::isDone);
 
     var consumerProps = KafkaTestUtils.consumerProps(
-        "processUnsignedMessage", "false", embeddedKafka);
+        embeddedKafka, "processUnsignedMessage", false);
     var consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
 
@@ -377,7 +382,7 @@ class Asn1EncodedDataRouterTest {
   private KafkaMessageListenerContainer<String, String> setupListenerContainer(
       Asn1EncodedDataRouter encoderRouter,
       String containerName) {
-    var consumerProps = KafkaTestUtils.consumerProps(containerName, "false", embeddedKafka);
+    var consumerProps = KafkaTestUtils.consumerProps(embeddedKafka, containerName, false);
     DefaultKafkaConsumerFactory<String, String> consumerFactory =
         new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new StringDeserializer());
     ContainerProperties containerProperties = new ContainerProperties(asn1CoderTopics.getEncoderOutput());
@@ -400,7 +405,7 @@ class Asn1EncodedDataRouterTest {
 
   private Consumer<String, String> createTestConsumer(String group) {
     var consumerProps = KafkaTestUtils.consumerProps(
-        group, "false", embeddedKafka);
+        embeddedKafka, group, false);
     var consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,
         new StringDeserializer(), new StringDeserializer());
     return consumerFactory.createConsumer();

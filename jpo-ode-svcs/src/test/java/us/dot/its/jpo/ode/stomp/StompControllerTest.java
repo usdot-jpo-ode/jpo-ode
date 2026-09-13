@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,58 +15,50 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.stomp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
-import mockit.Verifications;
-//import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.stomp.RegistrationMessage;
-import us.dot.its.jpo.ode.stomp.StompContent;
-import us.dot.its.jpo.ode.stomp.StompController;
-
-//@RunWith(JMockit.class)
+@ExtendWith(MockitoExtension.class)
 public class StompControllerTest {
-    
-    @Tested
-    StompController testStompController;
-    @Injectable
+
+    @Mock
     SimpMessagingTemplate template;
 
+    @InjectMocks
+    StompController testStompController;
+
     @Test
-    public void testGreeting(@Mocked RegistrationMessage mockRegistrationMessage) {
+    public void testGreeting() {
+        RegistrationMessage mockRegistrationMessage = Mockito.mock(RegistrationMessage.class);
         try {
             testStompController.greeting(mockRegistrationMessage);
         } catch (InterruptedException e) {
             fail("Unexpected exception testing greeting method: " + e);
         }
-        
-        try {
-            new Verifications() {{
-                mockRegistrationMessage.getName();
-                times = 1;
-                Thread.sleep(anyLong);
-            }};
-        } catch (InterruptedException e) {
-            fail("Unexpected exception in verifications block: " + e);
-        }
+
+        // getName() runs after Thread.sleep(), so verifying it covers the body executing fully.
+        verify(mockRegistrationMessage, times(1)).getName();
     }
-    
+
     @Test
     public void testMessages() {
         assertEquals("{\"success\": true}", testStompController.messages());
-        
-        new Verifications() {{
-            template.convertAndSend(anyString, (StompContent) any);
-        }};
+
+        verify(template).convertAndSend(anyString(), any(StompContent.class));
     }
-    
+
     @Test
     public void testTest() {
         assertEquals("index", testStompController.test());

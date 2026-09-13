@@ -16,17 +16,14 @@
 
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import mockit.Tested;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class J2735EmergencyDetailsTest {
 
-  @Tested
-  J2735EmergencyDetails ed;
-
   @Test
   void testGettersAndSetters() {
+    J2735EmergencyDetails ed = new J2735EmergencyDetails();
     Integer sspRights = 1;
     ed.setDoNotUse(sspRights);
     Assertions.assertEquals(sspRights, ed.getDoNotUse());
