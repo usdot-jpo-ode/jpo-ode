@@ -164,6 +164,11 @@
       <version>1.2.0</version>
     </dependency>
     <dependency>
+      <groupId>com.neaeraconsulting</groupId>
+      <artifactId>j2735-2024-ffm-lib</artifactId>
+      <version>2.1.0-beta1</version>
+    </dependency>
+    <dependency>
       <groupId>net.javacrumbs.json-unit</groupId>
       <artifactId>json-unit</artifactId>
       <version>4.1.0</version>
@@ -192,6 +197,52 @@
             <goals>
               <goal>build-info</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-ffmlib-native-linux-x86_64</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.neaeraconsulting</groupId>
+                  <artifactId>j2735-2024-ffm-lib</artifactId>
+                  <version>2.1.0-beta1</version>
+                  <classifier>linux-x86_64</classifier>
+                  <type>so</type>
+                  <destFileName>libasnapplication.so</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-ffmlib-native-windows-x86_64</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.neaeraconsulting</groupId>
+                  <artifactId>j2735-2024-ffm-lib</artifactId>
+                  <version>2.1.0-beta1</version>
+                  <classifier>windows-x86_64</classifier>
+                  <type>dll</type>
+                  <destFileName>asnapplication.dll</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>

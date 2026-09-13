@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,13 +25,43 @@ public class OdeMessageFrameMetadata extends OdeLogMetadata {
   private Source source;
   private String originIp;
 
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Long asnDecodeLatencyMs;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Long psid;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String generationTime;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String expiryTime;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String certificateStartTime;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String certificateExpiryTime;
+
   // Only used for messages created through the TIM deposit endpoint
-  @JsonProperty("request")
   private ServiceRequest request;
 
   // otherwise it will deserialize as "certPresent"
-  @JsonProperty("isCertPresent")
   private boolean isCertPresent;
+
+  /**
+   * Explicit accessor avoids Lombok copying {@code @JsonProperty} to both generated accessors
+   * when annotation copying is enabled in lombok.config.
+   */
+  @JsonProperty("isCertPresent")
+  public boolean isCertPresent() {
+    return isCertPresent;
+  }
+
+  @JsonProperty("isCertPresent")
+  public void setCertPresent(boolean certPresent) {
+    isCertPresent = certPresent;
+  }
 
   public OdeMessageFrameMetadata(OdeMsgPayload<?> payload) {
     super(payload);
