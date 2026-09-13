@@ -11,8 +11,8 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -212,7 +212,7 @@ public class FfmlibDecodeService {
       nativeTimer.record(nativeNanos, TimeUnit.NANOSECONDS);
 
       long pojoStart = System.nanoTime();
-      MessageFrame<?> messageFrame = parseMessageFrame(intermediate);
+      final MessageFrame<?> messageFrame = parseMessageFrame(intermediate);
       long pojoNanos = System.nanoTime() - pojoStart;
       pojoTimer.record(pojoNanos, TimeUnit.NANOSECONDS);
 

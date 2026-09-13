@@ -3,9 +3,9 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 import j2735ffm.Asn1Codec;
 import j2735ffm.AsnEncoding;
+import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +28,15 @@ public class FfmlibMessageFrameCodec {
     this.meterRegistry = meterRegistry;
   }
 
+  /**
+   * Converts encoded data between two ASN.1 representations.
+   *
+   * @param input encoded input bytes
+   * @param pdu ASN.1 protocol data unit name
+   * @param from source encoding
+   * @param to target encoding
+   * @return converted bytes
+   */
   public byte[] convert(byte[] input, String pdu, AsnEncoding from, AsnEncoding to) {
     long start = System.nanoTime();
     String outcome = "success";
@@ -73,10 +82,12 @@ public class FfmlibMessageFrameCodec {
         .register(meterRegistry);
   }
 
+  /** Intermediate text encodings produced by the native codec. */
   public enum IntermediateEncoding {
     XER
   }
 
+  /** Native decode result containing intermediate text and its encoding. */
   public record IntermediateDecodeResult(String text, IntermediateEncoding encoding) {
   }
 }

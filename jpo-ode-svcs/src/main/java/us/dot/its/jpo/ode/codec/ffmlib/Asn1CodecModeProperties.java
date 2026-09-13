@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class Asn1CodecModeProperties {
 
+  /** Identifies the codec implementation used for ASN.1 processing. */
   public enum CodecMode {
     external,
     ffm

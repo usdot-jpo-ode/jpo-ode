@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Asn1CodecConfiguration {
 
+  /** Creates the native codec from the configured FFMLib library. */
   @Bean
   @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
   public Asn1Codec asn1Codec(FfmlibProperties properties) {

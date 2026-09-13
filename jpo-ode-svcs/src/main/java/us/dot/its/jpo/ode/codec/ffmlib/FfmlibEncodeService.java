@@ -7,8 +7,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import j2735ffm.AsnEncoding;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -53,7 +53,7 @@ public class FfmlibEncodeService {
   public String encodeMessageFrame(
       MessageFrame<?> messageFrame, OdeMessageFrameMetadata metadata) throws Exception {
     ObjectNode metadataNode = JsonUtils.toObjectNode(JsonUtils.toJson(metadata, false));
-    return encodeMessageFrame(messageFrame, metadataNode);
+    return encodeMessageFrameWithMetadata(messageFrame, metadataNode);
   }
 
   /**
@@ -100,14 +100,14 @@ public class FfmlibEncodeService {
         throw new IllegalArgumentException("MessageFrame XML not found in encode input");
       }
       MessageFrame<?> messageFrame = simpleXmlMapper.convertValue(messageFrameNode, MessageFrame.class);
-      return encodeMessageFrame(messageFrame, JsonUtils.toObjectNode(metadata.toString()));
+      return encodeMessageFrameWithMetadata(messageFrame, JsonUtils.toObjectNode(metadata.toString()));
     } else {
       throw new IllegalArgumentException(
           "Encode input has neither MessageFrame nor AdvisorySituationData");
     }
   }
 
-  private String encodeMessageFrame(MessageFrame<?> messageFrame, ObjectNode metadata)
+  private String encodeMessageFrameWithMetadata(MessageFrame<?> messageFrame, ObjectNode metadata)
       throws Exception {
     String canonicalXer = simpleXmlMapper.writeValueAsString(messageFrame);
     byte[] uper = codec().xerToUper(canonicalXer);
