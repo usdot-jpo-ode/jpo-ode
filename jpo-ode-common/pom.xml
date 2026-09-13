@@ -7,12 +7,12 @@
     <artifactId>jpo-ode</artifactId>
     <version>6.0.0</version>
   </parent>
-  
+
   <artifactId>jpo-ode-common</artifactId>
   <name>jpo-ode-common</name>
   <description>JPO ODE Common Components</description>
   <packaging>jar</packaging>
-  
+
   <properties>
     <!-- SonarQube Properties -->
     <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/util/GeoUtils.java</sonar.exclusions>
@@ -21,7 +21,7 @@
     <sonar.inclusions>src/main/java/us/dot/its/jpo/ode/inet/*</sonar.inclusions>
   </properties>
 
-  
+
   <dependencies>
     <dependency>
       <groupId>org.json</groupId>
@@ -33,14 +33,14 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-    	<groupId>com.fasterxml.jackson.dataformat</groupId>
-    	<artifactId>jackson-dataformat-xml</artifactId>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
     </dependency>
-		<dependency>
+    <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
       <version>4.0.5</version>
-		</dependency>
+    </dependency>
     <dependency>
       <groupId>jakarta.websocket</groupId>
       <artifactId>jakarta.websocket-client-api</artifactId>
