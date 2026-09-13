@@ -85,6 +85,19 @@ public class FfmlibDecodeService {
   private final Timer totalTimer;
   private final Counter failureCounter;
 
+  /**
+   * Constructs the FFMLib decode service with the native codec, topic, and metric dependencies.
+   *
+   * @param ffmlibCodec the optional native codec for FFM mode
+   * @param properties FFMLib runtime properties
+   * @param modeProperties codec-mode selection
+   * @param jsonTopics decoded JSON topic names
+   * @param rawEncodedJsonTopics raw encoded JSON topic names
+   * @param kafkaTemplate Kafka producer
+   * @param simpleXmlMapper XML mapper for J2735 XML processing
+   * @param meterRegistry Micrometer registry for decode timers
+   * @param externalDecoderInputTopic legacy external decoder input topic name
+   */
   public FfmlibDecodeService(
       ObjectProvider<FfmlibMessageFrameCodec> ffmlibCodec,
       FfmlibProperties properties,
