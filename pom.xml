@@ -31,18 +31,18 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
 
     <!-- Generic properties -->
     <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
     <sonar.organization>usdot-jpo-ode</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     <!-- JaCoCo Properties -->
-    <jacoco.version>0.8.11</jacoco.version>
+    <jacoco.version>0.8.14</jacoco.version>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -88,7 +88,7 @@
        - Apply the appropriate Lombok configuration change and update this project
          to use the newly generated getters and setters.
       -->
-      <version>1.18.30</version>
+      <version>1.18.40</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -131,7 +131,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <release>21</release>
+            <release>25</release>
             <showDeprecation>true</showDeprecation>
             <compilerArgs>
               <arg>-Xlint:deprecation</arg>
@@ -140,7 +140,7 @@
               <path>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.30</version>
+                <version>1.18.40</version>
               </path>
             </annotationProcessorPaths>
           </configuration>
@@ -149,6 +149,9 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <argLine>@{argLine}
+              -Djava.library.path=${project.build.directory}/libs
+              --enable-native-access=ALL-UNNAMED</argLine>
             <systemPropertyVariables>
               <loader.path>${loader.path}</loader.path>
               <buildDirectory>${project.build.directory}</buildDirectory>
@@ -206,6 +209,13 @@
       </plugin>
     </plugins>
   </reporting>
+  <repositories>
+    <repository>
+      <id>github-ffm</id>
+      <name>J2735 FFM GitHub Packages</name>
+      <url>https://maven.pkg.github.com/${github_organization}/j2735-ffm-java</url>
+    </repository>
+  </repositories>
   <distributionManagement>
     <repository>
       <id>github</id>

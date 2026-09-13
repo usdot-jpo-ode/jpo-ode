@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateTimeUtils {
 
+  private static final Instant IEEE_1609_EPOCH = Instant.parse("2004-01-01T00:00:00Z");
   private static Clock clock = Clock.systemUTC();
 
   private DateTimeUtils() {
@@ -76,5 +77,17 @@ public class DateTimeUtils {
 
   public static long difference(ZonedDateTime t1, ZonedDateTime t2) {
     return t2.toInstant().toEpochMilli() - t1.toInstant().toEpochMilli();
+  }
+
+  /** Converts an IEEE 1609.2 Time64 value (microseconds since 2004-01-01) to ISO-8601. */
+  public static String ieee1609Time64ToIso(long microseconds) {
+    long seconds = Math.floorDiv(microseconds, 1_000_000L);
+    long micros = Math.floorMod(microseconds, 1_000_000L);
+    return IEEE_1609_EPOCH.plusSeconds(seconds).plusNanos(micros * 1_000L).toString();
+  }
+
+  /** Converts an IEEE 1609.2 Time32 value (seconds since 2004-01-01) to ISO-8601. */
+  public static String ieee1609Time32ToIso(long seconds) {
+    return IEEE_1609_EPOCH.plusSeconds(seconds).toString();
   }
 }

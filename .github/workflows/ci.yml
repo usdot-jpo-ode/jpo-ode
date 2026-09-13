@@ -1,5 +1,9 @@
 name: ci
 
+permissions:
+  contents: read
+  packages: read
+
 on:
   pull_request:
   push:
@@ -16,6 +20,10 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v7
         with:
+          build-args: |
+            GITHUB_ACTOR=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -30,9 +38,15 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
+          java-version: "25"
           distribution: "temurin"
+          server-id: github-ffm
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
       - name: Build and test
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean verify
 
   sonar:
@@ -49,10 +63,15 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
+          java-version: "25"
           distribution: "temurin"
+          server-id: github-ffm
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
       - name: Run Sonar
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -e clean verify sonar:sonar -Dsonar.projectKey=usdot.jpo.ode:jpo-ode -Dsonar.projectName=jpo-ode -Dsonar.organization=usdot-jpo-ode -Dsonar.host.url=https://sonarcloud.io
