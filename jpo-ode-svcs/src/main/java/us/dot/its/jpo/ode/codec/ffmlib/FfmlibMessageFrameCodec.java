@@ -2,9 +2,9 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import java.nio.charset.StandardCharsets;
 import j2735ffm.Asn1Codec;
 import j2735ffm.AsnEncoding;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
