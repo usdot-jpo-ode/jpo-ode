@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Optional;
-import j2735ffm.AsnEncoding;
-import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,25 +47,6 @@ class FfmlibDecodeServiceTest {
   private static final String BSM_TOPIC = "topic.OdeBsmJson";
   private static final String BSM_HEX =
       "001480ADDA7CDE5517E962C66947240CB711E804C8B106B7DB7B12B3056B8AA1AA4E838D00400F86822A3CD398D89E1BB8405B72C3C7A398C3CAFF63338526C646F4FFF524AD9E404039D5DA2FA62FEB57E305B552C7BE088B61E52A6BFC8CAF5AF64414F3E4513FEC189F8B5E1138B824A48B29BA1F43CB12CE296BCA3DFA8F651AB44AB1B81B633B797D5645DAA4EDADAB4AC22A0BC38AB361443395BAA2C81CC4538E7413E9C8C3F696BB2C9B6B0000";
-  private static final String SIGNED_IEEE_XER = """
-      <Ieee1609Dot2Data>
-        <protocolVersion>3</protocolVersion>
-        <content><signedData>
-          <tbsData>
-            <payload><data><content><unsecuredData>0014</unsecuredData></content></data></payload>
-            <headerInfo>
-              <psid>32</psid>
-              <generationTime>0</generationTime>
-              <expiryTime>1000000</expiryTime>
-            </headerInfo>
-          </tbsData>
-          <signer><certificate><CertificateBase><toBeSigned><validityPeriod>
-            <start>1</start><duration><minutes>1</minutes></duration>
-          </validityPeriod></toBeSigned></CertificateBase></certificate></signer>
-        </signedData></content>
-      </Ieee1609Dot2Data>
-      """;
-
   @Mock
   private FfmlibMessageFrameCodec ffmlibCodec;
   @Mock
@@ -188,41 +167,17 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void signedCoerEnvelopeExtractsMetadataAndDecodesInlineMessageFrame() throws Exception {
-    stubSuccessfulDecode();
-    when(ffmlibCodec.decodeToXer(any(), eq("Ieee1609Dot2Data"), eq(AsnEncoding.COER)))
-        .thenReturn(SIGNED_IEEE_XER);
-    when(simpleXmlMapper.readTree(SIGNED_IEEE_XER))
-        .thenReturn(new XmlMapper().readTree(SIGNED_IEEE_XER));
-
+  void signedIeee1609EnvelopeIsRejected() {
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
     OdeAsn1Data input = new OdeAsn1Data(
         metadata, new OdeAsn1Payload(new OdeHexByteArray("038100")));
 
-    decodeService.decode(input, "signed-bsm");
-
-    assertEquals(32L, metadata.getPsid());
-    assertEquals("2004-01-01T00:00:00Z", metadata.getGenerationTime());
-    assertEquals("2004-01-01T00:00:01Z", metadata.getExpiryTime());
-    assertEquals("2004-01-01T00:00:01Z", metadata.getCertificateStartTime());
-    assertEquals("2004-01-01T00:01:01Z", metadata.getCertificateExpiryTime());
-    assertTrue(metadata.isCertPresent());
-    verify(ffmlibCodec).uperToIntermediate(
-        org.mockito.AdditionalMatchers.aryEq(HexUtils.fromHexString("0014")));
+    assertThrows(IllegalArgumentException.class, () -> decodeService.decode(input, "signed-bsm"));
   }
 
   @Test
-  void encryptedIeee1609EnvelopeIsRejected() throws Exception {
-    String encryptedXer = """
-        <Ieee1609Dot2Data><protocolVersion>3</protocolVersion>
-          <content><encryptedData/></content>
-        </Ieee1609Dot2Data>
-        """;
-    when(ffmlibCodec.decodeToXer(any(), eq("Ieee1609Dot2Data"), eq(AsnEncoding.COER)))
-        .thenReturn(encryptedXer);
-    when(simpleXmlMapper.readTree(encryptedXer))
-        .thenReturn(new XmlMapper().readTree(encryptedXer));
+  void encryptedIeee1609EnvelopeIsRejected() {
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
     OdeAsn1Data input = new OdeAsn1Data(

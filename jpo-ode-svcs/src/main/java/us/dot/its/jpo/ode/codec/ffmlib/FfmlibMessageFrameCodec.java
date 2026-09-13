@@ -2,8 +2,8 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import j2735ffm.Asn1Codec;
 import j2735ffm.AsnEncoding;
+import j2735ffm.MessageFrameCodec;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Component;
  * ODE adapter around the generic, thread-safe native codec.
  *
  * <p>Every conversion records a bounded Micrometer timer tagged by PDU, encoding pair, and
- * outcome. The underlying {@link Asn1Codec} is a singleton and confines FFM memory per call.
+ * outcome. The underlying {@link MessageFrameCodec} is a singleton and confines FFM memory per call.
  */
 @Component
 @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
 public class FfmlibMessageFrameCodec {
 
   private static final String MESSAGE_FRAME = "MessageFrame";
-  private final Asn1Codec codec;
+  private final MessageFrameCodec codec;
   private final MeterRegistry meterRegistry;
 
-  public FfmlibMessageFrameCodec(Asn1Codec codec, MeterRegistry meterRegistry) {
+  public FfmlibMessageFrameCodec(MessageFrameCodec codec, MeterRegistry meterRegistry) {
     this.codec = codec;
     this.meterRegistry = meterRegistry;
   }
@@ -41,7 +41,7 @@ public class FfmlibMessageFrameCodec {
     long start = System.nanoTime();
     String outcome = "success";
     try {
-      return codec.convert(input, pdu, from, to);
+      return codec.convertGeneral(input, pdu, from, to);
     } catch (RuntimeException error) {
       outcome = "failure";
       throw error;

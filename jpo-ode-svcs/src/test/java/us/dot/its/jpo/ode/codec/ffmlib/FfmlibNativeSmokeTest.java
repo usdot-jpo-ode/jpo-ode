@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import j2735ffm.Asn1Codec;
+import j2735ffm.MessageFrameCodec;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
@@ -34,13 +34,13 @@ class FfmlibNativeSmokeTest {
         so.toAbsolutePath().toString());
     properties.setIntermediateEncoding("xer");
 
-    Asn1Codec asn1Codec = new Asn1Codec(
+    MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
         properties.getTextBufferSize(),
         properties.getUperBufferSize(),
         properties.getErrorBufferSize(),
         Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
-        asn1Codec, new SimpleMeterRegistry());
+        messageFrameCodec, new SimpleMeterRegistry());
     IntermediateDecodeResult result = codec.uperToIntermediate(HexUtils.fromHexString(BSM_HEX));
 
     assertNotNull(result);
