@@ -28,16 +28,16 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
-import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -63,7 +63,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 /**
  * Routes FFMLib-encoded TIM messages to SDX and/or RSUs (signing, second ASD encode, deposits).
- **/
+  */
 @Component
 @Slf4j
 public class Asn1EncodedDataRouter {
@@ -138,7 +138,7 @@ public class Asn1EncodedDataRouter {
    */
   public void processEncodedAsn1Xml(String encoderOutputXml)
       throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
-    processEncodedAsn1Xml(encoderOutputXml, null);
+    processEncodedAsn1XmlWithPublishedTim(encoderOutputXml, null);
   }
 
   /** Consumes AEM output only while the legacy external codec mode is active. */
@@ -156,7 +156,7 @@ public class Asn1EncodedDataRouter {
    * filtered-topic record. This avoids racing the asynchronous OdeTimJson Kafka Streams KTable
    * update when encoding occurs in-process.
    */
-  public void processEncodedAsn1Xml(String encoderOutputXml, String publishedTimJson)
+  public void processEncodedAsn1XmlWithPublishedTim(String encoderOutputXml, String publishedTimJson)
       throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
     JSONObject consumedObj = XmlUtils.toJSONObject(encoderOutputXml)
         .getJSONObject(OdeAsn1Data.class.getSimpleName());

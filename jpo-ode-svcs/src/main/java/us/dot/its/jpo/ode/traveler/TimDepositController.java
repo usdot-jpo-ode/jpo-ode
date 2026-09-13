@@ -39,9 +39,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
-import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
+import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
@@ -284,7 +284,7 @@ public class TimDepositController {
         // Encode in-process via FFM, then route (sign / RSU / SDX).
         String encodedXml = ffmlibEncodeService.encodeMessageFrame(
             odeTimMessageFrameData.getPayload().getData(), odeTimMessageFrameData.getMetadata());
-        asn1EncodedDataRouter.processEncodedAsn1Xml(encodedXml, obfuscatedJ2735Tim);
+        asn1EncodedDataRouter.processEncodedAsn1XmlWithPublishedTim(encodedXml, obfuscatedJ2735Tim);
       } else {
         kafkaTemplate.send(
             asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);

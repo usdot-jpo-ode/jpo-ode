@@ -27,6 +27,7 @@ public class PortMappedConfigurableReceiver extends GenericReceiver {
     this.ingestConfig = ingestConfig;
   }
 
+  /** Receives and routes datagrams using the configured source address and message type. */
   @Override
   public void run() {
     log.debug("PortMappedConfigurableReceiver started.");

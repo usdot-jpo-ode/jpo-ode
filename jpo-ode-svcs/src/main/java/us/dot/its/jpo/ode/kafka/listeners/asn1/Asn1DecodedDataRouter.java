@@ -35,6 +35,7 @@ public class Asn1DecodedDataRouter {
     this.xmlMapper = xmlMapper;
   }
 
+  /** Routes one external decoder result to its message-specific JSON topic. */
   @KafkaListener(id = "Asn1DecodedDataRouter", topics = "${ode.kafka.topics.asn1.decoder-output}")
   public void listen(ConsumerRecord<String, String> record) throws Exception {
     JSONObject consumed = XmlUtils.toJSONObject(record.value())
