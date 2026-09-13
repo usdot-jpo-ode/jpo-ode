@@ -49,17 +49,20 @@ public class RawEncodedJsonService {
     String jsonStringMetadata = rawJsonObject.get("metadata").toString();
     var metadata = mapper.readValue(jsonStringMetadata, metadataClass);
 
-    Asn1Encoding
-        unsecuredDataEncoding =
-        new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
-    metadata.addEncoding(unsecuredDataEncoding);
-
     String payloadHexString =
         ((JSONObject) ((JSONObject) rawJsonObject.get("payload")).get("data")).getString(
             "bytes");
-    payloadHexString = UperUtil.stripDot2Header(payloadHexString, messageType.getStartFlag());
+    byte[] payloadBytes = HexUtils.fromHexString(payloadHexString);
+    payloadBytes = UperUtil.stripDot3Header(payloadBytes, messageType.getStartFlagBytes());
 
-    OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+    metadata.addEncoding(new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER));
+    if (payloadBytes.length >= 3 && payloadBytes[0] == 0x03
+        && payloadBytes[1] == (byte) 0x81 && payloadBytes[2] == 0x00) {
+      metadata.addEncoding(
+          new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER));
+    }
+
+    OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
     return new OdeAsn1Data(metadata, payload);
   }
 

@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.uper;
 
 import lombok.Getter;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 @Getter
 public enum SupportedMessageType {
@@ -16,8 +17,10 @@ public enum SupportedMessageType {
     RSM("0021");
 
     private final String startFlag;
+    private final byte[] startFlagBytes;
 
     SupportedMessageType(String startFlag) {
         this.startFlag = startFlag;
+        this.startFlagBytes = CodecUtils.fromHex(startFlag);
     }
 }

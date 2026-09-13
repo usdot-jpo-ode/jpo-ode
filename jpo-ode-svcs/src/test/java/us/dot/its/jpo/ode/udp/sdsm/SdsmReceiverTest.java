@@ -1,120 +1,81 @@
 package us.dot.its.jpo.ode.udp.sdsm;
 
-import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import java.net.DatagramPacket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import us.dot.its.jpo.ode.config.SerializationConfig;
-import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
+import org.springframework.test.context.ContextConfiguration;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
-import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.test.utilities.TestUDPClient;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = {KafkaConsumerConfig.class,  KafkaProducerConfig.class,
-        SerializationConfig.class, TestMetricsConfig.class, UDPReceiverProperties.class, RawEncodedJsonTopics.class, KafkaProperties.class, OdeKafkaProperties.class},
-    properties = {"ode.receivers.sdsm.receiver-port=12413",
-        "ode.kafka.topics.raw-encoded-json.sdsm=topic.SdsmReceiverTest"})
-@EmbeddedKafka
-@TestPropertySource(properties = {"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
+    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, TestMetricsConfig.class},
+    properties = {"ode.receivers.sdsm.receiver-port=12413"})
+@ContextConfiguration(classes = {UDPReceiverProperties.class, KafkaProperties.class})
 @DirtiesContext
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SdsmReceiverTest {
+
+  private static final String BASE = "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/";
 
   @Autowired
   UDPReceiverProperties udpReceiverProperties;
 
-  @Autowired
-  KafkaTemplate<String, String> kafkaTemplate;
+  @MockBean
+  FfmlibDecodeService decodeService;
 
-  @Autowired
-  RawEncodedJsonTopics rawEncodedJsonTopics;
+  EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
-  private ExecutorService executorService;
   private SdsmReceiver sdsmReceiver;
+  private ExecutorService executorService;
 
-  private CompletableFuture<String> future;
+  @BeforeAll
+  void startReceiver() {
+    sdsmReceiver = new SdsmReceiver(udpReceiverProperties.getSdsm(), decodeService);
+    executorService = Executors.newCachedThreadPool();
+    executorService.submit(sdsmReceiver);
+  }
 
-  @AfterEach
+  @AfterAll
   void cleanup() {
-    if (executorService != null) {
-      executorService.shutdown();
-    }
-    if (sdsmReceiver != null) {
-      sdsmReceiver.setStopped(true);
-    }
+    sdsmReceiver.setStopped(true);
+    executorService.shutdown();
   }
 
   @Test
-  void testRun() throws Exception {
-    future = new CompletableFuture<>();
-
-    final Clock prevClock = DateTimeUtils
-        .setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
-
-    try {
-      SdsmReceiver sdsmReceiver = new SdsmReceiver(udpReceiverProperties.getSdsm(), kafkaTemplate,
-          rawEncodedJsonTopics.getSdsm());
-      ExecutorService executorService = Executors.newCachedThreadPool();
-      executorService.submit(sdsmReceiver);
-
-      String fileContent = Files.readString(Paths
-          .get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt"));
-      String expected = Files.readString(Paths.get(
-          "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM_expected.json"));
-
-      TestUDPClient udpClient =
-          new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort());
-      udpClient.send(fileContent);
-
-      String actualPayload = future.get(3, TimeUnit.SECONDS);
-
-      assertNotEquals(expected, actualPayload);
-
-      JSONObject producedJson = new JSONObject(actualPayload);
-      JSONObject expectedJson = new JSONObject(expected);
-
-      assertNotEquals(expectedJson.getJSONObject("metadata").get("serialId"),
-          producedJson.getJSONObject("metadata").get("serialId"));
-      expectedJson.getJSONObject("metadata").remove("serialId");
-      producedJson.getJSONObject("metadata").remove("serialId");
-
-      assertThat(JsonUtils.toJson(producedJson, false),
-          jsonEquals(JsonUtils.toJson(expectedJson, false)));
-    } finally {
-      DateTimeUtils.setClock(prevClock);
-    }
+  void testRawJ2735() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "SdsmReceiverTest_ValidSDSM.txt"));
+    new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.SDSM));
   }
 
-  @KafkaListener(topics = "topic.SdsmReceiverTest")
-  public void receive(String payload) {
-    future.complete(payload);
+  @Test
+  void testWithSignature() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "SdsmReceiverTest_ValidSDSM_WithSignature.txt"));
+    new TestUDPClient(udpReceiverProperties.getSdsm().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.SDSM));
   }
 }

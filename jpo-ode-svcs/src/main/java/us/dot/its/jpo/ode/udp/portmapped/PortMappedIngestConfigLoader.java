@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
@@ -23,10 +22,9 @@ public class PortMappedIngestConfigLoader {
   }
 
   public List<AbstractUdpReceiverPublisher> loadReceivers(UDPReceiverProperties udpProps,
-      RawEncodedJsonTopics rawEncodedJsonTopics, KafkaTemplate<String, String> kafkaTemplate) {
-        log.debug("Loading configurable UDP receivers from config...");
+      FfmlibDecodeService decodeService) {
+    log.debug("Loading configurable UDP receivers from config...");
 
-    
     if (config == null || config.getSources() == null || config.getSources().isEmpty()) {
       return Collections.emptyList();
     }
@@ -38,14 +36,13 @@ public class PortMappedIngestConfigLoader {
       if (type == null) {
         log.warn("Skipping configurable UDP ingest source with missing type. Source: {}", source);
         continue;
-      }else{
+      } else {
         source.setType(type);
       }
 
       PortMappedConfigurableReceiver receiver = new PortMappedConfigurableReceiver(
           buildReceiverProperties(udpProps, source),
-          kafkaTemplate,
-          rawEncodedJsonTopics,
+          decodeService,
           source
       );
       receivers.add(receiver);
@@ -57,11 +54,11 @@ public class PortMappedIngestConfigLoader {
     if (type == null || type.isBlank()) {
       return null;
     }
-
     return type.trim().toUpperCase(Locale.ROOT);
   }
 
-  private ReceiverProperties buildReceiverProperties(UDPReceiverProperties udpProps,PortMappedIngestConfig.PortMappedIngestSource source) {
+  private ReceiverProperties buildReceiverProperties(UDPReceiverProperties udpProps,
+      PortMappedIngestConfig.PortMappedIngestSource source) {
     ReceiverProperties baseProps = switch (source.getType()) {
       case "BSM" -> udpProps.getBsm();
       case "TIM" -> udpProps.getTim();

@@ -1,108 +1,81 @@
 package us.dot.its.jpo.ode.udp.rtcm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import java.net.DatagramPacket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import us.dot.its.jpo.ode.config.SerializationConfig;
-import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
+import org.springframework.test.context.ContextConfiguration;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
-import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.test.utilities.TestUDPClient;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
-/**
- * Unit test for the RtcmReceiver class, verifying UDP reception, Kafka publishing and output.
- */
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = { KafkaConsumerConfig.class, KafkaProducerConfig.class,
-        SerializationConfig.class, TestMetricsConfig.class,
-        UDPReceiverProperties.class, RawEncodedJsonTopics.class,
-        KafkaProperties.class,  OdeKafkaProperties.class},
-    properties = {"ode.receivers.rtcm.receiver-port=12753",
-        "ode.kafka.topics.raw-encoded-json.rtcm=topic.RtcmReceiverTest"})
-@EmbeddedKafka
-@TestPropertySource(properties = {"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
+    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, TestMetricsConfig.class},
+    properties = {"ode.receivers.rtcm.receiver-port=12753"})
+@ContextConfiguration(classes = {UDPReceiverProperties.class, KafkaProperties.class})
 @DirtiesContext
-public class RtcmReceiverTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class RtcmReceiverTest {
+
+  private static final String BASE = "src/test/resources/us/dot/its/jpo/ode/udp/rtcm/";
 
   @Autowired
   UDPReceiverProperties udpReceiverProperties;
 
-  @Autowired
-  RawEncodedJsonTopics rawEncodedJsonTopics;
+  @MockBean
+  FfmlibDecodeService decodeService;
 
-  @Autowired
-  KafkaTemplate<String, String> kafkaTemplate;
+  EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
-  private CompletableFuture<String> future;
+  private RtcmReceiver rtcmReceiver;
+  private ExecutorService executorService;
 
-  @Test
-  void testRun() throws Exception {
-    future = new CompletableFuture<>();
-
-    final Clock prevClock = DateTimeUtils
-        .setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));
-    // create the RtcmReceiver and submit it to a runner
-    RtcmReceiver rtcmReceiver = new RtcmReceiver(udpReceiverProperties.getRtcm(), kafkaTemplate,
-        rawEncodedJsonTopics.getRtcm());
-    ExecutorService executorService = Executors.newCachedThreadPool();
+  @BeforeAll
+  void startReceiver() {
+    rtcmReceiver = new RtcmReceiver(udpReceiverProperties.getRtcm(), decodeService);
+    executorService = Executors.newCachedThreadPool();
     executorService.submit(rtcmReceiver);
-
-    String fileContent = Files.readString(
-        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/rtcm/RtcmReceiverTest_ValidRTC.txt"));
-    String expected = Files.readString(Paths.get(
-        "src/test/resources/us/dot/its/jpo/ode/udp/rtcm/RtcmReceiverTest_ValidRTC_expected.json"));
-
-    TestUDPClient udpClient = new TestUDPClient(udpReceiverProperties.getRtcm().getReceiverPort());
-    udpClient.send(fileContent);
-
-    String actualPayload = future.get(3, TimeUnit.SECONDS);
-
-    // confirm the stream-id is different, then remove it from both so that we can test equality
-    // of all other fields
-    assertNotEquals(expected, actualPayload);
-    JSONObject producedJson = new JSONObject(actualPayload);
-    JSONObject expectedJson = new JSONObject(expected);
-
-    // assert that the UUIDs are different, then remove them so that the rest of the JSON can be
-    // compared
-    assertNotEquals(expectedJson.getJSONObject("metadata").get("serialId"),
-        producedJson.getJSONObject("metadata").get("serialId"));
-    expectedJson.getJSONObject("metadata").remove("serialId");
-    producedJson.getJSONObject("metadata").remove("serialId");
-
-    assertEquals(expectedJson.toString(2), producedJson.toString(2));
-
-    DateTimeUtils.setClock(prevClock);
   }
 
-  @KafkaListener(topics = "topic.RtcmReceiverTest")
-  public void receive(String payload) {
-    future.complete(payload);
+  @AfterAll
+  void cleanup() {
+    rtcmReceiver.setStopped(true);
+    executorService.shutdown();
+  }
+
+  @Test
+  void testRawJ2735() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "RtcmReceiverTest_ValidRTC.txt"));
+    new TestUDPClient(udpReceiverProperties.getRtcm().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.RTCM));
+  }
+
+  @Test
+  void testWithSignature() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "RtcmReceiverTest_ValidRTC_WithSignature.txt"));
+    new TestUDPClient(udpReceiverProperties.getRtcm().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.RTCM));
   }
 }

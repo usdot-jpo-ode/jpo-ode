@@ -28,14 +28,16 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -60,9 +62,7 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 /**
- * The Asn1EncodedDataRouter is responsible for routing encoded TIM messages
- * that are consumed from the Kafka topic.Asn1EncoderOutput topic and decide
- * whether to route to the SDX or an RSU.
+ * Routes FFMLib-encoded TIM messages to SDX and/or RSUs (signing, second ASD encode, deposits).
  **/
 @Component
 @Slf4j
@@ -83,11 +83,13 @@ public class Asn1EncodedDataRouter {
     }
   }
 
-  private final Asn1CoderTopics asn1CoderTopics;
   private final JsonTopics jsonTopics;
   private final String sdxDepositTopic;
   private final SecurityServicesClient securityServicesClient;
   private final ObjectMapper mapper;
+  private final FfmlibEncodeService ffmlibEncodeService;
+  private final Asn1CodecModeProperties asn1CodecMode;
+  private final Asn1CoderTopics asn1CoderTopics;
 
   private final OdeTimJsonTopology odeTimJsonTopology;
   private final RsuDepositor rsuDepositor;
@@ -95,16 +97,9 @@ public class Asn1EncodedDataRouter {
   private final boolean dataSigningEnabledRSU;
 
   /**
-   * Instantiates the Asn1EncodedDataRouter to actively consume from Kafka and
-   * route the encoded TIM messages to the SDX and RSUs.
-   *
-   * @param asn1CoderTopics            The specified ASN1 Coder topics
-   * @param jsonTopics                 The specified JSON topics to write to
-   * @param securityServicesProperties The security services properties to use
-   * @param mapper                     The ObjectMapper used for
-   *                                   serialization/deserialization
-   **/
-  public Asn1EncodedDataRouter(Asn1CoderTopics asn1CoderTopics,
+   * Instantiates the router that processes in-process FFMLib encoder output and deposits TIMs.
+   */
+  public Asn1EncodedDataRouter(
       JsonTopics jsonTopics,
       SecurityServicesProperties securityServicesProperties,
       OdeTimJsonTopology odeTimJsonTopology,
@@ -113,13 +108,18 @@ public class Asn1EncodedDataRouter {
       KafkaTemplate<String, String> kafkaTemplate,
       @Value("${ode.kafka.topics.sdx-depositor.input}") String sdxDepositTopic,
       ObjectMapper mapper,
-      XmlMapper xmlMapper) {
+      XmlMapper xmlMapper,
+      FfmlibEncodeService ffmlibEncodeService,
+      Asn1CodecModeProperties asn1CodecMode,
+      Asn1CoderTopics asn1CoderTopics) {
     super();
 
-    this.asn1CoderTopics = asn1CoderTopics;
     this.jsonTopics = jsonTopics;
     this.sdxDepositTopic = sdxDepositTopic;
     this.securityServicesClient = securityServicesClient;
+    this.ffmlibEncodeService = ffmlibEncodeService;
+    this.asn1CodecMode = asn1CodecMode;
+    this.asn1CoderTopics = asn1CoderTopics;
 
     this.kafkaTemplate = kafkaTemplate;
 
@@ -133,23 +133,40 @@ public class Asn1EncodedDataRouter {
   }
 
   /**
-   * Listens for messages from the specified Kafka topic and processes them.
-   *
-   * @param consumerRecord The Kafka consumer record containing the key and value
-   *                       of the consumed message.
+   * Processes encoder-output style {@code OdeAsn1Data} XML (hex UPER in payload) produced by
+   * {@link FfmlibEncodeService}.
    */
-  @KafkaListener(id = "Asn1EncodedDataRouter", topics = "${ode.kafka.topics.asn1.encoder-output}")
-  public void listen(ConsumerRecord<String, String> consumerRecord)
+  public void processEncodedAsn1Xml(String encoderOutputXml)
       throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
-    JSONObject consumedObj = XmlUtils.toJSONObject(consumerRecord.value())
+    processEncodedAsn1Xml(encoderOutputXml, null);
+  }
+
+  /** Consumes AEM output only while the legacy external codec mode is active. */
+  @KafkaListener(
+      id = "Asn1EncodedDataRouter",
+      topics = "${ode.kafka.topics.asn1.encoder-output}",
+      autoStartup = "#{environment.getProperty('ode.asn1.codec-mode', 'external') == 'external'}")
+  public void listen(ConsumerRecord<String, String> record)
+      throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
+    processEncodedAsn1Xml(record.value());
+  }
+
+  /**
+   * Processes encoder output and, when supplied, uses the already-published TIM JSON for the
+   * filtered-topic record. This avoids racing the asynchronous OdeTimJson Kafka Streams KTable
+   * update when encoding occurs in-process.
+   */
+  public void processEncodedAsn1Xml(String encoderOutputXml, String publishedTimJson)
+      throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
+    JSONObject consumedObj = XmlUtils.toJSONObject(encoderOutputXml)
         .getJSONObject(OdeAsn1Data.class.getSimpleName());
 
     JSONObject metadata = consumedObj.getJSONObject(OdeMsgMetadata.METADATA_STRING);
 
     if (!metadata.has(TimTransmogrifier.REQUEST_STRING)) {
       throw new Asn1EncodedDataRouterException(String.format(
-          "Invalid or missing '%s' object in the encoder response. Unable to process record with offset '%s'",
-          TimTransmogrifier.REQUEST_STRING, consumerRecord.offset()));
+          "Invalid or missing '%s' object in the encoder response.",
+          TimTransmogrifier.REQUEST_STRING));
     }
 
     JSONObject payloadData = consumedObj.getJSONObject(OdeMsgPayload.PAYLOAD_STRING)
@@ -158,17 +175,15 @@ public class Asn1EncodedDataRouter {
     log.debug("Mapped to object ServiceRequest: {}", request);
 
     if (payloadData.has("code") && payloadData.has("message")) {
-      // The ASN.1 encoding has failed. We cannot proceed
       var code = payloadData.get("code");
       var message = payloadData.get("message");
 
       log.error("ASN.1 encoding failed with code {} and message {}.", code, message);
       throw new Asn1EncodedDataRouterException(
-          "ASN.1 encoding failed for offset %d with code %s and message %s."
-              .formatted(consumerRecord.offset(), code, message));
+          "ASN.1 encoding failed with code %s and message %s.".formatted(code, message));
     }
     if (!payloadData.has(ADVISORY_SITUATION_DATA_STRING)) {
-      processUnsignedMessage(request, metadata, payloadData);
+      processUnsignedMessage(request, metadata, payloadData, publishedTimJson);
     } else if (request.getSdw() != null) {
       processDoubleEncodedMessage(request, payloadData);
     } else {
@@ -240,7 +255,7 @@ public class Asn1EncodedDataRouter {
   }
 
   private void processUnsignedMessage(ServiceRequest request, JSONObject metadataJson,
-      JSONObject payloadJson) {
+      JSONObject payloadJson, String publishedTimJson) {
     log.info("Processing unsigned message.");
     JSONObject messageFrameJson = payloadJson.getJSONObject(MESSAGE_FRAME);
     var hexEncodedTimBytes = messageFrameJson.getString(BYTES);
@@ -266,7 +281,7 @@ public class Asn1EncodedDataRouter {
     var encodedTimWithoutHeaders = stripHeader(bytesToSend);
 
     sendToRsus(request, encodedTimWithoutHeaders);
-    depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders);
+    depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders, publishedTimJson);
     if (dataSigningEnabledSDW) {
       publishForSecondEncoding(request, bytesToSend);
     } else {
@@ -421,7 +436,8 @@ public class Asn1EncodedDataRouter {
     return encodedUnsignedTim.substring(index);
   }
 
-  private void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim) {
+  private void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim,
+      String publishedTimJson) {
     String generatedBy = metadataObj.getString("recordGeneratedBy");
     String streamId = metadataObj.getJSONObject("serialId").getString("streamId");
     if (!generatedBy.equalsIgnoreCase("TMC")) {
@@ -429,7 +445,9 @@ public class Asn1EncodedDataRouter {
       return;
     }
 
-    String timString = odeTimJsonTopology.query(streamId);
+    String timString = publishedTimJson != null
+        ? publishedTimJson
+        : odeTimJsonTopology.query(streamId);
     if (timString != null) {
       // Set ASN1 data in TIM metadata
       JSONObject timJSON = new JSONObject(timString);
@@ -451,11 +469,17 @@ public class Asn1EncodedDataRouter {
     }
 
     try {
-      log.debug("Publishing message for round 2 encoding");
+      log.debug("Submitting ASD package for round 2 encoding (mode={})",
+          asn1CodecMode.getCodecMode());
       String asdPackagedTim = packageSignedTimIntoAsd(request, encodedTimWithoutHeaders);
-      kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
+      if (asn1CodecMode.isFfm()) {
+        String encodedAsdXml = ffmlibEncodeService.encodeOdeAsn1Xml(asdPackagedTim);
+        processEncodedAsn1Xml(encodedAsdXml);
+      } else {
+        kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
+      }
     } catch (Exception e) {
-      log.error("Error packaging ASD for round 2 encoding", e);
+      log.error("Error packaging/encoding ASD for round 2", e);
     }
   }
 }

@@ -2,44 +2,20 @@ package us.dot.its.jpo.ode.udp.psm;
 
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
-/**
- * The PsmReceiver class extends AbstractUdpReceiverPublisher and is responsible for receiving UDP
- * packets containing PSM (Personal Safety Message) data, decoding them from their hex
- * representation to JSON format, and then publishing the JSON data to a Kafka topic.
- *
- * </p>
- * The class utilizes a KafkaTemplate for publishing messages and a configurable topic name where
- * the decoded PSM JSON messages are sent.
- */
 @Slf4j
 public class PsmReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> psmPublisher;
-  private final String publishTopic;
+  private final FfmlibDecodeService decodeService;
 
-  /**
-   * Constructs a PsmReceiver object that listens for UDP packets containing Personal Safety
-   * Message (PSM) data, decodes them, and publishes the decoded JSON data to a specified Kafka
-   * topic.
-   *
-   * @param receiverProperties The properties containing configuration details such as the port to
-   *                           listen on and buffer size.
-   * @param kafkaTemplate      The KafkaTemplate used to publish messages to a Kafka topic.
-   * @param publishTopic       The name of the Kafka topic to which decoded PSM JSON messages should
-   *                           be published.
-   */
-  public PsmReceiver(ReceiverProperties receiverProperties,
-      KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+  public PsmReceiver(ReceiverProperties receiverProperties, FfmlibDecodeService decodeService) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
-
-    this.publishTopic = publishTopic;
-    this.psmPublisher = kafkaTemplate;
+    this.decodeService = decodeService;
   }
 
   @Override
@@ -53,15 +29,12 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP PSM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String psmJson = UdpHexDecoder.buildJsonPsmFromPacket(packet);
-          if (psmJson != null) {
-            psmPublisher.send(publishTopic, psmJson);
-          }
+          decodeService.decode(packet, SupportedMessageType.PSM);
         }
       } catch (InvalidPayloadException e) {
-        log.error("Error decoding packet", e);
+        log.error("Error decoding PSM packet", e);
       } catch (Exception e) {
-        log.error("Error receiving packet", e);
+        log.error("Error receiving PSM packet", e);
       }
     } while (!isStopped());
   }

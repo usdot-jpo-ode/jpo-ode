@@ -2,12 +2,10 @@ package us.dot.its.jpo.ode.kafka.listeners.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
@@ -18,23 +16,20 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
  */
 @Component
 public class RawEncodedRSMJsonRouter {
-  
-  private final KafkaTemplate<String, OdeObject> kafkaTemplate;
-  private final String publishTopic;
+
+  private final FfmlibDecodeService decodeService;
   private final RawEncodedJsonService rawEncodedJsonService;
 
   /**
    * Constructs an instance of the RawEncodedRSMJsonRouter.
    *
-   * @param kafkaTemplate A KafkaTemplate for publishing messages to a Kafka topic.
-   * @param publishTopic  The name of the Kafka topic to publish the processed messages to.
+   * @param decodeService         In-process FFMLib decode service that publishes decoded JSON
+   *                              or decodes in-process via FFMLib, depending on configuration.
    * @param rawEncodedJsonService A service to transform incoming data into the expected output
    */
-  public RawEncodedRSMJsonRouter(KafkaTemplate<String, OdeObject> kafkaTemplate,
-      @Value("${ode.kafka.topics.asn1.decoder-input}") String publishTopic,
+  public RawEncodedRSMJsonRouter(FfmlibDecodeService decodeService,
       RawEncodedJsonService rawEncodedJsonService) {
-    this.kafkaTemplate = kafkaTemplate;
-    this.publishTopic = publishTopic;
+    this.decodeService = decodeService;
     this.rawEncodedJsonService = rawEncodedJsonService;
   }
 
@@ -56,6 +51,6 @@ public class RawEncodedRSMJsonRouter {
         rawEncodedJsonService.addEncodingAndMutateBytes(consumerRecord.value(),
             SupportedMessageType.RSM,
             OdeMessageFrameMetadata.class);
-    kafkaTemplate.send(publishTopic, consumerRecord.key(), messageToPublish);
+    decodeService.decode(messageToPublish, consumerRecord.key());
   }
 }

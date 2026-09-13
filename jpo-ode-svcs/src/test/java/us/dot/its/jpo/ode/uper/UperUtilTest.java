@@ -39,6 +39,14 @@ class UperUtilTest {
   }
 
   @Test
+  void testStripDot3HeaderBytesKnownFlag() {
+    byte[] testPacket = {0x10, 0x20, 0x00, 0x1f, 0x00};
+    byte[] testExpected = {0x00, 0x1f, 0x00};
+    assertArrayEquals(testExpected,
+        UperUtil.stripDot3Header(testPacket, SupportedMessageType.TIM.getStartFlagBytes()));
+  }
+
+  @Test
   void testStripDot3HeaderWithDot2StartIndex() {
     byte[] testPacket = {0x0, 0x01, 0x03, (byte) 0x81, 0x00, 0x00, 0x1f, 0x00};
     byte[] testExpected = {0x03, (byte) 0x81, 0x00, 0x00, 0x1f, 0x00};
@@ -46,6 +54,28 @@ class UperUtilTest {
     testMsgStartFlag.put("TIM", "001f");
     byte[] testResult = UperUtil.stripDot3Header(testPacket, testMsgStartFlag);
     assertArrayEquals(testExpected, testResult);
+  }
+
+  @Test
+  void testStripDot3HeaderBytesWithDot2StartIndex() {
+    byte[] testPacket = {0x0, 0x01, 0x03, (byte) 0x81, 0x00, 0x00, 0x1f, 0x00};
+    byte[] testExpected = {0x03, (byte) 0x81, 0x00, 0x00, 0x1f, 0x00};
+    assertArrayEquals(testExpected,
+        UperUtil.stripDot3Header(testPacket, SupportedMessageType.TIM.getStartFlagBytes()));
+  }
+
+  @Test
+  void testStripDot2HeaderBytes() throws StartFlagNotFoundException {
+    byte[] testPacket = {0x10, 0x11, 0x00, 0x14, 0x00};
+    byte[] expected = {0x00, 0x14, 0x00};
+    assertArrayEquals(expected,
+        UperUtil.stripDot2Header(testPacket, SupportedMessageType.BSM.getStartFlagBytes()));
+  }
+
+  @Test
+  void testDeterminePacketTypeBsm() {
+    byte[] bsm = HexUtils.fromHexString("001480ADDA7CDE55");
+    assertEquals("BSM", UperUtil.determinePacketType(bsm));
   }
 
   @Test

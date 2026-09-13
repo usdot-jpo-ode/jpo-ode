@@ -2,37 +2,20 @@ package us.dot.its.jpo.ode.udp.ssm;
 
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
-/**
- * The SsmReceiver class is responsible for receiving UDP packets and publishing them as JSON
- * messages to a specified Kafka topic. It extends the functionality of AbstractUdpReceiverPublisher
- * to handle UDP packet reception and decoding.
- */
 @Slf4j
 public class SsmReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> ssmPublisher;
-  private final String publishTopic;
+  private final FfmlibDecodeService decodeService;
 
-  /**
-   * Constructs an SsmReceiver to handle UDP packets and publish them to a specified Kafka topic.
-   *
-   * @param receiverProperties Properties object containing the receiver configuration like port and
-   *                           buffer size.
-   * @param kafkaTemplate      Kafka template used to send messages to a Kafka topic.
-   * @param publishTopic       The Kafka topic to which the decoded UDP packets will be published.
-   */
-  public SsmReceiver(ReceiverProperties receiverProperties,
-      KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+  public SsmReceiver(ReceiverProperties receiverProperties, FfmlibDecodeService decodeService) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
-
-    this.publishTopic = publishTopic;
-    this.ssmPublisher = kafkaTemplate;
+    this.decodeService = decodeService;
   }
 
   @Override
@@ -46,15 +29,12 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP SSM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
-          if (ssmJson != null) {
-            ssmPublisher.send(publishTopic, ssmJson);
-          }
+          decodeService.decode(packet, SupportedMessageType.SSM);
         }
       } catch (InvalidPayloadException e) {
-        log.error("Error decoding packet", e);
+        log.error("Error decoding SSM packet", e);
       } catch (Exception e) {
-        log.error("Error receiving packet", e);
+        log.error("Error receiving SSM packet", e);
       }
     } while (!isStopped());
   }
