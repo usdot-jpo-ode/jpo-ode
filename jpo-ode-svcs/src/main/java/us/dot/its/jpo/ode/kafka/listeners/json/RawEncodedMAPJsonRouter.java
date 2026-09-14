@@ -3,12 +3,10 @@ package us.dot.its.jpo.ode.kafka.listeners.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
@@ -21,23 +19,19 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 @Component
 public class RawEncodedMAPJsonRouter {
 
-  private final KafkaTemplate<String, OdeObject> kafkaTemplate;
-  private final String publishTopic;
+  private final FfmlibDecodeService decodeService;
   private final RawEncodedJsonService rawEncodedJsonService;
 
   /**
    * Constructor for the RawEncodedMAPJsonRouter class.
    *
-   * @param kafkaTemplate The KafkaTemplate instance used to publish decoded data to the specified
-   *                      Kafka topic.
-   * @param publishTopic  The Kafka topic to which the decoded and processed data is published.
+   * @param decodeService         In-process FFMLib decode service that publishes decoded JSON
+   *                              or decodes in-process via FFMLib, depending on configuration.
    * @param rawEncodedJsonService A service to transform incoming data into the expected output
    */
-  public RawEncodedMAPJsonRouter(KafkaTemplate<String, OdeObject> kafkaTemplate,
-      @Value("${ode.kafka.topics.asn1.decoder-input}") String publishTopic,
+  public RawEncodedMAPJsonRouter(FfmlibDecodeService decodeService,
       RawEncodedJsonService rawEncodedJsonService) {
-    this.kafkaTemplate = kafkaTemplate;
-    this.publishTopic = publishTopic;
+    this.decodeService = decodeService;
     this.rawEncodedJsonService = rawEncodedJsonService;
   }
 
@@ -58,6 +52,6 @@ public class RawEncodedMAPJsonRouter {
     var messageToPublish = rawEncodedJsonService.addEncodingAndMutateBytes(
         consumerRecord.value(),
         SupportedMessageType.MAP, OdeMessageFrameMetadata.class);
-    kafkaTemplate.send(publishTopic, consumerRecord.key(), messageToPublish);
+    decodeService.decode(messageToPublish, consumerRecord.key());
   }
 }

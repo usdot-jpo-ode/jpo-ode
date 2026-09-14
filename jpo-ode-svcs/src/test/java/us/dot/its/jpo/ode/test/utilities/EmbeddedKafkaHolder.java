@@ -26,8 +26,8 @@ import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 @Slf4j
 public final class EmbeddedKafkaHolder {
 
-    private static final EmbeddedKafkaBroker embeddedKafka =
-            new EmbeddedKafkaKraftBroker(1, 1).brokerListProperty("spring.kafka.bootstrap-servers");
+  private static EmbeddedKafkaBroker embeddedKafka =
+      new EmbeddedKafkaKraftBroker(1, 1).brokerListProperty("spring.kafka.bootstrap-servers");
 
   private static boolean started;
 
@@ -68,12 +68,16 @@ public final class EmbeddedKafkaHolder {
         log.debug("topic {} already exists in embedded kafka broker. Skipping creation", topic);
         continue;
       }
-      NewTopic newTopic = new NewTopic(topic, 1, (short) 1);
       try {
-        embeddedKafka.addTopics(newTopic);
+        // Prefer the String overload so the broker's topic set stays in sync for consumers.
+        embeddedKafka.addTopics(topic);
       } catch (Exception e) {
-        // Ignore because we only care they are created not that they weren't created prior
-        log.debug("exception adding topic {} to embedded kafka broker", topic, e);
+        try {
+          embeddedKafka.addTopics(new NewTopic(topic, 1, (short) 1));
+        } catch (Exception nested) {
+          // Ignore because we only care they are created not that they weren't created prior
+          log.debug("exception adding topic {} to embedded kafka broker", topic, nested);
+        }
       }
     }
   }

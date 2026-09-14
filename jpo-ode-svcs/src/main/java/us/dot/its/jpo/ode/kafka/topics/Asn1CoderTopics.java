@@ -4,9 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Configuration properties for ASN.1 coder Kafka topics.
- */
+/** Legacy external ADM/AEM topic names retained for codec-mode rollback. */
 @Configuration
 @ConfigurationProperties("ode.kafka.topics.asn1")
 @Data

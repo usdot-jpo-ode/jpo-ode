@@ -62,12 +62,11 @@ class RawEncodedSPATJsonRouterTest {
   @Autowired
   KafkaTemplate<String, String> kafkaTemplate;
 
-  private CompletableFuture<String> future;
+  @org.springframework.test.context.bean.override.mockito.MockitoBean
+  us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService decodeService;
 
   @Test
   void testListen() throws JSONException, IOException, InterruptedException {
-
-   future = new CompletableFuture<>();
 
     var classLoader = getClass().getClassLoader();
     String spatJson;
@@ -87,18 +86,8 @@ class RawEncodedSPATJsonRouterTest {
     }
     kafkaTemplate.send(rawEncodedJsonTopics.getSpat(), spatJson);
 
-    String actualPayload;
-    try {
-      actualPayload = future.get(3, TimeUnit.SECONDS);
-    } catch (ExecutionException | TimeoutException e) {
-        throw new AssertionError("SPAT message was not received within the timeout period", e);
-    }
-
-    assertEquals(expectedSpat, actualPayload);
-  }
-
-  @KafkaListener(topics = "topic.Asn1DecoderSPATInput", groupId = "test-group")
-  public void receive(String payload) {
-    future.complete(payload);
+    org.mockito.Mockito.verify(decodeService, org.mockito.Mockito.timeout(5000))
+        .decode(org.mockito.ArgumentMatchers.any(us.dot.its.jpo.ode.model.OdeAsn1Data.class),
+            org.mockito.ArgumentMatchers.any());
   }
 }

@@ -2,67 +2,40 @@ package us.dot.its.jpo.ode.udp.map;
 
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
-import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
+import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
-/**
- * The MapReceiver class is responsible for receiving UDP packets, decoding them, and publishing the
- * decoded JSON map to a specified Kafka topic. It extends the {@link AbstractUdpReceiverPublisher}
- * class to leverage UDP receiving capabilities.
- *
- * </p>MapReceiver listens on a specified port for incoming UDP packets encapsulating
- * map data, and decodes these packets. Upon successful decoding, the map data is published to a
- * Kafka topic using KafkaTemplate.
- */
 @Slf4j
 public class MapReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> mapPublisher;
-  private final String publishTopic;
+  private final FfmlibDecodeService decodeService;
 
-  /**
-   * Constructs a new MapReceiver instance to receive UDP packets, decode them, and publish the
-   * decoded map data to a specified Kafka topic.
-   *
-   * @param receiverProperties The properties that define the UDP receiver configuration, including
-   *                           the port on which to listen and the buffer size for incoming
-   *                           packets.
-   * @param kafkaTemplate      The KafkaTemplate instance used to send messages to the Kafka topic.
-   * @param publishTopic       The topic to which decoded map data should be published.
-   */
-  public MapReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties,
-      KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+  public MapReceiver(ReceiverProperties receiverProperties, FfmlibDecodeService decodeService) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
-
-    this.mapPublisher = kafkaTemplate;
-    this.publishTopic = publishTopic;
+    this.decodeService = decodeService;
   }
 
   @Override
   public void run() {
-    log.debug("Map UDP Receiver Service started.");
+    log.debug("MAP UDP Receiver Service started.");
 
     byte[] buffer = new byte[bufferSize];
     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
     do {
       try {
-        log.debug("Waiting for UDP Map packets...");
+        log.debug("Waiting for UDP MAP packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String mapData = UdpHexDecoder.buildJsonMapFromPacket(packet);
-          if (mapData != null) {
-            mapPublisher.send(publishTopic, mapData);
-          }
+          decodeService.decode(packet, SupportedMessageType.MAP);
         }
       } catch (InvalidPayloadException e) {
-        log.error("Error decoding packet", e);
+        log.error("Error decoding MAP packet", e);
       } catch (Exception e) {
-        log.error("Error receiving packet", e);
+        log.error("Error receiving MAP packet", e);
       }
     } while (!isStopped());
   }
-
 }

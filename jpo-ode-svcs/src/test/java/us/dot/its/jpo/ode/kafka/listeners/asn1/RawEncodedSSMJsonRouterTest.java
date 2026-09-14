@@ -61,11 +61,11 @@ class RawEncodedSSMJsonRouterTest {
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
 
-  private CompletableFuture<String> future;
+  @org.springframework.test.context.bean.override.mockito.MockitoBean
+  us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService decodeService;
 
   @Test
   void testListen() throws JSONException, IOException, InterruptedException {
-    future = new CompletableFuture<>();
 
     var classLoader = getClass().getClassLoader();
     InputStream inputStream = classLoader
@@ -75,23 +75,8 @@ class RawEncodedSSMJsonRouterTest {
     var json = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     kafkaTemplate.send(rawEncodedJsonTopics.getSsm(), json);
 
-    inputStream = classLoader
-        .getResourceAsStream("us/dot/its/jpo/ode/kafka/listeners/asn1/expected-ssm.xml");
-    assert inputStream != null;
-    var expectedSSM = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-
-    String odeSsmData;
-    try {
-      odeSsmData = future.get(3, TimeUnit.SECONDS);
-    } catch (ExecutionException | TimeoutException e) {
-      throw new AssertionError("SSM message was not received within the timeout period", e);
-    }
-
-    assertEquals(expectedSSM, odeSsmData);
+    org.mockito.Mockito.verify(decodeService, org.mockito.Mockito.timeout(5000))
+        .decode(org.mockito.ArgumentMatchers.any(us.dot.its.jpo.ode.model.OdeAsn1Data.class),
+            org.mockito.ArgumentMatchers.any());
   }
-
-    @KafkaListener(topics = {"topic.Asn1DecoderSSMInput"} , groupId = "test-group")
-    public void receive(String payload) {
-      future.complete(payload);
-    }
 }

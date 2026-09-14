@@ -129,6 +129,16 @@ ode:
     time-period: 5
     upload-location-root: "uploads"
     obu-log-upload-location: "bsmlog"
+  asn1:
+    codec-mode: ${ODE_ASN1_CODEC_MODE:ffm}
+  ffmlib:
+    native-library-path: ${ODE_ASN1_FFM_LIBRARY_PATH:${ODE_FFMLIB_NATIVE_LIB_PATH:}}
+    # Native Asn1Codec buffers.
+    text-buffer-size: ${ODE_FFMLIB_TEXT_BUFFER_SIZE:2097152}
+    uper-buffer-size: ${ODE_FFMLIB_UPER_BUFFER_SIZE:262144}
+    error-buffer-size: ${ODE_FFMLIB_ERROR_BUFFER_SIZE:1024}
+    # Intermediate encoding after UPER: auto (JER when native lib supports it, else XER), jer, or xer
+    intermediate-encoding: ${ODE_FFMLIB_INTERMEDIATE_ENCODING:auto}
   tim-ingest-monitoring:
     tracking-enabled: ${ODE_TIM_INGEST_MONITORING_ENABLED}
     interval: ${ODE_TIM_INGEST_MONITORING_INTERVAL}

@@ -182,7 +182,7 @@ public class FfmlibDecodeService {
       log.debug("Prepared raw {} ASN.1 payload in {}us", key,
           (System.nanoTime() - prepStart) / 1000);
 
-      // totalTimer is recorded inside runPublishDecoded (same as the UDP worker path).
+      // Record the same total conversion timer used by the UDP path.
       runPublishDecoded(
           (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null);
     } catch (ClassCastException e) {

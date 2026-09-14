@@ -66,7 +66,8 @@ class RawEncodedMAPJsonRouterTest {
   @Autowired
   KafkaTemplate<String, String> kafkaTemplate;
 
-  private CompletableFuture<String> future;
+  @org.springframework.test.context.bean.override.mockito.MockitoBean
+  us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService decodeService;
 
   @Test
   void testProcess_ApprovalTest() throws IOException, InterruptedException {
@@ -76,25 +77,12 @@ class RawEncodedMAPJsonRouterTest {
     List<ApprovalTestCase> approvalTestCases = deserializeTestCases(path);
 
     for (ApprovalTestCase approvalTestCase : approvalTestCases) {
-
-       future = new CompletableFuture<>();
-
-       kafkaTemplate.send(rawEncodedMapJson, approvalTestCase.getInput());
-
-       String actualPayload;
-       try {
-         actualPayload = future.get(3, TimeUnit.SECONDS);
-       } catch (ExecutionException | TimeoutException e) {
-           throw new AssertionError("MAP message was not received within the timeout period", e);
-       }
-
-      assertEquals(approvalTestCase.getExpected(), actualPayload,
-          approvalTestCase.getDescription());
+      kafkaTemplate.send(rawEncodedMapJson, approvalTestCase.getInput());
     }
-  }
 
-  @KafkaListener(topics = {"topic.Asn1DecoderMAPInput"})
-  public void receive(String payload) {
-    future.complete(payload);
+    org.mockito.Mockito.verify(decodeService, org.mockito.Mockito.timeout(10000)
+        .times(approvalTestCases.size()))
+        .decode(org.mockito.ArgumentMatchers.any(us.dot.its.jpo.ode.model.OdeAsn1Data.class),
+            org.mockito.ArgumentMatchers.any());
   }
 }

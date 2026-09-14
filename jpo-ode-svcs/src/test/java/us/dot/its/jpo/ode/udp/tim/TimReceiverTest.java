@@ -1,112 +1,81 @@
 package us.dot.its.jpo.ode.udp.tim;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import java.net.DatagramPacket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import us.dot.its.jpo.ode.config.SerializationConfig;
-import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
-import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.test.utilities.TestUDPClient;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = {
-        KafkaProducerConfig.class,
-        KafkaConsumerConfig.class,
-        SerializationConfig.class,
-        TestMetricsConfig.class,
-        UDPReceiverProperties.class,
-        OdeKafkaProperties.class,
-        RawEncodedJsonTopics.class,
-        KafkaProperties.class
-    },
-    properties = {
-        "ode.receivers.tim.receiver-port=15353",
-        "ode.kafka.topics.raw-encoded-json.tim=topic.TimReceiverTest"
-    }
-)
-@EmbeddedKafka
-@TestPropertySource(properties = {"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
+    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, TestMetricsConfig.class},
+    properties = {"ode.receivers.tim.receiver-port=15353"})
+@ContextConfiguration(classes = {UDPReceiverProperties.class, KafkaProperties.class})
 @DirtiesContext
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TimReceiverTest {
+
+  private static final String BASE = "src/test/resources/us/dot/its/jpo/ode/udp/tim/";
 
   @Autowired
   UDPReceiverProperties udpReceiverProperties;
 
-  @Autowired
-  RawEncodedJsonTopics rawEncodedJsonTopics;
+  @MockitoBean
+  FfmlibDecodeService decodeService;
 
-  @Autowired
-  KafkaTemplate<String, String> kafkaTemplate;
+  EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
-  private CompletableFuture<String> future;
+  private TimReceiver timReceiver;
+  private ExecutorService executorService;
 
-  @Test
-  void testRun() throws Exception {
-    future = new CompletableFuture<>();
-
-    final Clock prevClock = DateTimeUtils.setClock(
-        Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneId.of("UTC")));
-
-    TimReceiver timReceiver = new TimReceiver(udpReceiverProperties.getTim(),
-        kafkaTemplate, rawEncodedJsonTopics.getTim());
-    ExecutorService executorService = Executors.newCachedThreadPool();
+  @BeforeAll
+  void startReceiver() {
+    timReceiver = new TimReceiver(udpReceiverProperties.getTim(), decodeService);
+    executorService = Executors.newCachedThreadPool();
     executorService.submit(timReceiver);
-
-    String fileContent =
-        Files.readString(Paths.get(
-            "src/test/resources/us/dot/its/jpo/ode/udp/tim/TimReceiverTest_ValidTIM.txt"));
-    String expected = Files.readString(Paths.get(
-        "src/test/resources/us/dot/its/jpo/ode/udp/tim/TimReceiverTest_ValidTIM_expected.json"));
-
-    TestUDPClient udpClient = new TestUDPClient(udpReceiverProperties.getTim().getReceiverPort());
-    udpClient.send(fileContent);
-
-    String actualPayload = future.get(3, TimeUnit.SECONDS);
-
-    assertNotEquals(expected, actualPayload);
-    JSONObject producedJson = new JSONObject(actualPayload);
-    JSONObject expectedJson = new JSONObject(expected);
-
-    assertNotEquals(expectedJson.getJSONObject("metadata").get("serialId"),
-        producedJson.getJSONObject("metadata").get("serialId"));
-    expectedJson.getJSONObject("metadata").remove("serialId");
-    producedJson.getJSONObject("metadata").remove("serialId");
-
-    assertEquals(
-        expectedJson.toString(2),
-        producedJson.toString(2));
-
-    DateTimeUtils.setClock(prevClock);
   }
 
-  @KafkaListener(topics = "topic.TimReceiverTest")
-  public void receive(String payload) {
-    future.complete(payload);
+  @AfterAll
+  void cleanup() {
+    timReceiver.setStopped(true);
+    executorService.shutdown();
+  }
+
+  @Test
+  void testRawJ2735() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "TimReceiverTest_ValidTIM.txt"));
+    new TestUDPClient(udpReceiverProperties.getTim().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.TIM));
+  }
+
+  @Test
+  void testWithSignature() throws Exception {
+    String content = Files.readString(Paths.get(BASE + "TimReceiverTest_ValidTIM_WithSignature.txt"));
+    new TestUDPClient(udpReceiverProperties.getTim().getReceiverPort()).send(content);
+    verify(decodeService, timeout(5000)).decode(any(DatagramPacket.class), eq(SupportedMessageType.TIM));
   }
 }
