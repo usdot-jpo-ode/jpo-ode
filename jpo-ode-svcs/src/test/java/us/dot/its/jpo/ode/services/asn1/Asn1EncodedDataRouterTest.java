@@ -40,13 +40,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.test.annotation.DirtiesContext;
@@ -81,7 +82,11 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
         "ode.security-services.is-sdw-signing-enabled=false",
         "ode.kafka.topics.json.tim-cert-expiration=topic.Asn1EncodedDataRouterTestTimCertExpiration",
         "ode.kafka.topics.json.tim-tmc-filtered=topic.Asn1EncodedDataRouterTestTimTmcFiltered",
-        "ode.kafka.topics.sdx-depositor.input=topic.Asn1EncodedDataRouterTestSDXDepositor"
+        "ode.kafka.topics.sdx-depositor.input=topic.Asn1EncodedDataRouterTestSDXDepositor",
+        "ode.kafka.topics.json.tim=topic.OdeTimJson",
+        "ode.kafka.topics.json.tim-ktable=topic.OdeTimJsonKTable",
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "ode.kafka.brokers=${spring.embedded.kafka.brokers}"
     },
     classes = {
         OdeKafkaProperties.class,
@@ -100,9 +105,21 @@ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 @EnableConfigurationProperties
 @DirtiesContext
 @ActiveProfiles("test")
+@EmbeddedKafka(
+    partitions = 1,
+    topics = {
+        "topic.Asn1EncodedDataRouterTestTimCertExpiration",
+        "topic.Asn1EncodedDataRouterTestTimTmcFiltered",
+        "topic.Asn1EncodedDataRouterTestSDXDepositor",
+        "topic.OdeTimJson",
+        "topic.OdeTimJsonKTable"
+    }
+)
 class Asn1EncodedDataRouterTest {
 
-  private final EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
+  @Autowired
+  private EmbeddedKafkaBroker embeddedKafka;
+
   @Autowired
   JsonTopics jsonTopics;
   @Autowired

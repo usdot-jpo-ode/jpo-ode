@@ -2,9 +2,9 @@ package us.dot.its.jpo.ode.test.utilities;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.springframework.kafka.KafkaException;
+import org.apache.kafka.common.KafkaException;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
+import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 
 /**
  * The EmbeddedKafkaHolder class is a utility for managing a singleton instance of an embedded Kafka
@@ -27,7 +27,7 @@ import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 public final class EmbeddedKafkaHolder {
 
   private static EmbeddedKafkaBroker embeddedKafka =
-      new EmbeddedKafkaZKBroker(1, false).brokerListProperty("spring.kafka.bootstrap-servers");
+      new EmbeddedKafkaKraftBroker(1, 1).brokerListProperty("spring.kafka.bootstrap-servers");
 
   private static boolean started;
 

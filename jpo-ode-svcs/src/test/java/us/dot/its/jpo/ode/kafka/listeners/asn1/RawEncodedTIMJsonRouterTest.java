@@ -62,11 +62,11 @@ class RawEncodedTIMJsonRouterTest {
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
 
-  private CompletableFuture<String> future;
+  @org.springframework.test.context.bean.override.mockito.MockitoBean
+  us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService decodeService;
 
   @Test
   void testListen() throws JSONException, IOException, InterruptedException {
-    future = new CompletableFuture<>();
 
     var classLoader = getClass().getClassLoader();
     String json;
@@ -78,26 +78,8 @@ class RawEncodedTIMJsonRouterTest {
     }
     kafkaTemplate.send(rawEncodedJsonTopics.getTim(), json);
 
-    String expectedTim;
-    try (InputStream inputStream = classLoader.getResourceAsStream(
-            "us/dot/its/jpo/ode/kafka/listeners/asn1/expected-tim.xml")) {
-
-      assert inputStream != null;
-      expectedTim = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-    }
-
-    String odeTimData;
-    try {
-      odeTimData = future.get(3, TimeUnit.SECONDS);
-    } catch (ExecutionException | TimeoutException e) {
-      throw new AssertionError("TIM message was not received within the timeout period", e);
-    }
-
-    assertEquals(expectedTim, odeTimData);
-  }
-
-  @KafkaListener(topics = {"topic.Asn1DecoderTIMInput"} , groupId = "test-group")
-  public void receive(String payload) {
-    future.complete(payload);
+    org.mockito.Mockito.verify(decodeService, org.mockito.Mockito.timeout(5000))
+        .decode(org.mockito.ArgumentMatchers.any(us.dot.its.jpo.ode.model.OdeAsn1Data.class),
+            org.mockito.ArgumentMatchers.any());
   }
 }

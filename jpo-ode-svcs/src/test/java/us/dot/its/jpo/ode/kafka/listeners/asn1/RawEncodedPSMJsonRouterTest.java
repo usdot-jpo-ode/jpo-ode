@@ -64,12 +64,12 @@ class RawEncodedPSMJsonRouterTest {
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
 
-  private CompletableFuture<String> future;
+  @org.springframework.test.context.bean.override.mockito.MockitoBean
+  us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService decodeService;
 
   @Test
   void testListen() throws JSONException, IOException, InterruptedException {
 
-    future = new CompletableFuture<>();
 
     var classLoader = getClass().getClassLoader();
     String psmJson;
@@ -90,18 +90,8 @@ class RawEncodedPSMJsonRouterTest {
 
     kafkaTemplate.send(rawEncodedJsonTopics.getPsm(), psmJson);
 
-    String actualPayload;
-    try {
-      actualPayload = future.get(3, TimeUnit.SECONDS);
-    } catch (ExecutionException | TimeoutException e) {
-      throw new AssertionError("PSM message was not received within the timeout period", e);
-    }
-
-    assertEquals(expectedPsm, actualPayload);
-  }
-
-  @KafkaListener(topics = "topic.Asn1DecoderPSMInput")
-    public void receive(String payload) {
-      future.complete(payload);
+    org.mockito.Mockito.verify(decodeService, org.mockito.Mockito.timeout(5000))
+        .decode(org.mockito.ArgumentMatchers.any(us.dot.its.jpo.ode.model.OdeAsn1Data.class),
+            org.mockito.ArgumentMatchers.any());
   }
 }

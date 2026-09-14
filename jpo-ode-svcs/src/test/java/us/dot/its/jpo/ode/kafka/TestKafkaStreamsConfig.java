@@ -36,6 +36,7 @@ public class TestKafkaStreamsConfig {
       OdeKafkaProperties odeKafkaProperties,
       KafkaTemplate<String, String> kafkaTemplate) {
     EmbeddedKafkaHolder.addTopics(timTopic);
+    EmbeddedKafkaHolder.addTopics(timKTableTopic);
     var topology = new OdeTimJsonTopology(odeKafkaProperties, timTopic, timKTableTopic, kafkaTemplate);
     Awaitility.await().until(topology::isRunning);
     return topology;

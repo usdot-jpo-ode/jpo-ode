@@ -27,6 +27,15 @@ public class Asn1DecodedDataRouter {
   private final XmlMapper xmlMapper;
 
   /**
+   * Exception for Asn1DecodedDataRouter specific failures.
+   */
+  public static class Asn1DecodedDataRouterException extends Exception {
+    public Asn1DecodedDataRouterException(String string) {
+      super(string);
+    }
+  }
+
+  /**
    * Constructs the external ADM output router.
    *
    * @param kafkaTemplate Kafka producer
@@ -50,7 +59,10 @@ public class Asn1DecodedDataRouter {
     JSONObject data = consumed.getJSONObject(OdeMsgPayload.PAYLOAD_STRING)
         .getJSONObject(OdeMsgPayload.DATA_STRING);
     if (data.has("code")) {
-      throw new IllegalArgumentException("External ASN.1 decode failed: " + data);
+      throw new Asn1DecodedDataRouterException(
+          String.format("Error processing decoded message with code %s and message %s",
+              data.getString("code"),
+              data.has("message") ? data.getString("message") : "NULL"));
     }
     String destination = destination(new DSRCmsgID(
         data.getJSONObject("MessageFrame").getInt("messageId")).name().orElse("Unknown"));
