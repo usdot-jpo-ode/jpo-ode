@@ -16,15 +16,17 @@
 
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import mockit.Capturing;
-import mockit.Expectations;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DisabledVehicle;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
@@ -55,166 +57,144 @@ class SupplementalVehicleExtensionsBuilderTest {
   }
 
   @Test
-  void testVehicleClass(
-      @Capturing VehicleClassificationBuilder capturingVehicleClassificationBuilder) {
+  void testVehicleClass() {
+    try (MockedStatic<VehicleClassificationBuilder> classStatic =
+             Mockito.mockStatic(VehicleClassificationBuilder.class)) {
+      classStatic.when(() -> VehicleClassificationBuilder.genericVehicleClassification(any(JsonNode.class)))
+          .thenReturn(new J2735VehicleClassification());
 
-    new Expectations() {
-      {
-        VehicleClassificationBuilder.genericVehicleClassification((JsonNode) any);
-        result = new J2735VehicleClassification();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("classDetails", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("classDetails", "something");
+      J2735BsmPart2Content outputContent = new J2735BsmPart2Content();
 
-    J2735BsmPart2Content outputContent = new J2735BsmPart2Content();
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(outputContent,
+              testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(outputContent,
-            testInput);
-
-    Assertions.assertNotNull(result.getClassDetails());
+      Assertions.assertNotNull(result.getClassDetails());
+    }
   }
 
   @Test
-  void testVehicleData(@Capturing VehicleDataBuilder capturingVehicleDataBuilder) {
+  void testVehicleData() {
+    try (MockedStatic<VehicleDataBuilder> dataStatic = Mockito.mockStatic(VehicleDataBuilder.class)) {
+      dataStatic.when(() -> VehicleDataBuilder.genericVehicleData(any(JsonNode.class)))
+          .thenReturn(new J2735VehicleData());
 
-    new Expectations() {
-      {
-        VehicleDataBuilder.genericVehicleData((JsonNode) any);
-        result = new J2735VehicleData();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("vehicleData", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("vehicleData", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getVehicleData());
+      Assertions.assertNotNull(result.getVehicleData());
+    }
   }
 
   @Test
-  void testWeatherReport(@Capturing WeatherReportBuilder capturingWeatherReportBuilder) {
+  void testWeatherReport() {
+    try (MockedStatic<WeatherReportBuilder> wrStatic = Mockito.mockStatic(WeatherReportBuilder.class)) {
+      wrStatic.when(() -> WeatherReportBuilder.genericWeatherReport(any(JsonNode.class)))
+          .thenReturn(new J2735WeatherReport());
 
-    new Expectations() {
-      {
-        WeatherReportBuilder.genericWeatherReport((JsonNode) any);
-        result = new J2735WeatherReport();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("doNotUse1", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("doNotUse1", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getDoNotUse1());
+      Assertions.assertNotNull(result.getDoNotUse1());
+    }
   }
 
   @Test
-  void testWeatherProbe(@Capturing WeatherProbeBuilder capturingWeatherProbeBuilder) {
+  void testWeatherProbe() {
+    try (MockedStatic<WeatherProbeBuilder> wpStatic = Mockito.mockStatic(WeatherProbeBuilder.class)) {
+      wpStatic.when(() -> WeatherProbeBuilder.genericWeatherProbe(any(JsonNode.class)))
+          .thenReturn(new J2735WeatherProbe());
 
-    new Expectations() {
-      {
-        WeatherProbeBuilder.genericWeatherProbe((JsonNode) any);
-        result = new J2735WeatherProbe();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("doNotUse2", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("doNotUse2", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getDoNotUse2());
+      Assertions.assertNotNull(result.getDoNotUse2());
+    }
   }
 
   @Test
-  void testObstacle(@Capturing ObstacleDetectionBuilder capturingObstacleDetectionBuilder) {
+  void testObstacle() {
+    try (MockedStatic<ObstacleDetectionBuilder> obstacleStatic =
+             Mockito.mockStatic(ObstacleDetectionBuilder.class)) {
+      obstacleStatic.when(() -> ObstacleDetectionBuilder.genericObstacleDetection(any(JsonNode.class)))
+          .thenReturn(new J2735ObstacleDetection());
 
-    new Expectations() {
-      {
-        ObstacleDetectionBuilder.genericObstacleDetection((JsonNode) any);
-        result = new J2735ObstacleDetection();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("doNotUse3", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("doNotUse3", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getDoNotUse3());
+      Assertions.assertNotNull(result.getDoNotUse3());
+    }
   }
 
   @Test
-  void testStatus(@Capturing DisabledVehicleBuilder capturingDisabledVehicleBuilder) {
+  void testStatus() {
+    try (MockedStatic<DisabledVehicleBuilder> disabledStatic =
+             Mockito.mockStatic(DisabledVehicleBuilder.class)) {
+      disabledStatic.when(() -> DisabledVehicleBuilder.genericDisabledVehicle(any(JsonNode.class)))
+          .thenReturn(new J2735DisabledVehicle());
 
-    new Expectations() {
-      {
-        DisabledVehicleBuilder.genericDisabledVehicle((JsonNode) any);
-        result = new J2735DisabledVehicle();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("status", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("status", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getStatus());
+      Assertions.assertNotNull(result.getStatus());
+    }
   }
 
   @Test
-  void testSpeedProfile(@Capturing SpeedProfileBuilder capturingSpeedProfileBuilder) {
+  void testSpeedProfile() {
+    try (MockedStatic<SpeedProfileBuilder> speedStatic = Mockito.mockStatic(SpeedProfileBuilder.class)) {
+      speedStatic.when(() -> SpeedProfileBuilder.genericSpeedProfile(any(JsonNode.class)))
+          .thenReturn(new J2735SpeedProfile());
 
-    new Expectations() {
-      {
-        SpeedProfileBuilder.genericSpeedProfile((JsonNode) any);
-        result = new J2735SpeedProfile();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("doNotUse4", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("doNotUse4", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getDoNotUse4());
+      Assertions.assertNotNull(result.getDoNotUse4());
+    }
   }
 
   @Test
-  void testRtcmPackage(@Capturing RTCMPackageBuilder capturingRTCMPackageBuilder) {
+  void testRtcmPackage() {
+    try (MockedStatic<RTCMPackageBuilder> rtcmStatic = Mockito.mockStatic(RTCMPackageBuilder.class)) {
+      rtcmStatic.when(() -> RTCMPackageBuilder.genericRTCMPackage(any(JsonNode.class)))
+          .thenReturn(new J2735RTCMPackage());
 
-    new Expectations() {
-      {
-        RTCMPackageBuilder.genericRTCMPackage((JsonNode) any);
-        result = new J2735RTCMPackage();
-      }
-    };
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("doNotUse5", "something");
 
-    ObjectNode testInput = JsonUtils.newNode();
-    testInput.put("doNotUse5", "something");
+      J2735SupplementalVehicleExtensions result =
+          SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
+              new J2735BsmPart2Content(), testInput);
 
-    J2735SupplementalVehicleExtensions result =
-        SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(
-            new J2735BsmPart2Content(), testInput);
-
-    Assertions.assertNotNull(result.getDoNotUse5());
+      Assertions.assertNotNull(result.getDoNotUse5());
+    }
   }
 
   @Test

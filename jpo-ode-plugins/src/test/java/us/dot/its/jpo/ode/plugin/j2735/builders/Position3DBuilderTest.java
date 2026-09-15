@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,10 +15,11 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,11 +27,11 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import mockit.Capturing;
-import mockit.Expectations;
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -96,25 +97,21 @@ public class Position3DBuilderTest {
    }
 
    @Test
-   public void testOdePosition3DToDsrcPosition3D(@Capturing LatitudeBuilder capturingLatitudeBuilder,
-         @Capturing LongitudeBuilder capturingLongitudeBuilder, @Capturing ElevationBuilder capturingElevationBuilder) {
-      new Expectations() {
-         {
-            LatitudeBuilder.j2735Latitude((BigDecimal) any);
-            result = Long.valueOf(5);
-            LongitudeBuilder.j2735Longitude((BigDecimal) any);
-            result = Long.valueOf(6);
-            ElevationBuilder.j2735Elevation((BigDecimal) any);
-            result = Long.valueOf(7);
-         }
-      };
+   public void testOdePosition3DToDsrcPosition3D() {
+      try (MockedStatic<LatitudeBuilder> latStatic = Mockito.mockStatic(LatitudeBuilder.class);
+           MockedStatic<LongitudeBuilder> lonStatic = Mockito.mockStatic(LongitudeBuilder.class);
+           MockedStatic<ElevationBuilder> elevStatic = Mockito.mockStatic(ElevationBuilder.class)) {
+         latStatic.when(() -> LatitudeBuilder.j2735Latitude(any(BigDecimal.class))).thenReturn(Long.valueOf(5));
+         lonStatic.when(() -> LongitudeBuilder.j2735Longitude(any(BigDecimal.class))).thenReturn(Long.valueOf(6));
+         elevStatic.when(() -> ElevationBuilder.j2735Elevation(any(BigDecimal.class))).thenReturn(Long.valueOf(7));
 
-      DsrcPosition3D result = Position3DBuilder
-            .dsrcPosition3D(new OdePosition3D(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+         DsrcPosition3D result = Position3DBuilder
+               .dsrcPosition3D(new OdePosition3D(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
 
-      assertEquals(Long.valueOf(5), result.getLatitude());
-      assertEquals(Long.valueOf(6), result.getLongitude());
-      assertEquals(Long.valueOf(7), result.getElevation());
+         assertEquals(Long.valueOf(5), result.getLatitude());
+         assertEquals(Long.valueOf(6), result.getLongitude());
+         assertEquals(Long.valueOf(7), result.getElevation());
+      }
    }
 
    @Test

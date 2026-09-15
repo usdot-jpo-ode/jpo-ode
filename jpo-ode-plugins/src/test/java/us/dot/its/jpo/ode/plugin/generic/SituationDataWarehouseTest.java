@@ -15,29 +15,22 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.generic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW.TimeToLive;
 import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
-
-//@RunWith(JMockit.class)
 public class SituationDataWarehouseTest {
-   @Tested
-   SDW testSDW;
+   SDW testSDW = new SDW();
 
    @Test
    public void testGettersAndSetters() {

@@ -24,33 +24,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.json.JSONObject;
 import org.json.XML;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 class TravelerMessageFromHumanToAsnConverterTest {
-  @Mocked
-  Logger logger;
-
-  @BeforeEach
-  void setup() {
-    new MockUp<LoggerFactory>() {
-      @Mock
-      Logger getLogger(String value) {
-        return logger;
-      }
-    };
-  }
 
   @Test
   void testAdvisoryNodeLL() throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException,

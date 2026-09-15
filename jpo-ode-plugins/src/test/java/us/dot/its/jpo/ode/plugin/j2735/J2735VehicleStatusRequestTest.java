@@ -15,20 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
-
-//@RunWith(JMockit.class)
 public class J2735VehicleStatusRequestTest {
 
-    @Tested
-    J2735VehicleStatusRequest testVehicleStatusRequest;
+    J2735VehicleStatusRequest testVehicleStatusRequest = new J2735VehicleStatusRequest();
 
     @Test
     public void testSettersAndGetters() {
