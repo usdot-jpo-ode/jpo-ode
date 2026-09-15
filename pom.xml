@@ -81,14 +81,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <!-- If upgrading, consider one of the following approaches to avoid duplicate field names
-     (differing only by naming convention) in ODE-produced messages:
-       - Explicitly write getters and setters for any class field that violates the
-         JavaBeans naming convention (including in the ASN.1 POJOs), or
-       - Apply the appropriate Lombok configuration change and update this project
-         to use the newly generated getters and setters.
-      -->
-      <version>1.18.30</version>
+      <version>1.18.40</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -140,7 +133,7 @@
               <path>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.30</version>
+                <version>1.18.40</version>
               </path>
             </annotationProcessorPaths>
           </configuration>

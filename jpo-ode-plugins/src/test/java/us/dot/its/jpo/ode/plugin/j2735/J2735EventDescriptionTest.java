@@ -21,9 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
 public class J2735EventDescriptionTest {
 
-   J2735EventDescription ed = new J2735EventDescription();
+   private final J2735EventDescription ed = new J2735EventDescription();
 
    @Test
    public void testGettersAndSetters() {

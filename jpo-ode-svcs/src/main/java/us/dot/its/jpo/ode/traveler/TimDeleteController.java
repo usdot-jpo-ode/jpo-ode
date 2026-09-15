@@ -75,12 +75,32 @@ public class TimDeleteController {
   public ResponseEntity<String> deleteTim(@RequestBody String jsonString,
       @RequestParam(value = "index", required = true) Integer index) { // NOSONAR
 
-    if (null == jsonString) {
+    if (jsonString == null || jsonString.isBlank()) {
       logger.error("Empty request");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request"));
     }
 
     RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+    if (queryTarget == null) {
+      logger.error("TIM delete error, malformed JSON");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, "Malformed JSON"));
+    }
+
+    SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
+    if (snmpProtocol == null) {
+      logger.error("No SNMP protocol specified.");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
+    }
+
+    if (!snmpProtocol.equals(SnmpProtocol.FOURDOT1)
+        && !snmpProtocol.equals(SnmpProtocol.NTCIP1218)) {
+      logger.error("Unsupported SNMP protocol");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol"));
+    }
+
     TimTransmogrifier.updateRsuCreds(queryTarget, rsuProperties);
 
     logger.info("TIM delete call, RSU info {}", queryTarget);
@@ -97,14 +117,6 @@ public class TimDeleteController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Malformed JSON"));
     }
 
-    SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
-
-    if (snmpProtocol == null) {
-      logger.error("No SNMP protocol specified.");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
-    }
-
     PDU pdu = null;
     if (snmpProtocol.equals(SnmpProtocol.FOURDOT1)) {
       pdu = new ScopedPDU();
@@ -114,10 +126,6 @@ public class TimDeleteController {
       pdu = new ScopedPDU();
       pdu.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(index, 6));
       pdu.setType(PDU.SET);
-    } else {
-      logger.error("Unsupported SNMP protocol");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol"));
     }
 
     ResponseEvent rsuResponse = null;
@@ -139,14 +147,14 @@ public class TimDeleteController {
       String timeoutMessage = "Timeout. No response from RSU.";
       httpResponseBodyMessage = JsonUtils.jsonKeyValue(ERRSTR, timeoutMessage);
       logger.error("Failed to delete message at index {} for RSU {}: {}", index, rsuIpAddress, timeoutMessage);
-    } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
+    } else if (rsuResponse.getResponse().getErrorStatus() == PDU.noError) {
       // Success
       httpResponseReturnCode = HttpStatus.OK;
       httpResponseBodyMessage = JsonUtils.jsonKeyValue("deleted_msg", Integer.toString(index));
       logger.info("Successfully deleted message at index {} for RSU {}", index, rsuIpAddress);
     } else {
       // Error
-      httpResponseReturnCode = HttpStatus.BAD_REQUEST;
+      httpResponseReturnCode = HttpStatus.BAD_GATEWAY;
       int errorCodeReturnedByRSU = rsuResponse.getResponse().getErrorStatus();
       String errorTextReturnedByRSU = rsuResponse.getResponse().getErrorStatusText();
       String givenReason = "Error code " + Integer.toString(errorCodeReturnedByRSU) + ": " + errorTextReturnedByRSU;
