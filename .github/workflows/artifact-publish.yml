@@ -24,16 +24,11 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
         server-id: github-ffm
-        server-username: GITHUB_ACTOR
-        server-password: GITHUB_TOKEN
 
     - name: Remove snapshot from version
       run: mvn versions:set -DremoveSnapshot
 
     - name: Build with Maven
-      env:
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: mvn -B clean package --file pom.xml -DskipTests -Ppackage-jar
 
     - name: Publish to GitHub Packages
