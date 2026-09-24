@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/** Selects the legacy external ADM/AEM path or the in-process FFM codec path. */
+/** Selects the external ADM/AEM path or the in-process FFM codec path. */
 @Configuration
 @ConfigurationProperties(prefix = "ode.asn1")
 @Data
@@ -16,7 +16,7 @@ public class Asn1CodecModeProperties {
     ffm
   }
 
-  private CodecMode codecMode = CodecMode.ffm;
+  private CodecMode codecMode = CodecMode.external;
 
   public boolean isFfm() {
     return codecMode == CodecMode.ffm;

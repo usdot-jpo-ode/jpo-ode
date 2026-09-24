@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import j2735ffm.MessageFrameCodec;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -25,14 +24,12 @@ class FfmlibNativeSmokeTest {
 
   @Test
   void nativeCodecLoadsAndDecodesBsmUper() {
-    Path so = Path.of("target", "libs", "libasnapplication.so");
-    assumeTrue(Files.exists(so),
+    Path nativeLibrary = nativeLibraryOrNull();
+    assumeTrue(nativeLibrary != null,
         "FFMLib native library not present under target/libs");
 
     FfmlibProperties properties = new FfmlibProperties();
-    properties.setNativeLibraryPath(
-        so.toAbsolutePath().toString());
-    properties.setIntermediateEncoding("xer");
+    properties.setNativeLibraryPath(nativeLibrary.toString());
 
     MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
         properties.getTextBufferSize(),
@@ -49,5 +46,13 @@ class FfmlibNativeSmokeTest {
     assertTrue(
         result.text().contains("MessageFrame") || result.text().contains("basicSafetyMessage"),
         () -> "Unexpected decode output: " + result.text().substring(0, Math.min(200, result.text().length())));
+  }
+
+  private static Path nativeLibraryOrNull() {
+    try {
+      return FfmlibNativeLibraryLoader.resolve("");
+    } catch (IllegalStateException missing) {
+      return null;
+    }
   }
 }

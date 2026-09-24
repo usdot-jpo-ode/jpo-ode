@@ -26,9 +26,6 @@ public class OdeMessageFrameMetadata extends OdeLogMetadata {
   private String originIp;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private Long asnDecodeLatencyMs;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
   private Long psid;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)

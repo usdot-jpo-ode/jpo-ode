@@ -72,14 +72,12 @@ public class FfmlibMessageFrameCodec {
   }
 
   private Timer timer(String pdu, AsnEncoding from, AsnEncoding to, String outcome) {
-    return Timer.builder("ode.asn1.conversion")
-        .description("In-process native ASN.1 conversion latency")
-        .tag("pdu", pdu)
-        .tag("from", from.name())
-        .tag("to", to.name())
-        .tag("outcome", outcome)
-        .publishPercentileHistogram(false)
-        .register(meterRegistry);
+    return meterRegistry.timer(
+        "ode.asn1.conversion",
+        "pdu", pdu,
+        "from", from.name(),
+        "to", to.name(),
+        "outcome", outcome);
   }
 
   /** Intermediate text encodings produced by the native codec. */

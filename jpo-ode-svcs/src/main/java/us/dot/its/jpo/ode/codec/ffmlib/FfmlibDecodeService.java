@@ -53,6 +53,9 @@ public class FfmlibDecodeService {
 
   private static final byte[] SIGNED_DOT2_PREFIX = {0x03, (byte) 0x81, 0x00};
   private static final String IEEE_PDU = "Ieee1609Dot2Data";
+  private static final String SOURCE_UDP = "udp";
+  private static final String SOURCE_IMPORT = "import";
+  private static final String TYPE_UNKNOWN = "unknown";
 
   private record MessageTypeConfig(
       RecordType recordType, Source source, GeneratedBy generatedBy, boolean includeRxDetails) {}
@@ -77,12 +80,13 @@ public class FfmlibDecodeService {
   private final JsonTopics jsonTopics;
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final XmlMapper simpleXmlMapper;
+  private final MeterRegistry meterRegistry;
   private final Timer nativeTimer;
   private final Timer pojoTimer;
+  private final Timer asnDecodeTimer;
   private final Timer jsonTimer;
   private final Timer sendTimer;
   private final Timer totalTimer;
-  private final Counter failureCounter;
 
   /**
    * Constructs the FFMLib decode service with the native codec, topic, and metric dependencies.
@@ -114,18 +118,23 @@ public class FfmlibDecodeService {
     this.jsonTopics = jsonTopics;
     this.kafkaTemplate = kafkaTemplate;
     this.simpleXmlMapper = simpleXmlMapper;
+    this.meterRegistry = meterRegistry;
+    for (SupportedMessageType type : SupportedMessageType.values()) {
+      decodedCounter(type.name(), SOURCE_UDP);
+      decodedCounter(type.name(), SOURCE_IMPORT);
+    }
     this.nativeTimer = Timer.builder("ode.ffmlib.decode.stage")
         .tag("stage", "native").register(meterRegistry);
     this.pojoTimer = Timer.builder("ode.ffmlib.decode.stage")
         .tag("stage", "pojo").register(meterRegistry);
+    this.asnDecodeTimer = Timer.builder("ode.ffmlib.decode.asn")
+        .description("ASN.1 decode latency covering native conversion and POJO mapping")
+        .register(meterRegistry);
     this.jsonTimer = Timer.builder("ode.ffmlib.decode.stage")
         .tag("stage", "json").register(meterRegistry);
     this.sendTimer = Timer.builder("ode.ffmlib.decode.stage")
         .tag("stage", "send").register(meterRegistry);
     this.totalTimer = Timer.builder("ode.ffmlib.decode.total").register(meterRegistry);
-    this.failureCounter = Counter.builder("ode.ffmlib.decode.failures")
-        .description("In-process ASN.1 decode operations that failed")
-        .register(meterRegistry);
   }
 
   /**
@@ -135,6 +144,7 @@ public class FfmlibDecodeService {
       throws InvalidPayloadException {
     MessageTypeConfig config = MSG_TYPE_CONFIGS.get(msgType);
     if (config == null) {
+      recordFailure(msgType == null ? TYPE_UNKNOWN : msgType.name(), SOURCE_UDP, "unsupported_type");
       log.warn("FFMLib decode: unsupported message type {}", msgType);
       return;
     }
@@ -185,11 +195,16 @@ public class FfmlibDecodeService {
       // totalTimer is recorded inside runPublishDecoded (same as the UDP worker path).
       runPublishDecoded(
           (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null);
+    } catch (DecodeFailure failure) {
+      throw failure;
     } catch (ClassCastException e) {
+      recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, "invalid_payload");
       log.error("FFMLib decode failed (unexpected payload type) for key {}: {}", key, e.getMessage(),
           e);
       throw new IllegalArgumentException("Unexpected ASN.1 payload type", e);
     } catch (Exception e) {
+      String reason = e instanceof IllegalArgumentException ? "invalid_payload" : "unexpected";
+      recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, reason);
       log.error("FFMLib decode unexpected error for key {}: {}", key, e.getMessage(), e);
       throw new IllegalArgumentException("Unable to decode ASN.1 payload", e);
     }
@@ -203,9 +218,6 @@ public class FfmlibDecodeService {
     long totalStart = System.nanoTime();
     try {
       publishDecoded(metadata, uperBytes, key, knownType);
-    } catch (RuntimeException error) {
-      failureCounter.increment();
-      throw error;
     } finally {
       totalTimer.record(System.nanoTime() - totalStart, TimeUnit.NANOSECONDS);
     }
@@ -216,6 +228,8 @@ public class FfmlibDecodeService {
       byte[] uperBytes,
       String key,
       SupportedMessageType knownType) {
+    String type = knownType == null ? TYPE_UNKNOWN : knownType.name();
+    String source = knownType == null ? SOURCE_IMPORT : SOURCE_UDP;
     try {
       long nativeStart = System.nanoTime();
       byte[] messageFrameBytes = unwrapIeee1609IfPresent(metadata, uperBytes);
@@ -227,12 +241,13 @@ public class FfmlibDecodeService {
       final MessageFrame<?> messageFrame = parseMessageFrame(intermediate);
       long pojoNanos = System.nanoTime() - pojoStart;
       pojoTimer.record(pojoNanos, TimeUnit.NANOSECONDS);
+      type = messageType(knownType, messageFrame);
 
-      long asnDecodeLatencyMs = (nativeNanos + pojoNanos) / 1_000_000;
+      long asnDecodeNanos = nativeNanos + pojoNanos;
+      asnDecodeTimer.record(asnDecodeNanos, TimeUnit.NANOSECONDS);
       if (metadata.getOdeReceivedAt() == null || metadata.getOdeReceivedAt().isBlank()) {
         metadata.setOdeReceivedAt(DateTimeUtils.now());
       }
-      metadata.setAsnDecodeLatencyMs(Long.valueOf(asnDecodeLatencyMs));
       metadata.setEncodings(null);
       if (metadata.getReceivedMessageDetails() != null
           && metadata.getReceivedMessageDetails().getRxSource() == null) {
@@ -251,30 +266,103 @@ public class FfmlibDecodeService {
 
       String topic = resolveJsonTopic(knownType, messageFrame);
       if (topic == null) {
+        recordDropped(type, source);
         log.warn("FFMLib decode: no topic mapped for message, key {} dropped.", key);
         return;
       }
 
       long sendStart = System.nanoTime();
-      kafkaTemplate.send(topic, key, json);
+      try {
+        kafkaTemplate.send(topic, key, json);
+      } catch (RuntimeException error) {
+        log.error("FFMLib decode failed (Kafka publish) for key {}: {}", key, error.getMessage(),
+            error);
+        recordFailure(type, source, "publish");
+        throw new DecodeFailure("Unable to publish decoded ASN.1 payload", error);
+      }
       sendTimer.record(System.nanoTime() - sendStart, TimeUnit.NANOSECONDS);
+      recordDecoded(type, source);
 
       if (log.isDebugEnabled()) {
         log.debug(
-            "FFMLib decode key={} encoding={} native={}us pojo={}us totalAsn={}ms topic={}",
+            "FFMLib decode key={} encoding={} native={}us pojo={}us totalAsn={}us topic={}",
             key,
             intermediate.encoding(),
             nativeNanos / 1000,
             pojoNanos / 1000,
-            asnDecodeLatencyMs,
+            asnDecodeNanos / 1000,
             topic);
       }
+    } catch (DecodeFailure failure) {
+      throw failure;
     } catch (JsonProcessingException e) {
       log.error("FFMLib decode failed (JSON/XML processing) for key {}: {}", key, e.getMessage(), e);
-      throw new IllegalArgumentException("Unable to map decoded ASN.1 XER", e);
+      recordFailure(type, source, "mapping");
+      throw new DecodeFailure("Unable to map decoded ASN.1 XER", e);
     } catch (Exception e) {
+      String reason = e instanceof UnsupportedOperationException ? "signed_payload" : "unexpected";
       log.error("FFMLib decode unexpected error for key {}: {}", key, e.getMessage(), e);
-      throw new IllegalArgumentException("Unable to decode ASN.1 payload", e);
+      recordFailure(type, source, reason);
+      throw new DecodeFailure("Unable to decode ASN.1 payload", e);
+    }
+  }
+
+  private void recordDecoded(String type, String source) {
+    decodedCounter(type, source).increment();
+  }
+
+  private Counter decodedCounter(String type, String source) {
+    return meterRegistry.counter(
+        "ode.ffmlib.decode.messages",
+        "type", type,
+        "source", source);
+  }
+
+  private void recordFailure(String type, String source, String reason) {
+    meterRegistry.counter(
+        "ode.ffmlib.decode.failures",
+        "type", type,
+        "source", source,
+        "reason", reason)
+        .increment();
+  }
+
+  private void recordDropped(String type, String source) {
+    meterRegistry.counter(
+        "ode.ffmlib.decode.dropped",
+        "type", type,
+        "source", source,
+        "reason", "unmapped_topic")
+        .increment();
+  }
+
+  private static String messageType(SupportedMessageType knownType, MessageFrame<?> messageFrame) {
+    if (knownType != null) {
+      return knownType.name();
+    }
+    if (messageFrame == null || messageFrame.getMessageId() == null) {
+      return TYPE_UNKNOWN;
+    }
+    String messageName = messageFrame.getMessageId().name().orElse(TYPE_UNKNOWN);
+    return switch (messageName) {
+      case "basicSafetyMessage" -> SupportedMessageType.BSM.name();
+      case "travelerInformation" -> SupportedMessageType.TIM.name();
+      case "mapData" -> SupportedMessageType.MAP.name();
+      case "signalPhaseAndTimingMessage" -> SupportedMessageType.SPAT.name();
+      case "personalSafetyMessage" -> SupportedMessageType.PSM.name();
+      case "signalStatusMessage" -> SupportedMessageType.SSM.name();
+      case "signalRequestMessage" -> SupportedMessageType.SRM.name();
+      case "sensorDataSharingMessage" -> SupportedMessageType.SDSM.name();
+      case "rtcmCorrections" -> SupportedMessageType.RTCM.name();
+      case "roadSafetyMessage" -> SupportedMessageType.RSM.name();
+      default -> TYPE_UNKNOWN;
+    };
+  }
+
+  /** Decode failure already recorded in Micrometer. */
+  private static final class DecodeFailure extends IllegalArgumentException {
+    private DecodeFailure(String message, Throwable cause) {
+      super(message, cause);
     }
   }
 
@@ -298,7 +386,7 @@ public class FfmlibDecodeService {
     }
 
     throw new UnsupportedOperationException(
-        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 2.1.0-beta1; "
+        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 3.0.0-beta1; "
             + "use external codec mode for signed messages");
   }
 

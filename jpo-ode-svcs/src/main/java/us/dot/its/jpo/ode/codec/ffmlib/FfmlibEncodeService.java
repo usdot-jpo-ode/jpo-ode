@@ -129,7 +129,7 @@ public class FfmlibEncodeService {
     if (advisory.has("Ieee1609Dot2Data")) {
       throw new UnsupportedOperationException(
           "Signed IEEE 1609.2 advisory messages are not supported by j2735-2024-ffm-lib "
-              + "2.1.0-beta1; use external codec mode for signed messages");
+              + "3.0.0-beta1; use external codec mode for signed messages");
     } else if (advisory.has(MESSAGE_FRAME)) {
       MessageFrame<?> frame = simpleXmlMapper.convertValue(
           advisory.path(MESSAGE_FRAME), MessageFrame.class);

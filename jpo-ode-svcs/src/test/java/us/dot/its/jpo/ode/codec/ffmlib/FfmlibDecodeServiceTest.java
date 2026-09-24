@@ -1,12 +1,14 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,10 +102,15 @@ class FfmlibDecodeServiceTest {
     ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
     verify(kafkaTemplate).send(eq(BSM_TOPIC), eq("key-1"), jsonCaptor.capture());
     assertTrue(jsonCaptor.getValue().contains("10.0.0.5"));
-    assertTrue(jsonCaptor.getValue().contains("asnDecodeLatencyMs")
-        || metadata.getAsnDecodeLatencyMs() != null);
+    assertFalse(jsonCaptor.getValue().contains("asnDecodeLatencyMs"));
 
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.asn").timer().count(), 0.0);
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.total").timer().count(), 0.0);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "TIM").tag("source", "import").counter().count(), 0.0);
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
   }
 
   @Test
@@ -174,6 +181,14 @@ class FfmlibDecodeServiceTest {
         metadata, new OdeAsn1Payload(new OdeHexByteArray("038100")));
 
     assertThrows(IllegalArgumentException.class, () -> decodeService.decode(input, "signed-bsm"));
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "unknown")
+        .tag("source", "import")
+        .tag("reason", "signed_payload")
+        .counter()
+        .count(), 0.0);
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
   }
 
   @Test
@@ -209,6 +224,36 @@ class FfmlibDecodeServiceTest {
 
     verify(kafkaTemplate).send(
         eq("topic.Asn1DecoderInput"), eq("external-key"), any(String.class));
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  void unmappedMessageTypeIsCountedAsDropped() throws Exception {
+    when(ffmlibCodec.uperToIntermediate(any()))
+        .thenReturn(new IntermediateDecodeResult("<MessageFrame/>", IntermediateEncoding.XER));
+    MessageFrame frame = mock(BasicSafetyMessageMessageFrame.class);
+    DSRCmsgID msgId = mock(DSRCmsgID.class);
+    when(frame.getMessageId()).thenReturn(msgId);
+    when(msgId.name()).thenReturn(Optional.of("notAMessage"));
+    when(simpleXmlMapper.readValue(any(String.class), eq(MessageFrame.class))).thenReturn(frame);
+
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+    decodeService.decode(
+        new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))), "drop-key");
+
+    verify(kafkaTemplate, never()).send(any(), any(), any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.dropped")
+        .tag("type", "unknown")
+        .tag("source", "import")
+        .tag("reason", "unmapped_topic")
+        .counter()
+        .count(), 0.0);
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
