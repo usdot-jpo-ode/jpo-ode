@@ -63,6 +63,7 @@ public class TimDeleteControllerTest {
    private final String defaultRSUBlankUserPass = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"\",\"rsuPassword\":\"\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\"}";
    private final String fourDot1RSUBlankUserPass = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"\",\"rsuPassword\":\"\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"FOURDOT1\"}";
    private final String ntcip1218RSUBlankUserPass = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"\",\"rsuPassword\":\"\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"NTCIP1218\"}";
+   private final String nullSnmpProtocolRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":null}";
 
    private SnmpSession stubSessionReturning(ResponseEvent event) throws IOException {
       SnmpSession session = Mockito.mock(SnmpSession.class);
@@ -82,6 +83,25 @@ public class TimDeleteControllerTest {
    public void deleteShouldReturnBadRequestWhenNull() {
       assertEquals(HttpStatus.BAD_REQUEST,
             testTimDeleteController.deleteTim(null, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldReturnBadRequestWhenBlank() {
+      assertEquals(HttpStatus.BAD_REQUEST,
+            testTimDeleteController.deleteTim("   ", 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldReturnBadRequestWhenMalformedJson() {
+      assertEquals(HttpStatus.BAD_REQUEST,
+            testTimDeleteController.deleteTim("{not-json}", 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldRejectMissingSnmpProtocolBeforeCreatingSession() throws IOException {
+      assertEquals(HttpStatus.BAD_REQUEST,
+            testTimDeleteController.deleteTim(nullSnmpProtocolRSU, 42).getStatusCode());
+      Mockito.verifyNoInteractions(snmpSessionFactory);
    }
 
    @Test
@@ -201,7 +221,7 @@ public class TimDeleteControllerTest {
    @Test
    public void deleteTestOK() throws IOException {
       PDU pdu = Mockito.mock(PDU.class);
-      when(pdu.getErrorStatus()).thenReturn(0);
+      when(pdu.getErrorStatus()).thenReturn(PDU.noError);
       when(mockResponseEvent.getResponse()).thenReturn(pdu);
       stubSessionReturning(mockResponseEvent);
       assertEquals(HttpStatus.OK,
@@ -215,7 +235,7 @@ public class TimDeleteControllerTest {
    @Test
    public void deleteTestOK_fourDot1RSU() throws IOException {
       PDU pdu = Mockito.mock(PDU.class);
-      when(pdu.getErrorStatus()).thenReturn(0);
+      when(pdu.getErrorStatus()).thenReturn(PDU.noError);
       when(mockResponseEvent.getResponse()).thenReturn(pdu);
       stubSessionReturning(mockResponseEvent);
       assertEquals(HttpStatus.OK,
@@ -229,7 +249,7 @@ public class TimDeleteControllerTest {
    @Test
    public void deleteTestOK_ntcip1218RSU() throws IOException {
       PDU pdu = Mockito.mock(PDU.class);
-      when(pdu.getErrorStatus()).thenReturn(0);
+      when(pdu.getErrorStatus()).thenReturn(PDU.noError);
       when(mockResponseEvent.getResponse()).thenReturn(pdu);
       stubSessionReturning(mockResponseEvent);
       assertEquals(HttpStatus.OK,
@@ -242,56 +262,56 @@ public class TimDeleteControllerTest {
 
    @Test
    public void deleteTestMessageAlreadyExists() throws IOException {
-      assertBadRequestForErrorCode(defaultRSUNullUserPass, 12);
+      assertBadGatewayForErrorCode(defaultRSUNullUserPass, 12);
    }
 
    @Test
    public void deleteTestMessageAlreadyExists_fourDot1RSU() throws IOException {
-      assertBadRequestForErrorCode(fourDot1RSUNullUserPass, 12);
+      assertBadGatewayForErrorCode(fourDot1RSUNullUserPass, 12);
    }
 
    @Test
    public void deleteTestMessageAlreadyExists_ntcip1218RSU() throws IOException {
-      assertBadRequestForErrorCode(ntcip1218RSUNullUserPass, 12);
+      assertBadGatewayForErrorCode(ntcip1218RSUNullUserPass, 12);
    }
 
    @Test
    public void deleteTestInvalidIndex() throws IOException {
-      assertBadRequestForErrorCode(defaultRSUNullUserPass, 10);
+      assertBadGatewayForErrorCode(defaultRSUNullUserPass, 10);
    }
 
    @Test
    public void deleteTestInvalidIndex_fourDot1RSU() throws IOException {
-      assertBadRequestForErrorCode(fourDot1RSUNullUserPass, 10);
+      assertBadGatewayForErrorCode(fourDot1RSUNullUserPass, 10);
    }
 
    @Test
    public void deleteTestInvalidIndex_ntcip1218RSU() throws IOException {
-      assertBadRequestForErrorCode(ntcip1218RSUNullUserPass, 10);
+      assertBadGatewayForErrorCode(ntcip1218RSUNullUserPass, 10);
    }
 
    @Test
    public void deleteTestUnknownErrorCode() throws IOException {
-      assertBadRequestForErrorCode(defaultRSUNullUserPass, 5);
+      assertBadGatewayForErrorCode(defaultRSUNullUserPass, 5);
    }
 
    @Test
    public void deleteTestUnknownErrorCode_fourDot1RSU() throws IOException {
-      assertBadRequestForErrorCode(fourDot1RSUNullUserPass, 5);
+      assertBadGatewayForErrorCode(fourDot1RSUNullUserPass, 5);
    }
 
    @Test
    public void deleteTestUnknownErrorCode_ntcip1218RSU() throws IOException {
-      assertBadRequestForErrorCode(ntcip1218RSUNullUserPass, 5);
+      assertBadGatewayForErrorCode(ntcip1218RSUNullUserPass, 5);
    }
 
-   private void assertBadRequestForErrorCode(String rsuJson, int errorStatus) throws IOException {
+   private void assertBadGatewayForErrorCode(String rsuJson, int errorStatus) throws IOException {
       PDU pdu = Mockito.mock(PDU.class);
       when(pdu.getErrorStatus()).thenReturn(errorStatus);
       when(pdu.getErrorStatusText()).thenReturn("mocked error");
       when(mockResponseEvent.getResponse()).thenReturn(pdu);
       stubSessionReturning(mockResponseEvent);
-      assertEquals(HttpStatus.BAD_REQUEST,
+      assertEquals(HttpStatus.BAD_GATEWAY,
             testTimDeleteController.deleteTim(rsuJson, 42).getStatusCode());
    }
 }

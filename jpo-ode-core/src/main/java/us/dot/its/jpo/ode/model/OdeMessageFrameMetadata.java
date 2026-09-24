@@ -50,14 +50,25 @@ public class OdeMessageFrameMetadata extends OdeLogMetadata {
   private boolean isCertPresent;
 
   /**
-   * Explicit accessor avoids Lombok copying {@code @JsonProperty} to both generated accessors
-   * when annotation copying is enabled in lombok.config.
+   * Returns whether the message contains a certificate.
+   *
+   * <p>The explicit annotation keeps the historical JSON field name when Jackson inspects both
+   * fields and JavaBean accessors. Writing the accessor explicitly also avoids Lombok copying
+   * {@code @JsonProperty} to both generated accessors when annotation copying is enabled in
+   * {@code lombok.config}.
+   *
+   * @return true when a certificate is present
    */
   @JsonProperty("isCertPresent")
   public boolean isCertPresent() {
     return isCertPresent;
   }
 
+  /**
+   * Sets whether the message contains a certificate.
+   *
+   * @param certPresent whether a certificate is present
+   */
   @JsonProperty("isCertPresent")
   public void setCertPresent(boolean certPresent) {
     isCertPresent = certPresent;
