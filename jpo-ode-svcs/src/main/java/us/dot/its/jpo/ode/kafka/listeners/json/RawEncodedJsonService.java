@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
@@ -23,6 +25,11 @@ public class RawEncodedJsonService {
 
   private final ObjectMapper mapper;
 
+  /**
+   * Creates the raw-encoded JSON service.
+   *
+   * @param mapper JSON mapper used to read message metadata
+   */
   public RawEncodedJsonService(ObjectMapper mapper) {
     this.mapper = mapper;
   }
@@ -61,6 +68,25 @@ public class RawEncodedJsonService {
 
     OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
     return new OdeAsn1Data(metadata, payload);
+  }
+
+  /**
+   * Continues a raw encoded message toward a decoded JSON topic.
+   *
+   * <p>The external codec consumes the forwarded ASN.1 record. FFM mode decodes UDP in process and
+   * does not consume this topic.
+   *
+   * @param data prepared ASN.1 record
+   * @param key Kafka record key to preserve
+   * @param externalDecoderTemplate producer used only for the external decoder topic
+   * @param decoderInputTopic external decoder input topic
+   */
+  public void publish(
+      OdeAsn1Data data,
+      String key,
+      KafkaTemplate<String, OdeObject> externalDecoderTemplate,
+      String decoderInputTopic) {
+    externalDecoderTemplate.send(decoderInputTopic, key, data);
   }
 
 }

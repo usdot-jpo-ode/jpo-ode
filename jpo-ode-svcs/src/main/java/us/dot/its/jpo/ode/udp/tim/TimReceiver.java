@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The TimReceiver class extends the AbstractUdpReceiverPublisher and is responsible for receiving
@@ -16,7 +17,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
 @Slf4j
 public class TimReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> timPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -32,10 +33,22 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
    */
   public TimReceiver(ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs a TimReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public TimReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
+      String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
     this.publishTopic = publishTopic;
-    this.timPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
   }
 
   @Override
@@ -49,10 +62,7 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP TIM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String timData = UdpHexDecoder.buildJsonTimFromPacket(packet);
-          if (timData != null) {
-            timPublisher.send(publishTopic, timData);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.TIM, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);
