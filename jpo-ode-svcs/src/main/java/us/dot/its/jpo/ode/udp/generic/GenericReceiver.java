@@ -75,13 +75,12 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
           log.debug("Skipping empty payload");
           continue;
         }
-        final byte[] payload = Arrays.copyOfRange(packet.getData(), packet.getOffset(),
-            packet.getOffset() + packet.getLength());
-
         senderIp = packet.getAddress().getHostAddress();
         senderPort = packet.getPort();
         log.debug("Packet received from {}:{}", senderIp, senderPort);
 
+        final byte[] payload = Arrays.copyOfRange(packet.getData(), packet.getOffset(),
+            packet.getOffset() + packet.getLength());
         if (log.isDebugEnabled()) {
           log.debug("Raw Payload {}", HexUtils.toHexString(payload));
         }
