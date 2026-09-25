@@ -254,7 +254,7 @@ public class FfmlibDecodeService {
       OdeMessageFrameData frameData = new OdeMessageFrameData(metadata, payload);
 
       long jsonStart = System.nanoTime();
-      String json = JsonUtils.toJson(frameData, false);
+      final String json = JsonUtils.toJson(frameData, false);
       jsonTimer.record(System.nanoTime() - jsonStart, TimeUnit.NANOSECONDS);
 
       String topic = resolveJsonTopic(knownType, messageFrame);

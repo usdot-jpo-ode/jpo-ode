@@ -65,7 +65,7 @@ public class UdpServicesController {
 
     
     List<AbstractUdpReceiverPublisher> receivers = portMappedIngestConfigLoader
-      .loadReceivers(udpProps, rawEncodedJsonTopics, ingestPublisher);
+        .loadReceivers(udpProps, rawEncodedJsonTopics, ingestPublisher);
     for (AbstractUdpReceiverPublisher receiver : receivers) {
       startReceiver(receiver);
     }
