@@ -21,12 +21,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
@@ -60,6 +63,18 @@ public class ImporterDirectoryWatcher {
                                   JsonTopics jsonTopics,
                                   RawEncodedJsonTopics rawEncodedJsonTopics,
                                   KafkaTemplate<String, String> kafkaTemplate) {
+    this(fileImporterProperties, jsonTopics, rawEncodedJsonTopics, kafkaTemplate,
+        new Asn1CodecModeProperties(), null);
+  }
+
+  /** Constructs the application importer with its selected ASN.1 codec. */
+  @Autowired
+  public ImporterDirectoryWatcher(FileImporterProperties fileImporterProperties,
+                                  JsonTopics jsonTopics,
+                                  RawEncodedJsonTopics rawEncodedJsonTopics,
+                                  KafkaTemplate<String, String> kafkaTemplate,
+                                  Asn1CodecModeProperties codecMode,
+                                  FfmlibDecodeService ffmDecoder) {
     this.props = fileImporterProperties;
 
     this.inboxPath = Paths.get(fileImporterProperties.getUploadLocationRoot(), fileImporterProperties.getObuLogUploadLocation());
@@ -85,7 +100,8 @@ public class ImporterDirectoryWatcher {
     }
 
     this.importerProcessor = new ImporterProcessor(
-        new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics),
+        new LogFileToAsn1CodecPublisher(kafkaTemplate, jsonTopics, rawEncodedJsonTopics,
+            codecMode, ffmDecoder),
         ImporterFileType.LOG_FILE,
         fileImporterProperties.getBufferSize());
   }
