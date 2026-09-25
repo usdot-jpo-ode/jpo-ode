@@ -231,9 +231,9 @@ Tools:
 
 ### 6.2 - Java
 
-Install Java Development Kit (JDK) 21
+Install Java Development Kit (JDK) 25
 
-<https://www.oracle.com/java/technologies/downloads/#java21>
+<https://adoptium.net/temurin/releases/?version=25>
 
 <a name="eclipse-ide"></a>
 
@@ -243,7 +243,7 @@ Download and install Eclipse.
 
 <https://eclipse.org>
 
-Configure Eclipse to use Java 21 JDK. Local installation of Tomcat can
+Configure Eclipse to use Java 25 JDK. Local installation of Tomcat can
 integrate with Eclipse and can help with prototyping or debugging the
 application.
 
