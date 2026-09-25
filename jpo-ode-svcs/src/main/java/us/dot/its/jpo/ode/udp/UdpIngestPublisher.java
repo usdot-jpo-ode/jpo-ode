@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class UdpIngestPublisher {
   private final boolean directJsonActive;
   private final int workerCount;
   private final Map<SupportedMessageType, ArrayBlockingQueue<UdpDecodeInput>> queues;
+  private final Semaphore queued = new Semaphore(0);
   private final FfmlibDecodeService decoder;
   private final FfmlibOutputPublisher output;
   private final Counter directFailures;
@@ -124,6 +126,7 @@ public class UdpIngestPublisher {
   @PreDestroy
   public void close() {
     closed.set(true);
+    queued.release(workerCount);
   }
 
   /**
@@ -174,6 +177,7 @@ public class UdpIngestPublisher {
     ArrayBlockingQueue<UdpDecodeInput> queue = queues.get(type);
     while (!closed.get()) {
       if (queue.offer(input, 50, TimeUnit.MILLISECONDS)) {
+        queued.release();
         return;
       }
     }
@@ -201,6 +205,10 @@ public class UdpIngestPublisher {
     int cursor = Math.floorMod(startIndex, types.length);
     while (!closed.get() && !Thread.currentThread().isInterrupted()) {
       try {
+        queued.acquire();
+        if (closed.get()) {
+          return;
+        }
         UdpDecodeInput input = pollNext(types, cursor);
         cursor = (cursor + 1) % types.length;
         if (input == null) {
@@ -221,17 +229,16 @@ public class UdpIngestPublisher {
 
   /**
    * Takes the next queued datagram, starting at {@code cursor} so a busy type does not starve the
-   * others. Waits on the cursor queue only when every queue is empty.
+   * others. The shared permit wakes a worker for any type without a timed wait on one type.
    */
-  private UdpDecodeInput pollNext(SupportedMessageType[] types, int cursor)
-      throws InterruptedException {
+  private UdpDecodeInput pollNext(SupportedMessageType[] types, int cursor) {
     for (int offset = 0; offset < types.length; offset++) {
       UdpDecodeInput input = queues.get(types[(cursor + offset) % types.length]).poll();
       if (input != null) {
         return input;
       }
     }
-    return queues.get(types[cursor]).poll(50, TimeUnit.MILLISECONDS);
+    return null;
   }
 
   private static Map<SupportedMessageType, Profile> profiles() {
