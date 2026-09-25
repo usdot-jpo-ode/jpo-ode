@@ -342,6 +342,8 @@ required encoding and decoding needs of the application. The module is a
 submodule of ODE, also provided on GitHub:
 <https://github.com/usdot-jpo-ode/asn1_codec>
 
+The default `ODE_ASN1_CODEC_MODE=external` routes ASN.1 through the standalone codec. With `ffm`, ODE decodes UDP and imported log records in process and publishes Ode JSON directly. UDP queues are separate for each message type; `ODE_FFM_LISTENER_CONCURRENCY` controls the worker count. TIM MessageFrames are encoded in process; AdvisorySituationData still uses the external encoder, and PPM retains its external raw-topic path. Signed IEEE 1609.2 decoding remains unsupported in FFM mode; use external mode for signed traffic. The FFM intermediate encoding is XER.
+
 <a name="build-and-deploy-procedure"></a>
 
 #### 6.6.3 - Build and Deploy Procedure
