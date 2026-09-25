@@ -133,7 +133,7 @@ Supported message types:
 The ODE software can run on most standard Windows, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
 the system.  Larger data flows can require much larger space requirements depending on the
-amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 21 runtime environment.
+amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 25 runtime environment.
 
 ### Software Prerequisites
 
@@ -520,7 +520,7 @@ This section outlines the software technology stacks of the ODE.
 
 ### ODE Code
 
-- [Java 21](https://openjdk.java.net/)
+- [Java 25](https://adoptium.net/temurin/releases/?version=25)
 - [Maven](https://maven.apache.org/)
 - [Spring Boot](http://spring.io/projects/spring-boot)
 - [Logback](https://logback.qos.ch/)
