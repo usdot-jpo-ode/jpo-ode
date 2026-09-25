@@ -396,6 +396,13 @@ ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` fil
 
 The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
 
+By default the ODE uses that external codec. Set `ODE_ASN1_CODEC_MODE` in [sample.env](sample.env) to choose the codec:
+
+- `external` (default) publishes encode and decode work to the `asn1_codec` ADM and AEM containers. File import and PPM use the raw encoded topics on this codec.
+- `ffm` decodes UDP in the ODE process and publishes `topic.Ode*Json` without writing `topic.OdeRawEncoded*Json`. The socket thread only enqueues stripped UPER bytes. Decode workers, sized by `ODE_FFM_LISTENER_CONCURRENCY`, publish JSON and do not wait for the producer acknowledgement. A full queue blocks that receiver. External raw-topic decode routers are inactive in this mode. The existing AEM encoding path remains active. File import and PPM stay on `external`.
+
+`docker-compose.yml` passes the variable into the `ode` service. If it is omitted from `.env`, Compose supplies `external`. Recreate the ODE container after changing it (`docker compose up -d --force-recreate ode`).
+
 #### PPM Module (Geofencing and Filtering)
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:

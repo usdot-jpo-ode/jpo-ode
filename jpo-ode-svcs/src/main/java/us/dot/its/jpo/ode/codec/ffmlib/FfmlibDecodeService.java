@@ -6,8 +6,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import java.net.DatagramPacket;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -20,19 +22,12 @@ import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateEncoding;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
-import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.RxSource;
-import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder.UdpDecodeInput;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -41,11 +36,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 /**
  * Primary in-process J2735 UPER decode service backed by the FFMLib native codec.
  *
- * <p>UDP path: packet preparation, native decode, POJO mapping, JSON serialization, and Kafka
- * publication run synchronously on the receiver path, preserving the existing delivery contract.
- *
- * <p>Import path ({@link #decode(OdeAsn1Data, String)}) runs synchronously on the Kafka listener
- * thread.
+ * <p>UDP receivers enqueue stripped UPER bytes. Decode workers call {@link #prepareRaw} and publish
+ * Ode JSON without waiting for the producer acknowledgement.
  */
 @Slf4j
 @Service
@@ -57,25 +49,8 @@ public class FfmlibDecodeService {
   private static final String SOURCE_IMPORT = "import";
   private static final String TYPE_UNKNOWN = "unknown";
 
-  private record MessageTypeConfig(
-      RecordType recordType, Source source, GeneratedBy generatedBy, boolean includeRxDetails) {}
-
-  private static final Map<SupportedMessageType, MessageTypeConfig> MSG_TYPE_CONFIGS = Map.of(
-      SupportedMessageType.BSM,  new MessageTypeConfig(RecordType.bsmTx,  Source.EV,  GeneratedBy.OBU,     true),
-      SupportedMessageType.TIM,  new MessageTypeConfig(RecordType.timMsg, Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.MAP,  new MessageTypeConfig(RecordType.mapTx,  Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.SPAT, new MessageTypeConfig(RecordType.spatTx, Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.SSM,  new MessageTypeConfig(RecordType.ssmTx,  Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.SRM,  new MessageTypeConfig(RecordType.srmTx,  Source.RSU, GeneratedBy.OBU,     false),
-      SupportedMessageType.PSM,  new MessageTypeConfig(RecordType.psmTx,  Source.RSU, GeneratedBy.UNKNOWN, false),
-      SupportedMessageType.SDSM, new MessageTypeConfig(RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.RTCM, new MessageTypeConfig(RecordType.rtcmTx, Source.RSU, GeneratedBy.RSU,     false),
-      SupportedMessageType.RSM,  new MessageTypeConfig(RecordType.rsmTx,  Source.RSU, GeneratedBy.RSU,     false)
-  );
-
   private final ObjectProvider<FfmlibMessageFrameCodec> ffmlibCodec;
   private final Asn1CodecModeProperties modeProperties;
-  private final RawEncodedJsonTopics rawEncodedJsonTopics;
   private final String externalDecoderInputTopic;
   private final JsonTopics jsonTopics;
   private final KafkaTemplate<String, String> kafkaTemplate;
@@ -87,6 +62,7 @@ public class FfmlibDecodeService {
   private final Timer jsonTimer;
   private final Timer sendTimer;
   private final Timer totalTimer;
+  private final Map<String, Timer> endToEndTimers = new ConcurrentHashMap<>();
 
   /**
    * Constructs the FFMLib decode service with the native codec, topic, and metric dependencies.
@@ -95,7 +71,6 @@ public class FfmlibDecodeService {
    * @param properties FFMLib runtime properties
    * @param modeProperties codec-mode selection
    * @param jsonTopics decoded JSON topic names
-   * @param rawEncodedJsonTopics raw encoded JSON topic names
    * @param kafkaTemplate Kafka producer
    * @param simpleXmlMapper XML mapper for J2735 XML processing
    * @param meterRegistry Micrometer registry for decode timers
@@ -106,14 +81,12 @@ public class FfmlibDecodeService {
       FfmlibProperties properties,
       Asn1CodecModeProperties modeProperties,
       JsonTopics jsonTopics,
-      RawEncodedJsonTopics rawEncodedJsonTopics,
-      KafkaTemplate<String, String> kafkaTemplate,
+      @Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
       @Qualifier("simpleXmlMapper") XmlMapper simpleXmlMapper,
       MeterRegistry meterRegistry,
       @Value("${ode.kafka.topics.asn1.decoder-input}") String externalDecoderInputTopic) {
     this.ffmlibCodec = ffmlibCodec;
     this.modeProperties = modeProperties;
-    this.rawEncodedJsonTopics = rawEncodedJsonTopics;
     this.externalDecoderInputTopic = externalDecoderInputTopic;
     this.jsonTopics = jsonTopics;
     this.kafkaTemplate = kafkaTemplate;
@@ -138,41 +111,6 @@ public class FfmlibDecodeService {
   }
 
   /**
-   * Decodes a UDP packet on the receiver path and publishes the decoded JSON payload.
-   */
-  public void decode(DatagramPacket packet, SupportedMessageType msgType)
-      throws InvalidPayloadException {
-    MessageTypeConfig config = MSG_TYPE_CONFIGS.get(msgType);
-    if (config == null) {
-      recordFailure(msgType == null ? TYPE_UNKNOWN : msgType.name(), SOURCE_UDP, "unsupported_type");
-      log.warn("FFMLib decode: unsupported message type {}", msgType);
-      return;
-    }
-
-    long prepStart = System.nanoTime();
-    UdpDecodeInput input = UdpHexDecoder.prepareDecodeInput(
-        packet, msgType, config.recordType(), config.source(), config.generatedBy(),
-        config.includeRxDetails());
-    log.debug("Prepared {} UDP packet for FFMLib decode in {}us", msgType,
-        (System.nanoTime() - prepStart) / 1000);
-
-    // Hand off owned copies (uper bytes + metadata) — safe after receive buffer reuse.
-    final OdeMessageFrameMetadata metadata = input.metadata();
-    final byte[] uperBytes = input.uperBytes();
-    if (!modeProperties.isFfm()) {
-      OdeAsn1Data raw = new OdeAsn1Data(metadata, new us.dot.its.jpo.ode.model.OdeAsn1Payload(uperBytes));
-      try {
-        kafkaTemplate.send(resolveRawTopic(msgType), JsonUtils.toJson(raw, false));
-      } catch (Exception error) {
-        throw new InvalidPayloadException(
-            "Unable to publish external ASN.1 decode input: " + error.getMessage());
-      }
-      return;
-    }
-    runPublishDecoded(metadata, uperBytes, null, msgType);
-  }
-
-  /**
    * Decodes an already-parsed {@link OdeAsn1Data} — used by the file-import path through
    * {@code RawEncoded*JsonRouter} and {@code topic.OdeRawEncoded*Json}.
    */
@@ -194,7 +132,7 @@ public class FfmlibDecodeService {
 
       // totalTimer is recorded inside runPublishDecoded (same as the UDP worker path).
       runPublishDecoded(
-          (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null);
+          (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null, SOURCE_IMPORT);
     } catch (DecodeFailure failure) {
       throw failure;
     } catch (ClassCastException e) {
@@ -210,26 +148,81 @@ public class FfmlibDecodeService {
     }
   }
 
+  /** Decodes bytes extracted from a raw Kafka record without another hex conversion. */
+  public void decode(OdeMessageFrameMetadata metadata, byte[] uperBytes, String key) {
+    if (!modeProperties.isFfm()) {
+      throw new IllegalStateException("Raw-topic decode requires FFM mode");
+    }
+    runPublishDecoded(metadata, uperBytes, key, null, SOURCE_UDP);
+  }
+
+  /** Prepares one raw-topic output without waiting for a Kafka producer acknowledgement. */
+  public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
+      String key) {
+    if (!modeProperties.isFfm()) {
+      throw new IllegalStateException("Raw-topic decode requires FFM mode");
+    }
+    long start = System.nanoTime();
+    try {
+      return prepareDecoded(metadata, uperBytes, key, null, SOURCE_UDP, start);
+    } catch (RuntimeException error) {
+      totalTimer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+      throw error;
+    }
+  }
+
+  /** Records a confirmed raw-topic output; called only after Kafka confirms the send. */
+  public void recordRawConfirmed(PreparedDecodedMessage prepared) {
+    recordConfirmed(prepared);
+    totalTimer.record(System.nanoTime() - prepared.startNanos(), TimeUnit.NANOSECONDS);
+  }
+
+  /** Records a raw-topic output that could not be confirmed. */
+  public void recordRawPublishFailure(PreparedDecodedMessage prepared) {
+    recordFailure(prepared.type(), prepared.source(), "publish");
+    totalTimer.record(System.nanoTime() - prepared.startNanos(), TimeUnit.NANOSECONDS);
+  }
+
+  /** Immutable output of native decode and JSON mapping, ready for asynchronous publication. */
+  public record PreparedDecodedMessage(String topic, String key, String json,
+      OdeMessageFrameMetadata metadata, String type, String source, long startNanos,
+      long sendStartedNanos) {
+  }
+
   private void runPublishDecoded(
       OdeMessageFrameMetadata metadata,
       byte[] uperBytes,
       String key,
-      SupportedMessageType knownType) {
+      SupportedMessageType knownType,
+      String source) {
     long totalStart = System.nanoTime();
     try {
-      publishDecoded(metadata, uperBytes, key, knownType);
+      PreparedDecodedMessage prepared =
+          prepareDecoded(metadata, uperBytes, key, knownType, source, totalStart);
+      try {
+        kafkaTemplate.send(prepared.topic(), key, prepared.json()).get(10, TimeUnit.SECONDS);
+      } catch (InterruptedException error) {
+        Thread.currentThread().interrupt();
+        recordFailure(prepared.type(), source, "publish");
+        throw new PublishFailure("Interrupted while publishing decoded ASN.1 payload", error);
+      } catch (Exception error) {
+        recordFailure(prepared.type(), source, "publish");
+        throw new PublishFailure("Unable to publish decoded ASN.1 payload", error);
+      }
+      recordConfirmed(prepared);
     } finally {
       totalTimer.record(System.nanoTime() - totalStart, TimeUnit.NANOSECONDS);
     }
   }
 
-  private void publishDecoded(
+  private PreparedDecodedMessage prepareDecoded(
       OdeMessageFrameMetadata metadata,
       byte[] uperBytes,
       String key,
-      SupportedMessageType knownType) {
+      SupportedMessageType knownType,
+      String source,
+      long startNanos) {
     String type = knownType == null ? TYPE_UNKNOWN : knownType.name();
-    String source = knownType == null ? SOURCE_IMPORT : SOURCE_UDP;
     try {
       long nativeStart = System.nanoTime();
       byte[] messageFrameBytes = unwrapIeee1609IfPresent(metadata, uperBytes);
@@ -267,21 +260,8 @@ public class FfmlibDecodeService {
       String topic = resolveJsonTopic(knownType, messageFrame);
       if (topic == null) {
         recordDropped(type, source);
-        log.warn("FFMLib decode: no topic mapped for message, key {} dropped.", key);
-        return;
+        throw new DecodeFailure("No JSON topic mapped for decoded message", null);
       }
-
-      long sendStart = System.nanoTime();
-      try {
-        kafkaTemplate.send(topic, key, json);
-      } catch (RuntimeException error) {
-        log.error("FFMLib decode failed (Kafka publish) for key {}: {}", key, error.getMessage(),
-            error);
-        recordFailure(type, source, "publish");
-        throw new DecodeFailure("Unable to publish decoded ASN.1 payload", error);
-      }
-      sendTimer.record(System.nanoTime() - sendStart, TimeUnit.NANOSECONDS);
-      recordDecoded(type, source);
 
       if (log.isDebugEnabled()) {
         log.debug(
@@ -293,7 +273,11 @@ public class FfmlibDecodeService {
             asnDecodeNanos / 1000,
             topic);
       }
+      return new PreparedDecodedMessage(topic, key, json, metadata, type, source, startNanos,
+          System.nanoTime());
     } catch (DecodeFailure failure) {
+      throw failure;
+    } catch (PublishFailure failure) {
       throw failure;
     } catch (JsonProcessingException e) {
       log.error("FFMLib decode failed (JSON/XML processing) for key {}: {}", key, e.getMessage(), e);
@@ -307,8 +291,35 @@ public class FfmlibDecodeService {
     }
   }
 
+  private void recordConfirmed(PreparedDecodedMessage prepared) {
+    sendTimer.record(System.nanoTime() - prepared.sendStartedNanos(), TimeUnit.NANOSECONDS);
+    recordDecoded(prepared.type(), prepared.source());
+    recordEndToEndLatency(prepared.metadata(), prepared.type());
+  }
+
   private void recordDecoded(String type, String source) {
     decodedCounter(type, source).increment();
+  }
+
+  private void recordEndToEndLatency(OdeMessageFrameMetadata metadata, String type) {
+    if (metadata.getOdeReceivedAt() == null || metadata.getLogFileName() != null) {
+      return;
+    }
+    try {
+      Duration elapsed = Duration.between(Instant.parse(metadata.getOdeReceivedAt()),
+          Instant.now());
+      // Imported historical timestamps are not live UDP latency samples.
+      if (!elapsed.isNegative() && elapsed.compareTo(Duration.ofMinutes(5)) < 0) {
+        endToEndTimers.computeIfAbsent(type, messageType ->
+            Timer.builder("ode.ffmlib.decode.end.to.end")
+                .tag("type", messageType)
+                .publishPercentileHistogram()
+                .register(meterRegistry)).record(elapsed);
+      }
+    } catch (RuntimeException error) {
+      log.debug("Cannot measure FFM end-to-end latency for key timestamp {}",
+          metadata.getOdeReceivedAt());
+    }
   }
 
   private Counter decodedCounter(String type, String source) {
@@ -362,6 +373,13 @@ public class FfmlibDecodeService {
   /** Decode failure already recorded in Micrometer. */
   private static final class DecodeFailure extends IllegalArgumentException {
     private DecodeFailure(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
+  /** Retriable failure while confirming an output Kafka record. */
+  public static final class PublishFailure extends RuntimeException {
+    public PublishFailure(String message, Throwable cause) {
       super(message, cause);
     }
   }
@@ -460,21 +478,6 @@ public class FfmlibDecodeService {
     }
     return metadata.getEncodings() != null && metadata.getEncodings().stream()
         .anyMatch(encoding -> IEEE_PDU.equals(encoding.getElementType()));
-  }
-
-  private String resolveRawTopic(SupportedMessageType msgType) {
-    return switch (msgType) {
-      case BSM -> rawEncodedJsonTopics.getBsm();
-      case TIM -> rawEncodedJsonTopics.getTim();
-      case MAP -> rawEncodedJsonTopics.getMap();
-      case SPAT -> rawEncodedJsonTopics.getSpat();
-      case PSM -> rawEncodedJsonTopics.getPsm();
-      case SSM -> rawEncodedJsonTopics.getSsm();
-      case SRM -> rawEncodedJsonTopics.getSrm();
-      case SDSM -> rawEncodedJsonTopics.getSdsm();
-      case RTCM -> rawEncodedJsonTopics.getRtcm();
-      case RSM -> rawEncodedJsonTopics.getRsm();
-    };
   }
 
   private String resolveJsonTopic(SupportedMessageType knownType, MessageFrame<?> messageFrame) {

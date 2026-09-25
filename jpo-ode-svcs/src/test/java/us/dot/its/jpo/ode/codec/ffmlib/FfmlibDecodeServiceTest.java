@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateEncoding;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
-import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
@@ -42,6 +42,7 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @ExtendWith(MockitoExtension.class)
 class FfmlibDecodeServiceTest {
@@ -56,8 +57,6 @@ class FfmlibDecodeServiceTest {
   @Mock
   private JsonTopics jsonTopics;
   @Mock
-  private RawEncodedJsonTopics rawEncodedJsonTopics;
-  @Mock
   private KafkaTemplate<String, String> kafkaTemplate;
   @Mock
   private XmlMapper simpleXmlMapper;
@@ -71,12 +70,13 @@ class FfmlibDecodeServiceTest {
     Asn1CodecModeProperties modeProperties = new Asn1CodecModeProperties();
     modeProperties.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     lenient().when(ffmlibCodecProvider.getIfAvailable()).thenReturn(ffmlibCodec);
+    lenient().when(kafkaTemplate.send(any(), any(), any()))
+        .thenReturn(CompletableFuture.completedFuture(null));
     decodeService = new FfmlibDecodeService(
         ffmlibCodecProvider,
         properties,
         modeProperties,
         jsonTopics,
-        rawEncodedJsonTopics,
         kafkaTemplate,
         simpleXmlMapper,
         meterRegistry,
@@ -94,6 +94,7 @@ class FfmlibDecodeServiceTest {
 
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setOriginIp("10.0.0.5");
+    metadata.setOdeReceivedAt(DateTimeUtils.now());
     metadata.setSchemaVersion(9);
     OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX)));
 
@@ -106,11 +107,48 @@ class FfmlibDecodeServiceTest {
 
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.asn").timer().count(), 0.0);
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.total").timer().count(), 0.0);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.end.to.end")
+        .tag("type", "BSM").timer().count(), 0.0);
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
         .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
     assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
         .tag("type", "TIM").tag("source", "import").counter().count(), 0.0);
     assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  void failedJsonPublicationIsRetriableAndNotCountedAsDecoded() throws Exception {
+    stubSuccessfulDecode();
+    when(kafkaTemplate.send(any(), any(), any()))
+        .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker unavailable")));
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setOdeReceivedAt(DateTimeUtils.now());
+    metadata.setSchemaVersion(9);
+
+    assertThrows(FfmlibDecodeService.PublishFailure.class,
+        () -> decodeService.decode(metadata, new byte[] {0x00, 0x14}, "key-1"));
+
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp")
+        .tag("reason", "publish").counter().count(), 0.0);
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.end.to.end").timers().isEmpty());
+  }
+
+  @Test
+  void rawTopicDecodeUsesUdpMetricSource() throws Exception {
+    stubSuccessfulDecode();
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setOdeReceivedAt(DateTimeUtils.now());
+    metadata.setSchemaVersion(9);
+
+    decodeService.decode(metadata, new byte[] {0x00, 0x14}, "udp-key");
+
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
   }
 
   @Test
@@ -211,7 +249,6 @@ class FfmlibDecodeServiceTest {
         new FfmlibProperties(),
         modeProperties,
         jsonTopics,
-        rawEncodedJsonTopics,
         kafkaTemplate,
         simpleXmlMapper,
         meterRegistry,
@@ -242,8 +279,9 @@ class FfmlibDecodeServiceTest {
 
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
-    decodeService.decode(
-        new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))), "drop-key");
+    assertThrows(IllegalArgumentException.class, () -> decodeService.decode(
+        new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))),
+        "drop-key"));
 
     verify(kafkaTemplate, never()).send(any(), any(), any());
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.dropped")

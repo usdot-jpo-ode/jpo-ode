@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,8 +20,10 @@ final class FfmlibNativeLibraryLoader {
       candidates.add(Files.isDirectory(configured) ? configured.resolve(libraryName) : configured);
     } else {
       String classifier = classifier();
+      addBuildOutputCandidate(candidates, libraryName);
       candidates.add(Path.of("target", "ffmlib-native", "native", classifier, libraryName));
       candidates.add(Path.of("target", "libs", libraryName));
+      candidates.add(Path.of("jpo-ode-svcs", "target", "libs", libraryName));
       candidates.add(Path.of("libs", libraryName));
       candidates.add(Path.of("/home", "libs", libraryName));
     }
@@ -36,6 +39,27 @@ final class FfmlibNativeLibraryLoader {
       details.append(System.lineSeparator()).append("  ").append(candidate.toAbsolutePath());
     }
     throw new IllegalStateException(details.toString());
+  }
+
+  /**
+   * Maven copies the native library to this module's {@code target/libs}. An IDE launch from the
+   * repository root does not see that relative path, so also look beside the directory that
+   * contains this class.
+   */
+  private static void addBuildOutputCandidate(List<Path> candidates, String libraryName) {
+    try {
+      var codeSource = FfmlibNativeLibraryLoader.class.getProtectionDomain().getCodeSource();
+      if (codeSource == null || codeSource.getLocation() == null) {
+        return;
+      }
+      Path location = Path.of(codeSource.getLocation().toURI());
+      Path buildDirectory = location.getParent();
+      if (buildDirectory != null) {
+        candidates.add(buildDirectory.resolve("libs").resolve(libraryName));
+      }
+    } catch (URISyntaxException | IllegalArgumentException ignored) {
+      // Working-directory candidates still apply.
+    }
   }
 
   private static String libraryName() {

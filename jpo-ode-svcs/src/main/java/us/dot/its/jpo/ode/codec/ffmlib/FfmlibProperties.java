@@ -21,7 +21,8 @@ public class FfmlibProperties {
 
   /**
    * Explicit path to the native shared library (asnapplication.dll / libasnapplication.so).
-   * If blank, the library is auto-detected from the working directory, target/libs/, or libs/.
+   * If blank, the library is resolved beside the compiled classes ({@code target/libs}), then from
+   * the working directory and {@code /home/libs}.
    */
   private String nativeLibraryPath = "";
 
