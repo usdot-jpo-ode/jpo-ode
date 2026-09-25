@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The SsmReceiver class is responsible for receiving UDP packets and publishing them as JSON
@@ -16,7 +17,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
 @Slf4j
 public class SsmReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> ssmPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -29,10 +30,22 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
    */
   public SsmReceiver(ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs an SsmReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public SsmReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
+      String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
     this.publishTopic = publishTopic;
-    this.ssmPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
   }
 
   @Override
@@ -46,10 +59,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP SSM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String ssmJson = UdpHexDecoder.buildJsonSsmFromPacket(packet);
-          if (ssmJson != null) {
-            ssmPublisher.send(publishTopic, ssmJson);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.SSM, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);
