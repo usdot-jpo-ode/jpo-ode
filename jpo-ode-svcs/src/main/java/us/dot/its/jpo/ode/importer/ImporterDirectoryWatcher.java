@@ -26,10 +26,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
-import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
+import us.dot.its.jpo.ode.coder.stream.FileImporterProperties;
+import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
