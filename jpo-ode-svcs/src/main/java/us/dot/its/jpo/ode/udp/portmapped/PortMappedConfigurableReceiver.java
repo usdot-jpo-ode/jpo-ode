@@ -8,6 +8,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver.UnsupportedMessageTypeException;
@@ -32,12 +33,27 @@ public class PortMappedConfigurableReceiver extends GenericReceiver {
    *                             port and buffer size
    * @param ingestConfig         the configuration object containing the ingest settings
    */
-    public PortMappedConfigurableReceiver(ReceiverProperties props, KafkaTemplate<String, String> kafkaTemplate,
+  public PortMappedConfigurableReceiver(ReceiverProperties props, KafkaTemplate<String, String> kafkaTemplate,
       RawEncodedJsonTopics rawEncodedJsonTopics, PortMappedIngestConfig.PortMappedIngestSource ingestConfig) {
-      super(props, kafkaTemplate, rawEncodedJsonTopics);
-      log.info("Creating PortMappedConfigurableReceiver with port " + props.getReceiverPort() + " and buffer size " + props.getBufferSize() + " and Remap IP " + ingestConfig.getOriginIp());
+    this(props, UdpIngestPublisher.rawOnly(kafkaTemplate), rawEncodedJsonTopics, ingestConfig);
+  }
 
-      this.ingestConfig = ingestConfig;
+  /**
+   * Constructs a port-mapped receiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param props UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param rawEncodedJsonTopics raw topics used when direct JSON is off
+   * @param ingestConfig origin address and message type for this port
+   */
+  public PortMappedConfigurableReceiver(ReceiverProperties props, UdpIngestPublisher ingestPublisher,
+      RawEncodedJsonTopics rawEncodedJsonTopics, PortMappedIngestConfig.PortMappedIngestSource ingestConfig) {
+    super(props, ingestPublisher, rawEncodedJsonTopics);
+    log.info("Creating PortMappedConfigurableReceiver with port " + props.getReceiverPort()
+        + " and buffer size " + props.getBufferSize()
+        + " and Remap IP " + ingestConfig.getOriginIp());
+
+    this.ingestConfig = ingestConfig;
   }
 
   @Override
