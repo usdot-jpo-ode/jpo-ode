@@ -294,6 +294,11 @@ git submodule deinit -f . && git submodule update --recursive --init
   - **The .env files will contain private keys, do not add them to version control.**
   - Log-based alerts are enabled by default in the `sample.env`. If you don't want log messages notifying you when no TIMs were ingested in a specific period of time, 
   you will want to update your `.env` file to set `ODE_TIM_INGEST_MONITORING_ENABLED=false`. See [TimIngestWatcher](jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/traveler/TimIngestWatcher.java) to see the log-based monitoring provided.
+- Initialize the `jpo-asn-pojos` submodule at its pinned commit and keep both the repository-root
+  `lombok.config` and `jpo-asn-pojos/lombok.config` in the Docker build context. The image builder
+  copies these settings before compilation, then runs JSON/XML contract tests and a required Linux
+  FFMLib native smoke test against the classes produced in that image build. A missing or unloadable
+  native library fails the build.
 
 **Make:**
 

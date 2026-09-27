@@ -52,6 +52,10 @@ COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
 COPY --from=builder /home/jpo-ode-svcs/target/libs/libasnapplication.so /home/libs/libasnapplication.so
 COPY ./scripts/startup_jpoode.sh /home
 
+# Keep the configured Logback path aligned with the resource copied into this image.
+RUN test -s /home/logback.xml \
+    && grep -Fq -- '-Dlogback.configurationFile=/home/logback.xml' /home/startup_jpoode.sh
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssh-server curl \
     && mkdir -p /run/sshd \
