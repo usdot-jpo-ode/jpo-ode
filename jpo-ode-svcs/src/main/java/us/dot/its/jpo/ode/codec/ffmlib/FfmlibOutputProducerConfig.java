@@ -32,12 +32,34 @@ public class FfmlibOutputProducerConfig {
    */
   @Bean("ffmlibOutputProducerFactory")
   public ProducerFactory<String, String> ffmlibOutputProducerFactory(
-      KafkaProperties kafkaProperties, OdeKafkaProperties odeKafkaProperties) {
+      KafkaProperties kafkaProperties, OdeKafkaProperties odeKafkaProperties,
+      FfmlibProperties ffmlibProperties) {
     Map<String, Object> config = new HashMap<>(
         OdeKafkaClients.producerProperties(kafkaProperties, odeKafkaProperties));
     config.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     config.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configureFfmProducer(config, ffmlibProperties);
     return new DefaultKafkaProducerFactory<>(config);
+  }
+
+  /** Creates a dedicated producer for durable raw-topic UDP ingestion. */
+  @Bean("ffmlibRawProducerFactory")
+  public ProducerFactory<String, String> ffmlibRawProducerFactory(
+      KafkaProperties kafkaProperties, OdeKafkaProperties odeKafkaProperties,
+      FfmlibProperties ffmlibProperties) {
+    Map<String, Object> config = new HashMap<>(
+        OdeKafkaClients.producerProperties(kafkaProperties, odeKafkaProperties));
+    config.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    config.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configureFfmProducer(config, ffmlibProperties);
+    return new DefaultKafkaProducerFactory<>(config);
+  }
+
+  /** Creates the raw input template with no disabled-topic interception. */
+  @Bean("ffmlibRawKafkaTemplate")
+  public KafkaTemplate<String, String> ffmlibRawKafkaTemplate(
+      @Qualifier("ffmlibRawProducerFactory") ProducerFactory<String, String> producerFactory) {
+    return new KafkaTemplate<>(producerFactory);
   }
 
   /**
@@ -50,5 +72,16 @@ public class FfmlibOutputProducerConfig {
   public KafkaTemplate<String, String> ffmlibOutputKafkaTemplate(
       @Qualifier("ffmlibOutputProducerFactory") ProducerFactory<String, String> producerFactory) {
     return new KafkaTemplate<>(producerFactory);
+  }
+
+  private static void configureFfmProducer(Map<String, Object> config,
+      FfmlibProperties properties) {
+    config.put(ProducerConfig.ACKS_CONFIG, "all");
+    config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+    config.put(ProducerConfig.RETRIES_CONFIG,
+        Math.max(2, Integer.parseInt(config.getOrDefault(ProducerConfig.RETRIES_CONFIG, 0)
+            .toString())));
+    config.put(ProducerConfig.LINGER_MS_CONFIG, properties.getProducerLingerMs());
+    config.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, properties.getProducerCompressionType());
   }
 }

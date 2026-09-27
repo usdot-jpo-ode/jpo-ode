@@ -17,12 +17,11 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService.PreparedDecodedMessage;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
-/** Submits FFM JSON without waiting for the producer acknowledgement. */
+/** Publishes FFM JSON and completes only after Kafka confirms the record. */
 @Component
 @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
 public class FfmlibOutputPublisher {
   private final KafkaTemplate<String, String> output;
-  private final FfmlibDecodeService decoder;
   private final MeterRegistry meters;
   private final Set<String> disabledTopics;
   private final AtomicInteger inFlight = new AtomicInteger();
@@ -35,33 +34,31 @@ public class FfmlibOutputPublisher {
    * Creates the publisher for decoded JSON records.
    *
    * @param output dedicated FFM producer
-   * @param decoder metrics recorded after a JSON send is confirmed
    * @param properties topics that must not be written
    * @param meters output gauges and timers
    */
   public FfmlibOutputPublisher(
       @Qualifier("ffmlibOutputKafkaTemplate") KafkaTemplate<String, String> output,
-      FfmlibDecodeService decoder, OdeKafkaProperties properties, MeterRegistry meters) {
+      OdeKafkaProperties properties, MeterRegistry meters) {
     this.output = output;
-    this.decoder = decoder;
     this.disabledTopics = properties.getDisabledTopics();
     this.meters = meters;
     Gauge.builder("ode.ffmlib.output.in.flight", inFlight, AtomicInteger::get).register(meters);
   }
 
   /**
-   * Sends one decoded JSON record. A disabled topic is counted as a skip and is not sent. Retries
-   * are left to the shared producer configuration.
+   * Sends one decoded JSON record. A disabled topic is counted as a skip and is not sent. Kafka
+   * publication failures complete the returned future exceptionally for the listener to retry.
    *
    * @param message decoded output
-   * @return future that completes when the producer callback finishes, or immediately for a skip
+   * @return future with the explicit publication outcome, or an exceptional future on failure
    */
-  public CompletableFuture<Void> publish(PreparedDecodedMessage message) {
+  public CompletableFuture<PublicationOutcome> publish(PreparedDecodedMessage message) {
     long start = System.nanoTime();
-    CompletableFuture<Void> result = new CompletableFuture<>();
+    CompletableFuture<PublicationOutcome> result = new CompletableFuture<>();
     if (isDisabled(message.topic())) {
       skipped(message.topic()).increment();
-      result.complete(null);
+      result.complete(PublicationOutcome.SKIPPED_DISABLED);
       return result;
     }
     inFlight.incrementAndGet();
@@ -90,17 +87,16 @@ public class FfmlibOutputPublisher {
     return disabledTopics != null && disabledTopics.contains(topic);
   }
 
-  private void finish(PreparedDecodedMessage message, long start, CompletableFuture<Void> result,
-      Throwable error) {
+  private void finish(PreparedDecodedMessage message, long start,
+      CompletableFuture<PublicationOutcome> result, Throwable error) {
     inFlight.decrementAndGet();
-    confirmations.computeIfAbsent(message.topic(), topic -> Timer.builder(
-        "ode.ffmlib.output.confirmation").tag("topic", topic).register(meters))
-        .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     if (error == null) {
-      decoder.recordRawConfirmed(message);
-      result.complete(null);
+      confirmations.computeIfAbsent(message.topic(), topic -> Timer.builder(
+          "ode.ffmlib.output.confirmation").tag("topic", topic).publishPercentileHistogram()
+          .register(meters))
+          .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+      result.complete(PublicationOutcome.PUBLISHED);
     } else {
-      decoder.recordRawPublishFailure(message);
       failures(message.topic()).increment();
       result.completeExceptionally(error);
     }
@@ -119,5 +115,11 @@ public class FfmlibOutputPublisher {
   private Counter skipped(String topic) {
     return skipped.computeIfAbsent(topic, name -> meters.counter("ode.ffmlib.output.skipped",
         "topic", name, "reason", "disabled_topic"));
+  }
+
+  /** Successful internal publication outcomes. Actual Kafka failures complete exceptionally. */
+  public enum PublicationOutcome {
+    PUBLISHED,
+    SKIPPED_DISABLED
   }
 }

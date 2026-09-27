@@ -168,9 +168,11 @@ The following guide contains information about the data flow diagrams for the OD
 
 **Configuration:**
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` 
-properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log 
-file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.yaml` file as desired.
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*`
+properties or set `ODE_KAFKA_BROKERS` to another broker address, modify `jpo-ode-svcs\src\main\resources\application.yaml`
+as desired. In Docker Compose, ODE connects to the internal Kafka listener at `kafka:9094`; clients running on the host
+connect through `${DOCKER_HOST_IP}:9092`. Keep those addresses distinct so the container does not route Kafka traffic
+through the host port mapping.
 To adjust the settings in your unit/integration tests, modify the `jpo-ode-svcs\src\test\resources\application.yaml` file.
 
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
@@ -396,7 +398,24 @@ ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` fil
 
 The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
 
-ODE defaults to `ODE_ASN1_CODEC_MODE=external`. Set it to `ffm` to decode UDP and imported log files in process and publish directly to the Ode JSON topics. UDP packets use separate queues per message type; `ODE_FFM_LISTENER_CONCURRENCY` sets the number of decode workers (default 4). In FFM mode, UDP does not publish to the raw encoded JSON topics. TIM MessageFrames are encoded in process; AdvisorySituationData still uses the external encoder, and PPM retains its external raw-topic path. Signed IEEE 1609.2 payloads require external mode; the current FFM library does not decode them. FFM uses XER as its intermediate encoding.
+ODE defaults to `ODE_ASN1_CODEC_MODE=external`. Both modes publish UDP input to the existing raw encoded JSON topics. In `ffm` mode, one Kafka listener per message type consumes those durable records and publishes decoded output to the existing Ode JSON topics. The FFM listeners share the corresponding external router consumer groups, so switching modes resumes from the committed raw-topic offsets. Each type has its own listener and topic; decode congestion for one type does not block UDP ingestion or decoding for another type, although shared broker or host exhaustion can affect all types. `ODE_FFM_LISTENER_CONCURRENCY` defaults to four consumers per type, and each consumer processes one record at a time. Common BSMs start with `ODE_FFMLIB_FAST_PATH_BUFFER_SIZE` (32 KiB by default); messages that exceed those temporary buffers retry with the configured full native buffer sizes, preserving the existing payload capacity.
+
+FFM confirms each decoded JSON publication before committing its raw input offset. Failed output publication is retried twice after the initial attempt; if it remains unconfirmed, that listener stops with the input offset uncommitted. A process crash after output confirmation but before the input commit can replay the record and produce a duplicate. Malformed, unsupported, and signed inputs are copied to `<raw-topic>.FFM.DLT` with their original key and value plus source and failure headers; input is committed only after the quarantine write is confirmed. DLT records are retained for seven days by default and are never replayed automatically. Investigate a quarantine record and deliberately republish it to its raw topic when ready. Raw topics retain records for 24 hours by default. FFM provisions and verifies ten DLT topics at startup, with at least four partitions for each raw and DLT topic; larger existing partition counts and longer retention are preserved. Configure `ODE_FFM_TOPIC_PARTITIONS`, `ODE_FFM_RAW_TOPIC_RETENTION_MS`, and `ODE_FFM_DLT_RETENTION_MS` to change these minimums.
+
+When stopping the service, confirmed records are committed and unfinished records remain available for replay. Destinations disabled through the existing ODE topic configuration are counted as skipped and their raw inputs are committed intentionally; imported files with disabled destinations follow the successful-file path, while actual import failures follow the failed-file path. For rollback, set `ODE_ASN1_CODEC_MODE=external`; the external routers resume using the same raw-topic consumer groups and retain their existing topic, key, payload, and metadata contracts. Signed IEEE 1609.2 payloads require external mode; the current FFM library does not decode them. FFM uses XER as its intermediate encoding. TIM MessageFrames are encoded in process in FFM mode, while AdvisorySituationData and PPM remain on their external paths.
+
+For the Docker FFM latency acceptance check, run `scripts/tests/decode_benchmark.py` three times consecutively against the deployed Compose stack. Each run uses 1,000 warmup packets and 300,000 measured BSMs at 1,000 packets/second, checks correlation between raw and decoded JSON Kafka records, waits for consumer lag and publications to drain, and fails if `p95_ms` is missing or at least 5 ms:
+
+```bash
+python scripts/tests/decode_benchmark.py --mode ffm \
+  --broker "$DOCKER_HOST_IP:9092" \
+  --fixture scripts/tests/udpsender_bsm.py \
+  --udp-host 127.0.0.1 --udp-port 46800 \
+  --count 300000 --warmup 1000 --rate 1000 --max-p95-ms 5 \
+  --output scripts/tests/output/ffm-run-1.csv
+```
+
+Change the output name for each run and require every run to pass; do not use the median to hide a failed run. Each CSV is paired with a JSON summary. The recorded p95 boundary is UDP send time to Kafka JSON record creation time; Kafka output acknowledgement latency is reported separately.
 
 #### PPM Module (Geofencing and Filtering)
 

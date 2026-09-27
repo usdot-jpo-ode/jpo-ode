@@ -43,4 +43,22 @@ public class FfmlibProperties {
    */
   private long errorBufferSize = 1024L;
 
+  /** Smaller initial native buffers for the common BSM path; larger payloads use full buffers. */
+  private long fastPathBufferSize = 32768L;
+
+  /** Kafka producer linger for FFM raw and decoded records. Zero keeps the latency boundary low. */
+  private int producerLingerMs;
+
+  /** Kafka producer compression for FFM raw and decoded records. */
+  private String producerCompressionType = "none";
+
+  /** Minimum partition count for each raw and FFM dead-letter topic. */
+  private int topicPartitions = 4;
+
+  /** Minimum raw-topic retention in milliseconds. */
+  private long rawTopicRetentionMs = 86_400_000L;
+
+  /** Minimum FFM dead-letter retention in milliseconds. */
+  private long dltRetentionMs = 604_800_000L;
+
 }
