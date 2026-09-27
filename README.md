@@ -564,6 +564,12 @@ Install the IDE of your choice:
 
 The project can be reopened inside a dev container in VSCode. This environment should have all the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
+### Java 25 build and serialization verification
+
+Build with JDK 25 and Maven 3.9 or newer, with the `jpo-asn-pojos` submodule initialized at the commit pinned by this repository. Keep both the root `lombok.config` and `jpo-asn-pojos/lombok.config` in place; they preserve Jackson annotations on generated accessors and prevent duplicate JSON/XML fields.
+
+Run `mvn -B clean verify` for the full build and test suite. `docker build -t jpo-ode:verify .` also runs the serialization contract tests and a required Linux FFMLib native smoke test in the builder stage, against classes compiled in that image. The image build fails if the Linux native library is missing or the smoke test cannot load and decode with it.
+
 
 ### Checkstyle configuration
 

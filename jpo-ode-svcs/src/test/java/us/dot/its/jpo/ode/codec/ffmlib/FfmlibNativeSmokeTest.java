@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.nio.file.Path;
 import j2735ffm.MessageFrameCodec;
+import java.nio.file.Path;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
@@ -20,11 +20,20 @@ class FfmlibNativeSmokeTest {
 
   // Same payload used by BsmReceiverTest (valid J2735 BSM MessageFrame UPER hex).
   private static final String BSM_HEX =
-      "001480b8494c4c950cd8cde6e9651116579f22a424dd78fffff00761e4fd7eb7d07f7fff80005f11d1020214c1c0ffc7c016aff4017a0ff65403b0fd204c20ffccc04f8fe40c420ffe6404cefe60e9a10133408fcfde1438103ab4138f00e1eec1048ec160103e237410445c171104e26bc103dc4154305c2c84103b1c1c8f0a82f42103f34262d1123198103dac25fb12034ce10381c259f12038ca103574251b10e3b2210324c23ad0f23d8efffe0000209340d10000004264bf00";
+      "001480b8494c4c950cd8cde6e9651116579f22a424dd78fffff00761e4fd7eb7"
+      + "d07f7fff80005f11d1020214c1c0ffc7c016aff4017a0ff65403b0fd204c20ff"
+      + "ccc04f8fe40c420ffe6404cefe60e9a10133408fcfde1438103ab4138f00e1ee"
+      + "c1048ec160103e237410445c171104e26bc103dc4154305c2c84103b1c1c8f0a"
+      + "82f42103f34262d1123198103dac25fb12034ce10381c259f12038ca10357425"
+      + "1b10e3b2210324c23ad0f23d8efffe0000209340d10000004264bf00";
 
   @Test
   void nativeCodecLoadsAndDecodesBsmUper() {
     Path nativeLibrary = nativeLibraryOrNull();
+    if (Boolean.getBoolean("ffmlib.smoke.required")) {
+      assertNotNull(nativeLibrary,
+          "Required FFMLib native library not present under target/libs");
+    }
     assumeTrue(nativeLibrary != null,
         "FFMLib native library not present under target/libs");
 

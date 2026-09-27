@@ -347,7 +347,15 @@ submodule of ODE, also provided on GitHub:
 #### 6.6.3 - Build and Deploy Procedure
 
 Follow the steps in jpo-ode/README.md [Installation](../README.md#3-installation) section for building
-and deploying the JPO-ODE services.
+and deploying the JPO-ODE services. Build with JDK 25 and Maven 3.9 or newer, and initialize the
+`jpo-asn-pojos` submodule at the commit pinned by this repository. Preserve both the repository-root
+`lombok.config` and `jpo-asn-pojos/lombok.config`; the Docker builder copies both before compiling
+the generated ASN.1 classes and ODE modules.
+
+Run `mvn -B clean verify` for the complete local verification. A Docker image build also runs the
+serialization contract tests and a required Linux FFMLib native decode smoke test in its builder
+stage. That check uses the classes built in the image and fails if the expected native library is
+missing or cannot load.
 
 <a name="ode-application-properties"></a>
 
