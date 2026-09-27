@@ -135,3 +135,6 @@ settings.xml
 #########################
 ### jpo-cvdp ###
 ppm_data/*
+
+# Local decode benchmark CSVs, summaries, and deployment evidence.
+/scripts/tests/output/

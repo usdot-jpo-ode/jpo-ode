@@ -128,7 +128,7 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
   }
 
   protected void routeMessageByMessageType(String messageType, DatagramPacket packet)
-      throws InvalidPayloadException, InterruptedException, UnsupportedMessageTypeException {
+      throws InvalidPayloadException, UnsupportedMessageTypeException {
     log.debug("Detected Message Type {}", messageType);
     switch (messageType) {
       case "MAP" -> publisher.publish(packet, SupportedMessageType.MAP, rawEncodedJsonTopics.getMap());

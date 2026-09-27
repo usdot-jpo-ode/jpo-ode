@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Optional;
@@ -34,14 +35,15 @@ import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
-import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +51,10 @@ class FfmlibDecodeServiceTest {
 
   private static final String BSM_TOPIC = "topic.OdeBsmJson";
   private static final String BSM_HEX =
-      "001480ADDA7CDE5517E962C66947240CB711E804C8B106B7DB7B12B3056B8AA1AA4E838D00400F86822A3CD398D89E1BB8405B72C3C7A398C3CAFF63338526C646F4FFF524AD9E404039D5DA2FA62FEB57E305B552C7BE088B61E52A6BFC8CAF5AF64414F3E4513FEC189F8B5E1138B824A48B29BA1F43CB12CE296BCA3DFA8F651AB44AB1B81B633B797D5645DAA4EDADAB4AC22A0BC38AB361443395BAA2C81CC4538E7413E9C8C3F696BB2C9B6B0000";
+      "001480ADDA7CDE5517E962C66947240CB711E804C8B106B7DB7B12B3056B8AA1AA4E838D00400F86822A3CD398D89E1B"
+          + "B8405B72C3C7A398C3CAFF63338526C646F4FFF524AD9E404039D5DA2FA62FEB57E305B552C7BE088B61E52A6BFC8CAF"
+          + "5AF64414F3E4513FEC189F8B5E1138B824A48B29BA1F43CB12CE296BCA3DFA8F651AB44AB1B81B633B797D5645DAA4ED"
+          + "ADAB4AC22A0BC38AB361443395BAA2C81CC4538E7413E9C8C3F696BB2C9B6B0000";
   @Mock
   private FfmlibMessageFrameCodec ffmlibCodec;
   @Mock
@@ -59,25 +64,37 @@ class FfmlibDecodeServiceTest {
   @Mock
   private KafkaTemplate<String, String> kafkaTemplate;
   @Mock
+  private ObjectProvider<FfmlibOutputPublisher> outputPublisherProvider;
+  @Mock
+  private FfmlibOutputPublisher outputPublisher;
+  @Mock
   private XmlMapper simpleXmlMapper;
+  @Mock
+  private ObjectReader messageFrameReader;
   private SimpleMeterRegistry meterRegistry;
   private FfmlibDecodeService decodeService;
 
   @BeforeEach
   void setUp() {
     meterRegistry = new SimpleMeterRegistry();
-    FfmlibProperties properties = new FfmlibProperties();
     Asn1CodecModeProperties modeProperties = new Asn1CodecModeProperties();
     modeProperties.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     lenient().when(ffmlibCodecProvider.getIfAvailable()).thenReturn(ffmlibCodec);
     lenient().when(kafkaTemplate.send(any(), any(), any()))
         .thenReturn(CompletableFuture.completedFuture(null));
+    lenient().when(outputPublisherProvider.getObject()).thenReturn(outputPublisher);
+    lenient().when(outputPublisher.publish(any()))
+        .thenReturn(CompletableFuture.completedFuture(
+            FfmlibOutputPublisher.PublicationOutcome.PUBLISHED));
+    lenient().when(simpleXmlMapper.readerFor(MessageFrame.class)).thenReturn(messageFrameReader);
+    FfmlibProperties properties = new FfmlibProperties();
     decodeService = new FfmlibDecodeService(
         ffmlibCodecProvider,
         properties,
         modeProperties,
         jsonTopics,
         kafkaTemplate,
+        outputPublisherProvider,
         simpleXmlMapper,
         meterRegistry,
         "topic.Asn1DecoderInput");
@@ -100,10 +117,13 @@ class FfmlibDecodeServiceTest {
 
     decodeService.decode(asn1Data, "key-1");
 
-    ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
-    verify(kafkaTemplate).send(eq(BSM_TOPIC), eq("key-1"), jsonCaptor.capture());
-    assertTrue(jsonCaptor.getValue().contains("10.0.0.5"));
-    assertFalse(jsonCaptor.getValue().contains("asnDecodeLatencyMs"));
+    ArgumentCaptor<FfmlibDecodeService.PreparedDecodedMessage> messageCaptor =
+        ArgumentCaptor.forClass(FfmlibDecodeService.PreparedDecodedMessage.class);
+    verify(outputPublisher).publish(messageCaptor.capture());
+    assertEquals(BSM_TOPIC, messageCaptor.getValue().topic());
+    assertEquals("key-1", messageCaptor.getValue().key());
+    assertTrue(messageCaptor.getValue().json().contains("10.0.0.5"));
+    assertFalse(messageCaptor.getValue().json().contains("asnDecodeLatencyMs"));
 
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.asn").timer().count(), 0.0);
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.total").timer().count(), 0.0);
@@ -117,9 +137,27 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
+  void disabledJsonDestinationIsACompletedImportOutcome() throws Exception {
+    stubSuccessfulDecode();
+    when(outputPublisher.publish(any())).thenReturn(CompletableFuture.completedFuture(
+        FfmlibOutputPublisher.PublicationOutcome.SKIPPED_DISABLED));
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    decodeService.decode(new OdeAsn1Data(metadata,
+        new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))), "disabled-import");
+
+    verify(outputPublisher).publish(any());
+    verify(kafkaTemplate, never()).send(any(), any(), any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
   void failedJsonPublicationIsRetriableAndNotCountedAsDecoded() throws Exception {
     stubSuccessfulDecode();
-    when(kafkaTemplate.send(any(), any(), any()))
+    when(outputPublisher.publish(any()))
         .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker unavailable")));
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setOdeReceivedAt(DateTimeUtils.now());
@@ -152,6 +190,27 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
+  void bsmWithUnexpectedMessageIdUsesGenericFrameReader() throws Exception {
+    String xer = "<MessageFrame><messageId>31</messageId><value>"
+        + "<TravelerInformation/></value></MessageFrame>";
+    when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
+    when(ffmlibCodec.uperToIntermediate(any(), eq(SupportedMessageType.BSM)))
+        .thenReturn(new IntermediateDecodeResult(xer, IntermediateEncoding.XER));
+    MessageFrame<?> frame = mock(BasicSafetyMessageMessageFrame.class);
+    when(messageFrameReader.readValue(xer)).thenReturn(frame);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(metadata,
+        new byte[] {0x00, 0x14}, "unexpected-frame", SupportedMessageType.BSM,
+        new byte[] {0x00, 0x14});
+
+    assertEquals(BSM_TOPIC, decoded.topic());
+    assertEquals("BSM", decoded.type());
+    verify(messageFrameReader).readValue(xer);
+  }
+
+  @Test
   void decodeOdeAsn1DataPreservesReceivedAtAndLogFileMetadata() throws Exception {
     stubSuccessfulDecode();
 
@@ -173,10 +232,12 @@ class FfmlibDecodeServiceTest {
 
     decodeService.decode(asn1Data, "log-file-key");
 
-    ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
-    verify(kafkaTemplate).send(eq(BSM_TOPIC), eq("log-file-key"), jsonCaptor.capture());
+    ArgumentCaptor<FfmlibDecodeService.PreparedDecodedMessage> messageCaptor =
+        ArgumentCaptor.forClass(FfmlibDecodeService.PreparedDecodedMessage.class);
+    verify(outputPublisher).publish(messageCaptor.capture());
+    org.mockito.Mockito.verifyNoInteractions(kafkaTemplate);
     var publishedMetadata = new com.fasterxml.jackson.databind.ObjectMapper()
-        .readTree(jsonCaptor.getValue()).path("metadata");
+        .readTree(messageCaptor.getValue().json()).path("metadata");
     assertEquals("2026-08-28T12:34:56.789Z",
         publishedMetadata.path("odeReceivedAt").asText());
     assertEquals("rxMsg.gz", publishedMetadata.path("logFileName").asText());
@@ -204,10 +265,11 @@ class FfmlibDecodeServiceTest {
 
     decodeService.decode(asn1Data, "missing-received-at");
 
-    ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
-    verify(kafkaTemplate).send(eq(BSM_TOPIC), eq("missing-received-at"), jsonCaptor.capture());
+    ArgumentCaptor<FfmlibDecodeService.PreparedDecodedMessage> messageCaptor =
+        ArgumentCaptor.forClass(FfmlibDecodeService.PreparedDecodedMessage.class);
+    verify(outputPublisher).publish(messageCaptor.capture());
     String odeReceivedAt = new com.fasterxml.jackson.databind.ObjectMapper()
-        .readTree(jsonCaptor.getValue()).path("metadata").path("odeReceivedAt").asText();
+        .readTree(messageCaptor.getValue().json()).path("metadata").path("odeReceivedAt").asText();
     assertTrue(!odeReceivedAt.isBlank());
   }
 
@@ -242,6 +304,22 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
+  void rawTopicSignedEnvelopeIsCheckedBeforeStrippedUperDecode() {
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+    byte[] originalSignedBytes = {(byte) 0x03, (byte) 0x81, 0x00, 0x00, 0x14};
+
+    assertThrows(UnsupportedOperationException.class, () -> decodeService.prepareRaw(metadata,
+        new byte[] {0x00, 0x14}, "replayed-signed", SupportedMessageType.BSM,
+        originalSignedBytes));
+
+    verify(ffmlibCodec, never()).uperToIntermediate(any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "signed_payload")
+        .counter().count(), 0.0);
+  }
+
+  @Test
   void externalModeRetainsKafkaDecoderInputRollbackPath() {
     decodeService.shutdown();
     Asn1CodecModeProperties modeProperties = new Asn1CodecModeProperties();
@@ -252,6 +330,7 @@ class FfmlibDecodeServiceTest {
         modeProperties,
         jsonTopics,
         kafkaTemplate,
+        outputPublisherProvider,
         simpleXmlMapper,
         meterRegistry,
         "topic.Asn1DecoderInput");
@@ -277,7 +356,7 @@ class FfmlibDecodeServiceTest {
     DSRCmsgID msgId = mock(DSRCmsgID.class);
     when(frame.getMessageId()).thenReturn(msgId);
     when(msgId.name()).thenReturn(Optional.of("notAMessage"));
-    when(simpleXmlMapper.readValue(any(String.class), eq(MessageFrame.class))).thenReturn(frame);
+    when(messageFrameReader.readValue(any(String.class))).thenReturn(frame);
 
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
@@ -285,6 +364,7 @@ class FfmlibDecodeServiceTest {
         new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))),
         "drop-key"));
 
+    verify(outputPublisher, never()).publish(any());
     verify(kafkaTemplate, never()).send(any(), any(), any());
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.dropped")
         .tag("type", "unknown")
@@ -307,6 +387,6 @@ class FfmlibDecodeServiceTest {
     // Import path resolves topic from messageId; UDP path uses knownType and may skip these.
     lenient().when(frame.getMessageId()).thenReturn(msgId);
     lenient().when(msgId.name()).thenReturn(Optional.of("basicSafetyMessage"));
-    when(simpleXmlMapper.readValue(any(String.class), eq(MessageFrame.class))).thenReturn(frame);
+    when(messageFrameReader.readValue(any(String.class))).thenReturn(frame);
   }
 }

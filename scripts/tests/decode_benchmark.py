@@ -1,27 +1,27 @@
-"""Correlate distinct UDP BSMs with JSON Kafka records for codec comparisons.
+"""Correlate UDP BSMs with durable raw and decoded JSON Kafka records.
 
-Latency is the JSON record create time minus the UDP send time. ``--mode ffm`` correlates JSON
-only and fails if ``topic.OdeRawEncodedBSMJson`` advances. ``--mode external`` requires a
-correlated raw record for every measured BSM. ``--skip-raw`` forces that JSON-only correlation.
+Latency (``p95_ms``) is Kafka JSON record creation time minus UDP send time. FFM runs also report
+producer acknowledgement latency separately from the end-to-end measurement. The runner requires
+every raw and JSON record, checks duplicates and quarantine traffic, and waits for consumer lag and
+late publications to drain before writing its result.
 
-Requires confluent-kafka. Example: python scripts/tests/decode_benchmark.py --mode ffm
---broker localhost:9092 --fixture scripts/tests/udpsender_bsm.py --count 300000
---rate 1000 --output ffm-run-1.csv
+Requires confluent-kafka. For the strict FFM gate, use ``--max-p95-ms 5`` with 1,000 warmup and
+300,000 measured packets at a target rate of 1,000 packets/second.
 """
 
 import argparse
 import ast
 import csv
 import json
+import math
 import multiprocessing
 import queue
 import random
+import re
 import socket
 import time
 from pathlib import Path
 from urllib.request import urlopen
-
-from confluent_kafka import Consumer, TopicPartition
 
 
 def fixture_bytes(path):
@@ -44,6 +44,11 @@ def packet_id(packet):
     return (int.from_bytes(packet[35:40], "big") >> 6) & 0xffffffff
 
 
+def measured_message_ids(first_id, warmup, count):
+    """Return measured IDs, excluding the warmup prefix."""
+    return set(range(first_id + warmup, first_id + warmup + count))
+
+
 def send_packets(packets, host, port, rate, timing):
     sent_at = {}
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
@@ -58,41 +63,20 @@ def send_packets(packets, host, port, rate, timing):
 
 
 def percent(values, fraction):
-    ordered = sorted(values)
+    """Linearly interpolate a percentile at the ``(n - 1) * p`` position."""
+    ordered = sorted(float(value) for value in values)
     if not ordered:
         return None
+    if not 0 <= fraction <= 1 or any(not math.isfinite(value) for value in ordered):
+        raise ValueError("percentile input must be finite and fraction must be in [0, 1]")
     position = (len(ordered) - 1) * fraction
     low = int(position)
     high = min(low + 1, len(ordered) - 1)
     return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
 
 
-def scrape_confirmed(url):
-    try:
-        text = urlopen(url, timeout=5).read().decode("utf-8")
-    except Exception:
-        return {}
-    buckets = {}
-    for line in text.splitlines():
-        if not line.startswith("ode_ffmlib_decode_end_to_end_seconds_bucket{"):
-            continue
-        if 'type="BSM"' not in line:
-            continue
-        label = line.split('le="', 1)[1].split('"', 1)[0]
-        buckets[float(label)] = float(line.rsplit(" ", 1)[1])
-    return buckets
-
-
-def raw_topic_movement(consumer, topic, start_offsets):
-    moved = []
-    for part, start in start_offsets.items():
-        _, end = consumer.get_watermark_offsets(TopicPartition(topic, part), timeout=10)
-        if end > start:
-            moved.append({"partition": part, "start": start, "end": end})
-    return moved
-
-
 def confirmed_percent(before, after, fraction):
+    """Estimate producer acknowledgement latency from Prometheus histogram deltas."""
     counts = {limit: count - before.get(limit, 0) for limit, count in after.items()}
     total = counts.get(float("inf"), 0)
     if total <= 0:
@@ -110,6 +94,100 @@ def confirmed_percent(before, after, fraction):
     return None
 
 
+def validation_errors(expected_ids, raw, output, send_times, duplicate_raw, duplicate_json,
+                      unexpected_records, dlt_count, invalid_timestamps, actual_rate,
+                      target_rate, max_send_gap_ms, max_send_gap_limit_ms, p95_ms,
+                      max_p95_ms, pending_publications, drained):
+    """Evaluate the same acceptance gates used by the command-line benchmark."""
+    expected = set(expected_ids)
+    errors = []
+    missing_raw = expected - set(raw)
+    missing_json = expected - set(output)
+    missing_send_times = expected - set(send_times)
+    if missing_raw:
+        errors.append(f"missing {len(missing_raw)} raw records")
+    if missing_json:
+        errors.append(f"missing {len(missing_json)} JSON records")
+    if missing_send_times:
+        errors.append(f"missing {len(missing_send_times)} UDP send timestamps")
+    if duplicate_raw:
+        errors.append(f"found {duplicate_raw} duplicate raw records")
+    if duplicate_json:
+        errors.append(f"found {duplicate_json} duplicate JSON records")
+    if unexpected_records:
+        errors.append(f"found {unexpected_records} records outside the benchmark ID set")
+    if dlt_count:
+        errors.append(f"found {dlt_count} unexpected quarantine records")
+    if invalid_timestamps:
+        errors.append(f"found {invalid_timestamps} invalid timestamps or negative latencies")
+    if actual_rate is None or not math.isfinite(actual_rate):
+        errors.append("actual UDP rate is missing or invalid")
+    elif not 0.95 * target_rate <= actual_rate <= 1.05 * target_rate:
+        errors.append(f"actual UDP rate {actual_rate:.2f}/s is outside +/-5% of target")
+    if max_send_gap_ms is None or not math.isfinite(max_send_gap_ms):
+        errors.append("maximum inter-packet send gap is missing or invalid")
+    elif max_send_gap_ms >= max_send_gap_limit_ms:
+        errors.append(
+            f"maximum inter-packet send gap {max_send_gap_ms:.1f} ms is not below "
+            f"{max_send_gap_limit_ms:.1f} ms")
+    if max_p95_ms is not None:
+        if p95_ms is None or not math.isfinite(p95_ms):
+            errors.append("p95_ms is missing or invalid")
+        elif p95_ms >= max_p95_ms:
+            errors.append(f"p95_ms {p95_ms:.3f} is not below {max_p95_ms:.3f} ms")
+    if pending_publications is None or pending_publications != 0:
+        errors.append("pending FFM publications are missing or nonzero")
+    if not drained:
+        errors.append("Kafka consumer lag did not drain before timeout")
+    return errors
+
+
+def scrape_ffm_metrics(url, topic):
+    """Read the FFM output confirmation histogram and in-flight publication gauge."""
+    text = urlopen(url, timeout=5).read().decode("utf-8")
+    return parse_ffmlib_metrics(text, topic)
+
+
+def parse_ffmlib_metrics(text, topic):
+    """Parse labeled Micrometer histogram and gauge samples for one JSON topic."""
+    buckets = {}
+    pending_values = []
+    for line in text.splitlines():
+        if line.startswith("ode_ffmlib_output_confirmation_seconds_bucket{") \
+                and f'topic="{topic}"' in line:
+            label = re.search(r'le="([^"]+)"', line)
+            if label:
+                limit = float(label.group(1).replace("+Inf", "inf"))
+                buckets[limit] = float(line.rsplit(" ", 1)[1])
+        elif line.startswith("ode_ffmlib_output_in_flight"):
+            match = re.fullmatch(r"ode_ffmlib_output_in_flight(?:\{[^}]*\})?\s+([^\s]+)",
+                                 line)
+            if match:
+                pending_values.append(float(match.group(1)))
+    return buckets, max(pending_values) if pending_values else None
+
+
+def is_drained_to_watermarks(positions, end_offsets, start_offsets):
+    """Ignore untouched partitions and require every new record to be consumed."""
+    by_partition = {(position.topic, position.partition): position.offset
+                    for position in positions}
+    for key, end in end_offsets.items():
+        if end <= start_offsets[key]:
+            continue
+        if by_partition.get(key, -1) < end:
+            return False
+    return True
+
+
+def extract_message_id(topic, value):
+    record = json.loads(value)
+    if topic.startswith("topic.OdeRawEncoded"):
+        raw_hex = record["metadata"]["asn1"]
+        return packet_id(bytes.fromhex(raw_hex))
+    bsm = record["payload"]["data"]["value"]["BasicSafetyMessage"]
+    return int(bsm["coreData"]["id"], 16)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("external", "ffm"), required=True)
@@ -119,16 +197,33 @@ def main():
     parser.add_argument("--udp-port", type=int, default=46800)
     parser.add_argument("--raw-topic", default="topic.OdeRawEncodedBSMJson")
     parser.add_argument("--json-topic", default="topic.OdeBsmJson")
-    parser.add_argument("--skip-raw", action="store_true",
-                        help="correlate JSON only; ffm always does this, external does not infer it")
+    parser.add_argument("--dlt-topic", help="defaults to <raw-topic>.FFM.DLT in FFM mode")
     parser.add_argument("--metrics-url", default="http://127.0.0.1:8080/actuator/prometheus")
     parser.add_argument("--count", type=int, default=300000)
     parser.add_argument("--warmup", type=int, default=1000)
     parser.add_argument("--rate", type=float, default=1000)
+    parser.add_argument("--max-send-gap-ms", type=float, default=1000,
+                        help="fail when the measured sender pauses for this long")
+    parser.add_argument("--max-p95-ms", type=float,
+                        help="fail when p95 is missing or greater than or equal to this value")
+    parser.add_argument("--quiet-period-seconds", type=float, default=15)
+    parser.add_argument("--drain-timeout-seconds", type=float, default=60)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    if args.mode == "ffm":
-        args.skip_raw = True
+    if args.mode == "ffm" and args.max_p95_ms is None:
+        parser.error("--max-p95-ms is required for the FFM acceptance benchmark")
+    if args.count <= 0 or args.warmup < 0 or not math.isfinite(args.rate) or args.rate <= 0:
+        parser.error("count and rate must be positive and warmup must be nonnegative")
+    if not math.isfinite(args.max_send_gap_ms) or args.max_send_gap_ms <= 0:
+        parser.error("max-send-gap-ms must be a finite positive value")
+    if args.max_p95_ms is not None and (
+            not math.isfinite(args.max_p95_ms) or args.max_p95_ms <= 0):
+        parser.error("max-p95-ms must be a finite positive value")
+
+    try:
+        from confluent_kafka import Consumer, TopicPartition
+    except ImportError as error:
+        raise SystemExit("confluent-kafka is required: install it with pip") from error
 
     fixture = fixture_bytes(args.fixture)
     if packet_id(fixture) != 0x31325433:
@@ -136,125 +231,179 @@ def main():
     first_id = random.randrange(0, 0xffffffff - args.count - args.warmup)
     packets = [with_id(fixture, first_id + index)
                for index in range(args.count + args.warmup)]
-    expected = set(range(first_id, first_id + len(packets)))
+    expected_all = set(range(first_id, first_id + len(packets)))
+    expected_measured = measured_message_ids(first_id, args.warmup, args.count)
+    dlt_topic = args.dlt_topic or f"{args.raw_topic}.FFM.DLT"
+
     consumer = Consumer({"bootstrap.servers": args.broker,
                          "group.id": f"decode-benchmark-{time.time_ns()}",
                          "enable.auto.commit": False,
                          "client.id": "ode-decode-benchmark"})
-    partitions = {}
+    topic_names = [args.raw_topic, args.json_topic]
+    if args.mode == "ffm":
+        topic_names.append(dlt_topic)
     assigned = []
-    topics = (args.json_topic,) if args.skip_raw else (args.raw_topic, args.json_topic)
-    for topic in topics:
+    partitions = {}
+    starts = {}
+    end_by_partition = {}
+    for topic in topic_names:
         info = consumer.list_topics(topic, timeout=10).topics[topic]
         if info.error is not None:
             raise RuntimeError(f"Topic {topic} is not available: {info.error}")
         partitions[topic] = len(info.partitions)
         for part in info.partitions:
             _, end = consumer.get_watermark_offsets(TopicPartition(topic, part), timeout=10)
+            starts[(topic, part)] = end
+            end_by_partition[(topic, part)] = end
             assigned.append(TopicPartition(topic, part, end))
     consumer.assign(assigned)
-    consumer.poll(0.1)
-    raw_start = {}
-    if args.mode == "ffm":
-        raw_info = consumer.list_topics(args.raw_topic, timeout=10).topics[args.raw_topic]
-        if raw_info.error is not None:
-            raise RuntimeError(f"Topic {args.raw_topic} is not available: {raw_info.error}")
-        for part in raw_info.partitions:
-            _, end = consumer.get_watermark_offsets(TopicPartition(args.raw_topic, part), timeout=10)
-            raw_start[part] = end
+
     raw = {}
     output = {}
-    duplicate_raw = duplicate_json = 0
+    duplicates = {"raw": 0, "json": 0}
+    unexpected_records = 0
+    invalid_timestamps = 0
+    dlt_count = 0
+
+    def accept(record):
+        nonlocal unexpected_records, invalid_timestamps, dlt_count
+        if record.error():
+            raise RuntimeError(record.error())
+        topic = record.topic()
+        if topic == dlt_topic:
+            dlt_count += 1
+            return
+        target = raw if topic == args.raw_topic else output
+        kind = "raw" if topic == args.raw_topic else "json"
+        try:
+            message_id = extract_message_id(topic, record.value())
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            invalid_timestamps += 1
+            return
+        if message_id not in expected_all:
+            unexpected_records += 1
+            return
+        timestamp = record.timestamp()[1]
+        if timestamp is None or timestamp <= 0:
+            invalid_timestamps += 1
+        if message_id in target:
+            duplicates[kind] += 1
+            return
+        target[message_id] = (record.partition(), record.offset(), timestamp, record.key())
 
     def capture_until(required, deadline):
-        nonlocal duplicate_raw, duplicate_json
         while time.monotonic() < deadline:
-            raw_ready = args.skip_raw or len(raw) >= required
-            if raw_ready and len(output) >= required:
+            if len(raw) >= required and len(output) >= required:
                 return
             record = consumer.poll(0.2)
-            if record is None:
-                continue
-            if record.error():
-                raise RuntimeError(record.error())
-            value = json.loads(record.value())
-            if record.topic() == args.raw_topic:
-                asn1 = value.get("metadata", {}).get("asn1")
-                if not asn1:
-                    continue
-                message_id = packet_id(bytes.fromhex(asn1))
-                if message_id not in expected:
-                    continue
-                if message_id in raw:
-                    duplicate_raw += 1
-                else:
-                    raw[message_id] = (record.partition(), record.offset(),
-                                       record.timestamp()[1])
-            else:
-                try:
-                    bsm = value["payload"]["data"]["value"]["BasicSafetyMessage"]
-                    message_id = int(bsm["coreData"]["id"], 16)
-                except (KeyError, TypeError, ValueError):
-                    continue
-                if message_id not in expected:
-                    continue
-                if message_id in output:
-                    duplicate_json += 1
-                else:
-                    output[message_id] = (record.partition(), record.offset(),
-                                          record.timestamp()[1])
+            if record is not None:
+                accept(record)
+        raise TimeoutError(
+            f"Timed out awaiting {required} correlated records (raw={len(raw)}, json={len(output)})")
 
-    raw_movement = []
+    def current_watermarks():
+        result = {}
+        for topic, part in starts:
+            _, end = consumer.get_watermark_offsets(TopicPartition(topic, part), timeout=10)
+            result[(topic, part)] = end
+        return result
+
+    def drained_to(end_offsets):
+        return is_drained_to_watermarks(consumer.position(assigned), end_offsets, starts)
+
+    def drain_until_quiet():
+        deadline = time.monotonic() + args.drain_timeout_seconds
+        last_watermarks = current_watermarks()
+        quiet_since = time.monotonic()
+        while time.monotonic() < deadline:
+            record = consumer.poll(0.2)
+            if record is not None:
+                accept(record)
+            watermarks = current_watermarks()
+            is_drained = drained_to(watermarks)
+            if watermarks != last_watermarks or not is_drained:
+                quiet_since = time.monotonic()
+            last_watermarks = watermarks
+            if is_drained and time.monotonic() - quiet_since >= args.quiet_period_seconds:
+                return True, watermarks
+        return False, last_watermarks
+
     send_times = {}
 
-    def run_send(subset):
+    def run_send(subset, required_total):
         timing = multiprocessing.Queue()
         sender = multiprocessing.Process(target=send_packets,
             args=(subset, args.udp_host, args.udp_port, args.rate, timing))
         sender.start()
-        seen = len(output) if args.skip_raw else len(raw)
-        capture_until(seen + len(subset), time.monotonic() + len(subset) / args.rate + 60)
         try:
+            capture_until(required_total, time.monotonic() + len(subset) / args.rate + 120)
             started, ended, sent_at = timing.get(timeout=120)
-        except queue.Empty:
-            sender.terminate()
-            sender.join(timeout=5)
-            raise RuntimeError("UDP sender did not report send times")
-        sender.join(timeout=30)
-        if sender.exitcode != 0:
-            raise RuntimeError("UDP sender failed")
+            sender.join(timeout=30)
+            if sender.is_alive():
+                raise RuntimeError("UDP sender did not exit after sending packets")
+            if sender.exitcode != 0:
+                raise RuntimeError("UDP sender failed")
+        except queue.Empty as error:
+            raise RuntimeError("UDP sender did not report send times") from error
+        finally:
+            if sender.is_alive():
+                sender.terminate()
+                sender.join(timeout=5)
+            timing.close()
+            timing.join_thread()
         send_times.update(sent_at)
         return (len(subset) - 1) / (ended - started) if len(subset) > 1 else None
 
+    before_confirmations = {}
     try:
-        run_send(packets[:args.warmup])
-        raw_warm = args.skip_raw or len(raw) >= args.warmup
-        if not raw_warm or len(output) < args.warmup:
-            raise RuntimeError("Warmup records did not clear before measurement")
-        before = scrape_confirmed(args.metrics_url) if args.mode == "ffm" else {}
-        actual_rate = run_send(packets[args.warmup:])
-        after = scrape_confirmed(args.metrics_url) if args.mode == "ffm" else {}
-        if args.mode == "ffm":
-            raw_movement = raw_topic_movement(consumer, args.raw_topic, raw_start)
+        run_send(packets[:args.warmup], args.warmup)
+        before_confirmations, _ = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
+            if args.mode == "ffm" else ({}, None)
+        actual_rate = run_send(packets[args.warmup:], len(packets))
+        drained, final_watermarks = drain_until_quiet()
+        after_confirmations, pending_publications = scrape_ffm_metrics(
+            args.metrics_url, args.json_topic) if args.mode == "ffm" else ({}, None)
     finally:
         consumer.close()
 
-    ids = range(first_id + args.warmup, first_id + len(packets))
     rows = []
-    for message_id in ids:
-        if message_id not in output or message_id not in send_times:
+    latencies = []
+    for message_id in sorted(expected_measured):
+        if message_id not in raw or message_id not in output or message_id not in send_times:
             continue
-        if not args.skip_raw and message_id not in raw:
+        raw_partition, raw_offset, raw_timestamp, raw_key = raw[message_id]
+        json_partition, json_offset, json_timestamp, json_key = output[message_id]
+        send_timestamp = send_times[message_id]
+        latency = json_timestamp - send_timestamp if json_timestamp is not None else float("nan")
+        if not math.isfinite(send_timestamp) or not math.isfinite(latency) or latency < 0:
+            invalid_timestamps += 1
             continue
-        if message_id in raw:
-            raw_partition, raw_offset, raw_time = raw[message_id]
-        else:
-            raw_partition = raw_offset = raw_time = ""
-        json_partition, json_offset, json_time = output[message_id]
-        udp_send_ms = send_times[message_id]
-        rows.append((f"{message_id:08X}", raw_partition, raw_offset, raw_time,
-                     json_partition, json_offset, json_time,
-                     udp_send_ms, json_time - udp_send_ms))
+        if raw_key != json_key:
+            unexpected_records += 1
+            continue
+        latencies.append(latency)
+        rows.append((f"{message_id:08X}", raw_partition, raw_offset, raw_timestamp,
+                     json_partition, json_offset, json_timestamp, send_timestamp, latency))
+
+    ordered_send_times = [send_times[message_id] for message_id in sorted(expected_measured)
+                          if message_id in send_times]
+    send_gaps = [later - earlier for earlier, later in
+                 zip(ordered_send_times, ordered_send_times[1:])]
+    invalid_timestamps += sum(gap < 0 or not math.isfinite(gap) for gap in send_gaps)
+    max_send_gap_ms = max(send_gaps, default=None)
+
+    p50 = percent(latencies, .50)
+    p95 = percent(latencies, .95)
+    p99 = percent(latencies, .99)
+    ack = {f"confirmed_p{quantile}_estimate_ms": confirmed_percent(
+        before_confirmations, after_confirmations, fraction)
+        for quantile, fraction in ((50, .50), (95, .95), (99, .99))}
+    errors = validation_errors(expected_measured, raw, output, send_times,
+        duplicates["raw"], duplicates["json"], unexpected_records, dlt_count,
+        invalid_timestamps, actual_rate, args.rate, max_send_gap_ms, args.max_send_gap_ms,
+        p95, args.max_p95_ms,
+        pending_publications if args.mode == "ffm" else 0.0, drained)
+
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
@@ -262,27 +411,28 @@ def main():
                          "json_partition", "json_offset", "json_create_time_ms",
                          "udp_send_time_ms", "udp_to_json_record_ms"))
         writer.writerows(rows)
-    latency = [row[-1] for row in rows]
-    summary = {"mode": args.mode, "skip_raw": args.skip_raw,
-        "target_rate_per_second": args.rate,
-        "actual_udp_rate_per_second": actual_rate, "warmup": args.warmup,
-        "udp_sent": args.count, "raw_correlated": sum(i in raw for i in ids),
-        "json_correlated": sum(i in output for i in ids), "paired": len(rows),
-        "duplicate_raw": duplicate_raw, "duplicate_json": duplicate_json,
-        "raw_watermark_advanced": raw_movement,
-        "partitions": partitions, "p50_ms": percent(latency, .5),
-        "p95_ms": percent(latency, .95), "p99_ms": percent(latency, .99),
-        "confirmed_p50_estimate_ms": confirmed_percent(before, after, .5),
-        "confirmed_p95_estimate_ms": confirmed_percent(before, after, .95),
-        "confirmed_p99_estimate_ms": confirmed_percent(before, after, .99)}
-    args.output.with_suffix(".json").write_text(json.dumps(summary, indent=2),
-        encoding="utf-8")
+
+    summary = {"mode": args.mode, "raw_topic": args.raw_topic, "json_topic": args.json_topic,
+        "dlt_topic": dlt_topic if args.mode == "ffm" else None,
+        "target_rate_per_second": args.rate, "actual_udp_rate_per_second": actual_rate,
+        "rate_tolerance_percent": 5, "max_inter_packet_send_gap_ms": max_send_gap_ms,
+        "max_send_gap_ms": args.max_send_gap_ms,
+        "warmup": args.warmup, "udp_sent": args.count,
+        "raw_correlated": sum(message_id in raw for message_id in expected_measured),
+        "json_correlated": sum(message_id in output for message_id in expected_measured),
+        "paired": len(rows), "duplicate_raw": duplicates["raw"],
+        "duplicate_json": duplicates["json"], "unexpected_records": unexpected_records,
+        "unexpected_dlt_records": dlt_count, "invalid_timestamps": invalid_timestamps,
+        "consumer_lag_drained": drained,
+        "final_watermarks": {f"{topic}:{part}": end
+                              for (topic, part), end in final_watermarks.items()},
+        "pending_publications": pending_publications,
+        "partitions": partitions, "p50_ms": p50, "p95_ms": p95, "p99_ms": p99,
+        **ack, "max_p95_ms": args.max_p95_ms, "passed": not errors, "errors": errors}
+    args.output.with_suffix(".json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
-    if raw_movement:
-        raise SystemExit(f"FFM mode wrote raw topic {args.raw_topic}: {raw_movement}")
-    if len(rows) != args.count:
-        missing = "JSON" if args.skip_raw else "raw or JSON"
-        raise SystemExit(f"Missing {missing} records")
+    if errors:
+        raise SystemExit("Benchmark acceptance failed: " + "; ".join(errors))
 
 
 if __name__ == "__main__":

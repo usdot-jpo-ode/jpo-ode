@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -23,40 +24,52 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 class FfmlibOutputPublisherTest {
   @Test
   @SuppressWarnings("unchecked")
-  void producerFailureCompletesWithoutAnotherSend() {
+  void producerFailureCompletesExceptionallyForListenerRetry() {
     KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
-    FfmlibDecodeService decoder = mock(FfmlibDecodeService.class);
     var message = message();
     when(producer.send(message.topic(), message.key(), message.json()))
         .thenReturn(CompletableFuture.failedFuture(new TimeoutException("broker")));
-    var publisher = new FfmlibOutputPublisher(producer, decoder, new OdeKafkaProperties(),
+    var publisher = new FfmlibOutputPublisher(producer, new OdeKafkaProperties(),
         new SimpleMeterRegistry());
 
     assertThrows(ExecutionException.class, () -> publisher.publish(message).get(5, TimeUnit.SECONDS));
 
     verify(producer, times(1)).send(message.topic(), message.key(), message.json());
-    verify(decoder).recordRawPublishFailure(message);
   }
 
   @Test
   @SuppressWarnings("unchecked")
   void disabledTopicIsSkippedWithoutSendingOrFailing() throws Exception {
     KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
-    FfmlibDecodeService decoder = mock(FfmlibDecodeService.class);
     OdeKafkaProperties properties = new OdeKafkaProperties();
     properties.setDisabledTopics(Set.of("json"));
     SimpleMeterRegistry meters = new SimpleMeterRegistry();
-    var publisher = new FfmlibOutputPublisher(producer, decoder, properties, meters);
+    var publisher = new FfmlibOutputPublisher(producer, properties, meters);
     var message = message();
 
-    publisher.publish(message).get(1, TimeUnit.SECONDS);
+    assertEquals(FfmlibOutputPublisher.PublicationOutcome.SKIPPED_DISABLED,
+        publisher.publish(message).get(1, TimeUnit.SECONDS));
 
     verify(producer, never()).send(any(), any(), any());
-    verify(decoder, never()).recordRawPublishFailure(message);
-    verify(decoder, never()).recordRawConfirmed(message);
     assertEquals(1.0, meters.counter("ode.ffmlib.output.skipped", "topic", "json",
         "reason", "disabled_topic").count());
     assertEquals(0.0, meters.counter("ode.ffmlib.output.failures", "topic", "json").count());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void kafkaConfirmationCompletesWithPublishedOutcomeAndRecordsLatency() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    var message = message();
+    when(producer.send(message.topic(), message.key(), message.json()))
+        .thenReturn(CompletableFuture.completedFuture(null));
+    SimpleMeterRegistry meters = new SimpleMeterRegistry();
+    var publisher = new FfmlibOutputPublisher(producer, new OdeKafkaProperties(), meters);
+
+    assertEquals(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED,
+        publisher.publish(message).get(1, TimeUnit.SECONDS));
+    assertEquals(0.0, meters.get("ode.ffmlib.output.in.flight").gauge().value());
+    assertTrue(meters.get("ode.ffmlib.output.confirmation").timer().count() == 1);
   }
 
   private static FfmlibDecodeService.PreparedDecodedMessage message() {

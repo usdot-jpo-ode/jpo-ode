@@ -59,6 +59,9 @@ class FfmlibNativeSmokeTest {
         properties.getUperBufferSize(),
         properties.getErrorBufferSize(),
         Path.of(properties.getNativeLibraryPath()));
+    MessageFrameCodec fastBsmCodec = new MessageFrameCodec(properties.getFastPathBufferSize(),
+        properties.getFastPathBufferSize(), properties.getErrorBufferSize(),
+        Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
         messageFrameCodec, new SimpleMeterRegistry());
     byte[] uper = HexUtils.fromHexString(BSM_HEX);
