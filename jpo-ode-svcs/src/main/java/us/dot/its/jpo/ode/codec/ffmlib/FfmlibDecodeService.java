@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.DSRCmsgID;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
@@ -37,8 +40,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 /**
  * Primary in-process J2735 UPER decode service backed by the FFMLib native codec.
  *
- * <p>UDP receivers enqueue stripped UPER bytes. Decode workers call {@link #prepareRaw} and publish
- * Ode JSON without waiting for the producer acknowledgement.
+ * <p>FFM listeners consume durable raw-topic records and confirm JSON publication before they
+ * acknowledge their input offsets.
  */
 @Slf4j
 @Service
@@ -55,7 +58,9 @@ public class FfmlibDecodeService {
   private final String externalDecoderInputTopic;
   private final JsonTopics jsonTopics;
   private final KafkaTemplate<String, String> kafkaTemplate;
-  private final XmlMapper simpleXmlMapper;
+  private final ObjectProvider<FfmlibOutputPublisher> outputPublisher;
+  private final ObjectReader messageFrameReader;
+  private final ObjectReader bsmValueReader;
   private final MeterRegistry meterRegistry;
   private final Timer nativeTimer;
   private final Timer pojoTimer;
@@ -72,7 +77,8 @@ public class FfmlibDecodeService {
    * @param properties FFMLib runtime properties
    * @param modeProperties codec-mode selection
    * @param jsonTopics decoded JSON topic names
-   * @param kafkaTemplate Kafka producer
+   * @param kafkaTemplate Kafka producer used for the external decoder path
+   * @param outputPublisher FFM JSON publisher used by the optional in-process route
    * @param simpleXmlMapper XML mapper for J2735 XML processing
    * @param meterRegistry Micrometer registry for decode timers
    * @param externalDecoderInputTopic legacy external decoder input topic name
@@ -83,6 +89,7 @@ public class FfmlibDecodeService {
       Asn1CodecModeProperties modeProperties,
       JsonTopics jsonTopics,
       @Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+      ObjectProvider<FfmlibOutputPublisher> outputPublisher,
       @Qualifier("simpleXmlMapper") XmlMapper simpleXmlMapper,
       MeterRegistry meterRegistry,
       @Value("${ode.kafka.topics.asn1.decoder-input}") String externalDecoderInputTopic) {
@@ -91,7 +98,9 @@ public class FfmlibDecodeService {
     this.externalDecoderInputTopic = externalDecoderInputTopic;
     this.jsonTopics = jsonTopics;
     this.kafkaTemplate = kafkaTemplate;
-    this.simpleXmlMapper = simpleXmlMapper;
+    this.outputPublisher = outputPublisher;
+    this.messageFrameReader = simpleXmlMapper.readerFor(MessageFrame.class);
+    this.bsmValueReader = simpleXmlMapper.readerFor(BasicSafetyMessage.class);
     this.meterRegistry = meterRegistry;
     for (SupportedMessageType type : SupportedMessageType.values()) {
       decodedCounter(type.name(), SOURCE_UDP);
@@ -144,7 +153,6 @@ public class FfmlibDecodeService {
       log.debug("Prepared raw {} ASN.1 payload in {}us", key,
           (System.nanoTime() - prepStart) / 1000);
 
-      // totalTimer is recorded inside runPublishDecoded (same as the UDP worker path).
       runPublishDecoded(
           (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null, SOURCE_IMPORT);
     } catch (UnsupportedOperationException failure) {
@@ -172,15 +180,28 @@ public class FfmlibDecodeService {
     runPublishDecoded(metadata, uperBytes, key, null, SOURCE_UDP);
   }
 
-  /** Prepares one raw-topic output without waiting for a Kafka producer acknowledgement. */
+  /** Prepares one raw-topic output; the listener confirms it before acknowledging its input. */
   public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
       String key) {
+    return prepareRaw(metadata, uperBytes, key, null, uperBytes);
+  }
+
+  /** Prepares a known raw-topic type after checking its original received bytes for signatures. */
+  public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
+      String key, SupportedMessageType knownType, byte[] originalBytes) {
     if (!modeProperties.isFfm()) {
       throw new IllegalStateException("Raw-topic decode requires FFM mode");
     }
+    if (isIeee1609(originalBytes, metadata)) {
+      recordFailure(knownType == null ? TYPE_UNKNOWN : knownType.name(), SOURCE_UDP,
+          "signed_payload");
+      throw new UnsupportedOperationException(
+          "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib "
+              + "3.0.0-beta1; use external codec mode for signed messages");
+    }
     long start = System.nanoTime();
     try {
-      return prepareDecoded(metadata, uperBytes, key, null, SOURCE_UDP, start);
+      return prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_UDP, start);
     } catch (RuntimeException error) {
       totalTimer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
       throw error;
@@ -199,7 +220,7 @@ public class FfmlibDecodeService {
     totalTimer.record(System.nanoTime() - prepared.startNanos(), TimeUnit.NANOSECONDS);
   }
 
-  /** Immutable output of native decode and JSON mapping, ready for asynchronous publication. */
+  /** Immutable output of native decode and JSON mapping, ready for confirmed publication. */
   public record PreparedDecodedMessage(String topic, String key, String json,
       OdeMessageFrameMetadata metadata, String type, String source, long startNanos,
       long sendStartedNanos) {
@@ -216,7 +237,11 @@ public class FfmlibDecodeService {
       PreparedDecodedMessage prepared =
           prepareDecoded(metadata, uperBytes, key, knownType, source, totalStart);
       try {
-        kafkaTemplate.send(prepared.topic(), key, prepared.json()).get(10, TimeUnit.SECONDS);
+        if (modeProperties.isFfm()) {
+          outputPublisher.getObject().publish(prepared).get(10, TimeUnit.SECONDS);
+        } else {
+          kafkaTemplate.send(prepared.topic(), key, prepared.json()).get(10, TimeUnit.SECONDS);
+        }
       } catch (InterruptedException error) {
         Thread.currentThread().interrupt();
         recordFailure(prepared.type(), source, "publish");
@@ -242,12 +267,14 @@ public class FfmlibDecodeService {
     try {
       long nativeStart = System.nanoTime();
       byte[] messageFrameBytes = unwrapIeee1609IfPresent(metadata, uperBytes);
-      IntermediateDecodeResult intermediate = codec().uperToIntermediate(messageFrameBytes);
+      IntermediateDecodeResult intermediate = knownType == null
+          ? codec().uperToIntermediate(messageFrameBytes)
+          : codec().uperToIntermediate(messageFrameBytes, knownType);
       long nativeNanos = System.nanoTime() - nativeStart;
       nativeTimer.record(nativeNanos, TimeUnit.NANOSECONDS);
 
       long pojoStart = System.nanoTime();
-      final MessageFrame<?> messageFrame = parseMessageFrame(intermediate);
+      final MessageFrame<?> messageFrame = parseMessageFrame(intermediate, knownType);
       long pojoNanos = System.nanoTime() - pojoStart;
       pojoTimer.record(pojoNanos, TimeUnit.NANOSECONDS);
       type = messageType(knownType, messageFrame);
@@ -403,9 +430,49 @@ public class FfmlibDecodeService {
     }
   }
 
-  private MessageFrame<?> parseMessageFrame(IntermediateDecodeResult intermediate)
-      throws JsonProcessingException {
-    return simpleXmlMapper.readValue(intermediate.text(), MessageFrame.class);
+  private MessageFrame<?> parseMessageFrame(IntermediateDecodeResult intermediate,
+      SupportedMessageType knownType) throws JsonProcessingException {
+    if (knownType == SupportedMessageType.BSM) {
+      try {
+        MessageFrame<?> bsmFrame = parseBsmFrame(intermediate.text());
+        if (bsmFrame != null) {
+          return bsmFrame;
+        }
+      } catch (JsonProcessingException error) {
+        log.debug("Direct BSM XER mapping failed; falling back to generic MessageFrame mapping",
+            error);
+      }
+    }
+    return messageFrameReader.readValue(intermediate.text());
+  }
+
+  private MessageFrame<?> parseBsmFrame(String xer) throws JsonProcessingException {
+    if (bsmValueReader == null) {
+      return null;
+    }
+    String messageIdStartTag = "<messageId>";
+    String messageIdEndTag = "</messageId>";
+    String valueStartTag = "<value>";
+    int messageIdStart = xer.indexOf(messageIdStartTag);
+    int messageIdEnd = xer.indexOf(messageIdEndTag, messageIdStart);
+    int valueStart = xer.indexOf(valueStartTag);
+    if (messageIdStart < 0 || messageIdEnd < 0 || valueStart < messageIdEnd
+        || !"20".equals(xer.substring(messageIdStart + messageIdStartTag.length(), messageIdEnd))) {
+      return null;
+    }
+
+    String bsmStartTag = "<BasicSafetyMessage>";
+    String bsmEndTag = "</BasicSafetyMessage>";
+    int bsmStart = xer.indexOf(bsmStartTag, valueStart);
+    int bsmEnd = xer.indexOf(bsmEndTag, bsmStart);
+    if (bsmStart < 0 || bsmEnd < 0) {
+      return null;
+    }
+    String bsmXer = xer.substring(bsmStart, bsmEnd + bsmEndTag.length());
+    BasicSafetyMessage bsm = bsmValueReader.readValue(bsmXer);
+    BasicSafetyMessageMessageFrame messageFrame = new BasicSafetyMessageMessageFrame();
+    messageFrame.setValue(bsm);
+    return messageFrame;
   }
 
   private FfmlibMessageFrameCodec codec() {

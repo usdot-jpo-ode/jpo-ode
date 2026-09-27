@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 
@@ -20,6 +21,18 @@ public final class OdeKafkaClients {
   public static Map<String, Object> consumerProperties(KafkaProperties kafkaProperties,
       OdeKafkaProperties odeKafkaProperties) {
     Map<String, Object> properties = new HashMap<>(kafkaProperties.buildConsumerProperties());
+    applyConfluent(properties, odeKafkaProperties);
+    return properties;
+  }
+
+  /** Admin client settings with the same bootstrap and Confluent authentication as ODE clients. */
+  public static Map<String, Object> adminProperties(KafkaProperties kafkaProperties,
+      OdeKafkaProperties odeKafkaProperties) {
+    Map<String, Object> properties = new HashMap<>(kafkaProperties.buildAdminProperties());
+    String brokers = odeKafkaProperties.getBrokers();
+    if (brokers != null && !brokers.isBlank()) {
+      properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+    }
     applyConfluent(properties, odeKafkaProperties);
     return properties;
   }

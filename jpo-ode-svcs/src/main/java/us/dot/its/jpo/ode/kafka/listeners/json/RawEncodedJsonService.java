@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.kafka.listeners.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
@@ -11,10 +12,12 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.uper.UperUtil;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 /**
  * Service class responsible for processing raw ASN.1 encoded JSON data, applying specific
@@ -68,6 +71,45 @@ public class RawEncodedJsonService {
 
     OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
     return new OdeAsn1Data(metadata, payload);
+  }
+
+  /**
+   * Parses the existing raw-topic contract once for in-process decoding, avoiding a JSON parse,
+   * hex encode, and second hex parse on the hot path.
+   *
+   * @param json raw-topic JSON value
+   * @param messageType message type used to locate the UPER start flag
+   * @return metadata, stripped UPER bytes, and original bytes used for signature detection
+   * @throws JsonProcessingException if the raw JSON or metadata is malformed
+   * @throws StartFlagNotFoundException if the message start flag cannot be located
+   */
+  public FfmRawRecord parseFfmRecord(String json, SupportedMessageType messageType)
+      throws JsonProcessingException, StartFlagNotFoundException {
+    JsonNode root = mapper.readTree(json);
+    JsonNode payloadBytes = root.path("payload").path("data").path("bytes");
+    if (!payloadBytes.isTextual() || payloadBytes.textValue().isBlank()) {
+      throw new IllegalArgumentException("Raw record has no original ASN.1 payload bytes");
+    }
+    JsonNode metadataNode = root.get("metadata");
+    if (metadataNode == null || !metadataNode.isObject()) {
+      throw new IllegalArgumentException("Raw record has no metadata object");
+    }
+
+    OdeMessageFrameMetadata metadata = mapper.treeToValue(metadataNode,
+        OdeMessageFrameMetadata.class);
+    metadata.addEncoding(new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER));
+
+    byte[] packetBytes = CodecUtils.fromHex(payloadBytes.textValue());
+    byte[] originalBytes = metadata.getAsn1() == null || metadata.getAsn1().isBlank()
+        ? packetBytes
+        : CodecUtils.fromHex(metadata.getAsn1());
+    byte[] uperBytes = UperUtil.stripDot2Header(packetBytes, messageType.getStartFlagBytes());
+    return new FfmRawRecord(metadata, uperBytes, originalBytes);
+  }
+
+  /** Raw UDP input parsed for the FFMLib listener. */
+  public record FfmRawRecord(OdeMessageFrameMetadata metadata, byte[] uperBytes,
+      byte[] originalBytes) {
   }
 
   /**

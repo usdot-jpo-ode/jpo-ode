@@ -8,6 +8,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -30,17 +34,22 @@ import us.dot.its.jpo.ode.udp.tim.TimReceiver;
  */
 @Controller
 @Slf4j
-public class UdpServicesController {
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class UdpServicesController implements ApplicationRunner {
 
   private final List<ExecutorService> executors = new ArrayList<>();
+  private final UDPReceiverProperties udpProps;
+  private final RawEncodedJsonTopics rawEncodedJsonTopics;
+  private final UdpIngestPublisher ingestPublisher;
+  private final PortMappedIngestConfigLoader portMappedIngestConfigLoader;
 
   /**
    * Constructs a UdpServicesController to manage UDP receiver services for different message
    * types.
    *
    * @param udpProps             Properties containing configuration for each UDP receiver.
-   * @param rawEncodedJsonTopics Topics to which raw messages are published when direct JSON is off.
-   * @param ingestPublisher      Publisher that selects the raw topic or direct Ode JSON.
+   * @param rawEncodedJsonTopics Topics to which UDP messages are published before decoding.
+   * @param ingestPublisher      Publisher that writes the durable raw-topic contract.
    * @param portMappedIngestConfigLoader Loader for extra port-mapped receivers.
    */
   @Autowired
@@ -48,7 +57,14 @@ public class UdpServicesController {
                                RawEncodedJsonTopics rawEncodedJsonTopics,
                                UdpIngestPublisher ingestPublisher,
                                PortMappedIngestConfigLoader portMappedIngestConfigLoader) {
+    this.udpProps = udpProps;
+    this.rawEncodedJsonTopics = rawEncodedJsonTopics;
+    this.ingestPublisher = ingestPublisher;
+    this.portMappedIngestConfigLoader = portMappedIngestConfigLoader;
+  }
 
+  @Override
+  public void run(ApplicationArguments args) {
     log.debug("Starting UDP receiver services...");
 
     startReceiver(new BsmReceiver(udpProps.getBsm(), ingestPublisher, rawEncodedJsonTopics.getBsm()));

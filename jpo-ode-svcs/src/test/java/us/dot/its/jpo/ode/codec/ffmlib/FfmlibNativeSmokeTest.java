@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,9 +46,23 @@ class FfmlibNativeSmokeTest {
         properties.getUperBufferSize(),
         properties.getErrorBufferSize(),
         Path.of(properties.getNativeLibraryPath()));
+    MessageFrameCodec fastBsmCodec = new MessageFrameCodec(properties.getFastPathBufferSize(),
+        properties.getFastPathBufferSize(), properties.getErrorBufferSize(),
+        Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
-        messageFrameCodec, new SimpleMeterRegistry());
-    IntermediateDecodeResult result = codec.uperToIntermediate(HexUtils.fromHexString(BSM_HEX));
+        messageFrameCodec, fastBsmCodec, new SimpleMeterRegistry());
+    IntermediateDecodeResult result = codec.uperToIntermediate(
+        HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
+    String fullBufferOutput = messageFrameCodec.uperToXer(HexUtils.fromHexString(BSM_HEX));
+    assertEquals(fullBufferOutput, result.text());
+
+    MessageFrameCodec undersizedFastCodec = new MessageFrameCodec(64, 64,
+        properties.getErrorBufferSize(), Path.of(properties.getNativeLibraryPath()));
+    FfmlibMessageFrameCodec fallbackCodec = new FfmlibMessageFrameCodec(messageFrameCodec,
+        undersizedFastCodec, new SimpleMeterRegistry());
+    IntermediateDecodeResult fallback = fallbackCodec.uperToIntermediate(
+        HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
+    assertEquals(fullBufferOutput, fallback.text());
 
     assertNotNull(result);
     assertNotNull(result.text());
