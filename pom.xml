@@ -148,7 +148,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>-Djava.library.path=${project.build.directory}/libs
+            <argLine>-Djava.io.tmpdir=${java.io.tmpdir}
+              -Djava.library.path=${project.build.directory}/libs
               --enable-native-access=ALL-UNNAMED</argLine>
             <systemPropertyVariables>
               <loader.path>${loader.path}</loader.path>
