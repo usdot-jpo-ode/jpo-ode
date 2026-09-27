@@ -3,6 +3,11 @@ LABEL org.opencontainers.image.authors="583114@bah.com"
 
 WORKDIR /home
 
+# Lombok's Jackson annotation handling must be available while compiling both generated ASN.1
+# classes and the ODE. Without these settings, JavaBean accessors can add duplicate JSON/XML fields.
+COPY ./lombok.config ./lombok.config
+COPY ./jpo-asn-pojos/lombok.config ./jpo-asn-pojos/lombok.config
+
 COPY ./jpo-asn-pojos/pom.xml ./jpo-asn-pojos/
 
 COPY ./jpo-asn-pojos/jpo-asn-runtime/pom.xml ./jpo-asn-pojos/jpo-asn-runtime/
@@ -27,6 +32,15 @@ COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 # Then build the rest of the project. The FFMLib dependency and its native libraries are resolved
 # from Maven Central.
 RUN mvn -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests
+
+# Verify wire contracts and a real native decode using the classes produced by this builder.
+# The artifact check and required smoke-test property prevent a missing Linux library from silently
+# turning the native test into a skip.
+RUN test -s /home/jpo-ode-svcs/target/libs/libasnapplication.so \
+    && mvn -pl jpo-ode-svcs -am \
+      -Dtest=SerializationContractTest,FfmlibNativeSmokeTest \
+      -Dsurefire.failIfNoSpecifiedTests=false \
+      -Dffmlib.smoke.required=true test
 
 FROM eclipse-temurin:25-jre-noble
 
