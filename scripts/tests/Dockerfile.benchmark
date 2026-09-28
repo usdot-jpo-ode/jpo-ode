@@ -1,0 +1,8 @@
+FROM python:3.12.5-slim-bookworm
+
+WORKDIR /tests
+COPY scripts/tests/requirements-benchmark.txt /tests/requirements-benchmark.txt
+RUN pip install --no-cache-dir --disable-pip-version-check \
+    -r /tests/requirements-benchmark.txt
+
+ENTRYPOINT ["python", "/tests/decode_benchmark.py"]

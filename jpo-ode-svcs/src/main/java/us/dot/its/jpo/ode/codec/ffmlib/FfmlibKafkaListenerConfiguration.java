@@ -24,7 +24,8 @@ public class FfmlibKafkaListenerConfiguration {
   @Bean("ffmlibKafkaListenerContainerFactory")
   public ConcurrentKafkaListenerContainerFactory<String, String> ffmlibKafkaListenerContainerFactory(
       KafkaProperties kafkaProperties, OdeKafkaProperties odeKafkaProperties,
-      @Value("${ode.ffmlib.listener-concurrency:4}") int concurrency) {
+      @Value("${ode.ffmlib.listener-concurrency:4}") int concurrency,
+      FfmlibProperties ffmlibProperties) {
     Map<String, Object> properties =
         OdeKafkaClients.consumerProperties(kafkaProperties, odeKafkaProperties);
     properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -39,7 +40,7 @@ public class FfmlibKafkaListenerConfiguration {
     factory.setConcurrency(concurrency);
     factory.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());
     factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
-    factory.getContainerProperties().setSyncCommits(true);
+    factory.getContainerProperties().setSyncCommits(ffmlibProperties.isSyncCommits());
     return factory;
   }
 }

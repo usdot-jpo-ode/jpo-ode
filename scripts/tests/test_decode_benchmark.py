@@ -3,8 +3,12 @@
 import math
 import unittest
 
-from decode_benchmark import (is_drained_to_watermarks, measured_message_ids, parse_ffmlib_metrics,
-                              percent, validation_errors)
+from decode_benchmark import (classify_latency, complete_window_rates, is_drained_to_watermarks,
+                              is_create_time_timestamp, is_group_committed_to_watermarks,
+                              latency_windows,
+                              measured_message_ids, parse_ffmlib_metrics,
+                              parse_outstanding_metrics, parse_stage_metrics, percent,
+                              validation_errors)
 
 
 class DecodeBenchmarkTest(unittest.TestCase):
@@ -43,9 +47,59 @@ class DecodeBenchmarkTest(unittest.TestCase):
         self.assertIn(
             "maximum inter-packet send gap 1000.0 ms is not below 1000.0 ms", errors)
 
+    def test_application_group_offsets_must_reach_raw_watermarks(self):
+        starts = {("raw", 0): 10}
+        ends = {("raw", 0): 12}
+        self.assertFalse(is_group_committed_to_watermarks({("raw", 0): 11}, "raw", ends, starts))
+        self.assertTrue(is_group_committed_to_watermarks({("raw", 0): 12}, "raw", ends, starts))
+
+    def test_10_second_rates_use_only_complete_windows(self):
+        sends = [index / 1000 for index in range(20000)] + [20.5]
+        self.assertEqual([1000.0, 1000.0], complete_window_rates(sends, 1000))
+
+    def test_latency_windows_exclude_warmup_and_report_complete_windows(self):
+        send_times = {message_id: {"monotonic_s": float(message_id)}
+                      for message_id in range(21)}
+        latencies = {message_id: float(message_id) for message_id in range(21)}
+
+        windows = latency_windows(send_times, latencies, 1, 20, 1)
+
+        self.assertEqual(2, len(windows))
+        self.assertEqual(10, windows[0]["paired"])
+        self.assertAlmostEqual(9.55, windows[0]["p95_ms"])
+        self.assertEqual(10, windows[1]["paired"])
+        self.assertAlmostEqual(19.55, windows[1]["p95_ms"])
+
+    def test_stage_histograms_are_grouped_by_stage_and_metric(self):
+        text = "\n".join((
+            'ode_ffmlib_decode_stage_seconds_bucket{stage="native",le="0.001"} 80',
+            'ode_ffmlib_decode_stage_seconds_bucket{stage="native",le="+Inf"} 100',
+            'ode_ffmlib_raw_record_age_seconds_bucket{le="0.005"} 95'))
+
+        stages = parse_stage_metrics(text)
+
+        self.assertEqual({0.001: 80.0, float("inf"): 100.0}, stages["native"])
+        self.assertEqual({0.005: 95.0}, stages["ode_ffmlib_raw_record_age"])
+
+    def test_raw_and_offset_metrics_are_parsed_for_drain(self):
+        text = "\n".join((
+            "ode_ffmlib_raw_publication_in_flight 0.0",
+            "ode_ffmlib_offset_commit_in_flight 2.0"))
+        self.assertEqual((0.0, 2.0), parse_outstanding_metrics(text))
+
     def test_nonfinite_percentile_samples_are_rejected(self):
         with self.assertRaises(ValueError):
             percent([1.0, math.inf], .95)
+
+    def test_submillisecond_negative_timestamp_is_retained_as_quantization(self):
+        self.assertEqual((-0.5, "quantization_negative"), classify_latency(100.0, 100.5))
+        self.assertEqual((None, "invalid"), classify_latency(99.0, 100.5))
+
+    def test_only_create_time_timestamps_are_accepted(self):
+        self.assertTrue(is_create_time_timestamp(1))
+        self.assertFalse(is_create_time_timestamp(0))
+        self.assertFalse(is_create_time_timestamp(2))
+        self.assertFalse(is_create_time_timestamp(None))
 
     def test_labeled_ffmlib_metrics_report_confirmation_and_pending_count(self):
         text = '\n'.join((
@@ -83,7 +137,8 @@ def valid_errors(expected={1}, raw=None, output=None, duplicate_raw=0, duplicate
     output = set(expected) if output is None else set(output)
     return validation_errors(expected, raw, output, {item: 1.0 for item in expected},
         duplicate_raw, duplicate_json, 0, dlt_count, invalid_timestamps, actual_rate, 1000,
-        max_send_gap, max_send_gap_limit, p95, maximum, 0.0, True)
+        [1000.0], max_send_gap, max_send_gap_limit, p95, maximum, 0.0, 0.0, 0.0,
+        True, True)
 
 
 class FakePosition:

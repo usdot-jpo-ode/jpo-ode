@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +40,9 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private final FfmlibOutputPublisher output;
   private final KafkaTemplate<String, String> quarantineProducer;
   private final RawEncodedJsonTopics topics;
+  private final FfmlibCommitTracker commitTracker;
+  private final Timer rawAgeTimer;
+  private final Timer parseTimer;
   private final Map<String, String> unhealthyListeners = new ConcurrentHashMap<>();
 
   /**
@@ -53,12 +58,17 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       FfmlibOutputPublisher output,
       @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
       KafkaTemplate<String, String> quarantineProducer,
-      RawEncodedJsonTopics topics) {
+      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters) {
     this.rawService = rawService;
     this.decoder = decoder;
     this.output = output;
     this.quarantineProducer = quarantineProducer;
     this.topics = topics;
+    this.commitTracker = commitTracker;
+    this.rawAgeTimer = Timer.builder("ode.ffmlib.raw.record.age")
+        .publishPercentileHistogram().register(meters);
+    this.parseTimer = Timer.builder("ode.ffmlib.decode.stage")
+        .tag("stage", "parse").publishPercentileHistogram().register(meters);
   }
 
   @KafkaListener(id = "RawEncodedBSMJsonRouter", groupId = "RawEncodedBSMJsonRouter",
@@ -149,18 +159,32 @@ public class FfmlibRawJsonListener implements HealthIndicator {
     return Health.down().withDetail("ffmListeners", Map.copyOf(unhealthyListeners)).build();
   }
 
+  /** Marks a raw listener unhealthy after Kafka reports an offset commit failure. */
+  void recordCommitFailure(String listenerId, Exception error) {
+    unhealthyListeners.put(listenerId, "offset_commit_" + error.getClass().getSimpleName());
+    log.error("Offset commit failed for FFM listener {}; confirmed output may replay", listenerId,
+        error);
+  }
+
   private void consume(SupportedMessageType type, String listenerId,
       ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     PreparedDecodedMessage prepared;
+    long listenerEntry = System.currentTimeMillis();
+    if (record.timestamp() > 0) {
+      rawAgeTimer.record(Math.max(0, listenerEntry - record.timestamp()), TimeUnit.MILLISECONDS);
+    }
+    long parseStart = System.nanoTime();
     try {
       RawEncodedJsonService.FfmRawRecord raw = rawService.parseFfmRecord(record.value(), type);
       prepared = decoder.prepareRaw(raw.metadata(), raw.uperBytes(), record.key(), type,
           raw.originalBytes());
     } catch (Exception error) {
+      parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
       quarantine(record, listenerId, rawTopic(type), category(error), 1);
-      acknowledgment.acknowledge();
+      acknowledge(acknowledgment);
       return;
     }
+    parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
 
     PublicationOutcome outcome;
     try {
@@ -170,11 +194,22 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       throw error;
     }
     if (outcome == PublicationOutcome.SKIPPED_DISABLED) {
-      acknowledgment.acknowledge();
+      acknowledge(acknowledgment);
       return;
     }
     decoder.recordRawConfirmed(prepared);
-    acknowledgment.acknowledge();
+    acknowledge(acknowledgment);
+  }
+
+  private void acknowledge(Acknowledgment acknowledgment) {
+    commitTracker.beginCommit();
+    try {
+      acknowledgment.acknowledge();
+      commitTracker.completeSynchronousCommit();
+    } catch (RuntimeException error) {
+      commitTracker.cancelCommit();
+      throw error;
+    }
   }
 
   private PublicationOutcome publishWithRetry(PreparedDecodedMessage message) {

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ class UdpIngestPublisherTest {
     KafkaTemplate<String, String> ffmlibRaw = mock(KafkaTemplate.class);
     ObjectProvider<KafkaTemplate<String, String>> ffmlibProvider = mock(ObjectProvider.class);
     Asn1CodecModeProperties mode = codecMode(Asn1CodecModeProperties.CodecMode.external);
-    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode);
+    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode,
+        new SimpleMeterRegistry());
 
     publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
 
@@ -53,7 +55,8 @@ class UdpIngestPublisherTest {
     ObjectProvider<KafkaTemplate<String, String>> ffmlibProvider = mock(ObjectProvider.class);
     when(ffmlibProvider.getIfAvailable()).thenReturn(ffmlibRaw);
     Asn1CodecModeProperties mode = codecMode(Asn1CodecModeProperties.CodecMode.ffm);
-    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode);
+    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode,
+        new SimpleMeterRegistry());
 
     publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
 
