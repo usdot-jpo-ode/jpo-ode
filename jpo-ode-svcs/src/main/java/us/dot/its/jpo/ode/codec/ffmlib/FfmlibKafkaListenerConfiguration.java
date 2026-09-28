@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +23,6 @@ public class FfmlibKafkaListenerConfiguration {
   @Bean("ffmlibKafkaListenerContainerFactory")
   public ConcurrentKafkaListenerContainerFactory<String, String> ffmlibKafkaListenerContainerFactory(
       KafkaProperties kafkaProperties, OdeKafkaProperties odeKafkaProperties,
-      @Value("${ode.ffmlib.listener-concurrency:4}") int concurrency,
       FfmlibProperties ffmlibProperties) {
     Map<String, Object> properties =
         OdeKafkaClients.consumerProperties(kafkaProperties, odeKafkaProperties);
@@ -37,7 +35,7 @@ public class FfmlibKafkaListenerConfiguration {
     ConcurrentKafkaListenerContainerFactory<String, String> factory =
         new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory);
-    factory.setConcurrency(concurrency);
+    factory.setConcurrency(ffmlibProperties.getListenerConcurrency());
     factory.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());
     factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
     factory.getContainerProperties().setSyncCommits(ffmlibProperties.isSyncCommits());

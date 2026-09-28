@@ -5,8 +5,8 @@ import unittest
 
 from decode_benchmark import (classify_latency, complete_window_rates, is_drained_to_watermarks,
                               is_create_time_timestamp, is_group_committed_to_watermarks,
-                              latency_windows,
-                              measured_message_ids, parse_ffmlib_metrics,
+                              latency_windows, MetricSnapshot, QuietPeriod,
+                              measured_message_ids, metric_estimates, parse_ffmlib_metrics,
                               parse_outstanding_metrics, parse_stage_metrics, percent,
                               validation_errors)
 
@@ -73,12 +73,14 @@ class DecodeBenchmarkTest(unittest.TestCase):
     def test_stage_histograms_are_grouped_by_stage_and_metric(self):
         text = "\n".join((
             'ode_ffmlib_decode_stage_seconds_bucket{stage="native",le="0.001"} 80',
+            'ode_ffmlib_decode_stage_seconds_bucket{host="ode2",stage="native",le="0.001"} 20',
             'ode_ffmlib_decode_stage_seconds_bucket{stage="native",le="+Inf"} 100',
+            'ode_ffmlib_decode_stage_seconds_bucket{host="ode2",stage="native",le="+Inf"} 30',
             'ode_ffmlib_raw_record_age_seconds_bucket{le="0.005"} 95'))
 
         stages = parse_stage_metrics(text)
 
-        self.assertEqual({0.001: 80.0, float("inf"): 100.0}, stages["native"])
+        self.assertEqual({0.001: 100.0, float("inf"): 130.0}, stages["native"])
         self.assertEqual({0.005: 95.0}, stages["ode_ffmlib_raw_record_age"])
 
     def test_raw_and_offset_metrics_are_parsed_for_drain(self):
@@ -106,13 +108,37 @@ class DecodeBenchmarkTest(unittest.TestCase):
             'ode_ffmlib_output_confirmation_seconds_bucket'
             '{enabled="true",topic="topic.OdeBsmJson",le="0.005"} 8',
             'ode_ffmlib_output_confirmation_seconds_bucket'
+            '{enabled="false",topic="topic.OdeBsmJson",le="0.005"} 2',
+            'ode_ffmlib_output_confirmation_seconds_bucket'
             '{enabled="true",topic="topic.OtherJson",le="0.005"} 50',
             'ode_ffmlib_output_in_flight{enabled="true",host="ode"} 0.0'))
 
         buckets, pending = parse_ffmlib_metrics(text, "topic.OdeBsmJson")
 
-        self.assertEqual({0.005: 8.0}, buckets)
+        self.assertEqual({0.005: 10.0}, buckets)
         self.assertEqual(0.0, pending)
+
+    def test_quiet_period_restarts_when_health_or_pending_work_changes(self):
+        quiet = QuietPeriod(1.0)
+        drained = True
+        clear = MetricSnapshot(pending_output=0, pending_raw=0, pending_commits=0)
+        pending = MetricSnapshot(pending_output=1, pending_raw=0, pending_commits=0)
+
+        self.assertFalse(quiet.observe(0.0, drained, True, clear, True))
+        self.assertFalse(quiet.observe(0.8, drained, False, clear, True))
+        self.assertFalse(quiet.observe(1.5, drained, True, pending, True))
+        self.assertFalse(quiet.observe(2.0, drained, True, clear, True))
+        self.assertTrue(quiet.observe(3.0, drained, True, clear, True))
+
+    def test_external_mode_keeps_summary_metrics_empty_without_ffm_gauges(self):
+        before, after = MetricSnapshot(), MetricSnapshot()
+        estimates, stage = metric_estimates(before, after, ffm_mode=False)
+
+        self.assertEqual({"confirmed_p50_estimate_ms": None,
+                          "confirmed_p95_estimate_ms": None,
+                          "confirmed_p99_estimate_ms": None}, estimates)
+        self.assertEqual({}, stage)
+        self.assertEqual([], valid_errors(dlt_count=1, ffm_checks=False))
 
     def test_drained_check_ignores_untouched_partitions(self):
         starts = {("topic.OdeBsmJson", 0): 10, ("topic.DLT", 0): 0}
@@ -132,13 +158,14 @@ class DecodeBenchmarkTest(unittest.TestCase):
 
 def valid_errors(expected={1}, raw=None, output=None, duplicate_raw=0, duplicate_json=0,
                  dlt_count=0, invalid_timestamps=0, actual_rate=1000, max_send_gap=1.0,
-                 max_send_gap_limit=1000.0, p95=4.0, maximum=5.0):
+                 max_send_gap_limit=1000.0, p95=4.0, maximum=5.0, ffm_checks=True,
+                 health_ok=True):
     raw = set(expected) if raw is None else set(raw)
     output = set(expected) if output is None else set(output)
     return validation_errors(expected, raw, output, {item: 1.0 for item in expected},
         duplicate_raw, duplicate_json, 0, dlt_count, invalid_timestamps, actual_rate, 1000,
         [1000.0], max_send_gap, max_send_gap_limit, p95, maximum, 0.0, 0.0, 0.0,
-        True, True)
+        True, True, health_ok=health_ok, ffm_checks=ffm_checks)
 
 
 class FakePosition:

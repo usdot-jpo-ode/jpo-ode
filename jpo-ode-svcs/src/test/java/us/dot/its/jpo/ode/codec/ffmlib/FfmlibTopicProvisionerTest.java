@@ -2,19 +2,24 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
@@ -27,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -68,6 +74,7 @@ class FfmlibTopicProvisionerTest {
     KafkaProperties kafkaProperties = new KafkaProperties();
     kafkaProperties.setBootstrapServers(List.of(broker));
     final FfmlibProperties ffmlibProperties = new FfmlibProperties();
+    ffmlibProperties.setListenerConcurrency(1);
     final KafkaListenerEndpointRegistry registry = mock(KafkaListenerEndpointRegistry.class);
     final FfmlibRawJsonListener rawJsonListener = mock(FfmlibRawJsonListener.class);
     final FfmlibCommitTracker commitTracker = mock(FfmlibCommitTracker.class);
@@ -86,12 +93,18 @@ class FfmlibTopicProvisionerTest {
       ContainerProperties properties = new ContainerProperties(RAW_BSM);
       containerProperties.put(listenerId, properties);
       when(container.getContainerProperties()).thenReturn(properties);
+      doAnswer(invocation -> {
+        ((ConsumerAwareRebalanceListener) properties.getConsumerRebalanceListener())
+            .onPartitionsAssigned(mock(Consumer.class), List.of());
+        return null;
+      }).when(container).start();
     }
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
 
     FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
-        odeProperties, rawTopics(), registry, rawJsonListener, commitTracker, rawProducer,
+        odeProperties, rawTopics(), registry, rawJsonListener,
+        commitTracker, rawProducer,
         outputProducer, jsonTopics(), ffmlibProperties);
     provisioner.run(null);
 
@@ -124,6 +137,7 @@ class FfmlibTopicProvisionerTest {
       verify(containers.get(listenerId)).start();
       assertFalse(containerProperties.get(listenerId).isSyncCommits());
     }
+    verify(rawJsonListener).markStartupComplete();
     verify(rawProducer).partitionsFor(RAW_BSM);
     verify(outputProducer).partitionsFor("topic.OdeBsmJson");
     verify(outputProducer).partitionsFor(DLT_BSM);
@@ -137,6 +151,95 @@ class FfmlibTopicProvisionerTest {
     verify(commitTracker).completeCommit(commitError);
   }
 
+  @Test
+  void startupDeadlineStopsEveryStartedListener() throws Exception {
+    String broker = embeddedKafka.getBrokersAsString();
+    OdeKafkaProperties odeProperties = new OdeKafkaProperties();
+    odeProperties.setBrokers(broker);
+    KafkaProperties kafkaProperties = new KafkaProperties();
+    kafkaProperties.setBootstrapServers(List.of(broker));
+    FfmlibProperties ffmlibProperties = new FfmlibProperties();
+    ffmlibProperties.setListenerConcurrency(1);
+    ffmlibProperties.setStartupTimeout(Duration.ofMillis(10));
+    KafkaListenerEndpointRegistry registry = mock(KafkaListenerEndpointRegistry.class);
+    FfmlibRawJsonListener rawJsonListener = mock(FfmlibRawJsonListener.class);
+    FfmlibCommitTracker commitTracker = mock(FfmlibCommitTracker.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> rawProducer = mock(KafkaTemplate.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> outputProducer = mock(KafkaTemplate.class);
+    when(rawProducer.partitionsFor(anyString())).thenReturn(List.of(mock(PartitionInfo.class)));
+    when(outputProducer.partitionsFor(anyString())).thenReturn(List.of(mock(PartitionInfo.class)));
+    Map<String, MessageListenerContainer> containers = new HashMap<>();
+    for (String listenerId : listenerIds()) {
+      MessageListenerContainer container = mock(MessageListenerContainer.class);
+      containers.put(listenerId, container);
+      when(container.getContainerProperties()).thenReturn(new ContainerProperties(RAW_BSM));
+    }
+    when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
+        containers.get(invocation.getArgument(0)));
+    FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
+        odeProperties, rawTopics("topic.ProvisionerTimeoutRaw"), registry, rawJsonListener,
+        commitTracker, rawProducer,
+        outputProducer, jsonTopics(), ffmlibProperties);
+
+    assertThrows(IllegalStateException.class, () -> provisioner.run(null));
+
+    for (String listenerId : listenerIds()) {
+      verify(containers.get(listenerId)).start();
+      verify(containers.get(listenerId)).stop();
+    }
+    verify(rawJsonListener).markStartupFailure(any(Throwable.class));
+  }
+
+  @Test
+  void delayedGroupJoinBeyondThirtySecondsDoesNotTriggerStartupFailure() throws Exception {
+    String broker = embeddedKafka.getBrokersAsString();
+    OdeKafkaProperties odeProperties = new OdeKafkaProperties();
+    odeProperties.setBrokers(broker);
+    KafkaProperties kafkaProperties = new KafkaProperties();
+    kafkaProperties.setBootstrapServers(List.of(broker));
+    FfmlibProperties ffmlibProperties = new FfmlibProperties();
+    ffmlibProperties.setListenerConcurrency(1);
+    ffmlibProperties.setStartupTimeout(Duration.ofSeconds(40));
+    KafkaListenerEndpointRegistry registry = mock(KafkaListenerEndpointRegistry.class);
+    FfmlibRawJsonListener rawJsonListener = mock(FfmlibRawJsonListener.class);
+    FfmlibCommitTracker commitTracker = mock(FfmlibCommitTracker.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> rawProducer = mock(KafkaTemplate.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> outputProducer = mock(KafkaTemplate.class);
+    when(rawProducer.partitionsFor(anyString())).thenReturn(List.of(mock(PartitionInfo.class)));
+    when(outputProducer.partitionsFor(anyString())).thenReturn(List.of(mock(PartitionInfo.class)));
+    Map<String, MessageListenerContainer> containers = new HashMap<>();
+    for (String listenerId : listenerIds()) {
+      MessageListenerContainer container = mock(MessageListenerContainer.class);
+      ContainerProperties properties = new ContainerProperties(RAW_BSM);
+      containers.put(listenerId, container);
+      when(container.getContainerProperties()).thenReturn(properties);
+      doAnswer(invocation -> {
+        CompletableFuture.delayedExecutor(31, TimeUnit.SECONDS).execute(() -> {
+          try {
+            ((ConsumerAwareRebalanceListener) properties.getConsumerRebalanceListener())
+                .onPartitionsAssigned(mock(Consumer.class), List.of());
+          } catch (Exception error) {
+            throw new IllegalStateException(error);
+          }
+        });
+        return null;
+      }).when(container).start();
+    }
+    when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
+        containers.get(invocation.getArgument(0)));
+    FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
+        odeProperties, rawTopics("topic.ProvisionerDelayedRaw"), registry, rawJsonListener,
+        commitTracker, rawProducer, outputProducer, jsonTopics(), ffmlibProperties);
+
+    provisioner.run(null);
+
+    verify(rawJsonListener).markStartupComplete();
+  }
+
   private static String retention(
       Map<ConfigResource, org.apache.kafka.clients.admin.Config> configs,
       ConfigResource resource) {
@@ -145,17 +248,21 @@ class FfmlibTopicProvisionerTest {
   }
 
   private static RawEncodedJsonTopics rawTopics() {
+    return rawTopics("topic.ProvisionerRaw");
+  }
+
+  private static RawEncodedJsonTopics rawTopics(String prefix) {
     RawEncodedJsonTopics topics = new RawEncodedJsonTopics();
-    topics.setBsm(RAW_BSM);
-    topics.setSpat("topic.ProvisionerRawSPAT");
-    topics.setMap("topic.ProvisionerRawMAP");
-    topics.setTim("topic.ProvisionerRawTIM");
-    topics.setSrm("topic.ProvisionerRawSRM");
-    topics.setSsm("topic.ProvisionerRawSSM");
-    topics.setPsm("topic.ProvisionerRawPSM");
-    topics.setSdsm("topic.ProvisionerRawSDSM");
-    topics.setRtcm("topic.ProvisionerRawRTCM");
-    topics.setRsm("topic.ProvisionerRawRSM");
+    topics.setBsm(prefix + "BSM");
+    topics.setSpat(prefix + "SPAT");
+    topics.setMap(prefix + "MAP");
+    topics.setTim(prefix + "TIM");
+    topics.setSrm(prefix + "SRM");
+    topics.setSsm(prefix + "SSM");
+    topics.setPsm(prefix + "PSM");
+    topics.setSdsm(prefix + "SDSM");
+    topics.setRtcm(prefix + "RTCM");
+    topics.setRsm(prefix + "RSM");
     return topics;
   }
 

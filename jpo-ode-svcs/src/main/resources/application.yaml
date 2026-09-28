@@ -91,6 +91,7 @@ ode:
     codec-mode: ${ODE_ASN1_CODEC_MODE:external}
   ffmlib:
     listener-concurrency: ${ODE_FFM_LISTENER_CONCURRENCY:4}
+    startup-timeout: ${ODE_FFM_STARTUP_TIMEOUT:120s}
     fast-path-buffer-size: ${ODE_FFMLIB_FAST_PATH_BUFFER_SIZE:32768}
     producer-linger-ms: ${ODE_FFM_PRODUCER_LINGER_MS:0}
     producer-compression-type: ${ODE_FFM_PRODUCER_COMPRESSION_TYPE:none}

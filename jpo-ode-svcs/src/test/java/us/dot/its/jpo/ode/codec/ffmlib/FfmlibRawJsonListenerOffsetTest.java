@@ -71,7 +71,8 @@ class FfmlibRawJsonListenerOffsetTest {
     var decoder = mock(FfmlibDecodeService.class);
     var output = mock(FfmlibOutputPublisher.class);
     var topics = mock(RawEncodedJsonTopics.class);
-    var commitTracker = mock(FfmlibCommitTracker.class);
+    var meters = new SimpleMeterRegistry();
+    var commitTracker = new FfmlibCommitTracker(meters);
     var quarantine = mock(KafkaTemplate.class);
     when(topics.getBsm()).thenReturn(RAW_TOPIC);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
@@ -91,7 +92,7 @@ class FfmlibRawJsonListenerOffsetTest {
     });
 
     FfmlibRawJsonListener listener = new FfmlibRawJsonListener(rawService, decoder, output,
-        quarantine, topics, commitTracker, new SimpleMeterRegistry());
+        quarantine, topics, commitTracker, meters);
     TopicPartition inputPartition = new TopicPartition(RAW_TOPIC, 0);
     try (AdminClient admin = AdminClient.create(Map.of(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString()))) {
@@ -139,7 +140,7 @@ class FfmlibRawJsonListenerOffsetTest {
     ContainerProperties properties = new ContainerProperties(RAW_TOPIC);
     properties.setGroupId(GROUP_ID);
     properties.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-    properties.setSyncCommits(true);
+    properties.setSyncCommits(false);
     KafkaMessageListenerContainer<String, String> container =
         new KafkaMessageListenerContainer<>(consumerFactory, properties);
     container.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());

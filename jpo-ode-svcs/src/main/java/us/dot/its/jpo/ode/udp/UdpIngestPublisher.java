@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.net.DatagramPacket;
+import java.time.Duration;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,7 +88,11 @@ public class UdpIngestPublisher {
         profile.source(), profile.generatedBy(), profile.includeDetails());
     OdeAsn1Data data = new OdeAsn1Data(input.metadata(), new OdeAsn1Payload(input.uperBytes()));
     String json = JsonUtils.toJson(data, false);
-    if (json != null) {
+    if (json == null || json.isBlank()) {
+      failures.computeIfAbsent(rawTopic, topic -> meters.counter(
+          "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
+      log.error("Unable to serialize UDP raw record for {}", rawTopic);
+    } else {
       long start = System.nanoTime();
       inFlight.incrementAndGet();
       try {
@@ -100,10 +105,12 @@ public class UdpIngestPublisher {
           } else {
             confirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
                 "ode.ffmlib.raw.publication.confirmation").tag("topic", topic)
+                .minimumExpectedValue(Duration.ofNanos(1_000))
                 .publishPercentileHistogram().register(meters))
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
             receiptToConfirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
                 "ode.ffmlib.udp.receipt.to.raw.confirmation").tag("topic", topic)
+                .minimumExpectedValue(Duration.ofNanos(1_000))
                 .publishPercentileHistogram().register(meters))
                 .record(System.nanoTime() - receivedAt, TimeUnit.NANOSECONDS);
           }

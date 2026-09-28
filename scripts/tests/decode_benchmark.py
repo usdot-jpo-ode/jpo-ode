@@ -12,6 +12,7 @@ Requires confluent-kafka. For the strict FFM gate, use ``--max-p95-ms 5`` with 1
 import argparse
 import ast
 import csv
+from dataclasses import dataclass, field
 import json
 import math
 import multiprocessing
@@ -23,6 +24,38 @@ import socket
 import time
 from pathlib import Path
 from urllib.request import urlopen
+
+
+@dataclass(frozen=True)
+class MetricSnapshot:
+    confirmation_buckets: dict = field(default_factory=dict)
+    pending_output: float | None = None
+    pending_raw: float | None = None
+    pending_commits: float | None = None
+    stage_buckets: dict = field(default_factory=dict)
+
+
+def empty_metric_snapshot():
+    return MetricSnapshot()
+
+
+class QuietPeriod:
+    """Require continuous drain, healthy ODE, and no in-flight FFM work."""
+
+    def __init__(self, duration):
+        self.duration = duration
+        self.started_at = None
+
+    def observe(self, now, drained, health_ok, metrics, ffm_mode, watermarks_changed=False):
+        pending_ok = not ffm_mode or (
+            metrics.pending_output == 0 and metrics.pending_raw == 0
+            and metrics.pending_commits == 0)
+        if watermarks_changed or not drained or not health_ok or not pending_ok:
+            self.started_at = None
+            return False
+        if self.started_at is None:
+            self.started_at = now
+        return now - self.started_at >= self.duration
 
 
 def fixture_bytes(path):
@@ -119,11 +152,26 @@ def confirmed_percent(before, after, fraction):
     return None
 
 
+def metric_estimates(before, after, ffm_mode):
+    """Return FFM acknowledgement and stage estimates; external mode has neither metric set."""
+    if not ffm_mode:
+        return ({f"confirmed_p{quantile}_estimate_ms": None
+                 for quantile in (50, 95, 99)}, {})
+    ack = {f"confirmed_p{quantile}_estimate_ms": confirmed_percent(
+        before.confirmation_buckets, after.confirmation_buckets, fraction)
+        for quantile, fraction in ((50, .50), (95, .95), (99, .99))}
+    stages = {stage: confirmed_percent(before.stage_buckets.get(stage, {}),
+        after.stage_buckets.get(stage, {}), .95)
+        for stage in sorted(set(before.stage_buckets) | set(after.stage_buckets))}
+    return ack, stages
+
+
 def validation_errors(expected_ids, raw, output, send_times, duplicate_raw, duplicate_json,
                       unexpected_records, dlt_count, invalid_timestamps, actual_rate,
                       target_rate, window_rates, max_send_gap_ms, max_send_gap_limit_ms, p95_ms,
                       max_p95_ms, pending_publications, pending_raw_publications,
-                      pending_offset_commits, app_group_drained, drained):
+                      pending_offset_commits, app_group_drained, drained, health_ok=True,
+                      ffm_checks=True):
     """Evaluate the same acceptance gates used by the command-line benchmark."""
     expected = set(expected_ids)
     errors = []
@@ -142,7 +190,7 @@ def validation_errors(expected_ids, raw, output, send_times, duplicate_raw, dupl
         errors.append(f"found {duplicate_json} duplicate JSON records")
     if unexpected_records:
         errors.append(f"found {unexpected_records} records outside the benchmark ID set")
-    if dlt_count:
+    if ffm_checks and dlt_count:
         errors.append(f"found {dlt_count} unexpected quarantine records")
     if invalid_timestamps:
         errors.append(f"found {invalid_timestamps} invalid timestamps or negative latencies")
@@ -166,16 +214,19 @@ def validation_errors(expected_ids, raw, output, send_times, duplicate_raw, dupl
             errors.append("p95_ms is missing or invalid")
         elif p95_ms >= max_p95_ms:
             errors.append(f"p95_ms {p95_ms:.3f} is not below {max_p95_ms:.3f} ms")
-    if pending_publications is None or pending_publications != 0:
-        errors.append("pending FFM publications are missing or nonzero")
-    if pending_raw_publications is None or pending_raw_publications != 0:
-        errors.append("pending raw publications are missing or nonzero")
-    if pending_offset_commits is None or pending_offset_commits != 0:
-        errors.append("pending offset commits are missing or nonzero")
+    if ffm_checks:
+        if pending_publications is None or pending_publications != 0:
+            errors.append("pending FFM publications are missing or nonzero")
+        if pending_raw_publications is None or pending_raw_publications != 0:
+            errors.append("pending raw publications are missing or nonzero")
+        if pending_offset_commits is None or pending_offset_commits != 0:
+            errors.append("pending offset commits are missing or nonzero")
     if not app_group_drained:
         errors.append("application consumer-group offsets did not reach raw-topic watermarks")
     if not drained:
         errors.append("Kafka consumer lag did not drain before timeout")
+    if not health_ok:
+        errors.append("ODE health was not UP throughout the quiet period")
     return errors
 
 
@@ -184,7 +235,15 @@ def scrape_ffm_metrics(url, topic):
     text = urlopen(url, timeout=5).read().decode("utf-8")
     buckets, pending_output = parse_ffmlib_metrics(text, topic)
     pending_raw, pending_commits = parse_outstanding_metrics(text)
-    return buckets, pending_output, pending_raw, pending_commits, parse_stage_metrics(text)
+    return MetricSnapshot(buckets, pending_output, pending_raw, pending_commits,
+                          parse_stage_metrics(text))
+
+
+def check_health(url):
+    """Require the configured Spring Boot health endpoint to report UP."""
+    with urlopen(url, timeout=5) as response:
+        status = json.loads(response.read().decode("utf-8")).get("status")
+    return status == "UP"
 
 
 def parse_ffmlib_metrics(text, topic):
@@ -197,7 +256,7 @@ def parse_ffmlib_metrics(text, topic):
             label = re.search(r'le="([^"]+)"', line)
             if label:
                 limit = float(label.group(1).replace("+Inf", "inf"))
-                buckets[limit] = float(line.rsplit(" ", 1)[1])
+                buckets[limit] = buckets.get(limit, 0.0) + float(line.rsplit(" ", 1)[1])
         elif line.startswith("ode_ffmlib_output_in_flight"):
             match = re.fullmatch(r"ode_ffmlib_output_in_flight(?:\{[^}]*\})?\s+([^\s]+)",
                                  line)
@@ -238,7 +297,8 @@ def parse_stage_metrics(text):
         if stage_name is None or limit is None:
             continue
         seconds = float(limit.group(1).replace("+Inf", "inf"))
-        metrics.setdefault(stage_name, {})[seconds] = float(line.rsplit(" ", 1)[1])
+        buckets = metrics.setdefault(stage_name, {})
+        buckets[seconds] = buckets.get(seconds, 0.0) + float(line.rsplit(" ", 1)[1])
     return metrics
 
 
@@ -328,6 +388,8 @@ def main():
                         help="application group whose raw offsets must reach the end watermarks")
     parser.add_argument("--metrics-url", default=os.getenv(
         "DECODE_BENCHMARK_METRICS_URL", "http://127.0.0.1:8080/actuator/prometheus"))
+    parser.add_argument("--health-url", default=os.getenv(
+        "DECODE_BENCHMARK_HEALTH_URL", "http://127.0.0.1:8080/actuator/health"))
     parser.add_argument("--count", type=int, default=300000)
     parser.add_argument("--warmup", type=int, default=1000)
     parser.add_argument("--rate", type=float, default=1000)
@@ -459,7 +521,10 @@ def main():
     def drain_until_quiet():
         deadline = time.monotonic() + args.drain_timeout_seconds
         last_watermarks = current_watermarks()
-        quiet_since = time.monotonic()
+        quiet_period = QuietPeriod(args.quiet_period_seconds)
+        latest_metrics = empty_metric_snapshot()
+        quiet_health_ok = False
+        health_error = None
         while time.monotonic() < deadline:
             record = consumer.poll(0.2)
             if record is not None:
@@ -469,12 +534,21 @@ def main():
             is_app_drained = is_group_committed_to_watermarks(
                 offsets, args.raw_topic, watermarks, starts)
             is_drained = drained_to(watermarks) and is_app_drained
-            if watermarks != last_watermarks or not is_drained:
-                quiet_since = time.monotonic()
+            try:
+                quiet_health_ok = check_health(args.health_url)
+                health_error = None if quiet_health_ok else "health endpoint status was not UP"
+            except Exception as error:
+                quiet_health_ok = False
+                health_error = f"{type(error).__name__}: {error}"
+            latest_metrics = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
+                if args.mode == "ffm" else empty_metric_snapshot()
+            quiet_ok = quiet_period.observe(time.monotonic(), is_drained, quiet_health_ok,
+                latest_metrics, args.mode == "ffm", watermarks != last_watermarks)
             last_watermarks = watermarks
-            if is_drained and time.monotonic() - quiet_since >= args.quiet_period_seconds:
-                return True, watermarks, offsets
-        return False, last_watermarks, committed_offsets()
+            if quiet_ok:
+                return True, watermarks, offsets, latest_metrics, quiet_health_ok, health_error
+        return (False, last_watermarks, committed_offsets(), latest_metrics,
+                quiet_health_ok, health_error)
 
     send_times = {}
 
@@ -517,28 +591,33 @@ def main():
         return ((len(subset) - 1) / (timing_state["finished"] - timing_state["started"])
                 if len(subset) > 1 and timing_state["finished"] is not None else None)
 
-    before_confirmations = ({}, 0.0, 0.0, 0.0, {})
-    after_confirmations = ({}, None, None, None, {})
+    before_confirmations = empty_metric_snapshot()
+    after_confirmations = empty_metric_snapshot()
     actual_rate = None
     drained = False
+    health_ok = False
+    health_failure = None
     final_watermarks = end_by_partition.copy()
     final_committed_offsets = committed_offsets()
     benchmark_failure = None
     try:
+        health_ok = check_health(args.health_url)
+        if not health_ok:
+            raise RuntimeError("ODE health endpoint did not report UP before workload")
         run_send(packets[:args.warmup], args.warmup)
         before_confirmations = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
-            if args.mode == "ffm" else ({}, 0.0, 0.0, 0.0)
+            if args.mode == "ffm" else empty_metric_snapshot()
         actual_rate = run_send(packets[args.warmup:], len(packets))
-        drained, final_watermarks, final_committed_offsets = drain_until_quiet()
-        after_confirmations = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
-            if args.mode == "ffm" else ({}, 0.0, 0.0, 0.0)
+        (drained, final_watermarks, final_committed_offsets, after_confirmations,
+         health_ok, health_failure) = drain_until_quiet()
     except Exception as error:
         benchmark_failure = f"{type(error).__name__}: {error}"
         try:
             final_watermarks = current_watermarks()
             final_committed_offsets = committed_offsets()
             after_confirmations = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
-                if args.mode == "ffm" else ({}, 0.0, 0.0, 0.0)
+                if args.mode == "ffm" else empty_metric_snapshot()
+            health_ok = check_health(args.health_url)
         except Exception as report_error:
             benchmark_failure += f"; partial status unavailable: {report_error}"
     finally:
@@ -625,20 +704,18 @@ def main():
     p50 = percent(latencies, .50)
     p95 = percent(latencies, .95)
     p99 = percent(latencies, .99)
-    ack = {f"confirmed_p{quantile}_estimate_ms": confirmed_percent(
-        before_confirmations[0], after_confirmations[0], fraction)
-        for quantile, fraction in ((50, .50), (95, .95), (99, .99))}
-    stage_p95 = {stage: confirmed_percent(before_confirmations[4].get(stage, {}),
-        after_confirmations[4].get(stage, {}), .95)
-        for stage in sorted(set(before_confirmations[4]) | set(after_confirmations[4]))}
+    ack, stage_p95 = metric_estimates(before_confirmations, after_confirmations,
+                                      args.mode == "ffm")
     errors = validation_errors(expected_measured, raw, output, send_times,
         duplicates["raw"], duplicates["json"], unexpected_records, dlt_count,
         invalid_timestamps, actual_rate, args.rate, window_rates, max_send_gap_ms,
         args.max_send_gap_ms,
         p95, args.max_p95_ms,
-        after_confirmations[1], after_confirmations[2], after_confirmations[3],
+        after_confirmations.pending_output, after_confirmations.pending_raw,
+        after_confirmations.pending_commits,
         is_group_committed_to_watermarks(final_committed_offsets, args.raw_topic,
-                                         final_watermarks, starts), drained)
+                                         final_watermarks, starts), drained,
+        health_ok=health_ok and health_failure is None, ffm_checks=args.mode == "ffm")
     if benchmark_failure:
         errors.append("benchmark interrupted: " + benchmark_failure)
 
@@ -672,12 +749,14 @@ def main():
         "timestamp_type_counts": timestamp_type_counts,
         "negative_timestamp_quantization_samples": quantization_negative_timestamps,
         "benchmark_failure": benchmark_failure,
+        "health_url": args.health_url, "health_ok_through_quiet_period": health_ok,
+        "health_failure": health_failure,
         "consumer_lag_drained": drained,
         "final_watermarks": {f"{topic}:{part}": end
                               for (topic, part), end in final_watermarks.items()},
-        "pending_publications": after_confirmations[1],
-        "pending_raw_publications": after_confirmations[2],
-        "pending_offset_commits": after_confirmations[3],
+        "pending_publications": after_confirmations.pending_output,
+        "pending_raw_publications": after_confirmations.pending_raw,
+        "pending_offset_commits": after_confirmations.pending_commits,
         "application_consumer_group": args.consumer_group,
         "application_committed_offsets": {
             f"{topic}:{part}": offset

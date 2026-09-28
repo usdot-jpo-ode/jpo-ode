@@ -80,7 +80,8 @@ public class FfmlibMessageFrameCodec {
 
   public IntermediateDecodeResult uperToIntermediate(byte[] uperBytes) {
     return new IntermediateDecodeResult(
-        decodeToXer(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER), IntermediateEncoding.XER);
+        convert(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER),
+        IntermediateEncoding.JER);
   }
 
   /** Uses compact native buffers for small BSMs and retries with configured full buffers on error. */
@@ -92,26 +93,25 @@ public class FfmlibMessageFrameCodec {
     long start = System.nanoTime();
     String outcome = "success";
     try {
-      byte[] xerBytes;
+      byte[] jerBytes;
       try {
-        xerBytes = fastBsmCodec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
-            AsnEncoding.XER);
+        jerBytes = fastBsmCodec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
+            AsnEncoding.JER);
       } catch (RuntimeException fastPathFailure) {
         try {
-          xerBytes = codec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
-              AsnEncoding.XER);
+          jerBytes = codec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
+              AsnEncoding.JER);
         } catch (RuntimeException fullPathFailure) {
           fullPathFailure.addSuppressed(fastPathFailure);
           throw fullPathFailure;
         }
       }
-      return new IntermediateDecodeResult(new String(xerBytes, StandardCharsets.UTF_8),
-          IntermediateEncoding.XER);
+      return new IntermediateDecodeResult(jerBytes, IntermediateEncoding.JER);
     } catch (RuntimeException error) {
       outcome = "failure";
       throw error;
     } finally {
-      timer(MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.XER, outcome)
+      timer(MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER, outcome)
           .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     }
   }
@@ -135,10 +135,10 @@ public class FfmlibMessageFrameCodec {
 
   /** Intermediate text encodings produced by the native codec. */
   public enum IntermediateEncoding {
-    XER
+    JER
   }
 
-  /** Native decode result containing intermediate text and its encoding. */
-  public record IntermediateDecodeResult(String text, IntermediateEncoding encoding) {
+  /** Native decode result containing UTF-8 JER bytes and their encoding. */
+  public record IntermediateDecodeResult(byte[] bytes, IntermediateEncoding encoding) {
   }
 }

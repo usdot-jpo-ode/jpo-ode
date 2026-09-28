@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,6 +7,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.MessageFrameCodec;
+import j2735ffm.AsnEncoding;
 import java.nio.file.Path;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
@@ -53,8 +53,9 @@ class FfmlibNativeSmokeTest {
         messageFrameCodec, fastBsmCodec, new SimpleMeterRegistry());
     IntermediateDecodeResult result = codec.uperToIntermediate(
         HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
-    String fullBufferOutput = messageFrameCodec.uperToXer(HexUtils.fromHexString(BSM_HEX));
-    assertEquals(fullBufferOutput, result.text());
+    byte[] fullBufferOutput = messageFrameCodec.convertGeneral(HexUtils.fromHexString(BSM_HEX),
+        "MessageFrame", AsnEncoding.UPER, AsnEncoding.JER);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(fullBufferOutput, result.bytes());
 
     MessageFrameCodec undersizedFastCodec = new MessageFrameCodec(64, 64,
         properties.getErrorBufferSize(), Path.of(properties.getNativeLibraryPath()));
@@ -62,14 +63,17 @@ class FfmlibNativeSmokeTest {
         undersizedFastCodec, new SimpleMeterRegistry());
     IntermediateDecodeResult fallback = fallbackCodec.uperToIntermediate(
         HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
-    assertEquals(fullBufferOutput, fallback.text());
+    org.junit.jupiter.api.Assertions.assertArrayEquals(fullBufferOutput, fallback.bytes());
 
     assertNotNull(result);
-    assertNotNull(result.text());
-    assertFalse(result.text().isBlank());
-    assertTrue(
-        result.text().contains("MessageFrame") || result.text().contains("basicSafetyMessage"),
-        () -> "Unexpected decode output: " + result.text().substring(0, Math.min(200, result.text().length())));
+    assertNotNull(result.bytes());
+    assertFalse(result.bytes().length == 0);
+    String jer = new String(result.bytes(), java.nio.charset.StandardCharsets.UTF_8);
+    assertTrue(jer.contains("BasicSafetyMessage"), () -> "Unexpected JER output: " + jer);
+
+    String xer = messageFrameCodec.uperToXer(HexUtils.fromHexString(BSM_HEX));
+    org.junit.jupiter.api.Assertions.assertArrayEquals(HexUtils.fromHexString(BSM_HEX),
+        codec.xerToUper(xer), "XER encoding must remain compatible with beta2");
   }
 
   private static Path nativeLibraryOrNull() {

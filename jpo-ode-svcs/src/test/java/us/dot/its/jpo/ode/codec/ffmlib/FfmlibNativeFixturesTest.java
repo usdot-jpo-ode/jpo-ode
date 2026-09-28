@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.MessageFrameCodec;
 import java.net.DatagramPacket;
@@ -81,9 +80,9 @@ class FfmlibNativeFixturesTest {
     mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     JsonTopics topics = jsonTopics();
     KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
-    XmlMapper xmlMapper = new XmlMapper();
+    ObjectMapper jerMapper = new ObjectMapper();
     FfmlibDecodeService decoder = new FfmlibDecodeService(codecProvider, properties, mode, topics,
-        kafka, outputProvider, xmlMapper, new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
+        kafka, outputProvider, jerMapper, new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
     ObjectMapper jsonMapper = new ObjectMapper();
 
     for (Fixture fixture : FIXTURES) {
@@ -96,13 +95,13 @@ class FfmlibNativeFixturesTest {
       FfmlibDecodeService.PreparedDecodedMessage decoded = decoder.prepareRaw(input.metadata(),
           input.uperBytes(), "fixture-key", fixture.type(), received);
       if (fixture.type() == SupportedMessageType.BSM) {
-        String xer = codec.uperToIntermediate(input.uperBytes()).text();
-        MessageFrame<?> genericFrame = xmlMapper.readValue(xer, MessageFrame.class);
+        byte[] jer = codec.uperToIntermediate(input.uperBytes()).bytes();
+        MessageFrame<?> genericFrame = jerMapper.readValue(jer, MessageFrame.class);
         JsonNode expectedPayload = jsonMapper.readTree(
             JsonUtils.toJson(new OdeMessageFramePayload(genericFrame), false));
         JsonNode actualPayload = jsonMapper.readTree(decoded.json()).path("payload");
         assertEquals(expectedPayload, actualPayload,
-            fixture.path() + " direct BSM XER mapping must preserve the generic JSON model");
+            fixture.path() + " direct BSM JER mapping must preserve the generic JSON model");
       }
 
       assertEquals(fixture.type().name(), decoded.type(), fixture.path());

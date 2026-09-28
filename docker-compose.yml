@@ -67,6 +67,7 @@ services:
       ODE_KAFKA_LISTENER_CONCURRENCY: ${ODE_KAFKA_LISTENER_CONCURRENCY}
       ODE_ASN1_CODEC_MODE: ${ODE_ASN1_CODEC_MODE:-external}
       ODE_FFM_LISTENER_CONCURRENCY: ${ODE_FFM_LISTENER_CONCURRENCY:-4}
+      ODE_FFM_STARTUP_TIMEOUT: ${ODE_FFM_STARTUP_TIMEOUT:-120s}
       ODE_FFMLIB_FAST_PATH_BUFFER_SIZE: ${ODE_FFMLIB_FAST_PATH_BUFFER_SIZE:-32768}
       ODE_FFM_PRODUCER_LINGER_MS: ${ODE_FFM_PRODUCER_LINGER_MS:-0}
       ODE_FFM_PRODUCER_COMPRESSION_TYPE: ${ODE_FFM_PRODUCER_COMPRESSION_TYPE:-none}
@@ -260,6 +261,17 @@ services:
         condition: service_healthy
       ode:
         condition: service_healthy
+
+  mongodb-exporter:
+    build:
+      context: .
+      dockerfile: scripts/tests/Dockerfile.mongodb-exporter
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/busybox", "wget", "-q", "-O", "/dev/null",
+        "http://127.0.0.1:9216/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     logging:
       options:
         max-size: "10m"
@@ -313,6 +325,7 @@ services:
     environment:
       DECODE_BENCHMARK_UDP_HOST: ode
       DECODE_BENCHMARK_METRICS_URL: http://ode:8080/actuator/prometheus
+      DECODE_BENCHMARK_HEALTH_URL: http://ode:8080/actuator/health
     volumes:
       - ./scripts/tests:/tests:ro
       - ./scripts/tests/output:/output
@@ -321,14 +334,3 @@ services:
         condition: service_healthy
       ode:
         condition: service_healthy
-
-  mongodb-exporter:
-    build:
-      context: .
-      dockerfile: scripts/tests/Dockerfile.mongodb-exporter
-    healthcheck:
-      test: ["CMD", "/usr/local/bin/busybox", "wget", "-q", "-O", "/dev/null",
-        "http://127.0.0.1:9216/metrics"]
-      interval: 30s
-      timeout: 10s
-      retries: 3

@@ -1,8 +1,12 @@
 package us.dot.its.jpo.ode.kafka.listeners.json;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import java.io.IOException;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,6 +31,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 public class RawEncodedJsonService {
 
   private final ObjectMapper mapper;
+  private final ObjectReader ffmMetadataReader;
 
   /**
    * Creates the raw-encoded JSON service.
@@ -35,6 +40,7 @@ public class RawEncodedJsonService {
    */
   public RawEncodedJsonService(ObjectMapper mapper) {
     this.mapper = mapper;
+    this.ffmMetadataReader = mapper.readerFor(OdeMessageFrameMetadata.class);
   }
 
   /**
@@ -80,31 +86,92 @@ public class RawEncodedJsonService {
    * @param json raw-topic JSON value
    * @param messageType message type used to locate the UPER start flag
    * @return metadata, stripped UPER bytes, and original bytes used for signature detection
-   * @throws JsonProcessingException if the raw JSON or metadata is malformed
+   * @throws IOException if the raw JSON or metadata is malformed
    * @throws StartFlagNotFoundException if the message start flag cannot be located
    */
   public FfmRawRecord parseFfmRecord(String json, SupportedMessageType messageType)
-      throws JsonProcessingException, StartFlagNotFoundException {
-    JsonNode root = mapper.readTree(json);
-    JsonNode payloadBytes = root.path("payload").path("data").path("bytes");
-    if (!payloadBytes.isTextual() || payloadBytes.textValue().isBlank()) {
+      throws IOException, StartFlagNotFoundException {
+    JsonNode metadataNode = null;
+    String payloadHex = null;
+    try (JsonParser parser = mapper.createParser(json)) {
+      if (parser.nextToken() != JsonToken.START_OBJECT) {
+        throw new IllegalArgumentException("Raw record must be a JSON object");
+      }
+      while (parser.nextToken() != JsonToken.END_OBJECT) {
+        if (parser.currentToken() != JsonToken.FIELD_NAME) {
+          throw new IllegalArgumentException("Raw record has an invalid JSON object");
+        }
+        String field = parser.currentName();
+        JsonToken value = parser.nextToken();
+        if ("metadata".equals(field)) {
+          metadataNode = parser.readValueAsTree();
+        } else if ("payload".equals(field)) {
+          payloadHex = readPayloadHex(parser, value);
+        } else {
+          parser.skipChildren();
+        }
+      }
+    }
+    if (payloadHex == null || payloadHex.isBlank()) {
       throw new IllegalArgumentException("Raw record has no original ASN.1 payload bytes");
     }
-    JsonNode metadataNode = root.get("metadata");
     if (metadataNode == null || !metadataNode.isObject()) {
       throw new IllegalArgumentException("Raw record has no metadata object");
     }
+    OdeMessageFrameMetadata metadata = ffmMetadataReader.readValue(mapper.treeAsTokens(metadataNode));
 
-    OdeMessageFrameMetadata metadata = mapper.treeToValue(metadataNode,
-        OdeMessageFrameMetadata.class);
     metadata.addEncoding(new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER));
 
-    byte[] packetBytes = CodecUtils.fromHex(payloadBytes.textValue());
+    byte[] packetBytes = CodecUtils.fromHex(payloadHex);
     byte[] originalBytes = metadata.getAsn1() == null || metadata.getAsn1().isBlank()
         ? packetBytes
         : CodecUtils.fromHex(metadata.getAsn1());
     byte[] uperBytes = UperUtil.stripDot2Header(packetBytes, messageType.getStartFlagBytes());
     return new FfmRawRecord(metadata, uperBytes, originalBytes);
+  }
+
+  private static String readPayloadHex(JsonParser parser, JsonToken payloadToken)
+      throws IOException {
+    if (payloadToken != JsonToken.START_OBJECT) {
+      parser.skipChildren();
+      return null;
+    }
+    String payloadHex = null;
+    while (parser.nextToken() != JsonToken.END_OBJECT) {
+      if (parser.currentToken() != JsonToken.FIELD_NAME) {
+        throw new IllegalArgumentException("Raw payload has an invalid JSON object");
+      }
+      String field = parser.currentName();
+      JsonToken value = parser.nextToken();
+      if ("data".equals(field)) {
+        payloadHex = readPayloadBytes(parser, value);
+      } else {
+        parser.skipChildren();
+      }
+    }
+    return payloadHex;
+  }
+
+  private static String readPayloadBytes(JsonParser parser, JsonToken dataToken)
+      throws IOException {
+    if (dataToken != JsonToken.START_OBJECT) {
+      parser.skipChildren();
+      return null;
+    }
+    String payloadHex = null;
+    while (parser.nextToken() != JsonToken.END_OBJECT) {
+      if (parser.currentToken() != JsonToken.FIELD_NAME) {
+        throw new IllegalArgumentException("Raw payload data has an invalid JSON object");
+      }
+      String field = parser.currentName();
+      JsonToken value = parser.nextToken();
+      if ("bytes".equals(field)) {
+        payloadHex = value == JsonToken.VALUE_STRING ? parser.getText() : null;
+      } else {
+        parser.skipChildren();
+      }
+    }
+    return payloadHex;
   }
 
   /** Raw UDP input parsed for the FFMLib listener. */

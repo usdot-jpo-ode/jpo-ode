@@ -1,10 +1,13 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,9 @@ import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.errors.RetriableException;
 import org.apache.kafka.common.errors.TopicExistsException;
@@ -24,6 +29,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.kafka.OdeKafkaClients;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -60,6 +66,8 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
   private final long rawRetentionMs;
   private final long dltRetentionMs;
   private final boolean syncCommits;
+  private final int listenerConcurrency;
+  private final Duration startupTimeout;
 
   /**
    * Creates the topic provisioner for the configured Kafka cluster.
@@ -98,41 +106,107 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
     this.rawRetentionMs = ffmlibProperties.getRawTopicRetentionMs();
     this.dltRetentionMs = ffmlibProperties.getDltRetentionMs();
     this.syncCommits = ffmlibProperties.isSyncCommits();
+    this.listenerConcurrency = ffmlibProperties.getListenerConcurrency();
+    this.startupTimeout = ffmlibProperties.getStartupTimeout();
   }
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
-    List<TopicRetention> topics = topicRetentions();
-    try (AdminClient admin = AdminClient.create(adminProperties)) {
-      createMissingTopics(admin, topics);
-      ensureMinimumPartitions(admin, topics);
-      ensureMinimumRetention(admin, topics);
-      verifyTopics(admin, topics);
-    }
-    warmProducerMetadata(rawProducer, rawTopics.allTopics());
-    warmProducerMetadata(outputProducer, outputTopics());
-    commitTracker.setSynchronous(syncCommits);
-    for (String listenerId : LISTENER_IDS) {
-      var container = registry.getListenerContainer(listenerId);
-      if (container == null) {
-        throw new IllegalStateException("Missing FFM Kafka listener container " + listenerId);
+    List<org.springframework.kafka.listener.MessageListenerContainer> started = new ArrayList<>();
+    try {
+      List<TopicRetention> topics = topicRetentions();
+      try (AdminClient admin = AdminClient.create(adminProperties)) {
+        createMissingTopics(admin, topics);
+        ensureMinimumPartitions(admin, topics);
+        ensureMinimumRetention(admin, topics);
+        verifyTopics(admin, topics);
       }
-      var containerProperties = container.getContainerProperties();
-      containerProperties.setSyncCommits(syncCommits);
-      containerProperties.setCommitCallback((offsets, error) -> {
-        commitTracker.completeCommit(error);
-        if (error != null) {
-          rawJsonListener.recordCommitFailure(listenerId, error);
-          log.error("Stopping FFM listener {} after offset commit failure for {}", listenerId,
-              offsets);
-          container.stop(() -> log.info("Stopped FFM listener {} after commit failure", listenerId));
+      warmProducerMetadata(rawProducer, rawTopics.allTopics());
+      warmProducerMetadata(outputProducer, outputTopics());
+      commitTracker.setSynchronous(syncCommits);
+      Map<String, AssignmentTracker> assignments = new HashMap<>();
+      for (String listenerId : LISTENER_IDS) {
+        var container = registry.getListenerContainer(listenerId);
+        if (container == null) {
+          throw new IllegalStateException("Missing FFM Kafka listener container " + listenerId);
         }
-      });
-      container.start();
-      awaitAssignment(listenerId, container);
+        var containerProperties = container.getContainerProperties();
+        containerProperties.setSyncCommits(syncCommits);
+        containerProperties.setCommitCallback((offsets, error) -> {
+          commitTracker.completeCommit(error);
+          if (error != null) {
+            rawJsonListener.recordCommitFailure(listenerId, error);
+            log.error("Stopping FFM listener {} after offset commit failure for {}", listenerId,
+                offsets);
+            container.stop(() -> log.info("Stopped FFM listener {} after commit failure",
+                listenerId));
+          }
+        });
+        AssignmentTracker tracker = new AssignmentTracker(listenerConcurrency);
+        containerProperties.setConsumerRebalanceListener(tracker);
+        assignments.put(listenerId, tracker);
+        started.add(container);
+        container.start();
+      }
+      long deadline = System.nanoTime() + startupTimeout.toNanos();
+      for (String listenerId : LISTENER_IDS) {
+        awaitGroupJoin(listenerId, assignments.get(listenerId), deadline);
+      }
+      rawJsonListener.markStartupComplete();
+      log.info("Verified {} FFM raw and DLT topics and started the raw-topic consumers",
+          topics.size());
+    } catch (Exception error) {
+      rawJsonListener.markStartupFailure(error);
+      stopStarted(started);
+      throw error;
+    } catch (Error error) {
+      rawJsonListener.markStartupFailure(error);
+      stopStarted(started);
+      throw error;
     }
-    log.info("Verified {} FFM raw and DLT topics and started the raw-topic consumers",
-        topics.size());
+  }
+
+  private static void stopStarted(
+      List<org.springframework.kafka.listener.MessageListenerContainer> started) {
+    for (var container : started) {
+      try {
+        container.stop();
+      } catch (RuntimeException stopError) {
+        log.warn("Unable to stop a partially started FFM listener container", stopError);
+      }
+    }
+  }
+
+  private void awaitGroupJoin(String listenerId, AssignmentTracker tracker, long deadline)
+      throws InterruptedException {
+    while (!tracker.isReady()) {
+      long remaining = deadline - System.nanoTime();
+      if (remaining <= 0) {
+        throw new IllegalStateException("FFM listener " + listenerId
+            + " did not join its Kafka consumer group within " + startupTimeout);
+      }
+      TimeUnit.NANOSECONDS.sleep(Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(50)));
+    }
+  }
+
+  private static final class AssignmentTracker implements ConsumerAwareRebalanceListener {
+    private final int expectedConsumers;
+    private final Set<Consumer<?, ?>> assignedConsumers = ConcurrentHashMap.newKeySet();
+
+    private AssignmentTracker(int expectedConsumers) {
+      this.expectedConsumers = expectedConsumers;
+    }
+
+    @Override
+    public void onPartitionsAssigned(Consumer<?, ?> consumer, Collection<TopicPartition> partitions) {
+      // An empty assignment is a successful group join when all topic partitions are owned by
+      // other ODE instances. The callback, rather than a nonempty partition list, is readiness.
+      assignedConsumers.add(consumer);
+    }
+
+    private boolean isReady() {
+      return assignedConsumers.size() >= expectedConsumers;
+    }
   }
 
   private void warmProducerMetadata(KafkaTemplate<String, String> producer,
@@ -155,20 +229,6 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
       withDeadLetters.add(rawTopic + ".FFM.DLT");
     }
     return withDeadLetters;
-  }
-
-  private static void awaitAssignment(String listenerId,
-      org.springframework.kafka.listener.MessageListenerContainer container)
-      throws InterruptedException {
-    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-    while (container.getAssignedPartitions() == null
-        || container.getAssignedPartitions().isEmpty()) {
-      if (System.nanoTime() >= deadline) {
-        throw new IllegalStateException("FFM listener " + listenerId
-            + " did not receive a Kafka partition assignment within 30 seconds");
-      }
-      Thread.sleep(50);
-    }
   }
 
   private List<TopicRetention> topicRetentions() {
