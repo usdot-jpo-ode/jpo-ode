@@ -52,6 +52,9 @@ public class FfmlibOutputProducerConfig {
     config.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     config.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     configureFfmProducer(config, ffmlibProperties);
+    if ("round_robin".equalsIgnoreCase(ffmlibProperties.getRawPartitionStrategy())) {
+      config.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, FfmlibRawTopicPartitioner.class);
+    }
     return new DefaultKafkaProducerFactory<>(config);
   }
 

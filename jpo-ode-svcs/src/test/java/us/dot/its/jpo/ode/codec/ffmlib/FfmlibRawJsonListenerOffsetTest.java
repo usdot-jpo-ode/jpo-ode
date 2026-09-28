@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +71,7 @@ class FfmlibRawJsonListenerOffsetTest {
     var decoder = mock(FfmlibDecodeService.class);
     var output = mock(FfmlibOutputPublisher.class);
     var topics = mock(RawEncodedJsonTopics.class);
+    var commitTracker = mock(FfmlibCommitTracker.class);
     var quarantine = mock(KafkaTemplate.class);
     when(topics.getBsm()).thenReturn(RAW_TOPIC);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
@@ -89,7 +91,7 @@ class FfmlibRawJsonListenerOffsetTest {
     });
 
     FfmlibRawJsonListener listener = new FfmlibRawJsonListener(rawService, decoder, output,
-        quarantine, topics);
+        quarantine, topics, commitTracker, new SimpleMeterRegistry());
     TopicPartition inputPartition = new TopicPartition(RAW_TOPIC, 0);
     try (AdminClient admin = AdminClient.create(Map.of(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString()))) {

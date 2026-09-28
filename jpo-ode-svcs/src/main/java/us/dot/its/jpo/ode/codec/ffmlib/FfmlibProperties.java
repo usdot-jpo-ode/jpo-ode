@@ -52,6 +52,12 @@ public class FfmlibProperties {
   /** Kafka producer compression for FFM raw and decoded records. */
   private String producerCompressionType = "none";
 
+  /** Whether FFM input offsets use synchronous commits instead of async callbacks. */
+  private boolean syncCommits;
+
+  /** Strategy for null-key FFM raw records; keyed records retain Kafka's default hash mapping. */
+  private String rawPartitionStrategy = "round_robin";
+
   /** Minimum partition count for each raw and FFM dead-letter topic. */
   private int topicPartitions = 4;
 
