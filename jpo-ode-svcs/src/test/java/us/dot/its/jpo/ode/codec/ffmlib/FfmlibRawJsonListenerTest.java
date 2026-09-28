@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,6 +42,7 @@ class FfmlibRawJsonListenerTest {
   private FfmlibOutputPublisher output;
   private KafkaTemplate<String, String> quarantineProducer;
   private RawEncodedJsonTopics topics;
+  private FfmlibCommitTracker commitTracker;
   private FfmlibRawJsonListener listener;
   private ConsumerRecord<String, String> record;
   private Acknowledgment acknowledgment;
@@ -54,8 +56,10 @@ class FfmlibRawJsonListenerTest {
     output = mock(FfmlibOutputPublisher.class);
     quarantineProducer = mock(KafkaTemplate.class);
     topics = mock(RawEncodedJsonTopics.class);
+    commitTracker = mock(FfmlibCommitTracker.class);
     when(topics.getBsm()).thenReturn(RAW_TOPIC);
-    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics);
+    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
+        commitTracker, new SimpleMeterRegistry());
     metadata = new OdeMessageFrameMetadata();
     metadata.setAsn1("0014");
     var rawData = new RawEncodedJsonService.FfmRawRecord(metadata, new byte[] {0, 20},

@@ -107,17 +107,18 @@ public class FfmlibDecodeService {
       decodedCounter(type.name(), SOURCE_IMPORT);
     }
     this.nativeTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "native").register(meterRegistry);
+        .tag("stage", "native").publishPercentileHistogram().register(meterRegistry);
     this.pojoTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "pojo").register(meterRegistry);
+        .tag("stage", "xer_mapping").publishPercentileHistogram().register(meterRegistry);
     this.asnDecodeTimer = Timer.builder("ode.ffmlib.decode.asn")
         .description("ASN.1 decode latency covering native conversion and POJO mapping")
-        .register(meterRegistry);
+        .publishPercentileHistogram().register(meterRegistry);
     this.jsonTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "json").register(meterRegistry);
+        .tag("stage", "json").publishPercentileHistogram().register(meterRegistry);
     this.sendTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "send").register(meterRegistry);
-    this.totalTimer = Timer.builder("ode.ffmlib.decode.total").register(meterRegistry);
+        .tag("stage", "send").publishPercentileHistogram().register(meterRegistry);
+    this.totalTimer = Timer.builder("ode.ffmlib.decode.total")
+        .publishPercentileHistogram().register(meterRegistry);
   }
 
   /** Decodes an imported log record directly to its Ode JSON topic. */

@@ -13,19 +13,21 @@ import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.errors.RetriableException;
 import org.apache.kafka.common.errors.TopicExistsException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.kafka.OdeKafkaClients;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
+import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
 /** Provisions and verifies the FFM raw and quarantine topics before starting FFM consumers. */
@@ -49,9 +51,15 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
   private final Map<String, Object> adminProperties;
   private final RawEncodedJsonTopics rawTopics;
   private final KafkaListenerEndpointRegistry registry;
+  private final FfmlibRawJsonListener rawJsonListener;
+  private final FfmlibCommitTracker commitTracker;
+  private final KafkaTemplate<String, String> rawProducer;
+  private final KafkaTemplate<String, String> outputProducer;
+  private final JsonTopics jsonTopics;
   private final int partitions;
   private final long rawRetentionMs;
   private final long dltRetentionMs;
+  private final boolean syncCommits;
 
   /**
    * Creates the topic provisioner for the configured Kafka cluster.
@@ -60,18 +68,36 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
    * @param odeKafkaProperties ODE broker configuration
    * @param rawTopics configured raw message topics
    * @param registry listener containers to start after verification
+   * @param rawJsonListener health state for listener failures
+   * @param commitTracker metrics for asynchronous offset commits
+   * @param rawProducer dedicated UDP raw-topic producer
+   * @param outputProducer dedicated decoded JSON and quarantine producer
+   * @param jsonTopics configured decoded JSON topic names
    * @param ffmlibProperties FFM topic partitions and retention
    */
   public FfmlibTopicProvisioner(
       org.springframework.boot.kafka.autoconfigure.KafkaProperties kafkaProperties,
       OdeKafkaProperties odeKafkaProperties, RawEncodedJsonTopics rawTopics,
-      KafkaListenerEndpointRegistry registry, FfmlibProperties ffmlibProperties) {
+      KafkaListenerEndpointRegistry registry, FfmlibRawJsonListener rawJsonListener,
+      FfmlibCommitTracker commitTracker,
+      @org.springframework.beans.factory.annotation.Qualifier("ffmlibRawKafkaTemplate")
+      KafkaTemplate<String, String> rawProducer,
+      @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
+      KafkaTemplate<String, String> outputProducer,
+      JsonTopics jsonTopics,
+      FfmlibProperties ffmlibProperties) {
     this.adminProperties = OdeKafkaClients.adminProperties(kafkaProperties, odeKafkaProperties);
     this.rawTopics = rawTopics;
     this.registry = registry;
+    this.rawJsonListener = rawJsonListener;
+    this.commitTracker = commitTracker;
+    this.rawProducer = rawProducer;
+    this.outputProducer = outputProducer;
+    this.jsonTopics = jsonTopics;
     this.partitions = ffmlibProperties.getTopicPartitions();
     this.rawRetentionMs = ffmlibProperties.getRawTopicRetentionMs();
     this.dltRetentionMs = ffmlibProperties.getDltRetentionMs();
+    this.syncCommits = ffmlibProperties.isSyncCommits();
   }
 
   @Override
@@ -83,15 +109,66 @@ public class FfmlibTopicProvisioner implements ApplicationRunner {
       ensureMinimumRetention(admin, topics);
       verifyTopics(admin, topics);
     }
+    warmProducerMetadata(rawProducer, rawTopics.allTopics());
+    warmProducerMetadata(outputProducer, outputTopics());
+    commitTracker.setSynchronous(syncCommits);
     for (String listenerId : LISTENER_IDS) {
       var container = registry.getListenerContainer(listenerId);
       if (container == null) {
         throw new IllegalStateException("Missing FFM Kafka listener container " + listenerId);
       }
+      var containerProperties = container.getContainerProperties();
+      containerProperties.setSyncCommits(syncCommits);
+      containerProperties.setCommitCallback((offsets, error) -> {
+        commitTracker.completeCommit(error);
+        if (error != null) {
+          rawJsonListener.recordCommitFailure(listenerId, error);
+          log.error("Stopping FFM listener {} after offset commit failure for {}", listenerId,
+              offsets);
+          container.stop(() -> log.info("Stopped FFM listener {} after commit failure", listenerId));
+        }
+      });
       container.start();
+      awaitAssignment(listenerId, container);
     }
     log.info("Verified {} FFM raw and DLT topics and started the raw-topic consumers",
         topics.size());
+  }
+
+  private void warmProducerMetadata(KafkaTemplate<String, String> producer,
+      List<String> topicNames) {
+    for (String topicName : topicNames) {
+      List<PartitionInfo> partitions = producer.partitionsFor(topicName);
+      if (partitions == null || partitions.isEmpty()) {
+        throw new IllegalStateException("No producer metadata available for FFM topic "
+            + topicName);
+      }
+    }
+  }
+
+  private List<String> outputTopics() {
+    List<String> topics = List.of(jsonTopics.getBsm(), jsonTopics.getMap(), jsonTopics.getPsm(),
+        jsonTopics.getSpat(), jsonTopics.getSrm(), jsonTopics.getSsm(), jsonTopics.getTim(),
+        jsonTopics.getSdsm(), jsonTopics.getRtcm(), jsonTopics.getRsm());
+    List<String> withDeadLetters = new ArrayList<>(topics);
+    for (String rawTopic : rawTopics.allTopics()) {
+      withDeadLetters.add(rawTopic + ".FFM.DLT");
+    }
+    return withDeadLetters;
+  }
+
+  private static void awaitAssignment(String listenerId,
+      org.springframework.kafka.listener.MessageListenerContainer container)
+      throws InterruptedException {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+    while (container.getAssignedPartitions() == null
+        || container.getAssignedPartitions().isEmpty()) {
+      if (System.nanoTime() >= deadline) {
+        throw new IllegalStateException("FFM listener " + listenerId
+            + " did not receive a Kafka partition assignment within 30 seconds");
+      }
+      Thread.sleep(50);
+    }
   }
 
   private List<TopicRetention> topicRetentions() {

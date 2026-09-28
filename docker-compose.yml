@@ -70,9 +70,12 @@ services:
       ODE_FFMLIB_FAST_PATH_BUFFER_SIZE: ${ODE_FFMLIB_FAST_PATH_BUFFER_SIZE:-32768}
       ODE_FFM_PRODUCER_LINGER_MS: ${ODE_FFM_PRODUCER_LINGER_MS:-0}
       ODE_FFM_PRODUCER_COMPRESSION_TYPE: ${ODE_FFM_PRODUCER_COMPRESSION_TYPE:-none}
+      ODE_FFM_SYNC_COMMITS: ${ODE_FFM_SYNC_COMMITS:-false}
+      ODE_FFM_RAW_PARTITION_STRATEGY: ${ODE_FFM_RAW_PARTITION_STRATEGY:-round_robin}
       ODE_FFM_TOPIC_PARTITIONS: ${ODE_FFM_TOPIC_PARTITIONS:-4}
       ODE_FFM_RAW_TOPIC_RETENTION_MS: ${ODE_FFM_RAW_TOPIC_RETENTION_MS:-86400000}
       ODE_FFM_DLT_RETENTION_MS: ${ODE_FFM_DLT_RETENTION_MS:-604800000}
+      JAVA_TOOL_OPTIONS: ${ODE_JAVA_TOOL_OPTIONS:-}
     depends_on:
       kafka:
         condition: service_healthy
@@ -298,3 +301,34 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+
+  decode-benchmark:
+    profiles:
+      - benchmark
+    build:
+      context: .
+      dockerfile: scripts/tests/Dockerfile.benchmark
+    image: jpoode_decode_benchmark:python-3.12.5
+    entrypoint: ["python", "/tests/decode_benchmark.py"]
+    environment:
+      DECODE_BENCHMARK_UDP_HOST: ode
+      DECODE_BENCHMARK_METRICS_URL: http://ode:8080/actuator/prometheus
+    volumes:
+      - ./scripts/tests:/tests:ro
+      - ./scripts/tests/output:/output
+    depends_on:
+      kafka:
+        condition: service_healthy
+      ode:
+        condition: service_healthy
+
+  mongodb-exporter:
+    build:
+      context: .
+      dockerfile: scripts/tests/Dockerfile.mongodb-exporter
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/busybox", "wget", "-q", "-O", "/dev/null",
+        "http://127.0.0.1:9216/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

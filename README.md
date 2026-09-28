@@ -407,17 +407,21 @@ ODE defaults to `ODE_ASN1_CODEC_MODE=external`. Both modes publish UDP input to 
 
 FFM confirms each decoded JSON publication before committing its raw input offset. Failed output publication is retried twice after the initial attempt; if it remains unconfirmed, that listener stops with the input offset uncommitted. A process crash after output confirmation but before the input commit can replay the record and produce a duplicate. Malformed, unsupported, and signed inputs are copied to `<raw-topic>.FFM.DLT` with their original key and value plus source and failure headers; input is committed only after the quarantine write is confirmed. DLT records are retained for seven days by default and are never replayed automatically. Investigate a quarantine record and deliberately republish it to its raw topic when ready. Raw topics retain records for 24 hours by default. FFM provisions and verifies ten DLT topics at startup, with at least four partitions for each raw and DLT topic; larger existing partition counts and longer retention are preserved. Configure `ODE_FFM_TOPIC_PARTITIONS`, `ODE_FFM_RAW_TOPIC_RETENTION_MS`, and `ODE_FFM_DLT_RETENTION_MS` to change these minimums.
 
+`ODE_FFM_SYNC_COMMITS=false` uses asynchronous offset commits after confirmed output; set it to `true` to compare synchronous commits. A commit failure marks that message-type listener unhealthy and stops it without blocking the listener thread. `ODE_FFM_RAW_PARTITION_STRATEGY=round_robin` distributes null-key raw UDP records across available partitions; `default` restores Kafka's sticky null-key behavior. Non-null keys keep Kafka's default hash mapping. Startup provisions and verifies raw/DLT topics before starting the FFM consumers. UDP receiver threads publish to Kafka without waiting for a particular type's decoder backlog.
+
 When stopping the service, confirmed records are committed and unfinished records remain available for replay. Destinations disabled through the existing ODE topic configuration are counted as skipped and their raw inputs are committed intentionally; imported files with disabled destinations follow the successful-file path, while actual import failures follow the failed-file path. For rollback, set `ODE_ASN1_CODEC_MODE=external`; the external routers resume using the same raw-topic consumer groups and retain their existing topic, key, payload, and metadata contracts. Signed IEEE 1609.2 payloads require external mode; the current FFM library does not decode them. FFM uses XER as its intermediate encoding. TIM MessageFrames are encoded in process in FFM mode, while AdvisorySituationData and PPM remain on their external paths.
 
-For the Docker FFM latency acceptance check, run `scripts/tests/decode_benchmark.py` three times consecutively against the deployed Compose stack. Each run uses 1,000 warmup packets and 300,000 measured BSMs at 1,000 packets/second, checks correlation between raw and decoded JSON Kafka records, waits for consumer lag and publications to drain, and fails if `p95_ms` is missing or at least 5 ms:
+Run the benchmark from its pinned Linux Compose service so UDP send times, Kafka CreateTime values, and the ODE share the Linux host clock. It connects to `ode:46800`, `kafka:9094`, and the ODE's internal metrics endpoint. Its CSV preserves paired raw/JSON timestamps; its JSON summary reports complete-window latency, send-rate and per-partition rates, decode-stage histogram estimates, application-group committed offsets, and pending work. For acceptance, run it three times consecutively; each run sends 1,000 warmup BSMs and 300,000 measured BSMs at 1,000/s, checks raw/JSON correlation and application-group committed offsets, waits for zero pending raw sends, output publications, and commits plus a 15-second quiet period, and fails when `p95_ms` is missing or at least 5 ms:
 
 ```bash
-python scripts/tests/decode_benchmark.py --mode ffm \
-  --broker "$DOCKER_HOST_IP:9092" \
-  --fixture scripts/tests/udpsender_bsm.py \
-  --udp-host 127.0.0.1 --udp-port 46800 \
+docker compose --profile all --profile benchmark run --rm --no-deps decode-benchmark \
+  --mode ffm --broker kafka:9094 \
+  --fixture /tests/udpsender_bsm.py \
+  --udp-host ode --udp-port 46800 \
+  --metrics-url http://ode:8080/actuator/prometheus \
+  --consumer-group RawEncodedBSMJsonRouter \
   --count 300000 --warmup 1000 --rate 1000 --max-p95-ms 5 \
-  --output scripts/tests/output/ffm-run-1.csv
+  --output /output/ffm-run-1.csv
 ```
 
 Change the output name for each run and require every run to pass; do not use the median to hide a failed run. Each CSV is paired with a JSON summary. The recorded p95 boundary is UDP send time to Kafka JSON record creation time; Kafka output acknowledgement latency is reported separately.
