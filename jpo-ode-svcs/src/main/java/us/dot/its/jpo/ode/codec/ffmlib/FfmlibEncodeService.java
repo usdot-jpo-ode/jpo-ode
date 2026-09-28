@@ -74,7 +74,7 @@ public class FfmlibEncodeService {
     if (payloadData.has(ADVISORY_SITUATION_DATA)) {
       throw new UnsupportedOperationException(
           "AdvisorySituationData encoding is not supported by j2735-2024-ffm-lib "
-              + "3.0.0-beta1; use the external encoder");
+              + "3.0.0-beta2; use the external encoder");
     } else if (payloadData.has(MESSAGE_FRAME)) {
       var messageFrameNode = simpleXmlMapper.readTree(odeAsn1Xml)
           .path(OdeMsgPayload.PAYLOAD_STRING)

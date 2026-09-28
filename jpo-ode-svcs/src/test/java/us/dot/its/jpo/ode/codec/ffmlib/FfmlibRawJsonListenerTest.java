@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,6 +61,7 @@ class FfmlibRawJsonListenerTest {
     when(topics.getBsm()).thenReturn(RAW_TOPIC);
     listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
         commitTracker, new SimpleMeterRegistry());
+    listener.markStartupComplete();
     metadata = new OdeMessageFrameMetadata();
     metadata.setAsn1("0014");
     var rawData = new RawEncodedJsonService.FfmRawRecord(metadata, new byte[] {0, 20},
@@ -211,6 +213,33 @@ class FfmlibRawJsonListenerTest {
     assertTrue(listenerFailure.get() instanceof IllegalStateException);
     verify(acknowledgment, never()).acknowledge();
     confirmation.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+  }
+
+  @Test
+  void unresolvedPublicationTimesOutWithoutStartingAnOverlappingSend() {
+    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
+        commitTracker, new SimpleMeterRegistry(), Duration.ofMillis(100));
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> unresolved =
+        new CompletableFuture<>();
+    when(output.publish(prepared)).thenReturn(unresolved);
+
+    assertThrows(RuntimeException.class, () -> listener.bsm(record, acknowledgment));
+
+    verify(output, times(1)).publish(prepared);
+    verify(decoder).recordRawPublishFailure(prepared);
+    verify(acknowledgment, never()).acknowledge();
+    assertEquals("DOWN", listener.health().getStatus().getCode());
+    unresolved.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+  }
+
+  @Test
+  void readinessRemainsDownUntilProvisioningFinishes() {
+    FfmlibRawJsonListener starting = new FfmlibRawJsonListener(rawService, decoder, output,
+        quarantineProducer, topics, commitTracker, new SimpleMeterRegistry());
+
+    assertEquals("DOWN", starting.health().getStatus().getCode());
+    starting.markStartupComplete();
+    assertEquals("UP", starting.health().getStatus().getCode());
   }
 
   @Test

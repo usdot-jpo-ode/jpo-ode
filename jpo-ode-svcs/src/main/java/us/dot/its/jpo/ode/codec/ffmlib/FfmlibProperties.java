@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.time.Duration;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +61,12 @@ public class FfmlibProperties {
 
   /** Minimum partition count for each raw and FFM dead-letter topic. */
   private int topicPartitions = 4;
+
+  /** Number of Kafka consumers created for each FFM message type. */
+  private int listenerConcurrency = 4;
+
+  /** Maximum time to wait for every FFM consumer to join its group during startup. */
+  private Duration startupTimeout = Duration.ofSeconds(120);
 
   /** Minimum raw-topic retention in milliseconds. */
   private long rawTopicRetentionMs = 86_400_000L;

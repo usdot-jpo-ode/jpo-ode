@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -92,7 +93,8 @@ public class FfmlibOutputPublisher {
     inFlight.decrementAndGet();
     if (error == null) {
       confirmations.computeIfAbsent(message.topic(), topic -> Timer.builder(
-          "ode.ffmlib.output.confirmation").tag("topic", topic).publishPercentileHistogram()
+          "ode.ffmlib.output.confirmation").tag("topic", topic)
+          .minimumExpectedValue(Duration.ofNanos(1_000)).publishPercentileHistogram()
           .register(meters))
           .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
       result.complete(PublicationOutcome.PUBLISHED);

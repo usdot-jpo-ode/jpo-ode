@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +71,24 @@ class FfmlibOutputPublisherTest {
         publisher.publish(message).get(1, TimeUnit.SECONDS));
     assertEquals(0.0, meters.get("ode.ffmlib.output.in.flight").gauge().value());
     assertTrue(meters.get("ode.ffmlib.output.confirmation").timer().count() == 1);
+  }
+
+  @Test
+  void unresolvedKafkaSendRemainsTrackedUntilItsActualCompletion() {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    CompletableFuture<org.springframework.kafka.support.SendResult<String, String>> send =
+        new CompletableFuture<>();
+    when(producer.send(any(), any(), any())).thenReturn(send);
+    SimpleMeterRegistry meters = new SimpleMeterRegistry();
+    var publisher = new FfmlibOutputPublisher(producer, new OdeKafkaProperties(), meters);
+
+    var confirmation = publisher.publish(message());
+
+    assertFalse(confirmation.isDone());
+    assertEquals(1.0, meters.get("ode.ffmlib.output.in.flight").gauge().value());
+    send.complete(null);
+    assertEquals(0.0, meters.get("ode.ffmlib.output.in.flight").gauge().value());
+    assertEquals(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED, confirmation.join());
   }
 
   private static FfmlibDecodeService.PreparedDecodedMessage message() {

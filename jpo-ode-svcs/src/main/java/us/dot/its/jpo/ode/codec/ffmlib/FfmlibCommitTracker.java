@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,8 @@ public class FfmlibCommitTracker {
     Gauge.builder("ode.ffmlib.offset.commit.in.flight", inFlight, AtomicInteger::get)
         .register(meters);
     completion = Timer.builder("ode.ffmlib.offset.commit.completion")
-        .publishPercentileHistogram().register(meters);
+        .minimumExpectedValue(Duration.ofNanos(1_000)).publishPercentileHistogram()
+        .register(meters);
     failures = meters.counter("ode.ffmlib.offset.commit.failures");
   }
 

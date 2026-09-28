@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,9 +17,11 @@ import java.net.InetAddress;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.mockito.MockedStatic;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.CodecUtils;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 class UdpIngestPublisherTest {
 
@@ -64,6 +67,23 @@ class UdpIngestPublisherTest {
     verify(ffmlibRaw).send(eq(RAW_TOPIC), sent.capture());
     verify(external, never()).send(any(), any());
     assertRawContract(sent.getValue());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void blankRawSerializationCountsFailureAndDoesNotPublish() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    SimpleMeterRegistry meters = new SimpleMeterRegistry();
+    UdpIngestPublisher publisher = new UdpIngestPublisher(producer, meters);
+
+    try (MockedStatic<JsonUtils> jsonUtils = mockStatic(JsonUtils.class)) {
+      jsonUtils.when(() -> JsonUtils.toJson(any(), eq(false))).thenReturn(" ");
+      publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+    }
+
+    verify(producer, never()).send(any(), any());
+    assertEquals(1.0, meters.counter("ode.ffmlib.raw.publication.failures", "topic", RAW_TOPIC)
+        .count());
   }
 
   private static void assertRawContract(String json) throws Exception {

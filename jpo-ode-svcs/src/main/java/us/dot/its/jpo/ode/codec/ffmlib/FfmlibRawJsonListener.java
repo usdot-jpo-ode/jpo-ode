@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -34,6 +36,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private static final int MAX_PUBLISH_ATTEMPTS = 3;
   private static final long PUBLISH_TIMEOUT_SECONDS = 10;
   private static final long RETRY_DELAY_MILLIS = 25;
+  private static final Duration PUBLISH_CONFIRMATION_BUDGET = Duration.ofSeconds(30);
 
   private final RawEncodedJsonService rawService;
   private final FfmlibDecodeService decoder;
@@ -43,7 +46,9 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private final FfmlibCommitTracker commitTracker;
   private final Timer rawAgeTimer;
   private final Timer parseTimer;
+  private final long publishConfirmationBudgetNanos;
   private final Map<String, String> unhealthyListeners = new ConcurrentHashMap<>();
+  private volatile boolean startupComplete;
 
   /**
    * Creates the durable raw-message listener.
@@ -54,21 +59,35 @@ public class FfmlibRawJsonListener implements HealthIndicator {
    * @param quarantineProducer confirms dead-letter publication
    * @param topics configured raw topic names
    */
+  @Autowired
   public FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
       FfmlibOutputPublisher output,
       @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
       KafkaTemplate<String, String> quarantineProducer,
       RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters) {
+    this(rawService, decoder, output, quarantineProducer, topics, commitTracker, meters,
+        PUBLISH_CONFIRMATION_BUDGET);
+  }
+
+  FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
+      FfmlibOutputPublisher output,
+      @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
+      KafkaTemplate<String, String> quarantineProducer,
+      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters,
+      Duration publishConfirmationBudget) {
     this.rawService = rawService;
     this.decoder = decoder;
     this.output = output;
     this.quarantineProducer = quarantineProducer;
     this.topics = topics;
     this.commitTracker = commitTracker;
+    this.publishConfirmationBudgetNanos = publishConfirmationBudget.toNanos();
     this.rawAgeTimer = Timer.builder("ode.ffmlib.raw.record.age")
-        .publishPercentileHistogram().register(meters);
+        .description("Millisecond-quantized Kafka CreateTime to listener-entry age")
+        .minimumExpectedValue(Duration.ofMillis(1)).publishPercentileHistogram().register(meters);
     this.parseTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "parse").publishPercentileHistogram().register(meters);
+        .tag("stage", "parse").minimumExpectedValue(Duration.ofNanos(1_000))
+        .publishPercentileHistogram().register(meters);
   }
 
   @KafkaListener(id = "RawEncodedBSMJsonRouter", groupId = "RawEncodedBSMJsonRouter",
@@ -153,10 +172,25 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   @Override
   public Health health() {
+    if (!startupComplete) {
+      return Health.down().withDetail("ffmStartup", "listeners_not_ready")
+          .withDetail("ffmListeners", Map.copyOf(unhealthyListeners)).build();
+    }
     if (unhealthyListeners.isEmpty()) {
       return Health.up().build();
     }
     return Health.down().withDetail("ffmListeners", Map.copyOf(unhealthyListeners)).build();
+  }
+
+  /** Marks the service ready after every configured raw consumer has joined its group. */
+  void markStartupComplete() {
+    startupComplete = true;
+  }
+
+  /** Records startup failure while keeping the service not ready. */
+  void markStartupFailure(Throwable error) {
+    startupComplete = false;
+    unhealthyListeners.put("startup", error.getClass().getSimpleName());
   }
 
   /** Marks a raw listener unhealthy after Kafka reports an offset commit failure. */
@@ -174,10 +208,9 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       rawAgeTimer.record(Math.max(0, listenerEntry - record.timestamp()), TimeUnit.MILLISECONDS);
     }
     long parseStart = System.nanoTime();
+    RawEncodedJsonService.FfmRawRecord raw;
     try {
-      RawEncodedJsonService.FfmRawRecord raw = rawService.parseFfmRecord(record.value(), type);
-      prepared = decoder.prepareRaw(raw.metadata(), raw.uperBytes(), record.key(), type,
-          raw.originalBytes());
+      raw = rawService.parseFfmRecord(record.value(), type);
     } catch (Exception error) {
       parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
       quarantine(record, listenerId, rawTopic(type), category(error), 1);
@@ -185,6 +218,15 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       return;
     }
     parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
+
+    try {
+      prepared = decoder.prepareRaw(raw.metadata(), raw.uperBytes(), record.key(), type,
+          raw.originalBytes());
+    } catch (Exception error) {
+      quarantine(record, listenerId, rawTopic(type), category(error), 1);
+      acknowledge(acknowledgment);
+      return;
+    }
 
     PublicationOutcome outcome;
     try {
@@ -213,26 +255,51 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   }
 
   private PublicationOutcome publishWithRetry(PreparedDecodedMessage message) {
+    long deadline = System.nanoTime() + publishConfirmationBudgetNanos;
     for (int attempt = 1; attempt <= MAX_PUBLISH_ATTEMPTS; attempt++) {
+      long remaining = deadline - System.nanoTime();
+      if (remaining <= 0) {
+        throw failedPublication(message, new TimeoutException(
+            "FFM output was not confirmed within the 30-second overall budget"));
+      }
+      var confirmation = output.publish(message);
       try {
-        return output.publish(message).get(PUBLISH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        remaining = deadline - System.nanoTime();
+        if (remaining <= 0) {
+          throw new TimeoutException(
+              "FFM output was not confirmed within the 30-second overall budget");
+        }
+        return confirmation.get(remaining, TimeUnit.NANOSECONDS);
       } catch (InterruptedException error) {
         Thread.currentThread().interrupt();
+        decoder.recordRawPublishFailure(message);
         throw new IllegalStateException("FFM output confirmation interrupted", error);
-      } catch (ExecutionException | TimeoutException error) {
-        if (attempt == MAX_PUBLISH_ATTEMPTS) {
-          decoder.recordRawPublishFailure(message);
-          throw new ExhaustedPublishAttemptsException(error);
+      } catch (TimeoutException error) {
+        // The Kafka send may still complete. Do not overlap it with another application send.
+        throw failedPublication(message, error);
+      } catch (ExecutionException error) {
+        if (attempt == MAX_PUBLISH_ATTEMPTS || System.nanoTime() >= deadline) {
+          throw failedPublication(message, error);
         }
         try {
-          Thread.sleep(RETRY_DELAY_MILLIS);
+          long delayNanos = Math.min(TimeUnit.MILLISECONDS.toNanos(RETRY_DELAY_MILLIS),
+              Math.max(0, deadline - System.nanoTime()));
+          if (delayNanos > 0) {
+            TimeUnit.NANOSECONDS.sleep(delayNanos);
+          }
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
+          decoder.recordRawPublishFailure(message);
           throw new IllegalStateException("FFM publication retry interrupted", interrupted);
         }
       }
     }
     throw new IllegalStateException("FFM publication attempts ended unexpectedly");
+  }
+
+  private RuntimeException failedPublication(PreparedDecodedMessage message, Throwable error) {
+    decoder.recordRawPublishFailure(message);
+    return new ExhaustedPublishAttemptsException(error);
   }
 
   private void quarantine(ConsumerRecord<String, String> original, String listenerId,

@@ -1,11 +1,15 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -22,7 +26,6 @@ import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessa
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.DSRCmsgID;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
-import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateEncoding;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
@@ -61,6 +64,7 @@ public class FfmlibDecodeService {
   private final ObjectProvider<FfmlibOutputPublisher> outputPublisher;
   private final ObjectReader messageFrameReader;
   private final ObjectReader bsmValueReader;
+  private final JsonFactory jerFactory;
   private final MeterRegistry meterRegistry;
   private final Timer nativeTimer;
   private final Timer pojoTimer;
@@ -79,7 +83,7 @@ public class FfmlibDecodeService {
    * @param jsonTopics decoded JSON topic names
    * @param kafkaTemplate Kafka producer used for the external decoder path
    * @param outputPublisher FFM JSON publisher used by the optional in-process route
-   * @param simpleXmlMapper XML mapper for J2735 XML processing
+   * @param simpleObjectMapper JSON mapper for J2735 JER processing
    * @param meterRegistry Micrometer registry for decode timers
    * @param externalDecoderInputTopic legacy external decoder input topic name
    */
@@ -90,7 +94,7 @@ public class FfmlibDecodeService {
       JsonTopics jsonTopics,
       @Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
       ObjectProvider<FfmlibOutputPublisher> outputPublisher,
-      @Qualifier("simpleXmlMapper") XmlMapper simpleXmlMapper,
+      @Qualifier("simpleObjectMapper") ObjectMapper simpleObjectMapper,
       MeterRegistry meterRegistry,
       @Value("${ode.kafka.topics.asn1.decoder-input}") String externalDecoderInputTopic) {
     this.ffmlibCodec = ffmlibCodec;
@@ -99,26 +103,33 @@ public class FfmlibDecodeService {
     this.jsonTopics = jsonTopics;
     this.kafkaTemplate = kafkaTemplate;
     this.outputPublisher = outputPublisher;
-    this.messageFrameReader = simpleXmlMapper.readerFor(MessageFrame.class);
-    this.bsmValueReader = simpleXmlMapper.readerFor(BasicSafetyMessage.class);
+    this.messageFrameReader = simpleObjectMapper.readerFor(MessageFrame.class);
+    this.bsmValueReader = simpleObjectMapper.readerFor(BasicSafetyMessage.class);
+    this.jerFactory = simpleObjectMapper.getFactory();
     this.meterRegistry = meterRegistry;
     for (SupportedMessageType type : SupportedMessageType.values()) {
       decodedCounter(type.name(), SOURCE_UDP);
       decodedCounter(type.name(), SOURCE_IMPORT);
     }
     this.nativeTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "native").publishPercentileHistogram().register(meterRegistry);
+        .tag("stage", "native").minimumExpectedValue(Duration.ofNanos(1_000))
+        .publishPercentileHistogram().register(meterRegistry);
     this.pojoTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "xer_mapping").publishPercentileHistogram().register(meterRegistry);
+        .tag("stage", "jer_mapping").minimumExpectedValue(Duration.ofNanos(1_000))
+        .publishPercentileHistogram().register(meterRegistry);
     this.asnDecodeTimer = Timer.builder("ode.ffmlib.decode.asn")
         .description("ASN.1 decode latency covering native conversion and POJO mapping")
-        .publishPercentileHistogram().register(meterRegistry);
+        .minimumExpectedValue(Duration.ofNanos(1_000)).publishPercentileHistogram()
+        .register(meterRegistry);
     this.jsonTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "json").publishPercentileHistogram().register(meterRegistry);
-    this.sendTimer = Timer.builder("ode.ffmlib.decode.stage")
-        .tag("stage", "send").publishPercentileHistogram().register(meterRegistry);
-    this.totalTimer = Timer.builder("ode.ffmlib.decode.total")
+        .tag("stage", "json").minimumExpectedValue(Duration.ofNanos(1_000))
         .publishPercentileHistogram().register(meterRegistry);
+    this.sendTimer = Timer.builder("ode.ffmlib.decode.stage")
+        .tag("stage", "send").minimumExpectedValue(Duration.ofNanos(1_000))
+        .publishPercentileHistogram().register(meterRegistry);
+    this.totalTimer = Timer.builder("ode.ffmlib.decode.total")
+        .minimumExpectedValue(Duration.ofNanos(1_000)).publishPercentileHistogram()
+        .register(meterRegistry);
   }
 
   /** Decodes an imported log record directly to its Ode JSON topic. */
@@ -139,7 +150,7 @@ public class FfmlibDecodeService {
         recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, "signed_payload");
         throw new UnsupportedOperationException(
             "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib "
-                + "3.0.0-beta1; use external codec mode for signed messages");
+                + "3.0.0-beta2; use external codec mode for signed messages");
       }
       String messageType = UperUtil.determineMessageType(asn1Data.getPayload());
       SupportedMessageType type = SupportedMessageType.valueOf(messageType);
@@ -198,7 +209,7 @@ public class FfmlibDecodeService {
           "signed_payload");
       throw new UnsupportedOperationException(
           "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib "
-              + "3.0.0-beta1; use external codec mode for signed messages");
+              + "3.0.0-beta2; use external codec mode for signed messages");
     }
     long start = System.nanoTime();
     try {
@@ -300,6 +311,10 @@ public class FfmlibDecodeService {
       long jsonStart = System.nanoTime();
       final String json = JsonUtils.toJson(frameData, false);
       jsonTimer.record(System.nanoTime() - jsonStart, TimeUnit.NANOSECONDS);
+      if (json == null || json.isBlank()) {
+        recordFailure(type, source, "serialization");
+        throw new DecodeFailure("Unable to serialize decoded ASN.1 JSON", null);
+      }
 
       String topic = resolveJsonTopic(knownType, messageFrame);
       if (topic == null) {
@@ -327,9 +342,9 @@ public class FfmlibDecodeService {
     } catch (PublishFailure failure) {
       throw failure;
     } catch (JsonProcessingException e) {
-      log.error("FFMLib decode failed (JSON/XML processing) for key {}: {}", key, e.getMessage(), e);
+      log.error("FFMLib decode failed (JER/JSON processing) for key {}: {}", key, e.getMessage(), e);
       recordFailure(type, source, "mapping");
-      throw new DecodeFailure("Unable to map decoded ASN.1 XER", e);
+      throw new DecodeFailure("Unable to map decoded ASN.1 JER", e);
     } catch (Exception e) {
       String reason = e instanceof UnsupportedOperationException ? "signed_payload" : "unexpected";
       log.error("FFMLib decode unexpected error for key {}: {}", key, e.getMessage(), e);
@@ -432,45 +447,51 @@ public class FfmlibDecodeService {
   }
 
   private MessageFrame<?> parseMessageFrame(IntermediateDecodeResult intermediate,
-      SupportedMessageType knownType) throws JsonProcessingException {
+      SupportedMessageType knownType) throws IOException {
     if (knownType == SupportedMessageType.BSM) {
       try {
-        MessageFrame<?> bsmFrame = parseBsmFrame(intermediate.text());
+        MessageFrame<?> bsmFrame = parseBsmFrame(intermediate.bytes());
         if (bsmFrame != null) {
           return bsmFrame;
         }
       } catch (JsonProcessingException error) {
-        log.debug("Direct BSM XER mapping failed; falling back to generic MessageFrame mapping",
+        log.debug("Direct BSM JER mapping failed; falling back to generic MessageFrame mapping",
             error);
       }
     }
-    return messageFrameReader.readValue(intermediate.text());
+    return messageFrameReader.readValue(intermediate.bytes());
   }
 
-  private MessageFrame<?> parseBsmFrame(String xer) throws JsonProcessingException {
-    if (bsmValueReader == null) {
+  private MessageFrame<?> parseBsmFrame(byte[] jer) throws IOException {
+    BasicSafetyMessage bsm = null;
+    int messageId = -1;
+    try (JsonParser parser = jerFactory.createParser(jer)) {
+      if (parser.nextToken() != JsonToken.START_OBJECT) {
+        return null;
+      }
+      while (parser.nextToken() == JsonToken.FIELD_NAME) {
+        String field = parser.currentName();
+        JsonToken value = parser.nextToken();
+        if ("messageId".equals(field) && value == JsonToken.VALUE_NUMBER_INT) {
+          messageId = parser.getIntValue();
+        } else if ("value".equals(field) && value == JsonToken.START_OBJECT) {
+          while (parser.nextToken() == JsonToken.FIELD_NAME) {
+            String choice = parser.currentName();
+            JsonToken choiceValue = parser.nextToken();
+            if ("BasicSafetyMessage".equals(choice) && choiceValue == JsonToken.START_OBJECT) {
+              bsm = bsmValueReader.readValue(parser);
+            } else {
+              parser.skipChildren();
+            }
+          }
+        } else {
+          parser.skipChildren();
+        }
+      }
+    }
+    if (messageId != 20 || bsm == null) {
       return null;
     }
-    String messageIdStartTag = "<messageId>";
-    String messageIdEndTag = "</messageId>";
-    String valueStartTag = "<value>";
-    int messageIdStart = xer.indexOf(messageIdStartTag);
-    int messageIdEnd = xer.indexOf(messageIdEndTag, messageIdStart);
-    int valueStart = xer.indexOf(valueStartTag);
-    if (messageIdStart < 0 || messageIdEnd < 0 || valueStart < messageIdEnd
-        || !"20".equals(xer.substring(messageIdStart + messageIdStartTag.length(), messageIdEnd))) {
-      return null;
-    }
-
-    String bsmStartTag = "<BasicSafetyMessage>";
-    String bsmEndTag = "</BasicSafetyMessage>";
-    int bsmStart = xer.indexOf(bsmStartTag, valueStart);
-    int bsmEnd = xer.indexOf(bsmEndTag, bsmStart);
-    if (bsmStart < 0 || bsmEnd < 0) {
-      return null;
-    }
-    String bsmXer = xer.substring(bsmStart, bsmEnd + bsmEndTag.length());
-    BasicSafetyMessage bsm = bsmValueReader.readValue(bsmXer);
     BasicSafetyMessageMessageFrame messageFrame = new BasicSafetyMessageMessageFrame();
     messageFrame.setValue(bsm);
     return messageFrame;
@@ -491,7 +512,7 @@ public class FfmlibDecodeService {
     }
 
     throw new UnsupportedOperationException(
-        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 3.0.0-beta1; "
+        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 3.0.0-beta2; "
             + "use external codec mode for signed messages");
   }
 
