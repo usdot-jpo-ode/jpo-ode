@@ -36,6 +36,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -71,6 +73,8 @@ public class Asn1EncodedDataRouter {
   private static final String ADVISORY_SITUATION_DATA_STRING = "AdvisorySituationData";
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final XmlMapper xmlMapper;
+  private final Asn1CodecModeProperties asn1CodecMode;
+  private final FfmlibEncodeService ffmlibEncodeService;
 
   /**
    * Exception for Asn1EncodedDataRouter specific failures.
@@ -105,7 +109,9 @@ public class Asn1EncodedDataRouter {
       KafkaTemplate<String, String> kafkaTemplate,
       @Value("${ode.kafka.topics.sdx-depositor.input}") String sdxDepositTopic,
       ObjectMapper mapper,
-      XmlMapper xmlMapper) {
+      XmlMapper xmlMapper,
+      Asn1CodecModeProperties asn1CodecMode,
+      FfmlibEncodeService ffmlibEncodeService) {
     super();
 
     this.jsonTopics = jsonTopics;
@@ -122,6 +128,8 @@ public class Asn1EncodedDataRouter {
     this.odeTimJsonTopology = odeTimJsonTopology;
     this.mapper = mapper;
     this.xmlMapper = xmlMapper;
+    this.asn1CodecMode = asn1CodecMode;
+    this.ffmlibEncodeService = ffmlibEncodeService;
   }
 
   /**
@@ -459,9 +467,16 @@ public class Asn1EncodedDataRouter {
     try {
       log.debug("Submitting ASD package for round 2 encoding");
       String asdPackagedTim = packageSignedTimIntoAsd(request, encodedTimWithoutHeaders);
-      kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
+      if (asn1CodecMode.isFfm()) {
+        processEncodedAsn1Xml(ffmlibEncodeService.encodeOdeAsn1Xml(asdPackagedTim));
+      } else {
+        kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
+      }
     } catch (Exception e) {
       log.error("Error packaging/encoding ASD for round 2", e);
+      if (asn1CodecMode.isFfm()) {
+        throw new IllegalStateException("Error encoding TIM ASD with FFM", e);
+      }
     }
   }
 }

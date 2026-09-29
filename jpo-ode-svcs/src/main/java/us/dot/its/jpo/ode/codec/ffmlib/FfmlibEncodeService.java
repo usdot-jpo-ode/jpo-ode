@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import j2735ffm.AsnEncoding;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.ObjectProvider;
@@ -56,9 +57,9 @@ public class FfmlibEncodeService {
   }
 
   /**
-   * Encodes a legacy encoder-input {@code OdeAsn1Data} XML document containing a MessageFrame.
-   * The frame is first mapped to a generated J2735 POJO and reserialized as canonical XER.
-   * AdvisorySituationData remains on the external encoder.
+   * Encodes a legacy encoder-input {@code OdeAsn1Data} XML document containing a MessageFrame
+   * or AdvisorySituationData. A frame is mapped to a generated J2735 POJO and reserialized as
+   * canonical XER; an ASD is passed directly to the generic SEMI PDU codec.
    *
    * @param odeAsn1Xml encoder-input style XML ({@code <OdeAsn1Data>...})
    * @return encoder-output style XML with hex UPER bytes in the payload
@@ -72,9 +73,19 @@ public class FfmlibEncodeService {
         .getJSONObject(OdeMsgPayload.DATA_STRING);
 
     if (payloadData.has(ADVISORY_SITUATION_DATA)) {
-      throw new UnsupportedOperationException(
-          "AdvisorySituationData encoding is not supported by j2735-2024-ffm-lib "
-              + "3.0.0-beta2; use the external encoder");
+      JsonNode asd = simpleXmlMapper.readTree(odeAsn1Xml)
+          .path(OdeMsgPayload.PAYLOAD_STRING)
+          .path(OdeMsgPayload.DATA_STRING)
+          .path(ADVISORY_SITUATION_DATA);
+      if (asd.isMissingNode() || asd.isNull()) {
+        throw new IllegalArgumentException("AdvisorySituationData XML not found in encode input");
+      }
+      String xer = simpleXmlMapper.writer().withRootName(ADVISORY_SITUATION_DATA)
+          .writeValueAsString(asd);
+      byte[] uper = codec().encodeFromXer(xer, ADVISORY_SITUATION_DATA, AsnEncoding.UPER);
+      ObjectNode metadataNode = JsonUtils.toObjectNode(metadata.toString());
+      wrapRsuArrayForXml(metadataNode);
+      return buildEncoderOutputXml(metadataNode, ADVISORY_SITUATION_DATA, CodecUtils.toHex(uper));
     } else if (payloadData.has(MESSAGE_FRAME)) {
       var messageFrameNode = simpleXmlMapper.readTree(odeAsn1Xml)
           .path(OdeMsgPayload.PAYLOAD_STRING)
