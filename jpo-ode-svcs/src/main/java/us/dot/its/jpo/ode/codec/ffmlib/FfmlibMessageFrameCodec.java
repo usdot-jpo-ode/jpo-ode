@@ -78,6 +78,7 @@ public class FfmlibMessageFrameCodec {
     return convert(xer.getBytes(StandardCharsets.UTF_8), pdu, AsnEncoding.XER, encoding);
   }
 
+  /** Decodes a UPER MessageFrame to UTF-8 JER bytes for in-process mapping. */
   public IntermediateDecodeResult uperToIntermediate(byte[] uperBytes) {
     return new IntermediateDecodeResult(
         convert(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER),
