@@ -65,7 +65,6 @@ public class RsuSnmp {
         ResponseEvent responseEvent;
         try {
             responseEvent = snmp.send(pdu, target);
-            snmp.close();
         } catch (Exception e) {
             responseEvent = null;
             logger.error("SNMP4J library exception", e);

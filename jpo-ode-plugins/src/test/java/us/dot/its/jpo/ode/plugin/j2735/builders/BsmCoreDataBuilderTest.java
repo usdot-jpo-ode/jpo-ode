@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,35 +15,48 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import mockit.Capturing;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class BsmCoreDataBuilderTest {
 
-   @Capturing
-   AccelerationSet4WayBuilder capturingAccelerationSet4WayBuilder;
-   @Capturing
-   PositionalAccuracyBuilder capturingPositionalAccuracyBuilder;
-   @Capturing
-   SpeedOrVelocityBuilder capturingSpeedOrVelocityBuilder;
-   @Capturing
-   BrakeSystemStatusBuilder capturingBrakeSystemStatusBuilder;
-   @Capturing
-   VehicleSizeBuilder capturingVehicleSizeBuilder;
+   private final List<MockedStatic<?>> staticMocks = new ArrayList<>();
+
+   @BeforeEach
+   void stubOutCollaboratingBuilders() {
+      staticMocks.add(Mockito.mockStatic(AccelerationSet4WayBuilder.class));
+      staticMocks.add(Mockito.mockStatic(PositionalAccuracyBuilder.class));
+      staticMocks.add(Mockito.mockStatic(SpeedOrVelocityBuilder.class));
+      staticMocks.add(Mockito.mockStatic(BrakeSystemStatusBuilder.class));
+      staticMocks.add(Mockito.mockStatic(VehicleSizeBuilder.class));
+   }
+
+   @AfterEach
+   void releaseStaticMocks() {
+      for (MockedStatic<?> mock : staticMocks) {
+         mock.close();
+      }
+      staticMocks.clear();
+   }
 
    @Test
    public void testRequiredElements() {
@@ -120,7 +133,8 @@ public class BsmCoreDataBuilderTest {
       testTransmission.set("testValue", null);
       testInput.set("transmission", testTransmission);
 
-      assertEquals(BsmCoreDataBuilder.genericBsmCoreData(testInput).getTransmission(), J2735TransmissionState.UNAVAILABLE);
+      assertEquals(BsmCoreDataBuilder.genericBsmCoreData(testInput).getTransmission(),
+            J2735TransmissionState.UNAVAILABLE);
    }
 
    @Test

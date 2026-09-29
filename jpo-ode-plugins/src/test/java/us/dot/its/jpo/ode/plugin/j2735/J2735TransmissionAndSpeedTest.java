@@ -15,21 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-//import mockit.integration.junit4.JMockit;
-
-import mockit.Tested;
-
-//@RunWith(JMockit.class)
 public class J2735TransmissionAndSpeedTest {
-   @Tested
-   J2735TransmissionAndSpeed tas;
+   J2735TransmissionAndSpeed tas = new J2735TransmissionAndSpeed();
 
    @Test
    public void testGettersAndSetters() {

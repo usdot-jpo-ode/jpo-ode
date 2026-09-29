@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.udp.generic;
 
-import io.netty.handler.codec.UnsupportedMessageTypeException;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
@@ -181,6 +180,20 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
         }
       }
       default -> throw new UnsupportedMessageTypeException(messageType);
+    }
+  }
+
+  /**
+   * Exception class for Unsupported Message Types.
+   */
+  public static class UnsupportedMessageTypeException extends Exception {
+    /**
+     * Constructs a new UnsupportedMessageTypeException with the specified detail message.
+     *
+     * @param message the detail message
+     */
+    public UnsupportedMessageTypeException(String message) {
+      super(message);
     }
   }
 }

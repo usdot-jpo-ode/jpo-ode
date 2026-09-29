@@ -26,4 +26,24 @@ public class ITIS_CodesAndText extends Asn1Object {
   private static final long serialVersionUID = 1L;
   @JsonProperty("SEQUENCE")
   private Items[] SEQUENCE;
+
+  /**
+   * Returns the ASN.1 sequence field.
+   *
+   * @return sequence items
+   */
+  @JsonProperty("SEQUENCE")
+  public Items[] getSEQUENCE() {
+    return SEQUENCE;
+  }
+
+  /**
+   * Sets the ASN.1 sequence field.
+   *
+   * @param sequence sequence items
+   */
+  @JsonProperty("SEQUENCE")
+  public void setSEQUENCE(Items[] sequence) {
+    SEQUENCE = sequence;
+  }
 }

@@ -15,20 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
-
-//@RunWith(JMockit.class)
 public class J2735FullPositionVectorTest {
-   @Tested
-   J2735FullPositionVector fpv;
+   J2735FullPositionVector fpv = new J2735FullPositionVector();
    
    @Test
    public void testGettersAndSetters() {

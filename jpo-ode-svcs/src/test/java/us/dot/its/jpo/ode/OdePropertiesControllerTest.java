@@ -1,41 +1,33 @@
 package us.dot.its.jpo.ode;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Tested;
-
+@ExtendWith(MockitoExtension.class)
 public class OdePropertiesControllerTest {
 
-   @Tested
-   OdePropertiesController testOdePropertiesController;
-
-   @Injectable
+   @Mock
    OdeProperties injectableOdeProperties;
+
+   @InjectMocks
+   OdePropertiesController testOdePropertiesController;
 
    @Test
    public void shouldReturnVersionFromOdeProperties1() {
-      new Expectations() {
-         {
-            injectableOdeProperties.getVersion();
-            result = "5";
-         }
-      };
+      when(injectableOdeProperties.getVersion()).thenReturn("5");
 
       assertEquals("{\"version\":\"5\"}", testOdePropertiesController.getVersion().getBody());
    }
 
    @Test
    public void shouldReturnVersionFromOdeProperties2() {
-      new Expectations() {
-         {
-            injectableOdeProperties.getVersion();
-            result = "testStringNotARealVersion";
-         }
-      };
+      when(injectableOdeProperties.getVersion()).thenReturn("testStringNotARealVersion");
 
       assertEquals("{\"version\":\"testStringNotARealVersion\"}", testOdePropertiesController.getVersion().getBody());
    }

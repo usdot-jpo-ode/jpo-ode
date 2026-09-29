@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode.config;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,12 +28,12 @@ public class MetricsConfig {
 
   private String getHostName() {
     try {
-      // Get hostname from environment variable if running in Kubernetes
+      // Get the hostname from the environment variable if running in Kubernetes
       String hostFromEnv = System.getenv("HOSTNAME");
       if (hostFromEnv != null && !hostFromEnv.isEmpty()) {
         return hostFromEnv;
       }
-      // Fallback to system hostname for local deployments in Docker
+      // Fallback to the system hostname for local deployments in Docker
       return InetAddress.getLocalHost().getHostName();
     } catch (UnknownHostException e) {
       return "unknown";

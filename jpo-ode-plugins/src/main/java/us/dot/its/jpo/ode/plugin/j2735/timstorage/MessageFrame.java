@@ -29,4 +29,24 @@ public class MessageFrame extends Asn1Object {
 
    @JsonProperty("MessageFrame")
    private J2735MessageFrame MessageFrame;
+
+   /**
+    * Returns the message frame using the ASN.1 field name.
+    *
+    * @return message frame
+    */
+   @JsonProperty("MessageFrame")
+   public J2735MessageFrame getMessageFrame() {
+      return MessageFrame;
+   }
+
+   /**
+    * Sets the message frame using the ASN.1 field name.
+    *
+    * @param messageFrame message frame
+    */
+   @JsonProperty("MessageFrame")
+   public void setMessageFrame(J2735MessageFrame messageFrame) {
+      MessageFrame = messageFrame;
+   }
 }

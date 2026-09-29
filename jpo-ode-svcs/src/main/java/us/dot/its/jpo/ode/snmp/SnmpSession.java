@@ -70,6 +70,16 @@ public class SnmpSession {
    * @throws IOException when failing to create the snmp Transport
    */
   public SnmpSession(RSU rsu) throws IOException {
+    this(rsu, DefaultUdpTransportMapping::new);
+  }
+
+  /**
+   * Constructor for SnmpSession with an explicit transport factory. Visible for tests so the
+   * transport-construction failure path can be exercised without mocking constructors.
+   *
+   * @throws IOException when the transport factory fails
+   */
+  SnmpSession(RSU rsu, TransportMappingFactory transportFactory) throws IOException {
     Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
 
     // Create a "target" to which a request is sent
@@ -86,7 +96,7 @@ public class SnmpSession {
     }
 
     // Set up the UDP transport mapping over which requests are sent
-    transport = new DefaultUdpTransportMapping();
+    transport = transportFactory.create();
 
     // Instantiate the SNMP instance
     snmp = new Snmp(transport);

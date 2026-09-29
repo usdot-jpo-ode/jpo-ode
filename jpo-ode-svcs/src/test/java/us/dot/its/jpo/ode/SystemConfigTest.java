@@ -15,14 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 
-//import mockit.integration.junit4.JMockit;
-
-//@RunWith(JMockit.class)
 public class SystemConfigTest {
 
     @Test
@@ -44,8 +40,8 @@ public class SystemConfigTest {
         testSystemConfig.setSchemaName(testSchemaName);
         testSystemConfig.setThreadCount(testThreadCount);
 
-        assertEquals("Incorrect schemaName", testSchemaName, testSystemConfig.getSchemaName());
-        assertEquals("Incorrect threadCount", testThreadCount, testSystemConfig.getThreadCount());
+        assertEquals(testSchemaName, testSystemConfig.getSchemaName(), "Incorrect schemaName");
+        assertEquals(testThreadCount, testSystemConfig.getThreadCount(), "Incorrect threadCount");
     }
 
 }

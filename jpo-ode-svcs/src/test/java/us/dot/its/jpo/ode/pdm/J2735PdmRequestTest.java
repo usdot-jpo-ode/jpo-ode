@@ -15,22 +15,15 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.pdm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
-
-//@RunWith(JMockit.class)
 public class J2735PdmRequestTest {
 
-    @Tested
-    J2735PdmRequest testJ2735ProbeDataManagement;
+    J2735PdmRequest testJ2735ProbeDataManagement = new J2735PdmRequest();
 
     @Test
     public void testSetOdeAndGetOde() {

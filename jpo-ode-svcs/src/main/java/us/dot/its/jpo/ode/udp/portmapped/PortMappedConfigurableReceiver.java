@@ -1,16 +1,16 @@
 package us.dot.its.jpo.ode.udp.portmapped;
 
-import io.netty.handler.codec.UnsupportedMessageTypeException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
-import org.apache.tomcat.util.buf.HexUtils;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
+import us.dot.its.jpo.ode.udp.generic.GenericReceiver.UnsupportedMessageTypeException;
 
 /**
  * PortMappedConfigurableReceiver is a class that listens for UDP packets and processes them based on the

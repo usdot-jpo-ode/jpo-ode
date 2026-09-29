@@ -32,6 +32,29 @@ public class OdeMessageFrameMetadata extends OdeLogMetadata {
   @JsonProperty("isCertPresent")
   private boolean isCertPresent;
 
+  /**
+   * Returns whether the message contains a certificate.
+   *
+   * <p>The explicit annotation keeps the historical JSON field name when Jackson inspects both
+   * fields and JavaBean accessors.
+   *
+   * @return true when a certificate is present
+   */
+  @JsonProperty("isCertPresent")
+  public boolean isCertPresent() {
+    return isCertPresent;
+  }
+
+  /**
+   * Sets whether the message contains a certificate.
+   *
+   * @param certPresent whether a certificate is present
+   */
+  @JsonProperty("isCertPresent")
+  public void setCertPresent(boolean certPresent) {
+    isCertPresent = certPresent;
+  }
+
   public OdeMessageFrameMetadata(OdeMsgPayload<?> payload) {
     super(payload);
   }

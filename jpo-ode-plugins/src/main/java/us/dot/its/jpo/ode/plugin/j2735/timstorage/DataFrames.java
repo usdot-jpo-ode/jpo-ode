@@ -29,4 +29,24 @@ public class DataFrames extends OdeObject {
 
   @JsonProperty("TravelerDataFrame")
   private TravelerDataFrame[] TravelerDataFrame;
+
+  /**
+   * Returns the traveler data frames using the ASN.1 field name.
+   *
+   * @return traveler data frames
+   */
+  @JsonProperty("TravelerDataFrame")
+  public TravelerDataFrame[] getTravelerDataFrame() {
+    return TravelerDataFrame;
+  }
+
+  /**
+   * Sets the traveler data frames using the ASN.1 field name.
+   *
+   * @param travelerDataFrame traveler data frames
+   */
+  @JsonProperty("TravelerDataFrame")
+  public void setTravelerDataFrame(TravelerDataFrame[] travelerDataFrame) {
+    TravelerDataFrame = travelerDataFrame;
+  }
 }

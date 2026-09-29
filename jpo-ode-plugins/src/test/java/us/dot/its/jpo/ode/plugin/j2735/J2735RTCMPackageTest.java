@@ -15,21 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-//import mockit.integration.junit4.JMockit;
-
-//@RunWith(JMockit.class)
 public class J2735RTCMPackageTest {
-   @Tested
-   J2735RTCMPackage pac;
+   J2735RTCMPackage pac = new J2735RTCMPackage();
 
    @Test
    public void testGettersAndSetters() {

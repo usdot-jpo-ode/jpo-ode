@@ -8,19 +8,13 @@ import java.nio.file.Paths;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -28,7 +22,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
@@ -41,8 +34,8 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @EnableConfigurationProperties
 @SpringBootTest(
-    classes = {OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class,
-        SerializationConfig.class, TestMetricsConfig.class,},
+    classes = { OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class,
+        SerializationConfig.class, TestMetricsConfig.class, RawEncodedJsonTopics.class, KafkaProperties.class },
     properties = {"ode.receivers.generic.receiver-port=15460",
         "ode.kafka.topics.raw-encoded-json.bsm=topic.GenericReceiverTestBSM",
         "ode.kafka.topics.raw-encoded-json.map=topic.GenericReceiverTestMAP",
@@ -54,10 +47,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
         "ode.kafka.topics.raw-encoded-json.sdsm=topic.GenericReceiverTestSDSM",
         "ode.kafka.topics.raw-encoded-json.rtcm=topic.GenericReceiverTestRTCM",
         "ode.kafka.topics.raw-encoded-json.rsm=topic.GenericReceiverTestRSM"})
-@ContextConfiguration(classes = {UDPReceiverProperties.class, OdeKafkaProperties.class,
-    RawEncodedJsonTopics.class, KafkaProperties.class})
 @DirtiesContext
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GenericReceiverTest {
 
   @Autowired
@@ -71,109 +61,141 @@ class GenericReceiverTest {
 
   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
 
-  private GenericReceiver genericReceiver;
-  private ExecutorService executorService;
-  private Consumer<String, String> consumer;
-  private Clock prevClock;
-
-  @BeforeAll
-  void startReceiver() {
+  @Test
+  void testRun() throws Exception {
     String[] topics = {rawEncodedJsonTopics.getBsm(), rawEncodedJsonTopics.getMap(),
         rawEncodedJsonTopics.getPsm(), rawEncodedJsonTopics.getSpat(),
         rawEncodedJsonTopics.getSsm(), rawEncodedJsonTopics.getTim(), rawEncodedJsonTopics.getSrm(),
-        rawEncodedJsonTopics.getSdsm(), rawEncodedJsonTopics.getRtcm(),
-        rawEncodedJsonTopics.getRsm()};
+        rawEncodedJsonTopics.getSdsm(), rawEncodedJsonTopics.getRtcm(), rawEncodedJsonTopics.getRsm()};
     EmbeddedKafkaHolder.addTopics(topics);
 
-    genericReceiver = new GenericReceiver(udpReceiverProperties.getGeneric(), kafkaTemplate,
-        rawEncodedJsonTopics);
-    executorService = Executors.newCachedThreadPool();
+    GenericReceiver genericReceiver = new GenericReceiver(udpReceiverProperties.getGeneric(),
+        kafkaTemplate, rawEncodedJsonTopics);
+
+    ExecutorService executorService = Executors.newCachedThreadPool();
     executorService.submit(genericReceiver);
 
-    var consumerProps = KafkaTestUtils.consumerProps("GenericReceiverTest", "true", embeddedKafka);
-    consumer = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(),
-        new StringDeserializer()).createConsumer();
-    embeddedKafka.consumeFromEmbeddedTopics(consumer, topics);
-
-    prevClock = DateTimeUtils
-        .setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
-  }
-
-  @AfterAll
-  void cleanup() {
-    genericReceiver.setStopped(true);
-    executorService.shutdown();
-    consumer.close();
-    DateTimeUtils.setClock(prevClock);
-  }
-
-  private record MsgFiles(String input, String expected) {}
-
-  private static Map<String, MsgFiles> buildFiles(String variant) {
-    String base = "src/test/resources/us/dot/its/jpo/ode/udp/";
-    String srmInput = variant.isEmpty()
-        ? base + "srm/SrmReceiverTest_ValidData.txt"
-        : base + "srm/SrmReceiverTest_ValidData" + variant + ".txt";
-    String srmExpected = variant.isEmpty()
-        ? base + "srm/SrmReceiverTest_ExpectedOutput.json"
-        : base + "srm/SrmReceiverTest_ExpectedOutput" + variant + ".json";
-    return Map.of(
-        "PSM",  new MsgFiles(base + "psm/PsmReceiverTest_ValidPSM" + variant + ".txt",
-                             base + "psm/PsmReceiverTest_ValidPSM" + variant + "_expected.json"),
-        "BSM",  new MsgFiles(base + "bsm/BsmReceiverTest_ValidBSM" + variant + ".txt",
-                             base + "bsm/BsmReceiverTest_ValidBSM" + variant + "_expected.json"),
-        "MAP",  new MsgFiles(base + "map/MapReceiverTest_ValidMAP" + variant + ".txt",
-                             base + "map/MapReceiverTest_ValidMAP" + variant + "_expected.json"),
-        "SPAT", new MsgFiles(base + "spat/SpatReceiverTest_ValidSPAT" + variant + ".txt",
-                             base + "spat/SpatReceiverTest_ValidSPAT" + variant + "_expected.json"),
-        "SSM",  new MsgFiles(base + "ssm/SsmReceiverTest_ValidSSM" + variant + ".txt",
-                             base + "ssm/SsmReceiverTest_ValidSSM" + variant + "_expected.json"),
-        "TIM",  new MsgFiles(base + "tim/TimReceiverTest_ValidTIM" + variant + ".txt",
-                             base + "tim/TimReceiverTest_ValidTIM" + variant + "_expected.json"),
-        "SRM",  new MsgFiles(srmInput, srmExpected),
-        "SDSM", new MsgFiles(base + "sdsm/SdsmReceiverTest_ValidSDSM" + variant + ".txt",
-                             base + "sdsm/SdsmReceiverTest_ValidSDSM" + variant + "_expected.json"),
-        "RTCM", new MsgFiles(base + "rtcm/RtcmReceiverTest_ValidRTC" + variant + ".txt",
-                             base + "rtcm/RtcmReceiverTest_ValidRTC" + variant + "_expected.json"),
-        "RSM",  new MsgFiles(base + "rsm/RsmReceiverTest_ValidRSM" + variant + ".txt",
-                             base + "rsm/RsmReceiverTest_ValidRSM" + variant + "_expected.json")
-    );
-  }
-
-  @Test
-  void testRawJ2735() throws Exception {
-    runScenario(buildFiles(""));
-  }
-
-  @Test
-  void testWithSignature() throws Exception {
-    runScenario(buildFiles("_WithSignature"));
-  }
-
-  private void runScenario(Map<String, MsgFiles> files) throws Exception {
     TestUDPClient udpClient =
         new TestUDPClient(udpReceiverProperties.getGeneric().getReceiverPort());
 
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getPsm(), files.get("PSM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getBsm(), files.get("BSM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getMap(), files.get("MAP"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getSpat(), files.get("SPAT"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getSsm(), files.get("SSM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getTim(), files.get("TIM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getSrm(), files.get("SRM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getSdsm(), files.get("SDSM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getRtcm(), files.get("RTCM"));
-    sendAndAssert(udpClient, rawEncodedJsonTopics.getRsm(), files.get("RSM"));
+    var consumerProps = KafkaTestUtils.consumerProps(embeddedKafka, "GenericReceiverTest", true);
+    var cf = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(),
+        new StringDeserializer());
+    var consumer = cf.createConsumer();
+    embeddedKafka.consumeFromEmbeddedTopics(consumer, topics);
+
+    final Clock prevClock = DateTimeUtils
+        .setClock(Clock.fixed(Instant.parse("2024-11-26T23:53:21.120Z"), ZoneOffset.UTC));
+
+    // Test the PSM path
+    String psmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/psm/PsmReceiverTest_ValidPSM.txt"));
+    String expectedPsm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/psm/PsmReceiverTest_ValidPSM_expected.json"));
+
+    udpClient.send(psmFileContent);
+    var psmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getPsm());
+    assertExpected("Produced PSM message does not match expected", psmRecord.value(), expectedPsm);
+
+    // Test the BSM path
+    String bsmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/bsm/BsmReceiverTest_ValidBSM.txt"));
+    String expectedBsm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/bsm/BsmReceiverTest_ValidBSM_expected.json"));
+    udpClient.send(bsmFileContent);
+
+    var bsmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getBsm());
+    assertExpected("Produced BSM message does not match expected", bsmRecord.value(), expectedBsm);
+
+    // Test the MAP path
+    String mapFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/map/MapReceiverTest_ValidMAP.txt"));
+    String expectedMap = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/map/MapReceiverTest_ValidMAP_expected.json"));
+    udpClient.send(mapFileContent);
+
+    var mapRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getMap());
+    assertExpected("Produced MAP message does not match expected", mapRecord.value(), expectedMap);
+
+    // Test the SPAT path
+    String spatFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/spat/SpatReceiverTest_ValidSPAT.txt"));
+    String expectedSpat = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/spat/SpatReceiverTest_ValidSPAT_expected.json"));
+    udpClient.send(spatFileContent);
+
+    var spatRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSpat());
+    assertExpected("Produced SPAT message does not match expected", spatRecord.value(),
+        expectedSpat);
+
+    // Test the SSM path
+    String ssmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/ssm/SsmReceiverTest_ValidSSM.txt"));
+    String expectedSsm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/ssm/SsmReceiverTest_ValidSSM_expected.json"));
+    udpClient.send(ssmFileContent);
+
+    var ssmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSsm());
+    assertExpected("Produced SSM message does not match expected", ssmRecord.value(), expectedSsm);
+
+    // Test the TIM path
+    String timFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/tim/TimReceiverTest_ValidTIM.txt"));
+    String expectedTim = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/tim/TimReceiverTest_ValidTIM_expected.json"));
+    udpClient.send(timFileContent);
+
+    var timRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getTim());
+    assertExpected("Produced TIM message does not match expected", timRecord.value(), expectedTim);
+
+    // Test the SRM path
+    String srmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/srm/SrmReceiverTest_ValidData.txt"));
+    String expectedSrm = Files.readString(Paths
+        .get("src/test/resources/us/dot/its/jpo/ode/udp/srm/SrmReceiverTest_ExpectedOutput.json"));
+    udpClient.send(srmFileContent);
+
+    var srmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSrm());
+    assertExpected("Produced SRM message does not match expected", srmRecord.value(), expectedSrm);
+
+    // Test the SDSM path
+    String sdsmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM.txt"));
+    String expectedSdsm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/sdsm/SdsmReceiverTest_ValidSDSM_expected.json"));
+    udpClient.send(sdsmFileContent);
+
+    var sdsmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getSdsm());
+    assertExpected("Produced SDSM message does not match expected", sdsmRecord.value(),
+        expectedSdsm);
+
+    // Test the RTCM path
+    String rtcmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/rtcm/RtcmReceiverTest_ValidRTC.txt"));
+    String expectedRtcm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/rtcm/RtcmReceiverTest_ValidRTC_expected.json"));
+    udpClient.send(rtcmFileContent);
+
+    var rtcmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getRtcm());
+    assertExpected("Produced RTCM message does not match expected", rtcmRecord.value(),
+        expectedRtcm);
+
+    // Test the RSM path
+    String rsmFileContent = Files.readString(
+        Paths.get("src/test/resources/us/dot/its/jpo/ode/udp/rsm/RsmReceiverTest_ValidRSM.txt"));
+    String expectedRsm = Files.readString(Paths.get(
+        "src/test/resources/us/dot/its/jpo/ode/udp/rsm/RsmReceiverTest_ValidRSM_expected.json"));
+    udpClient.send(rsmFileContent);
+
+    var rsmRecord = KafkaTestUtils.getSingleRecord(consumer, rawEncodedJsonTopics.getRsm());
+    assertExpected("Produced RSM message does not match expected", rsmRecord.value(),
+        expectedRsm);
+
+    DateTimeUtils.setClock(prevClock);
   }
 
-  private void sendAndAssert(TestUDPClient udpClient, String topic, MsgFiles files)
-      throws Exception {
-    String fileContent = Files.readString(Paths.get(files.input()));
-    String expected = Files.readString(Paths.get(files.expected()));
-    udpClient.send(fileContent);
-    ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, topic);
-
-    JSONObject producedJson = new JSONObject(record.value());
+  private static void assertExpected(String failureMsg, String actual, String expected) {
+    JSONObject producedJson = new JSONObject(actual);
     JSONObject expectedJson = new JSONObject(expected);
 
     assertNotEquals(expectedJson.getJSONObject("metadata").get("serialId"),
@@ -181,6 +203,6 @@ class GenericReceiverTest {
     expectedJson.getJSONObject("metadata").remove("serialId");
     producedJson.getJSONObject("metadata").remove("serialId");
 
-    assertEquals(expectedJson.toString(2), producedJson.toString(2));
+    assertEquals(expectedJson.toString(2), producedJson.toString(2), failureMsg);
   }
 }

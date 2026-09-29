@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 572682
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,21 +15,22 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import mockit.Capturing;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -86,17 +87,17 @@ public class EventDescriptionBuilderTest {
       J2735BitString actualValue = EventDescriptionBuilder.genericEventDescription(testNode).getHeading();
 
       // bit 0 = false
-      assertFalse("Incorrect bit 0", actualValue.get("FROM000_0TO022_5DEGREES"));
+      assertFalse(actualValue.get("FROM000_0TO022_5DEGREES"), "Incorrect bit 0");
       // bit 1 = true
-      assertTrue("Incorrect bit 1", actualValue.get("FROM022_5TO045_0DEGREES"));
+      assertTrue(actualValue.get("FROM022_5TO045_0DEGREES"), "Incorrect bit 1");
       // bit 8 = false
-      assertFalse("Incorrect bit 8", actualValue.get("FROM180_0TO202_5DEGREES"));
+      assertFalse(actualValue.get("FROM180_0TO202_5DEGREES"), "Incorrect bit 8");
       // bit 9 = true
-      assertTrue("Incorrect bit 9", actualValue.get("FROM202_5TO225_0DEGREES"));
+      assertTrue(actualValue.get("FROM202_5TO225_0DEGREES"), "Incorrect bit 9");
       // bit 14 = false
-      assertFalse("Incorrect bit 14", actualValue.get("FROM315_0TO337_5DEGREES"));
+      assertFalse(actualValue.get("FROM315_0TO337_5DEGREES"), "Incorrect bit 14");
       // bit 15 = true
-      assertTrue("Incorrect bit 15", actualValue.get("FROM337_5TO360_0DEGREES"));
+      assertTrue(actualValue.get("FROM337_5TO360_0DEGREES"), "Incorrect bit 15");
    }
 
    @Test
@@ -111,27 +112,29 @@ public class EventDescriptionBuilderTest {
    }
 
    @Test
-   public void testEmptyRegional(@Capturing CodecUtils capturingCodecUtils) {
+   public void testEmptyRegional() {
+      try (MockedStatic<CodecUtils> ignored = Mockito.mockStatic(CodecUtils.class)) {
+         ObjectNode testNode = JsonUtils.newNode();
+         testNode.put("typeEvent", 3);
+         testNode.set("regional", JsonUtils.newNode());
 
-      ObjectNode testNode = JsonUtils.newNode();
-      testNode.put("typeEvent", 3);
-      testNode.set("regional", JsonUtils.newNode());
-
-      assertEquals(0, EventDescriptionBuilder.genericEventDescription(testNode).getRegional().size());
+         assertEquals(0, EventDescriptionBuilder.genericEventDescription(testNode).getRegional().size());
+      }
    }
 
    @Test
-   public void testRegional(@Capturing CodecUtils capturingCodecUtils) {
+   public void testRegional() {
+      try (MockedStatic<CodecUtils> ignored = Mockito.mockStatic(CodecUtils.class)) {
+         ArrayNode regions = JsonUtils.newArrayNode();
+         regions.add(JsonUtils.newNode().put("regionId", 5).put("regExtValue", "something"));
 
-      ArrayNode regions = JsonUtils.newArrayNode();
-      regions.add(JsonUtils.newNode().put("regionId", 5).put("regExtValue", "something"));
+         ObjectNode testNode = JsonUtils.newNode();
+         testNode.put("typeEvent", 3);
+         testNode.set("regional", regions);
 
-      ObjectNode testNode = JsonUtils.newNode();
-      testNode.put("typeEvent", 3);
-      testNode.set("regional", regions);
-
-      assertEquals(Integer.valueOf(5),
-            EventDescriptionBuilder.genericEventDescription(testNode).getRegional().get(0).getId());
+         assertEquals(Integer.valueOf(5),
+               EventDescriptionBuilder.genericEventDescription(testNode).getRegional().get(0).getId());
+      }
    }
 
    @Test

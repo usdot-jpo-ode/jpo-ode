@@ -15,14 +15,11 @@
  ******************************************************************************/
 
 package us.dot.its.jpo.ode.plugin.j2735;
-
-import mockit.Tested;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class J2735SupplementalVehicleExtensionsTest {
-  @Tested
-  J2735SupplementalVehicleExtensions sve;
+  J2735SupplementalVehicleExtensions sve = new J2735SupplementalVehicleExtensions();
 
   @Test
   void testGettersAndSetters() {
