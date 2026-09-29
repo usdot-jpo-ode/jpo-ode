@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>Native {@code MessageFrameCodec} buffer parameters map to:
  * <ul>
- *   <li>{@code textBufferSize} — XER text buffer (needed for both encode and decode)</li>
+ *   <li>{@code textBufferSize} — XER/JER text buffer</li>
  *   <li>{@code uperBufferSize} — UPER binary buffer</li>
  *   <li>{@code errorBufferSize} — native error message buffer</li>
  * </ul>
@@ -27,8 +27,8 @@ public class FfmlibProperties {
   private String nativeLibraryPath = "";
 
   /**
-   * Text buffer size in bytes for XER encode/decode (native {@code textBufferSize}).
-   * Default 2 MiB — large MAP/TIM XER output can exceed smaller sizes.
+   * Text buffer size in bytes for XER encode and JER decode (native {@code textBufferSize}).
+   * Default 2 MiB — large MAP/TIM intermediate output can exceed smaller sizes.
    */
   private long textBufferSize = 2097152L;
 

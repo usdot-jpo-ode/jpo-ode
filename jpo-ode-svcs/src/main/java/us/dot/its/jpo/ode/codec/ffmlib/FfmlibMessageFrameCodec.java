@@ -60,7 +60,8 @@ public class FfmlibMessageFrameCodec {
 
   public IntermediateDecodeResult uperToIntermediate(byte[] uperBytes) {
     return new IntermediateDecodeResult(
-        decodeToXer(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER), IntermediateEncoding.XER);
+        convert(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER),
+        IntermediateEncoding.JER);
   }
 
   public String uperToXer(byte[] uperBytes) {
@@ -82,10 +83,10 @@ public class FfmlibMessageFrameCodec {
 
   /** Intermediate text encodings produced by the native codec. */
   public enum IntermediateEncoding {
-    XER
+    JER
   }
 
-  /** Native decode result containing intermediate text and its encoding. */
-  public record IntermediateDecodeResult(String text, IntermediateEncoding encoding) {
+  /** Native decode result containing UTF-8 JER bytes and their encoding. */
+  public record IntermediateDecodeResult(byte[] bytes, IntermediateEncoding encoding) {
   }
 }

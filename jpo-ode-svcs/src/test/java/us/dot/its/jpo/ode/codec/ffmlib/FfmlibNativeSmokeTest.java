@@ -1,12 +1,16 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import j2735ffm.AsnEncoding;
 import j2735ffm.MessageFrameCodec;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
@@ -47,14 +51,21 @@ class FfmlibNativeSmokeTest {
         Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
         messageFrameCodec, new SimpleMeterRegistry());
-    IntermediateDecodeResult result = codec.uperToIntermediate(HexUtils.fromHexString(BSM_HEX));
+    byte[] uper = HexUtils.fromHexString(BSM_HEX);
+    IntermediateDecodeResult result = codec.uperToIntermediate(uper);
 
     assertNotNull(result);
-    assertNotNull(result.text());
-    assertFalse(result.text().isBlank());
-    assertTrue(
-        result.text().contains("MessageFrame") || result.text().contains("basicSafetyMessage"),
-        () -> "Unexpected decode output: " + result.text().substring(0, Math.min(200, result.text().length())));
+    assertEquals(FfmlibMessageFrameCodec.IntermediateEncoding.JER, result.encoding());
+    assertNotNull(result.bytes());
+    assertFalse(result.bytes().length == 0);
+    String jer = new String(result.bytes(), StandardCharsets.UTF_8);
+    assertTrue(jer.contains("BasicSafetyMessage"), () -> "Unexpected JER output: " + jer);
+    assertArrayEquals(result.bytes(), codec.convert(uper, "MessageFrame", AsnEncoding.UPER,
+        AsnEncoding.JER));
+
+    String xer = codec.uperToXer(uper);
+    assertArrayEquals(uper, codec.xerToUper(xer),
+        "XER-based encoding must remain compatible with FFMLib beta2");
   }
 
   private static Path nativeLibraryOrNull() {
