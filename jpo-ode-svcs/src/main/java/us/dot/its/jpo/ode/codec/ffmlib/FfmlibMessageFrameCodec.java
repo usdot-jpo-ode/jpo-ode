@@ -86,6 +86,38 @@ public class FfmlibMessageFrameCodec {
         IntermediateEncoding.JER);
   }
 
+  /** Uses compact native buffers for small BSMs and retries with configured full buffers on error. */
+  public IntermediateDecodeResult uperToIntermediate(byte[] uperBytes,
+      SupportedMessageType knownType) {
+    if (knownType != SupportedMessageType.BSM || fastBsmCodec == codec) {
+      return uperToIntermediate(uperBytes);
+    }
+    long start = System.nanoTime();
+    String outcome = "success";
+    try {
+      byte[] jerBytes;
+      try {
+        jerBytes = fastBsmCodec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
+            AsnEncoding.JER);
+      } catch (RuntimeException fastPathFailure) {
+        try {
+          jerBytes = codec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
+              AsnEncoding.JER);
+        } catch (RuntimeException fullPathFailure) {
+          fullPathFailure.addSuppressed(fastPathFailure);
+          throw fullPathFailure;
+        }
+      }
+      return new IntermediateDecodeResult(jerBytes, IntermediateEncoding.JER);
+    } catch (RuntimeException error) {
+      outcome = "failure";
+      throw error;
+    } finally {
+      timer(MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER, outcome)
+          .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+    }
+  }
+
   public String uperToXer(byte[] uperBytes) {
     return decodeToXer(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER);
   }

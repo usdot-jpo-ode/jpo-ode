@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,7 +11,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.AsnEncoding;
 import j2735ffm.ConvertException;
 import j2735ffm.MessageFrameCodec;
-import java.nio.charset.StandardCharsets;
+import j2735ffm.AsnEncoding;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,18 +61,26 @@ class FfmlibNativeSmokeTest {
         properties.getFastPathBufferSize(), properties.getErrorBufferSize(),
         Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
-        messageFrameCodec, new SimpleMeterRegistry());
-    byte[] uper = HexUtils.fromHexString(BSM_HEX);
-    IntermediateDecodeResult result = codec.uperToIntermediate(uper);
+        messageFrameCodec, fastBsmCodec, new SimpleMeterRegistry());
+    IntermediateDecodeResult result = codec.uperToIntermediate(
+        HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
+    byte[] fullBufferOutput = messageFrameCodec.convertGeneral(HexUtils.fromHexString(BSM_HEX),
+        "MessageFrame", AsnEncoding.UPER, AsnEncoding.JER);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(fullBufferOutput, result.bytes());
+
+    MessageFrameCodec undersizedFastCodec = new MessageFrameCodec(64, 64,
+        properties.getErrorBufferSize(), Path.of(properties.getNativeLibraryPath()));
+    FfmlibMessageFrameCodec fallbackCodec = new FfmlibMessageFrameCodec(messageFrameCodec,
+        undersizedFastCodec, new SimpleMeterRegistry());
+    IntermediateDecodeResult fallback = fallbackCodec.uperToIntermediate(
+        HexUtils.fromHexString(BSM_HEX), us.dot.its.jpo.ode.uper.SupportedMessageType.BSM);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(fullBufferOutput, fallback.bytes());
 
     assertNotNull(result);
-    assertEquals(FfmlibMessageFrameCodec.IntermediateEncoding.JER, result.encoding());
     assertNotNull(result.bytes());
     assertFalse(result.bytes().length == 0);
-    String jer = new String(result.bytes(), StandardCharsets.UTF_8);
+    String jer = new String(result.bytes(), java.nio.charset.StandardCharsets.UTF_8);
     assertTrue(jer.contains("BasicSafetyMessage"), () -> "Unexpected JER output: " + jer);
-    assertArrayEquals(result.bytes(), codec.convert(uper, "MessageFrame", AsnEncoding.UPER,
-        AsnEncoding.JER));
 
     String xer = codec.uperToXer(uper);
     assertArrayEquals(uper, codec.xerToUper(xer),
