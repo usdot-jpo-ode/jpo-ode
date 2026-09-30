@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Run one uncapped Linux FFMLib acceptance workload and restore Compose limits."""
+"""Run one uncapped Linux FFMLib workload and restore Compose limits."""
 
+import argparse
 import concurrent.futures
 import csv
 import datetime as dt
@@ -31,8 +32,12 @@ def scrub(value):
 
 
 class Runner:
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, count=300000, warmup=1000, rate=1000):
+        self.services = SERVICES
         self.output_dir = output_dir
+        self.count = count
+        self.warmup = warmup
+        self.rate = rate
         self.log_path = output_dir / "runner.log"
         self.log = self.log_path.open("w", encoding="utf-8")
         self.compose_base = ["docker", "compose", "--profile", "all",
@@ -136,7 +141,7 @@ class Runner:
         result = self.command("compose-config", self.compose("config", "--format", "json"),
                               log_output=False)
         config = json.loads(result.stdout)
-        for service in SERVICES:
+        for service in self.services:
             definition = config["services"][service]
             resources = definition.get("deploy", {}).get("resources", {})
             limits = resources.get("limits", {}) or {}
@@ -209,12 +214,12 @@ class Runner:
         }
 
     def check_original_stack(self):
-        for service in SERVICES:
+        for service in self.services:
             state = self.inspect_container(service)
             if state["health"] != "healthy":
                 raise RuntimeError(f"{service} is not healthy before the uncapped run")
             self.original_containers[service] = state
-        for service in SERVICES:
+        for service in self.services:
             self.runtime["containers_before_traffic"][service] = self.original_containers[service]
         self._write_runtime()
 
@@ -256,7 +261,7 @@ class Runner:
             self.compose("config", "--format", "json", override=True), log_output=False)
         config = json.loads(result.stdout)
         checks = {}
-        for service in SERVICES:
+        for service in self.services:
             definition = config["services"][service]
             hard_limits = definition.get("deploy", {}).get("resources", {}).get("limits") or {}
             direct_limits = {key: definition.get(key) for key in (
@@ -347,7 +352,7 @@ class Runner:
             "up", "-d", "--no-deps", "--force-recreate", "ode", override=True), timeout=600)
         self.wait_healthy("ode")
         verified = {}
-        for service in SERVICES:
+        for service in self.services:
             container = self.inspect_container(service)
             result = self.uncapped_state(service, container)
             verified[service] = result
@@ -363,12 +368,23 @@ class Runner:
         snapshot["health_status"] = self.health_status(state["id"])
         return snapshot
 
+    def workload_command(self, benchmark_csv_path):
+        return self.compose("run", "--rm", "--no-deps", "decode-benchmark",
+            "--mode", "ffm", "--broker", "kafka:9094",
+            "--fixture", "/tests/udpsender_bsm.py", "--udp-host", "ode",
+            "--udp-port", "46800", "--metrics-url", "http://ode:8080/actuator/prometheus",
+            "--health-url", "http://ode:8080/actuator/health", "--count", str(self.count),
+            "--warmup", str(self.warmup), "--rate", str(self.rate), "--max-p95-ms", "5",
+            "--quiet-period-seconds", "15", "--drain-timeout-seconds", "120",
+            "--output", "/output/" + benchmark_csv_path.parent.name + "/"
+                + benchmark_csv_path.name)
+
     def collect_workload(self, benchmark_csv_path, resource_samples_path):
-        states = {service: self.inspect_container(service) for service in SERVICES}
-        previous = {service: self.sample_one(service, states[service]) for service in SERVICES}
+        states = {service: self.inspect_container(service) for service in self.services}
+        previous = {service: self.sample_one(service, states[service]) for service in self.services}
         baselines = previous.copy()
         previous_time = time.monotonic()
-        last_success_time = {service: previous_time for service in SERVICES}
+        last_success_time = {service: previous_time for service in self.services}
         scheduled = previous_time + SAMPLE_INTERVAL_SECONDS
         rows = []
         totals = {service: {"cpu_usage_usec": 0, "cpu_interval_percent": [],
@@ -379,18 +395,10 @@ class Runner:
                             "memory_events_high": 0, "memory_events_max": 0,
                             "memory_events_oom": 0, "memory_events_oom_kill": 0,
                             "health_status_samples": 0, "unhealthy_samples": 0,
-                            "errors": []} for service in SERVICES}
-        command = self.compose("run", "--rm", "--no-deps", "decode-benchmark",
-            "--mode", "ffm", "--broker", "kafka:9094",
-            "--fixture", "/tests/udpsender_bsm.py", "--udp-host", "ode",
-            "--udp-port", "46800", "--metrics-url", "http://ode:8080/actuator/prometheus",
-            "--health-url", "http://ode:8080/actuator/health", "--count", "300000",
-            "--warmup", "1000", "--rate", "1000", "--max-p95-ms", "5",
-            "--quiet-period-seconds", "15", "--drain-timeout-seconds", "120",
-            "--output", "/output/" + benchmark_csv_path.parent.name + "/"
-                + benchmark_csv_path.name)
-        self.runtime["benchmark"] = {"invoked": True, "mode": "ffm", "count": 300000,
-            "warmup": 1000, "rate_per_second": 1000,
+                            "errors": []} for service in self.services}
+        command = self.workload_command(benchmark_csv_path)
+        self.runtime["benchmark"] = {"invoked": True, "mode": getattr(self, "mode", "ffm"), "count": self.count,
+            "warmup": self.warmup, "rate_per_second": self.rate,
             "output_csv": str(benchmark_csv_path),
             "resource_samples_csv": str(resource_samples_path)}
         self._write_runtime()
@@ -418,9 +426,9 @@ class Runner:
                     snapshots = {}
                     sample_errors = {}
                     with concurrent.futures.ThreadPoolExecutor(
-                            max_workers=len(SERVICES)) as pool:
+                            max_workers=len(self.services)) as pool:
                         futures = {pool.submit(self.sample_one, service, states[service]): service
-                                   for service in SERVICES}
+                                   for service in self.services}
                         for future, service in futures.items():
                             try:
                                 snapshots[service] = future.result()
@@ -430,14 +438,14 @@ class Runner:
                                 self.runtime["sample_errors"].append(message)
                                 sample_errors[service] = message
                                 snapshots[service] = {}
-                    for service in SERVICES:
+                    for service in self.services:
                         interval_elapsed = sample_time - last_success_time[service]
                         row, usage, interval_percent = sample_row(service, states[service],
                             snapshots[service], previous[service], interval_elapsed,
                             sample_time - start, cadence, sample_errors.get(service))
                         rows.append(row)
                         totals[service]["health_status_samples"] += 1
-                        if row["health_status"] != "healthy":
+                        if row["health_status"] != ("running" if service == "adm" else "healthy"):
                             totals[service]["unhealthy_samples"] += 1
                         if service not in sample_errors:
                             aggregate_sample(totals[service], snapshots[service], usage,
@@ -473,9 +481,9 @@ class Runner:
                      if row["service"] == service]),
                 "maximum_cadence_seconds": max(
                     [row["actual_cadence_seconds"] for row in rows
-                     if row["service"] == service], default=None)} for service in SERVICES}}
+                     if row["service"] == service], default=None)} for service in self.services}}
         elapsed = max(0.001, time.monotonic() - start)
-        for service in SERVICES:
+        for service in self.services:
             set_counter_deltas(totals[service], baselines[service], previous[service])
             totals[service]["average_cpu_percent"] = \
                 totals[service]["cpu_usage_usec"] / (
@@ -526,17 +534,17 @@ class Runner:
                 "up", "-d", "--no-deps", "--force-recreate", "ode"), timeout=600)
             if ode_exit:
                 raise RuntimeError(f"Compose returned {ode_exit} restoring ODE")
-            after = {service: self.inspect_container(service) for service in SERVICES}
+            after = {service: self.inspect_container(service) for service in self.services}
             self.runtime["restore"]["containers"] = after
             mismatches = []
-            for service in SERVICES:
+            for service in self.services:
                 if after[service]["limits"] != self.original_containers[service]["limits"]:
                     mismatches.append(f"{service} container limits differ from their original values")
             if mismatches:
                 raise RuntimeError("; ".join(mismatches))
             self.runtime["restore"]["limits_restored"] = True
             unhealthy = []
-            for service in SERVICES:
+            for service in self.services:
                 try:
                     self.wait_healthy(service)
                 except RuntimeError:
@@ -550,7 +558,7 @@ class Runner:
                 f"{type(error).__name__}: {scrub(str(error))}")
             try:
                 restored = {}
-                for service in SERVICES:
+                for service in self.services:
                     original = self.original_containers[service]["limits"]
                     current = self.inspect_container(service)
                     update = ["docker", "update"]
@@ -572,7 +580,7 @@ class Runner:
                 self.runtime["restore"]["fallback_containers"] = restored
                 self.runtime["restore"]["limits_restored"] = True
                 unhealthy = []
-                for service in SERVICES:
+                for service in self.services:
                     try:
                         self.wait_healthy(service)
                     except RuntimeError:
@@ -700,12 +708,21 @@ def set_counter_deltas(result, baseline, final):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--count", type=int, default=300000)
+    parser.add_argument("--warmup", type=int, default=1000)
+    parser.add_argument("--rate", type=int, default=1000)
+    parser.add_argument("--label", choices=("compact-before", "compact-after"))
+    args = parser.parse_args()
+    if args.count <= 0 or args.warmup < 0 or args.rate <= 0:
+        parser.error("count and rate must be positive and warmup must be nonnegative")
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
-    output_dir = OUTPUT_ROOT / f"linux-{stamp}"
+    output_dir = OUTPUT_ROOT / f"linux-{args.label}-{stamp}" if args.label \
+        else OUTPUT_ROOT / f"linux-{stamp}"
     output_dir.mkdir(parents=True, exist_ok=False)
     csv_path = output_dir / f"linux-{stamp}.csv"
     resource_samples_path = output_dir / "resource-samples.csv"
-    runner = Runner(output_dir)
+    runner = Runner(output_dir, count=args.count, warmup=args.warmup, rate=args.rate)
     def interrupt(signum, _frame):
         raise KeyboardInterrupt(f"received signal {signum}")
 
