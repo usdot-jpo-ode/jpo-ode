@@ -8,10 +8,22 @@ from decode_benchmark import (classify_latency, complete_window_rates, is_draine
                               latency_windows, MetricSnapshot, QuietPeriod,
                               measured_message_ids, metric_estimates, parse_ffmlib_metrics,
                               parse_outstanding_metrics, parse_stage_metrics, percent,
-                              validation_errors)
+                              validation_errors, extract_message_id)
 
 
 class DecodeBenchmarkTest(unittest.TestCase):
+
+    def test_packet_corpus_correlates_raw_and_non_bsm_json(self):
+        value = '{"metadata":{"asn1":"002112ab"},"payload":{"data":{"messageId":33}}}'
+        identities = {bytes.fromhex("002112AB"): 123}
+        self.assertEqual(123, extract_message_id("topic.OdeRawEncodedRSMJson", value, identities))
+        self.assertEqual(123, extract_message_id("topic.OdeRsmJson", value, identities))
+
+    def test_packet_corpus_rejects_unknown_or_missing_original_bytes(self):
+        with self.assertRaises(KeyError):
+            extract_message_id("topic.OdeMapJson", '{"metadata":{"asn1":"002100"}}', {})
+        with self.assertRaises(KeyError):
+            extract_message_id("topic.OdeMapJson", '{"metadata":{}}', {})
 
     def test_percentile_uses_linear_interpolation(self):
         self.assertAlmostEqual(3.85, percent([1, 2, 3, 4], .95))

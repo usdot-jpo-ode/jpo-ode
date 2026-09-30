@@ -68,7 +68,6 @@ services:
       ODE_ASN1_CODEC_MODE: ${ODE_ASN1_CODEC_MODE:-external}
       ODE_FFM_LISTENER_CONCURRENCY: ${ODE_FFM_LISTENER_CONCURRENCY:-4}
       ODE_FFM_STARTUP_TIMEOUT: ${ODE_FFM_STARTUP_TIMEOUT:-120s}
-      ODE_FFMLIB_FAST_PATH_BUFFER_SIZE: ${ODE_FFMLIB_FAST_PATH_BUFFER_SIZE:-32768}
       ODE_FFM_PRODUCER_LINGER_MS: ${ODE_FFM_PRODUCER_LINGER_MS:-0}
       ODE_FFM_PRODUCER_COMPRESSION_TYPE: ${ODE_FFM_PRODUCER_COMPRESSION_TYPE:-none}
       ODE_FFM_SYNC_COMMITS: ${ODE_FFM_SYNC_COMMITS:-false}
@@ -319,14 +318,15 @@ services:
       - benchmark
     build:
       context: .
-      dockerfile: scripts/tests/Dockerfile.benchmark
+      dockerfile: scripts/benchmarks/Dockerfile
     image: jpoode_decode_benchmark:python-3.12.5
-    entrypoint: ["python", "/tests/decode_benchmark.py"]
+    entrypoint: ["python", "/benchmarks/decode_benchmark.py"]
     environment:
       DECODE_BENCHMARK_UDP_HOST: ode
       DECODE_BENCHMARK_METRICS_URL: http://ode:8080/actuator/prometheus
       DECODE_BENCHMARK_HEALTH_URL: http://ode:8080/actuator/health
     volumes:
+      - ./scripts/benchmarks:/benchmarks:ro
       - ./scripts/tests:/tests:ro
       - ./scripts/tests/output:/output
     depends_on:

@@ -1,4 +1,4 @@
-"""Correlate UDP BSMs with durable raw and decoded JSON Kafka records.
+"""Correlate UDP messages with durable raw and decoded JSON Kafka records.
 
 Latency (``p95_ms``) is Kafka JSON record creation time minus UDP send time. FFM runs also report
 producer acknowledgement latency separately from the end-to-end measurement. The runner requires
@@ -83,10 +83,18 @@ def measured_message_ids(first_id, warmup, count):
     return set(range(first_id + warmup, first_id + warmup + count))
 
 
-def send_packets(packets, host, port, rate, timing):
+def send_packets(packets, host, port, rate, timing, identities=None,
+                 scheduled_start=None, phase_offset_seconds=0.0):
     batch = {}
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
-        started = time.perf_counter()
+        if scheduled_start is None:
+            started = time.perf_counter()
+        else:
+            started = scheduled_start + phase_offset_seconds
+            remaining = started - time.perf_counter()
+            if remaining > 0:
+                time.sleep(remaining)
+            started = time.perf_counter()
         timing.put(("started", started))
         try:
             for index, packet in enumerate(packets):
@@ -94,7 +102,7 @@ def send_packets(packets, host, port, rate, timing):
                 if remaining > 0:
                     time.sleep(remaining)
                 udp.sendto(packet, (host, port))
-                batch[packet_id(packet)] = {
+                batch[identities[packet] if identities is not None else packet_id(packet)] = {
                     "wall_time_ms": time.time() * 1000,
                     "monotonic_s": time.perf_counter(),
                 }
@@ -365,8 +373,10 @@ def latency_windows(send_times, latencies, first_id, count, target_rate,
     return summaries
 
 
-def extract_message_id(topic, value):
+def extract_message_id(topic, value, identities=None):
     record = json.loads(value)
+    if identities is not None:
+        return identities[bytes.fromhex(record["metadata"]["asn1"])]
     if topic.startswith("topic.OdeRawEncoded"):
         raw_hex = record["metadata"]["asn1"]
         return packet_id(bytes.fromhex(raw_hex))
@@ -378,7 +388,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("external", "ffm"), required=True)
     parser.add_argument("--broker", required=True)
-    parser.add_argument("--fixture", type=Path, required=True)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--fixture", type=Path)
+    inputs.add_argument("--packet-file", type=Path, help="unique valid datagrams, one hex string per line")
+    parser.add_argument("--message-type", default="BSM")
+    parser.add_argument("--drain-group", action="append", default=[],
+                        help="additional external pipeline group:topic to drain")
     parser.add_argument("--udp-host", default=os.getenv("DECODE_BENCHMARK_UDP_HOST", "127.0.0.1"))
     parser.add_argument("--udp-port", type=int, default=46800)
     parser.add_argument("--raw-topic", default="topic.OdeRawEncodedBSMJson")
@@ -393,6 +408,12 @@ def main():
     parser.add_argument("--count", type=int, default=300000)
     parser.add_argument("--warmup", type=int, default=1000)
     parser.add_argument("--rate", type=float, default=1000)
+    parser.add_argument("--warmup-start-monotonic", type=float,
+                        help="shared monotonic start time for a coordinated mixed workload")
+    parser.add_argument("--measured-start-monotonic", type=float,
+                        help="shared monotonic start time for measured packets")
+    parser.add_argument("--phase-offset-ms", type=float, default=0,
+                        help="per-type phase offset used to evenly interleave senders")
     parser.add_argument("--max-send-gap-ms", type=float, default=1000,
                         help="fail when the measured sender pauses for this long")
     parser.add_argument("--max-p95-ms", type=float,
@@ -416,12 +437,20 @@ def main():
     except ImportError as error:
         raise SystemExit("confluent-kafka is required: install it with pip") from error
 
-    fixture = fixture_bytes(args.fixture)
-    if packet_id(fixture) != 0x31325433:
-        raise ValueError("BSM fixture changed; verify the TemporaryID bit offset")
-    first_id = random.randrange(0, 0xffffffff - args.count - args.warmup)
-    packets = [with_id(fixture, first_id + index)
-               for index in range(args.count + args.warmup)]
+    identities = None
+    if args.packet_file:
+        packets = [bytes.fromhex(line.strip()) for line in args.packet_file.read_text().splitlines()]
+        if len(packets) != args.count + args.warmup or len(set(packets)) != len(packets):
+            raise ValueError("packet-file must contain exactly count+warmup unique datagrams")
+        identities = {packet: index for index, packet in enumerate(packets)}
+        first_id = 0
+    else:
+        fixture = fixture_bytes(args.fixture)
+        if packet_id(fixture) != 0x31325433:
+            raise ValueError("BSM fixture changed; verify the TemporaryID bit offset")
+        first_id = random.randrange(0, 0xffffffff - args.count - args.warmup)
+        packets = [with_id(fixture, first_id + index)
+                   for index in range(args.count + args.warmup)]
     expected_all = set(range(first_id, first_id + len(packets)))
     expected_measured = measured_message_ids(first_id, args.warmup, args.count)
     dlt_topic = args.dlt_topic or f"{args.raw_topic}.FFM.DLT"
@@ -433,6 +462,8 @@ def main():
     topic_names = [args.raw_topic, args.json_topic]
     if args.mode == "ffm":
         topic_names.append(dlt_topic)
+    extra_groups = [item.split(":", 1) for item in args.drain_group]
+    topic_names.extend(topic for _, topic in extra_groups if topic not in topic_names)
     assigned = []
     partitions = {}
     starts = {}
@@ -453,6 +484,11 @@ def main():
                              "enable.auto.commit": False,
                              "client.id": "ode-benchmark-app-offset-check"})
 
+    extra_consumers = [(Consumer({"bootstrap.servers": args.broker, "group.id": group,
+                       "enable.auto.commit": False}), group, topic)
+                       for group, topic in extra_groups]
+    extra_commits = {}
+
     raw = {}
     output = {}
     duplicates = {"raw": 0, "json": 0}
@@ -469,10 +505,12 @@ def main():
         if topic == dlt_topic:
             dlt_count += 1
             return
+        if topic not in (args.raw_topic, args.json_topic):
+            return
         target = raw if topic == args.raw_topic else output
         kind = "raw" if topic == args.raw_topic else "json"
         try:
-            message_id = extract_message_id(topic, record.value())
+            message_id = extract_message_id(topic, record.value(), identities)
         except (KeyError, TypeError, ValueError, json.JSONDecodeError):
             invalid_timestamps += 1
             return
@@ -518,6 +556,16 @@ def main():
         return {(args.raw_topic, item.partition): item.offset
                 for item in committed if item.offset >= 0}
 
+    def extra_groups_drained(watermarks):
+        for checker, group, topic in extra_consumers:
+            offsets = checker.committed([TopicPartition(topic, part) for name, part in starts
+                                         if name == topic], timeout=10)
+            actual = {(topic, item.partition): item.offset for item in offsets}
+            extra_commits[group] = {f"{name}:{part}": value for (name, part), value in actual.items()}
+            if not is_group_committed_to_watermarks(actual, topic, watermarks, starts):
+                return False
+        return True
+
     def drain_until_quiet():
         deadline = time.monotonic() + args.drain_timeout_seconds
         last_watermarks = current_watermarks()
@@ -533,7 +581,7 @@ def main():
             offsets = committed_offsets()
             is_app_drained = is_group_committed_to_watermarks(
                 offsets, args.raw_topic, watermarks, starts)
-            is_drained = drained_to(watermarks) and is_app_drained
+            is_drained = drained_to(watermarks) and is_app_drained and extra_groups_drained(watermarks)
             try:
                 quiet_health_ok = check_health(args.health_url)
                 health_error = None if quiet_health_ok else "health endpoint status was not UP"
@@ -552,7 +600,7 @@ def main():
 
     send_times = {}
 
-    def run_send(subset, required_total):
+    def run_send(subset, required_total, scheduled_start=None):
         timing = multiprocessing.Queue()
         timing_state = {"started": None, "finished": None}
 
@@ -568,7 +616,8 @@ def main():
                     timing_state[kind] = value
 
         sender = multiprocessing.Process(target=send_packets,
-            args=(subset, args.udp_host, args.udp_port, args.rate, timing))
+            args=(subset, args.udp_host, args.udp_port, args.rate, timing, identities,
+                  scheduled_start, args.phase_offset_ms / 1000.0))
         sender.start()
         try:
             capture_until(required_total, time.monotonic() + len(subset) / args.rate + 120,
@@ -604,10 +653,11 @@ def main():
         health_ok = check_health(args.health_url)
         if not health_ok:
             raise RuntimeError("ODE health endpoint did not report UP before workload")
-        run_send(packets[:args.warmup], args.warmup)
+        run_send(packets[:args.warmup], args.warmup, args.warmup_start_monotonic)
         before_confirmations = scrape_ffm_metrics(args.metrics_url, args.json_topic) \
             if args.mode == "ffm" else empty_metric_snapshot()
-        actual_rate = run_send(packets[args.warmup:], len(packets))
+        actual_rate = run_send(packets[args.warmup:], len(packets),
+                               args.measured_start_monotonic)
         (drained, final_watermarks, final_committed_offsets, after_confirmations,
          health_ok, health_failure) = drain_until_quiet()
     except Exception as error:
@@ -623,12 +673,15 @@ def main():
     finally:
         consumer.close()
         app_consumer.close()
+        for checker, _, _ in extra_consumers:
+            checker.close()
 
     rows = []
     invalid_timestamp_rows = []
     latencies = []
     latency_by_id = {}
     quantization_negative_timestamps = 0
+    key_mismatches = 0
     for message_id in sorted(expected_measured):
         if message_id not in raw or message_id not in output or message_id not in send_times:
             continue
@@ -655,8 +708,10 @@ def main():
         if latency_status == "quantization_negative":
             quantization_negative_timestamps += 1
         if raw_key != json_key:
-            unexpected_records += 1
-            continue
+            key_mismatches += 1
+            if args.mode == "ffm":
+                unexpected_records += 1
+                continue
         latencies.append(latency)
         latency_by_id[message_id] = latency
         rows.append((f"{message_id:08X}", raw_partition, raw_offset, raw_timestamp_type,
@@ -722,21 +777,24 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
-        writer.writerow(("bsm_id", "raw_partition", "raw_offset", "raw_timestamp_type",
+        writer.writerow(("message_id" if identities is not None else "bsm_id", "raw_partition", "raw_offset", "raw_timestamp_type",
                          "raw_timestamp_ms", "json_partition", "json_offset",
                          "json_timestamp_type", "json_timestamp_ms", "udp_send_time_ms",
                          "udp_send_monotonic_s", "udp_to_json_record_ms", "timestamp_status"))
         writer.writerows(rows)
         writer.writerows(invalid_timestamp_rows)
 
-    summary = {"mode": args.mode, "raw_topic": args.raw_topic, "json_topic": args.json_topic,
+    summary = {"message_type": args.message_type, "packet_file": str(args.packet_file) if args.packet_file else None,
+        "extra_pipeline_committed_offsets": extra_commits,
+        "mode": args.mode, "raw_topic": args.raw_topic, "json_topic": args.json_topic,
         "dlt_topic": dlt_topic if args.mode == "ffm" else None,
         "target_rate_per_second": args.rate, "actual_udp_rate_per_second": actual_rate,
         "complete_1s_window_rates_per_second": second_rates,
         "complete_10s_window_rates_per_second": window_rates,
         "rate_tolerance_percent": 5, "max_inter_packet_send_gap_ms": max_send_gap_ms,
         "max_send_gap_ms": args.max_send_gap_ms,
-        "warmup": args.warmup, "udp_sent": args.count,
+        "warmup": args.warmup, "measured_requested_count": args.count,
+        "udp_sent": sum(message_id in send_times for message_id in expected_measured),
         "raw_correlated": sum(message_id in raw for message_id in expected_measured),
         "json_correlated": sum(message_id in output for message_id in expected_measured),
         "paired": len(rows), "duplicate_raw": duplicates["raw"],
@@ -744,6 +802,7 @@ def main():
         "raw_records_per_partition_per_second": raw_partition_rates,
         "max_consecutive_raw_partition_records": max_partition_streak,
         "latency_by_complete_10s_window": latency_by_window,
+        "raw_json_key_mismatches": key_mismatches,
         "duplicate_json": duplicates["json"], "unexpected_records": unexpected_records,
         "unexpected_dlt_records": dlt_count, "invalid_timestamps": invalid_timestamps,
         "timestamp_type_counts": timestamp_type_counts,
