@@ -6,11 +6,8 @@ import j2735ffm.AsnEncoding;
 import j2735ffm.MessageFrameCodec;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * ODE adapter around the generic, thread-safe native codec.
@@ -24,28 +21,17 @@ public class FfmlibMessageFrameCodec {
 
   private static final String MESSAGE_FRAME = "MessageFrame";
   private final MessageFrameCodec codec;
-  private final MessageFrameCodec fastBsmCodec;
   private final MeterRegistry meterRegistry;
 
   /**
-   * Creates the native codec adapter with its full and compact BSM codecs.
+   * Creates the native codec adapter.
    *
-   * @param codec full-size native codec for general decoding and fallback
-   * @param fastBsmCodec compact codec for common BSM payloads
+   * @param codec native codec for MessageFrame conversions
    * @param meterRegistry registry for conversion timing metrics
    */
-  @Autowired
-  public FfmlibMessageFrameCodec(MessageFrameCodec codec,
-      @Qualifier("ffmlibFastPathMessageFrameCodec") MessageFrameCodec fastBsmCodec,
-      MeterRegistry meterRegistry) {
-    this.codec = codec;
-    this.fastBsmCodec = fastBsmCodec;
-    this.meterRegistry = meterRegistry;
-  }
-
-  /** Convenience constructor used when native integration tests do not need the BSM fast path. */
   public FfmlibMessageFrameCodec(MessageFrameCodec codec, MeterRegistry meterRegistry) {
-    this(codec, codec, meterRegistry);
+    this.codec = codec;
+    this.meterRegistry = meterRegistry;
   }
 
   /**
@@ -83,38 +69,6 @@ public class FfmlibMessageFrameCodec {
     return new IntermediateDecodeResult(
         convert(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER),
         IntermediateEncoding.JER);
-  }
-
-  /** Uses compact native buffers for small BSMs and retries with configured full buffers on error. */
-  public IntermediateDecodeResult uperToIntermediate(byte[] uperBytes,
-      SupportedMessageType knownType) {
-    if (knownType != SupportedMessageType.BSM || fastBsmCodec == codec) {
-      return uperToIntermediate(uperBytes);
-    }
-    long start = System.nanoTime();
-    String outcome = "success";
-    try {
-      byte[] jerBytes;
-      try {
-        jerBytes = fastBsmCodec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
-            AsnEncoding.JER);
-      } catch (RuntimeException fastPathFailure) {
-        try {
-          jerBytes = codec.convertGeneral(uperBytes, MESSAGE_FRAME, AsnEncoding.UPER,
-              AsnEncoding.JER);
-        } catch (RuntimeException fullPathFailure) {
-          fullPathFailure.addSuppressed(fastPathFailure);
-          throw fullPathFailure;
-        }
-      }
-      return new IntermediateDecodeResult(jerBytes, IntermediateEncoding.JER);
-    } catch (RuntimeException error) {
-      outcome = "failure";
-      throw error;
-    } finally {
-      timer(MESSAGE_FRAME, AsnEncoding.UPER, AsnEncoding.JER, outcome)
-          .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
-    }
   }
 
   public String uperToXer(byte[] uperBytes) {

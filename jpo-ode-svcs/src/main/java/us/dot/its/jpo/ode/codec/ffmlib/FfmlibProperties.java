@@ -44,9 +44,6 @@ public class FfmlibProperties {
    */
   private long errorBufferSize = 1024L;
 
-  /** Smaller initial native buffers for the common BSM path; larger payloads use full buffers. */
-  private long fastPathBufferSize = 32768L;
-
   /** Kafka producer linger for FFM raw and decoded records. Zero keeps the latency boundary low. */
   private int producerLingerMs;
 

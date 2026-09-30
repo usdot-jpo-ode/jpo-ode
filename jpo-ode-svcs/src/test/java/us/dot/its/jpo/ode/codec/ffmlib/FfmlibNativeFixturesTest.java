@@ -68,9 +68,7 @@ class FfmlibNativeFixturesTest {
     properties.setNativeLibraryPath(nativeLibrary.toString());
     MessageFrameCodec nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),
         properties.getUperBufferSize(), properties.getErrorBufferSize(), nativeLibrary);
-    MessageFrameCodec fastBsmCodec = new MessageFrameCodec(properties.getFastPathBufferSize(),
-        properties.getFastPathBufferSize(), properties.getErrorBufferSize(), nativeLibrary);
-    FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(nativeCodec, fastBsmCodec,
+    FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(nativeCodec,
         new SimpleMeterRegistry());
     ObjectProvider<FfmlibMessageFrameCodec> codecProvider = mock(ObjectProvider.class);
     when(codecProvider.getIfAvailable()).thenReturn(codec);
