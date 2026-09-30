@@ -279,9 +279,7 @@ public class FfmlibDecodeService {
     try {
       long nativeStart = System.nanoTime();
       byte[] messageFrameBytes = unwrapIeee1609IfPresent(metadata, uperBytes);
-      IntermediateDecodeResult intermediate = knownType == null
-          ? codec().uperToIntermediate(messageFrameBytes)
-          : codec().uperToIntermediate(messageFrameBytes, knownType);
+      IntermediateDecodeResult intermediate = codec().uperToIntermediate(messageFrameBytes);
       long nativeNanos = System.nanoTime() - nativeStart;
       nativeTimer.record(nativeNanos, TimeUnit.NANOSECONDS);
 

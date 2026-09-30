@@ -246,7 +246,7 @@ class FfmlibDecodeServiceTest {
     byte[] jer = "{\"messageId\":31,\"value\":{\"TravelerInformation\":{}}}"
         .getBytes(StandardCharsets.UTF_8);
     when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
-    when(ffmlibCodec.uperToIntermediate(any(), eq(SupportedMessageType.BSM)))
+    when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
     MessageFrame<?> frame = mock(BasicSafetyMessageMessageFrame.class);
     when(messageFrameReader.readValue(jer)).thenReturn(frame);
@@ -267,7 +267,7 @@ class FfmlibDecodeServiceTest {
     byte[] jer = "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}}"
         .getBytes(StandardCharsets.UTF_8);
     when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
-    when(ffmlibCodec.uperToIntermediate(any(), eq(SupportedMessageType.BSM)))
+    when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
     when(bsmValueReader.readValue(any(JsonParser.class))).thenReturn(new BasicSafetyMessage());
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
@@ -285,7 +285,7 @@ class FfmlibDecodeServiceTest {
   @Test
   void malformedJerRecordsMappingFailure() throws Exception {
     byte[] jer = "{\"messageId\":".getBytes(StandardCharsets.UTF_8);
-    when(ffmlibCodec.uperToIntermediate(any(), eq(SupportedMessageType.BSM)))
+    when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
     when(messageFrameReader.readValue(jer))
         .thenThrow(new JsonProcessingException("Malformed JER") {});
@@ -475,10 +475,6 @@ class FfmlibDecodeServiceTest {
     lenient().when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult("{}".getBytes(StandardCharsets.UTF_8),
             IntermediateEncoding.JER));
-    lenient().when(ffmlibCodec.uperToIntermediate(any(), eq(SupportedMessageType.BSM)))
-        .thenReturn(new IntermediateDecodeResult("{}".getBytes(StandardCharsets.UTF_8),
-            IntermediateEncoding.JER));
-
     MessageFrame frame = mock(BasicSafetyMessageMessageFrame.class);
     DSRCmsgID msgId = mock(DSRCmsgID.class);
     // Import path resolves topic from messageId; UDP path uses knownType and may skip these.
