@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,26 +21,36 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
-import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
+import org.springframework.kafka.support.Acknowledgment;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.DSRCmsgID;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateEncoding;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
@@ -51,6 +63,8 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -409,6 +423,115 @@ class FfmlibDecodeServiceTest {
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
         .tag("type", "BSM").tag("source", "udp").tag("reason", "signed_payload")
         .counter().count(), 0.0);
+  }
+
+  @ParameterizedTest
+  @EnumSource(SupportedMessageType.class)
+  void rawTopicSignedEnvelopeBehindWsmpHeadersIsRejected(SupportedMessageType type) {
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    byte[] original = CodecUtils.fromHex("0001038100" + type.getStartFlag() + "AA");
+
+    assertThrows(UnsupportedOperationException.class, () -> decodeService.prepareRaw(metadata,
+        type.getStartFlagBytes(), "signed-wsmp", type, original));
+
+    verify(ffmlibCodec, never()).uperToIntermediate(any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", type.name()).tag("source", "udp").tag("reason", "signed_payload")
+        .counter().count(), 0.0);
+  }
+
+  @ParameterizedTest
+  @EnumSource(SupportedMessageType.class)
+  void importedSignedEnvelopeBehindWsmpHeadersIsRejected(SupportedMessageType type) {
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    OdeAsn1Data input = new OdeAsn1Data(metadata,
+        new OdeAsn1Payload(new OdeHexByteArray("0001038100" + type.getStartFlag() + "AA")));
+
+    assertThrows(UnsupportedOperationException.class,
+        () -> decodeService.decode(input, "signed-import-wsmp"));
+
+    verify(ffmlibCodec, never()).uperToIntermediate(any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "unknown").tag("source", "import").tag("reason", "signed_payload")
+        .counter().count(), 0.0);
+  }
+
+  @Test
+  void unsignedWsmpPayloadWithSignatureMarkerInsideMessageFrameStillDecodes() throws Exception {
+    stubSuccessfulDecode();
+    byte[] uper = CodecUtils.fromHex(BSM_HEX + "038100");
+    byte[] original = CodecUtils.fromHex("0001038000" + CodecUtils.toHex(uper));
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+
+    var prepared = decodeService.prepareRaw(metadata, uper, "unsigned-wsmp",
+        SupportedMessageType.BSM, original);
+
+    verify(ffmlibCodec).uperToIntermediate(eq(uper));
+    assertEquals(BSM_TOPIC, prepared.topic());
+    assertFalse(metadata.isCertPresent());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void signedUdpPacketBehindWsmpHeadersIsQuarantinedBeforeAcknowledgement() throws Exception {
+    byte[] original = CodecUtils.fromHex("0001038100" + BSM_HEX);
+    DatagramPacket packet = new DatagramPacket(original, original.length,
+        InetAddress.getLoopbackAddress(), 12345);
+    String rawJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
+    RawEncodedJsonService rawService = new RawEncodedJsonService(new ObjectMapper());
+    var parsed = rawService.parseFfmRecord(rawJson, SupportedMessageType.BSM);
+    OdeAsn1Data external = rawService.addEncodingAndMutateBytes(rawJson,
+        SupportedMessageType.BSM, OdeMessageFrameMetadata.class);
+    assertArrayEquals(original, parsed.originalBytes());
+    assertEquals(BSM_HEX, CodecUtils.toHex(parsed.uperBytes()));
+    assertEquals(((OdeHexByteArray) external.getPayload().getData()).getBytes(),
+        CodecUtils.toHex(parsed.uperBytes()));
+    assertTrue(parsed.metadata().getEncodings().stream()
+        .allMatch(encoding -> "MessageFrame".equals(encoding.getElementType())));
+
+    KafkaTemplate<String, String> quarantineProducer = mock(KafkaTemplate.class);
+    CompletableFuture<org.springframework.kafka.support.SendResult<String, String>> confirmation =
+        new CompletableFuture<>();
+    when(quarantineProducer.send(any(ProducerRecord.class))).thenReturn(confirmation);
+    RawEncodedJsonTopics rawTopics = mock(RawEncodedJsonTopics.class);
+    String rawTopic = "topic.OdeRawEncodedBSMJson";
+    when(rawTopics.getBsm()).thenReturn(rawTopic);
+    FfmlibRawJsonListener listener = new FfmlibRawJsonListener(rawService, decodeService,
+        outputPublisher, quarantineProducer, rawTopics, mock(FfmlibCommitTracker.class),
+        meterRegistry);
+    listener.markStartupComplete();
+    Acknowledgment acknowledgment = mock(Acknowledgment.class);
+    ConsumerRecord<String, String> record =
+        new ConsumerRecord<>(rawTopic, 0, 8, "signed-wsmp", rawJson);
+    AtomicReference<Throwable> failure = new AtomicReference<>();
+    Thread worker = new Thread(() -> {
+      try {
+        listener.bsm(record, acknowledgment);
+      } catch (Throwable error) {
+        failure.set(error);
+      }
+    });
+    worker.start();
+    try {
+      var captor = ArgumentCaptor.forClass(ProducerRecord.class);
+      verify(quarantineProducer, timeout(1000)).send(captor.capture());
+      ProducerRecord<String, String> quarantined = captor.getValue();
+      assertEquals("dlq.OdeRawEncodedBSMJson", quarantined.topic());
+      assertEquals(record.key(), quarantined.key());
+      assertEquals(rawJson, quarantined.value());
+      assertEquals("unsupported_signed", new String(
+          quarantined.headers().lastHeader("failure-category").value(), StandardCharsets.UTF_8));
+      verify(acknowledgment, never()).acknowledge();
+    } finally {
+      confirmation.complete(null);
+      worker.join(1000);
+    }
+    assertFalse(worker.isAlive());
+    assertEquals(null, failure.get());
+    verify(acknowledgment).acknowledge();
+    verify(ffmlibCodec, never()).uperToIntermediate(any());
+    verify(outputPublisher, never()).publish(any());
   }
 
   @Test

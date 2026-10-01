@@ -214,7 +214,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
     } catch (Exception error) {
       parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
       quarantine(record, listenerId, rawTopic(type), category(error), 1);
-      acknowledge(acknowledgment);
+      acknowledge(listenerId, acknowledgment);
       return;
     }
     parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
@@ -224,7 +224,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
           raw.originalBytes());
     } catch (Exception error) {
       quarantine(record, listenerId, rawTopic(type), category(error), 1);
-      acknowledge(acknowledgment);
+      acknowledge(listenerId, acknowledgment);
       return;
     }
 
@@ -236,20 +236,21 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       throw error;
     }
     if (outcome == PublicationOutcome.SKIPPED_DISABLED) {
-      acknowledge(acknowledgment);
+      acknowledge(listenerId, acknowledgment);
       return;
     }
     decoder.recordRawConfirmed(prepared);
-    acknowledge(acknowledgment);
+    acknowledge(listenerId, acknowledgment);
   }
 
-  private void acknowledge(Acknowledgment acknowledgment) {
+  private void acknowledge(String listenerId, Acknowledgment acknowledgment) {
     commitTracker.beginCommit();
     try {
       acknowledgment.acknowledge();
       commitTracker.completeSynchronousCommit();
     } catch (RuntimeException error) {
       commitTracker.cancelCommit();
+      recordCommitFailure(listenerId, error);
       throw error;
     }
   }
@@ -304,7 +305,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   private void quarantine(ConsumerRecord<String, String> original, String listenerId,
       String sourceTopic, String category, int attempts) {
-    String dltTopic = sourceTopic + ".FFM.DLT";
+    String dltTopic = FfmlibDeadLetterTopics.forRawTopic(sourceTopic);
     ProducerRecord<String, String> deadLetter = new ProducerRecord<>(dltTopic, original.key(),
         original.value());
     deadLetter.headers()

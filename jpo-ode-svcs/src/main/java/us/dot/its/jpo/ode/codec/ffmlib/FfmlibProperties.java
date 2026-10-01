@@ -56,19 +56,10 @@ public class FfmlibProperties {
   /** Strategy for null-key FFM raw records; keyed records retain Kafka's default hash mapping. */
   private String rawPartitionStrategy = "round_robin";
 
-  /** Minimum partition count for each raw and FFM dead-letter topic. */
-  private int topicPartitions = 4;
-
   /** Number of Kafka consumers created for each FFM message type. */
   private int listenerConcurrency = 4;
 
   /** Maximum time to wait for every FFM consumer to join its group during startup. */
   private Duration startupTimeout = Duration.ofSeconds(120);
-
-  /** Minimum raw-topic retention in milliseconds. */
-  private long rawTopicRetentionMs = 86_400_000L;
-
-  /** Minimum FFM dead-letter retention in milliseconds. */
-  private long dltRetentionMs = 604_800_000L;
 
 }

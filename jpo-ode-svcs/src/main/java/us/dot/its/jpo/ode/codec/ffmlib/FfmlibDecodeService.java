@@ -204,7 +204,7 @@ public class FfmlibDecodeService {
     if (!modeProperties.isFfm()) {
       throw new IllegalStateException("Raw-topic decode requires FFM mode");
     }
-    if (isIeee1609(originalBytes, metadata)) {
+    if (isIeee1609(originalBytes, metadata, knownType)) {
       recordFailure(knownType == null ? TYPE_UNKNOWN : knownType.name(), SOURCE_UDP,
           "signed_payload");
       throw new UnsupportedOperationException(
@@ -515,6 +515,30 @@ public class FfmlibDecodeService {
   }
 
   private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata) {
+    return isIeee1609(encoded, metadata, null);
+  }
+
+  private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata,
+      SupportedMessageType knownType) {
+    if (metadata.getEncodings() != null && metadata.getEncodings().stream()
+        .anyMatch(encoding -> IEEE_PDU.equals(encoding.getElementType()))) {
+      return true;
+    }
+    if (hasSignedDot2Prefix(encoded)) {
+      return true;
+    }
+    String messageType = knownType == null ? UperUtil.determinePacketType(encoded) : knownType.name();
+    if (messageType.isEmpty()) {
+      return false;
+    }
+    // Preserve the external decoder's header handling: only search before the MessageFrame,
+    // and retain the signed 1609.2 envelope while stripping WSMP / unsigned headers.
+    byte[] envelope = UperUtil.stripDot3Header(encoded,
+        SupportedMessageType.valueOf(messageType).getStartFlagBytes());
+    return hasSignedDot2Prefix(envelope);
+  }
+
+  private static boolean hasSignedDot2Prefix(byte[] encoded) {
     if (encoded.length >= SIGNED_DOT2_PREFIX.length) {
       boolean prefix = true;
       for (int i = 0; i < SIGNED_DOT2_PREFIX.length; i++) {
@@ -524,8 +548,7 @@ public class FfmlibDecodeService {
         return true;
       }
     }
-    return metadata.getEncodings() != null && metadata.getEncodings().stream()
-        .anyMatch(encoding -> IEEE_PDU.equals(encoding.getElementType()));
+    return false;
   }
 
   private String resolveJsonTopic(SupportedMessageType knownType, MessageFrame<?> messageFrame) {

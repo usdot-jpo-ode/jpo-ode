@@ -101,10 +101,12 @@ def send_packets(packets, host, port, rate, timing, identities=None,
                 remaining = started + index / rate - time.perf_counter()
                 if remaining > 0:
                     time.sleep(remaining)
+                wall_time_ms = time.time() * 1000
+                monotonic_s = time.perf_counter()
                 udp.sendto(packet, (host, port))
                 batch[identities[packet] if identities is not None else packet_id(packet)] = {
-                    "wall_time_ms": time.time() * 1000,
-                    "monotonic_s": time.perf_counter(),
+                    "wall_time_ms": wall_time_ms,
+                    "monotonic_s": monotonic_s,
                 }
                 if len(batch) >= 500:
                     timing.put(("batch", batch))
@@ -398,7 +400,7 @@ def main():
     parser.add_argument("--udp-port", type=int, default=46800)
     parser.add_argument("--raw-topic", default="topic.OdeRawEncodedBSMJson")
     parser.add_argument("--json-topic", default="topic.OdeBsmJson")
-    parser.add_argument("--dlt-topic", help="defaults to <raw-topic>.FFM.DLT in FFM mode")
+    parser.add_argument("--dlt-topic", help="defaults to dlq.<raw-topic without topic. prefix> in FFM mode")
     parser.add_argument("--consumer-group", default="RawEncodedBSMJsonRouter",
                         help="application group whose raw offsets must reach the end watermarks")
     parser.add_argument("--metrics-url", default=os.getenv(
@@ -453,7 +455,7 @@ def main():
                    for index in range(args.count + args.warmup)]
     expected_all = set(range(first_id, first_id + len(packets)))
     expected_measured = measured_message_ids(first_id, args.warmup, args.count)
-    dlt_topic = args.dlt_topic or f"{args.raw_topic}.FFM.DLT"
+    dlt_topic = args.dlt_topic or f"dlq.{args.raw_topic.removeprefix('topic.')}"
 
     consumer = Consumer({"bootstrap.servers": args.broker,
                          "group.id": f"decode-benchmark-{time.time_ns()}",

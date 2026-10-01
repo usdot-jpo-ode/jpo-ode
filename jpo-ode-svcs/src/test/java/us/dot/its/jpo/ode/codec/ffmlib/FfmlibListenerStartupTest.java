@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,63 +15,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConfigEntry;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.config.ConfigResource;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.MessageListenerContainer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
-@SpringBootTest(classes = FfmlibTopicProvisionerTest.TestContext.class,
-    properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-@EmbeddedKafka(partitions = 1)
-class FfmlibTopicProvisionerTest {
+class FfmlibListenerStartupTest {
 
-  private static final String RAW_BSM = "topic.ProvisionerRawBSM";
-  private static final String DLT_BSM = RAW_BSM + ".FFM.DLT";
-
-  @Autowired
-  private EmbeddedKafkaBroker embeddedKafka;
-
-  @Configuration
-  @EnableAutoConfiguration
-  static class TestContext {
-  }
+  private static final String RAW_BSM = "topic.StartupRawBSM";
+  private static final String DLT_BSM = "dlq.StartupRawBSM";
 
   @Test
-  void provisionsTopicsAndPreservesLargerExistingSettings() throws Exception {
-    String broker = embeddedKafka.getBrokersAsString();
-    Map<String, Object> adminProperties = Map.of("bootstrap.servers", broker);
-    try (AdminClient admin = AdminClient.create(adminProperties)) {
-      Map<String, String> rawConfig = Map.of("retention.ms", "172800000");
-      Map<String, String> dltConfig = Map.of("retention.ms", "1209600000");
-      admin.createTopics(List.of(
-          new NewTopic(RAW_BSM, 6, (short) 1).configs(rawConfig),
-          new NewTopic(DLT_BSM, 1, (short) 1).configs(dltConfig)))
-          .all().get(10, TimeUnit.SECONDS);
-    }
-
-    OdeKafkaProperties odeProperties = new OdeKafkaProperties();
-    odeProperties.setBrokers(broker);
-    KafkaProperties kafkaProperties = new KafkaProperties();
-    kafkaProperties.setBootstrapServers(List.of(broker));
+  void startsListenersAndHandlesCommitFailure() throws Exception {
     final FfmlibProperties ffmlibProperties = new FfmlibProperties();
     ffmlibProperties.setListenerConcurrency(1);
     final KafkaListenerEndpointRegistry registry = mock(KafkaListenerEndpointRegistry.class);
@@ -102,36 +63,10 @@ class FfmlibTopicProvisionerTest {
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
 
-    FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
-        odeProperties, rawTopics(), registry, rawJsonListener,
+    FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics(), registry, rawJsonListener,
         commitTracker, rawProducer,
         outputProducer, jsonTopics(), ffmlibProperties);
-    provisioner.run(null);
-
-    try (AdminClient admin = AdminClient.create(adminProperties)) {
-      var descriptions = admin.describeTopics(List.of(RAW_BSM, DLT_BSM,
-          "topic.ProvisionerRawMAP", "topic.ProvisionerRawMAP.FFM.DLT"))
-          .allTopicNames().get(10, TimeUnit.SECONDS);
-      assertEquals(6, descriptions.get(RAW_BSM).partitions().size());
-      assertEquals(4, descriptions.get(DLT_BSM).partitions().size());
-      assertEquals(4, descriptions.get("topic.ProvisionerRawMAP").partitions().size());
-      assertEquals(4, descriptions.get("topic.ProvisionerRawMAP.FFM.DLT").partitions().size());
-
-      var configs = admin.describeConfigs(List.of(
-          new ConfigResource(ConfigResource.Type.TOPIC, RAW_BSM),
-          new ConfigResource(ConfigResource.Type.TOPIC, DLT_BSM),
-          new ConfigResource(ConfigResource.Type.TOPIC, "topic.ProvisionerRawMAP"),
-          new ConfigResource(ConfigResource.Type.TOPIC, "topic.ProvisionerRawMAP.FFM.DLT")))
-          .all().get(10, TimeUnit.SECONDS);
-      assertEquals("172800000", retention(configs,
-          new ConfigResource(ConfigResource.Type.TOPIC, RAW_BSM)));
-      assertEquals("1209600000", retention(configs,
-          new ConfigResource(ConfigResource.Type.TOPIC, DLT_BSM)));
-      assertEquals("86400000", retention(configs,
-          new ConfigResource(ConfigResource.Type.TOPIC, "topic.ProvisionerRawMAP")));
-      assertEquals("604800000", retention(configs,
-          new ConfigResource(ConfigResource.Type.TOPIC, "topic.ProvisionerRawMAP.FFM.DLT")));
-    }
+    startup.run(null);
 
     for (String listenerId : listenerIds()) {
       verify(containers.get(listenerId)).start();
@@ -153,11 +88,6 @@ class FfmlibTopicProvisionerTest {
 
   @Test
   void startupDeadlineStopsEveryStartedListener() throws Exception {
-    String broker = embeddedKafka.getBrokersAsString();
-    OdeKafkaProperties odeProperties = new OdeKafkaProperties();
-    odeProperties.setBrokers(broker);
-    KafkaProperties kafkaProperties = new KafkaProperties();
-    kafkaProperties.setBootstrapServers(List.of(broker));
     FfmlibProperties ffmlibProperties = new FfmlibProperties();
     ffmlibProperties.setListenerConcurrency(1);
     ffmlibProperties.setStartupTimeout(Duration.ofMillis(10));
@@ -178,12 +108,11 @@ class FfmlibTopicProvisionerTest {
     }
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
-    FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
-        odeProperties, rawTopics("topic.ProvisionerTimeoutRaw"), registry, rawJsonListener,
+    FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics("topic.StartupTimeoutRaw"), registry, rawJsonListener,
         commitTracker, rawProducer,
         outputProducer, jsonTopics(), ffmlibProperties);
 
-    assertThrows(IllegalStateException.class, () -> provisioner.run(null));
+    assertThrows(IllegalStateException.class, () -> startup.run(null));
 
     for (String listenerId : listenerIds()) {
       verify(containers.get(listenerId)).start();
@@ -194,11 +123,6 @@ class FfmlibTopicProvisionerTest {
 
   @Test
   void delayedGroupJoinBeyondThirtySecondsDoesNotTriggerStartupFailure() throws Exception {
-    String broker = embeddedKafka.getBrokersAsString();
-    OdeKafkaProperties odeProperties = new OdeKafkaProperties();
-    odeProperties.setBrokers(broker);
-    KafkaProperties kafkaProperties = new KafkaProperties();
-    kafkaProperties.setBootstrapServers(List.of(broker));
     FfmlibProperties ffmlibProperties = new FfmlibProperties();
     ffmlibProperties.setListenerConcurrency(1);
     ffmlibProperties.setStartupTimeout(Duration.ofSeconds(40));
@@ -231,24 +155,16 @@ class FfmlibTopicProvisionerTest {
     }
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
-    FfmlibTopicProvisioner provisioner = new FfmlibTopicProvisioner(kafkaProperties,
-        odeProperties, rawTopics("topic.ProvisionerDelayedRaw"), registry, rawJsonListener,
+    FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics("topic.StartupDelayedRaw"), registry, rawJsonListener,
         commitTracker, rawProducer, outputProducer, jsonTopics(), ffmlibProperties);
 
-    provisioner.run(null);
+    startup.run(null);
 
     verify(rawJsonListener).markStartupComplete();
   }
 
-  private static String retention(
-      Map<ConfigResource, org.apache.kafka.clients.admin.Config> configs,
-      ConfigResource resource) {
-    ConfigEntry retention = configs.get(resource).get("retention.ms");
-    return retention.value();
-  }
-
   private static RawEncodedJsonTopics rawTopics() {
-    return rawTopics("topic.ProvisionerRaw");
+    return rawTopics("topic.StartupRaw");
   }
 
   private static RawEncodedJsonTopics rawTopics(String prefix) {
