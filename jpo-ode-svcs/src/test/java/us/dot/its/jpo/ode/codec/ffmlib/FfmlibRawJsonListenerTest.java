@@ -169,7 +169,7 @@ class FfmlibRawJsonListenerTest {
     var captor = org.mockito.ArgumentCaptor.forClass(ProducerRecord.class);
     verify(quarantineProducer).send(captor.capture());
     ProducerRecord<String, String> quarantined = captor.getValue();
-    assertEquals(RAW_TOPIC + ".FFM.DLT", quarantined.topic());
+    assertEquals("dlq.OdeRawEncodedBSMJson", quarantined.topic());
     assertEquals(record.key(), quarantined.key());
     assertEquals(record.value(), quarantined.value());
     assertEquals("topic.OdeRawEncodedBSMJson",

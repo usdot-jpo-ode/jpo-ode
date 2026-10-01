@@ -147,7 +147,6 @@ class Harness:
       ODE_FFM_RAW_PARTITION_STRATEGY: round_robin
       ODE_FFM_PRODUCER_LINGER_MS: "0"
       ODE_FFM_PRODUCER_COMPRESSION_TYPE: none
-      ODE_FFM_TOPIC_PARTITIONS: "4"
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,prometheus
   kafka:
     ports: !reset []

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.AsnEncoding;
@@ -41,13 +40,7 @@ class FfmlibNativeSmokeTest {
 
   @Test
   void nativeCodecLoadsAndDecodesBsmUper() {
-    Path nativeLibrary = nativeLibraryOrNull();
-    if (Boolean.getBoolean("ffmlib.smoke.required")) {
-      assertNotNull(nativeLibrary,
-          "Required FFMLib native library not present under target/libs");
-    }
-    assumeTrue(nativeLibrary != null,
-        "FFMLib native library not present under target/libs");
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
 
     FfmlibProperties properties = new FfmlibProperties();
     properties.setNativeLibraryPath(nativeLibrary.toString());

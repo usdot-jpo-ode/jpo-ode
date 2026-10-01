@@ -25,7 +25,7 @@ class FfmlibAsdEncodeTest {
 
   @Test
   void beta2EncodesAndDecodesTimAsd() throws Exception {
-    Path library = FfmlibNativeLibraryLoader.resolve("");
+    Path library = FfmlibNativeTestSupport.requireLibraryOrSkip();
     FfmlibProperties properties = new FfmlibProperties();
     MessageFrameCodec nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),
         properties.getUperBufferSize(), properties.getErrorBufferSize(), library);
@@ -54,7 +54,7 @@ class FfmlibAsdEncodeTest {
 
   @Test
   void invalidAsdDoesNotProduceEncodedOutput() throws Exception {
-    Path library = FfmlibNativeLibraryLoader.resolve("");
+    Path library = FfmlibNativeTestSupport.requireLibraryOrSkip();
     FfmlibProperties properties = new FfmlibProperties();
     MessageFrameCodec nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),
         properties.getUperBufferSize(), properties.getErrorBufferSize(), library);
