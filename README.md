@@ -133,7 +133,7 @@ Supported message types:
 The ODE software can run on most standard Windows, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
 the system.  Larger data flows can require much larger space requirements depending on the
-amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 21 runtime environment.
+amount of data being processed by the software. The ODE software application was developed using the open source programming language Java. If running the ODE outside of Docker, the application requires the Java 25 runtime environment.
 
 ### Software Prerequisites
 
@@ -292,6 +292,11 @@ git submodule deinit -f . && git submodule update --recursive --init
   - **The .env files will contain private keys, do not add them to version control.**
   - Log-based alerts are enabled by default in the `sample.env`. If you don't want log messages notifying you when no TIMs were ingested in a specific period of time, 
   you will want to update your `.env` file to set `ODE_TIM_INGEST_MONITORING_ENABLED=false`. See [TimIngestWatcher](jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/traveler/TimIngestWatcher.java) to see the log-based monitoring provided.
+- Initialize the `jpo-asn-pojos` submodule at its pinned commit and keep both the repository-root
+  `lombok.config` and `jpo-asn-pojos/lombok.config` in the Docker build context. The image builder
+  copies these settings before compilation, then runs JSON/XML contract tests and a required Linux
+  FFMLib native smoke test against the classes produced in that image build. A missing or unloadable
+  native library fails the build.
 
 **Make:**
 
@@ -520,7 +525,7 @@ This section outlines the software technology stacks of the ODE.
 
 ### ODE Code
 
-- [Java 21](https://openjdk.java.net/)
+- [Java 25](https://adoptium.net/temurin/releases/?version=25)
 - [Maven](https://maven.apache.org/)
 - [Spring Boot](http://spring.io/projects/spring-boot)
 - [Logback](https://logback.qos.ch/)
@@ -563,6 +568,14 @@ Install the IDE of your choice:
 ### Dev Container Environment
 
 The project can be reopened inside a dev container in VSCode. This environment should have all the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
+
+### Java 25 build and serialization verification
+
+Build with JDK 25 and Maven 3.9 or newer, with the `jpo-asn-pojos` submodule initialized at the commit pinned by this repository. Keep both the root `lombok.config` and `jpo-asn-pojos/lombok.config` in place; they preserve Jackson annotations on generated accessors and prevent duplicate JSON/XML fields.
+
+Run `mvn -B clean verify` for the full build and test suite. `docker build -t jpo-ode:verify .` also runs the serialization contract tests and a required Linux FFMLib native smoke test in the builder stage, against classes compiled in that image. The image build fails if the Linux native library is missing or the smoke test cannot load and decode with it.
+
+The FFMLib foundation uses `j2735-2024-ffm-lib:3.0.0-beta2` with matching Linux and Windows native artifacts. Its MessageFrame adapter returns UTF-8 JER bytes for UPER decoding and retains XER input for UPER encoding. The default `external` codec mode continues to use the existing message routes; in-process routing is added by the follow-on routing branch.
 
 
 ### Checkstyle configuration

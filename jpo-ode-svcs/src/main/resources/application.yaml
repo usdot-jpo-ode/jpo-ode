@@ -87,6 +87,8 @@ ode:
         rsm: "topic.OdeRawEncodedRSMJson"
       sdx-depositor:
         input: "topic.SDWDepositorInput"
+  asn1:
+    codec-mode: ${ODE_ASN1_CODEC_MODE:external}
 
   receivers:
     generic:
@@ -142,7 +144,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: health,prometheus
   prometheus:
     metrics:
       export:

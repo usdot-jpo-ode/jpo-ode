@@ -1,7 +1,12 @@
-FROM maven:3.8-eclipse-temurin-21-alpine AS builder
+FROM maven:3.9-eclipse-temurin-25-noble AS builder
 LABEL org.opencontainers.image.authors="583114@bah.com"
 
 WORKDIR /home
+
+# Lombok's Jackson annotation handling must be available while compiling both generated ASN.1
+# classes and the ODE. Without these settings, JavaBean accessors can add duplicate JSON/XML fields.
+COPY ./lombok.config ./lombok.config
+COPY ./jpo-asn-pojos/lombok.config ./jpo-asn-pojos/lombok.config
 
 COPY ./jpo-asn-pojos/pom.xml ./jpo-asn-pojos/
 
@@ -24,21 +29,36 @@ COPY ./jpo-ode-core/src ./jpo-ode-core/src/
 COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/
 COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 
-# Then build the rest of the project
+# Then build the rest of the project. The FFMLib dependency and its native libraries are resolved
+# from Maven Central.
 RUN mvn -pl jpo-ode-common,jpo-ode-plugins,jpo-ode-core,jpo-ode-svcs -am package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+# Verify wire contracts and a real native decode using the classes produced by this builder.
+# The artifact check and required smoke-test property prevent a missing Linux library from silently
+# turning the native test into a skip.
+RUN test -s /home/jpo-ode-svcs/target/libs/libasnapplication.so \
+    && mvn -pl jpo-ode-svcs -am \
+      -Dtest=SerializationContractTest,FfmlibNativeSmokeTest \
+      -Dsurefire.failIfNoSpecifiedTests=false \
+      -Dffmlib.smoke.required=true test
+
+FROM eclipse-temurin:25-jre-noble
 
 WORKDIR /home
 
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
+COPY --from=builder /home/jpo-ode-svcs/target/libs/libasnapplication.so /home/libs/libasnapplication.so
 COPY ./scripts/startup_jpoode.sh /home
 
-RUN apk --no-cache add openssh  \
-    && apk --no-cache add openrc  \
-    && rc-update add sshd \
-    && apk add libstdc++
+# Keep the configured Logback path aligned with the resource copied into this image.
+RUN test -s /home/logback.xml \
+    && grep -Fq -- '-Dlogback.configurationFile=/home/logback.xml' /home/startup_jpoode.sh
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssh-server curl \
+    && mkdir -p /run/sshd \
+    && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["sh", "/home/startup_jpoode.sh"]
