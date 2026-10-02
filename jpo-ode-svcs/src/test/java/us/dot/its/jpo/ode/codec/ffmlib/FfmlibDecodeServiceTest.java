@@ -380,33 +380,35 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void signedIeee1609EnvelopeIsRejected() {
+  void importedSignedEnvelopeDecodesItsEmbeddedMessageFrame() throws Exception {
+    stubSuccessfulDecode();
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
     OdeAsn1Data input = new OdeAsn1Data(
-        metadata, new OdeAsn1Payload(new OdeHexByteArray("038100")));
+        metadata, new OdeAsn1Payload(new OdeHexByteArray("038100" + BSM_HEX)));
 
-    UnsupportedOperationException failure = assertThrows(UnsupportedOperationException.class,
-        () -> decodeService.decode(input, "signed-bsm"));
-    assertTrue(failure.getMessage().contains("use external codec mode"));
-    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", "unknown")
-        .tag("source", "import")
-        .tag("reason", "signed_payload")
-        .counter()
-        .count(), 0.0);
-    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+    decodeService.decode(input, "signed-bsm");
+
+    verify(ffmlibCodec).uperToIntermediate(eq(CodecUtils.fromHex(BSM_HEX)));
+    verify(outputPublisher).publish(any());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
         .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
   }
 
   @Test
-  void encryptedIeee1609EnvelopeIsRejected() {
+  void importedEnvelopeWithoutMessageFrameIsRejected() {
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
     OdeAsn1Data input = new OdeAsn1Data(
         metadata, new OdeAsn1Payload(new OdeHexByteArray("038100")));
 
-    assertThrows(UnsupportedOperationException.class, () -> decodeService.decode(input, "encrypted"));
+    assertThrows(IllegalArgumentException.class, () -> decodeService.decode(input, "no-message"));
+    verify(ffmlibCodec, never()).uperToIntermediate(any());
+    verify(outputPublisher, never()).publish(any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "unknown").tag("source", "import").tag("reason", "invalid_payload")
+        .counter().count());
   }
 
   @Test
@@ -442,18 +444,25 @@ class FfmlibDecodeServiceTest {
 
   @ParameterizedTest
   @EnumSource(SupportedMessageType.class)
-  void importedSignedEnvelopeBehindWsmpHeadersIsRejected(SupportedMessageType type) {
+  void importedSignedEnvelopeMatchesExternalHeaderStripping(SupportedMessageType type)
+      throws Exception {
+    stubSuccessfulDecode();
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setCertPresent(true);
+    metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
     OdeAsn1Data input = new OdeAsn1Data(metadata,
-        new OdeAsn1Payload(new OdeHexByteArray("0001038100" + type.getStartFlag() + "AA")));
+        new OdeAsn1Payload(new OdeHexByteArray("0001038100" + type.getStartFlag() + "AA038100")));
+    OdeAsn1Data external = new RawEncodedJsonService(new ObjectMapper())
+        .addEncodingAndMutateBytes(JsonUtils.toJson(input, false), type,
+            OdeMessageFrameMetadata.class);
 
-    assertThrows(UnsupportedOperationException.class,
-        () -> decodeService.decode(input, "signed-import-wsmp"));
+    decodeService.decode(input, "signed-import-wsmp");
 
-    verify(ffmlibCodec, never()).uperToIntermediate(any());
-    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", "unknown").tag("source", "import").tag("reason", "signed_payload")
-        .counter().count(), 0.0);
+    byte[] expected = CodecUtils.fromHex(((OdeHexByteArray) external.getPayload().getData()).getBytes());
+    verify(ffmlibCodec).uperToIntermediate(eq(expected));
+    assertTrue(metadata.isCertPresent());
+    assertEquals(SecurityResultCode.spduCryptoVerificationFailure, metadata.getSecurityResultCode());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
   }
 
   @Test
