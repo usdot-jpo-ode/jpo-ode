@@ -257,6 +257,10 @@ services:
         condition: service_healthy
       ode:
         condition: service_healthy
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   sec:
     profiles:
