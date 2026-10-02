@@ -146,27 +146,24 @@ public class FfmlibDecodeService {
       long prepStart = System.nanoTime();
       OdeHexByteArray hexBytes = (OdeHexByteArray) asn1Data.getPayload().getData();
       byte[] encoded = CodecUtils.fromHex(hexBytes.getBytes());
-      if (isIeee1609(encoded, (OdeMessageFrameMetadata) asn1Data.getMetadata())) {
-        recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, "signed_payload");
-        throw new UnsupportedOperationException(
-            "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib "
-                + "3.0.0-beta2; use external codec mode for signed messages");
-      }
       String messageType = UperUtil.determineMessageType(asn1Data.getPayload());
       SupportedMessageType type = SupportedMessageType.valueOf(messageType);
       byte[] uperBytes = UperUtil.stripDot3Header(encoded, type.getStartFlagBytes());
-      if (!isIeee1609(uperBytes, (OdeMessageFrameMetadata) asn1Data.getMetadata())) {
-        try {
-          uperBytes = UperUtil.stripDot2Header(uperBytes, type.getStartFlagBytes());
-        } catch (StartFlagNotFoundException error) {
-          throw new IllegalArgumentException("Imported ASN.1 start flag was not found", error);
-        }
+      try {
+        uperBytes = UperUtil.stripDot2Header(uperBytes, type.getStartFlagBytes());
+      } catch (StartFlagNotFoundException error) {
+        throw new IllegalArgumentException("Imported ASN.1 start flag was not found", error);
       }
       log.debug("Prepared raw {} ASN.1 payload in {}us", key,
           (System.nanoTime() - prepStart) / 1000);
 
-      runPublishDecoded(
-          (OdeMessageFrameMetadata) asn1Data.getMetadata(), uperBytes, key, null, SOURCE_IMPORT);
+      OdeMessageFrameMetadata metadata = (OdeMessageFrameMetadata) asn1Data.getMetadata();
+      // The external route's XML round trip renders absent optional strings as empty strings.
+      metadata.setOriginIp(metadata.getOriginIp() == null ? "" : metadata.getOriginIp());
+      metadata.setOdePacketID(metadata.getOdePacketID() == null ? "" : metadata.getOdePacketID());
+      metadata.setOdeTimStartDateTime(
+          metadata.getOdeTimStartDateTime() == null ? "" : metadata.getOdeTimStartDateTime());
+      runPublishDecoded(metadata, uperBytes, key, null, SOURCE_IMPORT);
     } catch (UnsupportedOperationException failure) {
       throw failure;
     } catch (DecodeFailure failure) {
@@ -208,8 +205,8 @@ public class FfmlibDecodeService {
       recordFailure(knownType == null ? TYPE_UNKNOWN : knownType.name(), SOURCE_UDP,
           "signed_payload");
       throw new UnsupportedOperationException(
-          "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib "
-              + "3.0.0-beta2; use external codec mode for signed messages");
+          "Signed IEEE 1609.2 payloads are not decoded by the FFM raw-topic path; "
+              + "use external codec mode for signed UDP messages");
     }
     long start = System.nanoTime();
     try {
@@ -278,7 +275,9 @@ public class FfmlibDecodeService {
     String type = knownType == null ? TYPE_UNKNOWN : knownType.name();
     try {
       long nativeStart = System.nanoTime();
-      byte[] messageFrameBytes = unwrapIeee1609IfPresent(metadata, uperBytes);
+      // Imports already stripped the envelope; retain the certificate flag from the log.
+      byte[] messageFrameBytes = SOURCE_IMPORT.equals(source)
+          ? uperBytes : unwrapIeee1609IfPresent(metadata, uperBytes);
       IntermediateDecodeResult intermediate = codec().uperToIntermediate(messageFrameBytes);
       long nativeNanos = System.nanoTime() - nativeStart;
       nativeTimer.record(nativeNanos, TimeUnit.NANOSECONDS);
@@ -510,8 +509,8 @@ public class FfmlibDecodeService {
     }
 
     throw new UnsupportedOperationException(
-        "Signed IEEE 1609.2 payloads are not supported by j2735-2024-ffm-lib 3.0.0-beta2; "
-            + "use external codec mode for signed messages");
+        "Signed IEEE 1609.2 payloads are not decoded by the FFM raw-topic path; "
+            + "use external codec mode for signed UDP messages");
   }
 
   private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata) {
