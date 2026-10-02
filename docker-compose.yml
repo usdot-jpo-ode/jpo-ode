@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
+          cpus: "4"
           memory: 4G
     ports:
       - "8080:8080"
@@ -258,21 +258,6 @@ services:
       ode:
         condition: service_healthy
 
-  mongodb-exporter:
-    build:
-      context: .
-      dockerfile: scripts/tests/Dockerfile.mongodb-exporter
-    healthcheck:
-      test: ["CMD", "/usr/local/bin/busybox", "wget", "-q", "-O", "/dev/null",
-        "http://127.0.0.1:9216/metrics"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
   sec:
     profiles:
       - all
@@ -309,25 +294,3 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-
-  decode-benchmark:
-    profiles:
-      - benchmark
-    build:
-      context: .
-      dockerfile: scripts/benchmarks/Dockerfile
-    image: jpoode_decode_benchmark:python-3.12.5
-    entrypoint: ["python", "/benchmarks/decode_benchmark.py"]
-    environment:
-      DECODE_BENCHMARK_UDP_HOST: ode
-      DECODE_BENCHMARK_METRICS_URL: http://ode:8080/actuator/prometheus
-      DECODE_BENCHMARK_HEALTH_URL: http://ode:8080/actuator/health
-    volumes:
-      - ./scripts/benchmarks:/benchmarks:ro
-      - ./scripts/tests:/tests:ro
-      - ./scripts/tests/output:/output
-    depends_on:
-      kafka:
-        condition: service_healthy
-      ode:
-        condition: service_healthy
