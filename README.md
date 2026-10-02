@@ -411,25 +411,6 @@ FFM confirms each decoded JSON publication before committing its raw input offse
 
 When stopping the service, confirmed records are committed and unfinished records remain available for replay. Destinations disabled through the existing ODE topic configuration are counted as skipped and their raw inputs are committed intentionally; imported files with disabled destinations follow the successful-file path, while actual import failures follow the failed-file path. For rollback, set `ODE_ASN1_CODEC_MODE=external`; the external routers resume using the same raw-topic consumer groups and retain their existing topic, key, payload, and metadata contracts. FFM decoding uses JER as its intermediate encoding; encoding continues to use XER. TIM MessageFrames are encoded in process in FFM mode, while AdvisorySituationData and PPM remain on their external paths.
 
-Benchmark tools and usage instructions are in [scripts/benchmarks](scripts/benchmarks/README.md). UDP sender fixtures and recorded results remain under `scripts/tests`.
-
-The benchmark's `p50_ms`, `p95_ms`, and `p99_ms` boundary is Kafka JSON CreateTime minus UDP send time. Kafka CreateTime and the sender's wall clock are millisecond-quantized; decode-stage timings use `nanoTime` and submillisecond histogram buckets. The separately reported Kafka raw-record-age metric is also millisecond-quantized. Parse timing stops before native decoding and JSON preparation. The runner checks ODE health, drained application-group offsets, and zero in-flight work throughout its quiet period. Run the benchmark from its pinned Linux Compose service so UDP send times, Kafka CreateTime values, and the ODE share the Linux host clock. It connects to `ode:46800`, `kafka:9094`, and the ODE's internal metrics endpoint. Its CSV preserves paired raw/JSON timestamps; its JSON summary reports complete-window latency, send-rate and per-partition rates, decode-stage histogram estimates, application-group committed offsets, health, and pending work. The repository's repeatability gate uses three consecutive samples; each sends 1,000 warmup BSMs and 300,000 measured BSMs at 1,000/s, checks raw/JSON correlation and application-group committed offsets, waits for zero pending raw sends, output publications, and commits plus a 15-second quiet period, and fails when `p95_ms` is missing or at least 5 ms:
-
-```bash
-docker compose --profile all --profile benchmark run --rm --no-deps decode-benchmark \
-  --mode ffm --broker kafka:9094 \
-  --fixture /tests/udpsender_bsm.py \
-  --udp-host ode --udp-port 46800 \
-  --metrics-url http://ode:8080/actuator/prometheus \
-  --consumer-group RawEncodedBSMJsonRouter \
-  --count 300000 --warmup 1000 --rate 1000 --max-p95-ms 5 \
-  --output /output/ffm-run-1.csv
-```
-
-Change the output name for each run and require every run to pass; do not use the median to hide a failed run. Each CSV is paired with a JSON summary. The recorded p95 boundary is UDP send time to Kafka JSON record creation time; Kafka output acknowledgement latency is reported separately.
-
-The default Compose deployment caps the ODE at 2 CPUs and 4 GiB and Kafka at 1 CPU and 4 GiB. A benchmark run performed with temporary uncapping measures behavior on the Linux VM's available CPU and memory and does not establish latency under those deployment caps. Kafka CPU demand above one core is a signal to size the Kafka service or host accordingly. Temporary test overrides must be removed and the Compose limits restored after the run.
-
 #### PPM Module (Geofencing and Filtering)
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
