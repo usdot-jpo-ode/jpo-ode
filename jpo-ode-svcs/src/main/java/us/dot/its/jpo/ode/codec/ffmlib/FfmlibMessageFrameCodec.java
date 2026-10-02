@@ -23,6 +23,12 @@ public class FfmlibMessageFrameCodec {
   private final MessageFrameCodec codec;
   private final MeterRegistry meterRegistry;
 
+  /**
+   * Creates the native codec adapter.
+   *
+   * @param codec native codec for MessageFrame conversions
+   * @param meterRegistry registry for conversion timing metrics
+   */
   public FfmlibMessageFrameCodec(MessageFrameCodec codec, MeterRegistry meterRegistry) {
     this.codec = codec;
     this.meterRegistry = meterRegistry;

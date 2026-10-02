@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The MapReceiver class is responsible for receiving UDP packets, decoding them, and publishing the
@@ -20,7 +21,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 @Slf4j
 public class MapReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> mapPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -35,9 +36,21 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
    */
   public MapReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs a MapReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public MapReceiver(UDPReceiverProperties.ReceiverProperties receiverProperties,
+      UdpIngestPublisher ingestPublisher, String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
-    this.mapPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
     this.publishTopic = publishTopic;
   }
 
@@ -52,10 +65,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP Map packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String mapData = UdpHexDecoder.buildJsonMapFromPacket(packet);
-          if (mapData != null) {
-            mapPublisher.send(publishTopic, mapData);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.MAP, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);

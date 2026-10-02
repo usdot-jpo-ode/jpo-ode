@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import us.dot.its.jpo.ode.config.SerializationConfig;
@@ -27,7 +28,6 @@ import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
 import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
-import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
 import us.dot.its.jpo.ode.test.utilities.TestUDPClient;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -37,6 +37,8 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
     classes = { OdeKafkaProperties.class, UDPReceiverProperties.class, KafkaProducerConfig.class,
         SerializationConfig.class, TestMetricsConfig.class, RawEncodedJsonTopics.class, KafkaProperties.class },
     properties = {"ode.receivers.generic.receiver-port=15460",
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "ode.kafka.brokers=${spring.embedded.kafka.brokers}",
         "ode.kafka.topics.raw-encoded-json.bsm=topic.GenericReceiverTestBSM",
         "ode.kafka.topics.raw-encoded-json.map=topic.GenericReceiverTestMAP",
         "ode.kafka.topics.raw-encoded-json.psm=topic.GenericReceiverTestPSM",
@@ -48,6 +50,12 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
         "ode.kafka.topics.raw-encoded-json.rtcm=topic.GenericReceiverTestRTCM",
         "ode.kafka.topics.raw-encoded-json.rsm=topic.GenericReceiverTestRSM"})
 @DirtiesContext
+@EmbeddedKafka(partitions = 1, topics = {
+    "topic.GenericReceiverTestBSM", "topic.GenericReceiverTestMAP",
+    "topic.GenericReceiverTestPSM", "topic.GenericReceiverTestSPAT",
+    "topic.GenericReceiverTestSSM", "topic.GenericReceiverTestTIM",
+    "topic.GenericReceiverTestSRM", "topic.GenericReceiverTestSDSM",
+    "topic.GenericReceiverTestRTCM", "topic.GenericReceiverTestRSM"})
 class GenericReceiverTest {
 
   @Autowired
@@ -59,7 +67,8 @@ class GenericReceiverTest {
   @Autowired
   KafkaTemplate<String, String> kafkaTemplate;
 
-  EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
+  @Autowired
+  EmbeddedKafkaBroker embeddedKafka;
 
   @Test
   void testRun() throws Exception {
@@ -67,7 +76,6 @@ class GenericReceiverTest {
         rawEncodedJsonTopics.getPsm(), rawEncodedJsonTopics.getSpat(),
         rawEncodedJsonTopics.getSsm(), rawEncodedJsonTopics.getTim(), rawEncodedJsonTopics.getSrm(),
         rawEncodedJsonTopics.getSdsm(), rawEncodedJsonTopics.getRtcm(), rawEncodedJsonTopics.getRsm()};
-    EmbeddedKafkaHolder.addTopics(topics);
 
     GenericReceiver genericReceiver = new GenericReceiver(udpReceiverProperties.getGeneric(),
         kafkaTemplate, rawEncodedJsonTopics);

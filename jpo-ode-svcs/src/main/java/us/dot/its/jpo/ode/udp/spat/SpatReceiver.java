@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The SpatReceiver class is responsible for receiving UDP packets containing SPaT (Signal Phase and
@@ -20,7 +21,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
 @Slf4j
 public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> spatPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -35,10 +36,22 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
   public SpatReceiver(
       ReceiverProperties receiverProperties, KafkaTemplate<String, String> kafkaTemplate,
       String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs a SpatReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public SpatReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
+      String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
     this.publishTopic = publishTopic;
-    this.spatPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
   }
 
   @Override
@@ -52,10 +65,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
         log.debug("Waiting for UDP SPaT packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String spatJson = UdpHexDecoder.buildJsonSpatFromPacket(packet);
-          if (spatJson != null) {
-            spatPublisher.send(publishTopic, spatJson);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.SPAT, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);

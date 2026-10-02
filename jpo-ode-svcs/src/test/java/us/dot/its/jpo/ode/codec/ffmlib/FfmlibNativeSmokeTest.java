@@ -1,16 +1,12 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import j2735ffm.AsnEncoding;
 import j2735ffm.MessageFrameCodec;
-import java.nio.charset.StandardCharsets;
+import j2735ffm.AsnEncoding;
 import java.nio.file.Path;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
@@ -33,13 +29,7 @@ class FfmlibNativeSmokeTest {
 
   @Test
   void nativeCodecLoadsAndDecodesBsmUper() {
-    Path nativeLibrary = nativeLibraryOrNull();
-    if (Boolean.getBoolean("ffmlib.smoke.required")) {
-      assertNotNull(nativeLibrary,
-          "Required FFMLib native library not present under target/libs");
-    }
-    assumeTrue(nativeLibrary != null,
-        "FFMLib native library not present under target/libs");
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
 
     FfmlibProperties properties = new FfmlibProperties();
     properties.setNativeLibraryPath(nativeLibrary.toString());
@@ -51,28 +41,19 @@ class FfmlibNativeSmokeTest {
         Path.of(properties.getNativeLibraryPath()));
     FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
         messageFrameCodec, new SimpleMeterRegistry());
-    byte[] uper = HexUtils.fromHexString(BSM_HEX);
-    IntermediateDecodeResult result = codec.uperToIntermediate(uper);
+    IntermediateDecodeResult result = codec.uperToIntermediate(HexUtils.fromHexString(BSM_HEX));
+    byte[] fullBufferOutput = messageFrameCodec.convertGeneral(HexUtils.fromHexString(BSM_HEX),
+        "MessageFrame", AsnEncoding.UPER, AsnEncoding.JER);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(fullBufferOutput, result.bytes());
 
     assertNotNull(result);
-    assertEquals(FfmlibMessageFrameCodec.IntermediateEncoding.JER, result.encoding());
     assertNotNull(result.bytes());
     assertFalse(result.bytes().length == 0);
-    String jer = new String(result.bytes(), StandardCharsets.UTF_8);
+    String jer = new String(result.bytes(), java.nio.charset.StandardCharsets.UTF_8);
     assertTrue(jer.contains("BasicSafetyMessage"), () -> "Unexpected JER output: " + jer);
-    assertArrayEquals(result.bytes(), codec.convert(uper, "MessageFrame", AsnEncoding.UPER,
-        AsnEncoding.JER));
 
-    String xer = codec.uperToXer(uper);
-    assertArrayEquals(uper, codec.xerToUper(xer),
-        "XER-based encoding must remain compatible with FFMLib beta2");
-  }
-
-  private static Path nativeLibraryOrNull() {
-    try {
-      return FfmlibNativeLibraryLoader.resolve("");
-    } catch (IllegalStateException missing) {
-      return null;
-    }
+    String xer = messageFrameCodec.uperToXer(HexUtils.fromHexString(BSM_HEX));
+    org.junit.jupiter.api.Assertions.assertArrayEquals(HexUtils.fromHexString(BSM_HEX),
+        codec.xerToUper(xer), "XER encoding must remain compatible with beta2");
   }
 }

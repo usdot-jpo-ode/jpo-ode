@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.kafka;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
@@ -69,10 +68,6 @@ public class KafkaConsumerConfig {
   }
 
   private Map<String, Object> getKafkaConsumerProperties() {
-    Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
-    if ("CONFLUENT".equals(this.odeKafkaProperties.getKafkaType())) {
-      props.putAll(this.odeKafkaProperties.getConfluent().buildConfluentProperties());
-    }
-    return props;
+    return OdeKafkaClients.consumerProperties(kafkaProperties, odeKafkaProperties);
   }
 }

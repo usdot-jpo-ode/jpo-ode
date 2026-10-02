@@ -168,9 +168,11 @@ The following guide contains information about the data flow diagrams for the OD
 
 **Configuration:**
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` 
-properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log 
-file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.yaml` file as desired.
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*`
+properties or set `ODE_KAFKA_BROKERS` to another broker address, modify `jpo-ode-svcs\src\main\resources\application.yaml`
+as desired. In Docker Compose, ODE connects to the internal Kafka listener at `kafka:9094`; clients running on the host
+connect through `${DOCKER_HOST_IP}:9092`. Keep those addresses distinct so the container does not route Kafka traffic
+through the host port mapping.
 To adjust the settings in your unit/integration tests, modify the `jpo-ode-svcs\src\test\resources\application.yaml` file.
 
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
@@ -401,6 +403,14 @@ ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` fil
 
 The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
 
+ODE defaults to `ODE_ASN1_CODEC_MODE=external`. Both modes publish UDP input to the existing raw encoded JSON topics. In `ffm` mode, one Kafka listener per message type consumes those durable records and publishes decoded output to the existing Ode JSON topics. The FFM listeners share the corresponding external router consumer groups, so switching modes resumes from the committed raw-topic offsets. Each type has its own listener and topic; decode congestion for one type does not block UDP ingestion or decoding for another type, although shared broker or host exhaustion can affect all types. `ODE_FFM_LISTENER_CONCURRENCY` defaults to four consumers per type, and each consumer processes one record at a time. All FFM MessageFrame decodes use the configured native buffer sizes.
+
+FFM confirms each decoded JSON publication before committing its raw input offset. It allows at most three sends within a 30-second confirmation budget, retrying only after Kafka has reported an exceptional completion. It does not start a second send while an earlier send is unresolved. An unresolved send, exhausted retries, or interruption stops that listener and leaves its raw offset uncommitted. A late confirmation or process crash after output confirmation but before the input commit can replay the record and produce a duplicate; Kafka producer idempotence does not deduplicate distinct application sends. Malformed, unsupported, signed, and decoded-serialization failures are copied to `dlq.<raw-topic without the topic. prefix>` with their original key and value plus source and failure headers; input is committed only after the quarantine write is confirmed. DLT records are retained for seven days by default and are never replayed automatically. Investigate a quarantine record and deliberately republish it to its raw topic when ready. Raw topics remain in `apps.ode.streamTopics` in `jpo-utils/jikkou/kafka-topics-values.yaml` and use the existing `KAFKA_TOPIC_PARTITIONS` and `KAFKA_TOPIC_RETENTION_MS` settings (one partition and five-minute retention by default). The Jikkou `kafka-setup` service creates the ten quarantine topics listed separately in `apps.ode.dlqTopics`, using the `dlq.` prefix (for example, `topic.OdeRawEncodedBSMJson` routes failures to `dlq.OdeRawEncodedBSMJson`). Configure `KAFKA_DLQ_TOPIC_PARTITIONS` and `KAFKA_DLQ_TOPIC_RETENTION_MS` in `jpo-utils` for DLQ partitions and retention (four partitions and seven days by default). Complete topic setup before starting ODE. If raw-topic names are customized, update both lists to match; DLQ names replace the leading `topic.` with `dlq.`, or prepend `dlq.` when the raw name has no `topic.` prefix.
+
+`ODE_FFM_SYNC_COMMITS=false` uses asynchronous offset commits after confirmed output; set it to `true` to compare synchronous commits. A commit failure marks that message-type listener unhealthy and stops it without blocking the listener thread. `ODE_FFM_RAW_PARTITION_STRATEGY=round_robin` distributes null-key raw UDP records across available partitions; `default` restores Kafka's sticky null-key behavior. Non-null keys keep Kafka's default hash mapping. Startup warms producer metadata for the provisioned raw/DLT topics, starts every FFM listener, then waits up to `ODE_FFM_STARTUP_TIMEOUT` (120 seconds by default) for each consumer to join its group. Readiness accepts empty partition assignments for idle consumers and remains down until startup completes. A startup timeout stops every FFM listener started by the startup coordinator, leaving UDP ingestion closed. UDP receiver threads publish to Kafka without waiting for a particular type's decoder backlog.
+
+When stopping the service, confirmed records are committed and unfinished records remain available for replay. Destinations disabled through the existing ODE topic configuration are counted as skipped and their raw inputs are committed intentionally; imported files with disabled destinations follow the successful-file path, while actual import failures follow the failed-file path. For rollback, set `ODE_ASN1_CODEC_MODE=external`; the external routers resume using the same raw-topic consumer groups and retain their existing topic, key, payload, and metadata contracts. FFM decoding uses JER as its intermediate encoding; encoding continues to use XER. TIM MessageFrames are encoded in process in FFM mode, while AdvisorySituationData and PPM remain on their external paths.
+
 #### PPM Module (Geofencing and Filtering)
 
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
@@ -574,8 +584,6 @@ The project can be reopened inside a dev container in VSCode. This environment s
 Build with JDK 25 and Maven 3.9 or newer, with the `jpo-asn-pojos` submodule initialized at the commit pinned by this repository. Keep both the root `lombok.config` and `jpo-asn-pojos/lombok.config` in place; they preserve Jackson annotations on generated accessors and prevent duplicate JSON/XML fields.
 
 Run `mvn -B clean verify` for the full build and test suite. `docker build -t jpo-ode:verify .` also runs the serialization contract tests and a required Linux FFMLib native smoke test in the builder stage, against classes compiled in that image. The image build fails if the Linux native library is missing or the smoke test cannot load and decode with it.
-
-The FFMLib foundation uses `j2735-2024-ffm-lib:3.0.0-beta2` with matching Linux and Windows native artifacts. Its MessageFrame adapter returns UTF-8 JER bytes for UPER decoding and retains XER input for UPER encoding. The default `external` codec mode continues to use the existing message routes; in-process routing is added by the follow-on routing branch.
 
 
 ### Checkstyle configuration

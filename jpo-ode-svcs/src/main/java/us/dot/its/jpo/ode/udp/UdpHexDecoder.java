@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.udp;
 
 import java.net.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.buf.HexUtils;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
@@ -43,7 +42,15 @@ public class UdpHexDecoder {
    * Result of extracting an ASN.1 payload from a UDP packet: the stripped payload used for decode,
    * plus the full received hex (before 1609.3 / 1609.2 header stripping) for metadata.
    */
-  private record Asn1PayloadExtraction(OdeAsn1Payload payload, String untrimmedPayloadHex) {
+  private record Asn1PayloadExtraction(
+      OdeAsn1Payload payload, String untrimmedPayloadHex, byte[] uperBytes) {
+  }
+
+  /**
+   * Prepared UDP decode input: metadata ready for {@code OdeMessageFrameData}, plus stripped UPER
+   * bytes for native decode (no hex round-trip on the payload).
+   */
+  public record UdpDecodeInput(OdeMessageFrameMetadata metadata, byte[] uperBytes) {
   }
 
   /**
@@ -75,30 +82,30 @@ public class UdpHexDecoder {
     int offsetOfReceivedPacket = packet.getOffset();
     byte[] payload = retrieveRelevantBytes(lengthOfReceivedPacket, buffer, offsetOfReceivedPacket);
 
-    // Lowercase hex for start-flag matching (flags use a-f, e.g. TIM "001f"); uppercase for
-    // metadata.asn1 to match OdeHexByteArray / CodecUtils serialization.
-    String untrimmedPayloadHexLower = HexUtils.toHexString(payload).toLowerCase();
-    if (!untrimmedPayloadHexLower.contains(msgType.getStartFlag())) {
+    byte[] startFlag = msgType.getStartFlagBytes();
+    if (UperUtil.findValidStartFlagLocation(payload, startFlag) == -1) {
       throw new InvalidPayloadException("Payload does not contain start flag");
     }
 
-    log.debug("Full {} packet: {}", msgType, untrimmedPayloadHexLower);
+    if (log.isDebugEnabled()) {
+      log.debug("Full {} packet: {}", msgType, CodecUtils.toHex(payload));
+    }
 
-    String strippedHex =
-        UperUtil.stripDot3Header(untrimmedPayloadHexLower, msgType.getStartFlag()).toLowerCase();
-
-    // Adding the dot2 header stripping here to handle the case where the signed 1609.2 header is
-    // present.
+    // Strip headers on bytes — avoid bytes→hex→bytes round-trips on the UDP hot path.
+    byte[] stripped = UperUtil.stripDot3Header(payload, startFlag);
     try {
-      strippedHex = UperUtil.stripDot2Header(strippedHex, msgType.getStartFlag());
+      stripped = UperUtil.stripDot2Header(stripped, startFlag);
     } catch (StartFlagNotFoundException e) {
       log.debug("Error stripping dot2 header: {}", e.getMessage());
     }
 
-    log.debug("Stripped {} packet: {}", msgType, strippedHex);
+    if (log.isDebugEnabled()) {
+      log.debug("Stripped {} packet: {}", msgType, CodecUtils.toHex(stripped));
+    }
 
-    return new Asn1PayloadExtraction(new OdeAsn1Payload(HexUtils.fromHexString(strippedHex)),
-        CodecUtils.toHex(payload));
+    // metadata.asn1 uses uppercase hex (CodecUtils) for the full received payload once.
+    return new Asn1PayloadExtraction(new OdeAsn1Payload(stripped), CodecUtils.toHex(payload),
+        stripped);
   }
 
   /**
@@ -272,19 +279,31 @@ public class UdpHexDecoder {
       GeneratedBy generatedBy, boolean includeReceivedMessageDetails)
       throws InvalidPayloadException {
 
+    UdpDecodeInput input = prepareDecodeInput(packet, messageType, recordType, source, generatedBy,
+        includeReceivedMessageDetails);
+    OdeAsn1Payload payload = new OdeAsn1Payload(input.uperBytes());
+    return new OdeAsn1Data(input.metadata(), payload);
+  }
+
+  /**
+   * Prepares metadata and stripped UPER bytes for in-process FFMLib decode without hex-decoding
+   * the payload again.
+   */
+  public static UdpDecodeInput prepareDecodeInput(DatagramPacket packet,
+      SupportedMessageType messageType, RecordType recordType, Source source,
+      GeneratedBy generatedBy, boolean includeReceivedMessageDetails)
+      throws InvalidPayloadException {
+
     String senderIp = packet.getAddress().getHostAddress();
     int senderPort = packet.getPort();
     log.debug("Packet received from {}:{}", senderIp, senderPort);
 
-    // Create OdeMsgPayload and OdeLogMetadata objects and populate them
     Asn1PayloadExtraction extracted = extractAsn1PayloadFromPacket(packet, messageType);
     OdeAsn1Payload payload = extracted.payload();
     OdeMessageFrameMetadata metadata =
         new OdeMessageFrameMetadata(payload, extracted.untrimmedPayloadHex());
 
-    // Add header data for the decoding process
     metadata.setOdeReceivedAt(DateTimeUtils.now());
-
     metadata.setOriginIp(senderIp);
     metadata.setSource(source);
     metadata.setRecordType(recordType);
@@ -300,7 +319,7 @@ public class UdpHexDecoder {
       metadata.setReceivedMessageDetails(receivedMessageDetails);
     }
 
-    return new OdeAsn1Data(metadata, payload);
+    return new UdpDecodeInput(metadata, extracted.uperBytes());
   }
 
 }
