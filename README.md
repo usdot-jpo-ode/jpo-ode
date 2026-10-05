@@ -575,7 +575,7 @@ Build with JDK 25 and Maven 3.9 or newer, with the `jpo-asn-pojos` submodule ini
 
 Run `mvn -B clean verify` for the full build and test suite. `docker build -t jpo-ode:verify .` also runs the serialization contract tests and a required Linux FFMLib native smoke test in the builder stage, against classes compiled in that image. The image build fails if the Linux native library is missing or the smoke test cannot load and decode with it.
 
-The FFMLib foundation uses `j2735-2024-ffm-lib:3.0.0-beta2` with matching Linux and Windows native artifacts. Its MessageFrame adapter returns UTF-8 JER bytes for UPER decoding and retains XER input for UPER encoding. The default `external` codec mode continues to use the existing message routes; in-process routing is added by the follow-on routing branch.
+The FFMLib foundation uses [`j2735-2024-ffm-lib:3.0.0-beta3`](https://github.com/neaeraconsulting/j2735-ffm-java/releases/tag/3.0.0-beta3) with matching Linux and Windows native artifacts; beta3 fixes an upstream native heap over-read on encoding failure. Its MessageFrame adapter returns UTF-8 JER bytes for UPER decoding and retains XER input for UPER encoding. The default `external` codec mode continues to use the existing message routes; in-process routing is added by the follow-on routing branch.
 
 
 ### Checkstyle configuration

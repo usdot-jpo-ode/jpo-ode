@@ -13,6 +13,7 @@
   <name>jpo-ode-svcs</name>
   <description>Services and web interface for US DOT ITS JPO ODE</description>
   <properties>
+    <ffmlib.version>3.0.0-beta3</ffmlib.version>
     <!-- SonarQube Properties -->
     <sonar.exclusions>src/main/**/OdeSvcsApplication.java</sonar.exclusions>
   </properties>
@@ -166,7 +167,7 @@
     <dependency>
       <groupId>com.neaeraconsulting</groupId>
       <artifactId>j2735-2024-ffm-lib</artifactId>
-      <version>3.0.0-beta2</version>
+      <version>${ffmlib.version}</version>
     </dependency>
     <dependency>
       <groupId>net.javacrumbs.json-unit</groupId>
@@ -215,7 +216,7 @@
                 <artifactItem>
                   <groupId>com.neaeraconsulting</groupId>
                   <artifactId>j2735-2024-ffm-lib</artifactId>
-                  <version>3.0.0-beta2</version>
+                  <version>${ffmlib.version}</version>
                   <classifier>linux-x86_64</classifier>
                   <type>so</type>
                   <destFileName>libasnapplication.so</destFileName>
@@ -235,7 +236,7 @@
                 <artifactItem>
                   <groupId>com.neaeraconsulting</groupId>
                   <artifactId>j2735-2024-ffm-lib</artifactId>
-                  <version>3.0.0-beta2</version>
+                  <version>${ffmlib.version}</version>
                   <classifier>windows-x86_64</classifier>
                   <type>dll</type>
                   <destFileName>asnapplication.dll</destFileName>
