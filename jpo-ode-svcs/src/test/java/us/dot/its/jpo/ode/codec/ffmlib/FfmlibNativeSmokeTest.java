@@ -62,21 +62,14 @@ class FfmlibNativeSmokeTest {
     String jer = new String(result.bytes(), java.nio.charset.StandardCharsets.UTF_8);
     assertTrue(jer.contains("BasicSafetyMessage"), () -> "Unexpected JER output: " + jer);
 
-    String xer = codec.uperToXer(uper);
-    assertArrayEquals(uper, codec.xerToUper(xer),
-        "XER-based encoding must remain compatible with FFMLib");
+    String xer = messageFrameCodec.uperToXer(HexUtils.fromHexString(BSM_HEX));
+    org.junit.jupiter.api.Assertions.assertArrayEquals(HexUtils.fromHexString(BSM_HEX),
+        codec.xerToUper(xer), "XER encoding must remain compatible with FFMLib");
   }
 
   @Test
   void nativeCodecRejectsUnknownHashAlgorithmAndRecoversForValidBsm() {
-    Path nativeLibrary = nativeLibraryOrNull();
-    if (Boolean.getBoolean("ffmlib.smoke.required")) {
-      assertNotNull(nativeLibrary,
-          "Required FFMLib native library not present under target/libs");
-    }
-    assumeTrue(nativeLibrary != null,
-        "FFMLib native library not present under target/libs");
-
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
     FfmlibProperties properties = new FfmlibProperties();
     properties.setNativeLibraryPath(nativeLibrary.toString());
     MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
@@ -97,7 +90,7 @@ class FfmlibNativeSmokeTest {
 
     byte[] validBsmUper = HexUtils.fromHexString(BSM_HEX);
     IntermediateDecodeResult recovered = codec.uperToIntermediate(validBsmUper);
-    String jer = new String(recovered.bytes(), StandardCharsets.UTF_8);
+    String jer = new String(recovered.bytes(), java.nio.charset.StandardCharsets.UTF_8);
     assertTrue(jer.contains("BasicSafetyMessage"));
     String xer = codec.uperToXer(validBsmUper);
     assertArrayEquals(validBsmUper, codec.xerToUper(xer));
@@ -196,32 +189,11 @@ class FfmlibNativeSmokeTest {
     return Math.max(0L, deadline - System.nanoTime());
   }
 
-  @Test
-  void nativeCodecRejectsUnknownHashAlgorithmAndRecoversForValidBsm() {
-    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
-    FfmlibProperties properties = new FfmlibProperties();
-    properties.setNativeLibraryPath(nativeLibrary.toString());
-    MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
-        properties.getTextBufferSize(),
-        properties.getUperBufferSize(),
-        properties.getErrorBufferSize(),
-        Path.of(properties.getNativeLibraryPath()));
-    FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
-        messageFrameCodec, new SimpleMeterRegistry());
-
-    // OER accepts this unknown ENUMERATED value, but XER encoding it must fail safely.
-    RuntimeException failure = assertThrows(RuntimeException.class,
-        () -> codec.convert(new byte[] {0x7f}, "HashAlgorithm", AsnEncoding.OER, AsnEncoding.XER));
-    ConvertException nativeFailure = assertInstanceOf(ConvertException.class, failure.getCause());
-    assertNotNull(nativeFailure.getMessage());
-    assertTrue(nativeFailure.getMessage().contains("Error encoding"),
-        () -> "Expected a native encoding error, got: " + nativeFailure.getMessage());
-
-    byte[] validBsmUper = HexUtils.fromHexString(BSM_HEX);
-    IntermediateDecodeResult recovered = codec.uperToIntermediate(validBsmUper);
-    String jer = new String(recovered.bytes(), java.nio.charset.StandardCharsets.UTF_8);
-    assertTrue(jer.contains("BasicSafetyMessage"));
-    String xer = codec.uperToXer(validBsmUper);
-    org.junit.jupiter.api.Assertions.assertArrayEquals(validBsmUper, codec.xerToUper(xer));
+  private static Path nativeLibraryOrNull() {
+    try {
+      return FfmlibNativeLibraryLoader.resolve("");
+    } catch (IllegalStateException missing) {
+      return null;
+    }
   }
 }
