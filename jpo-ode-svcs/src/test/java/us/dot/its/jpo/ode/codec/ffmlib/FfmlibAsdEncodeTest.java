@@ -24,7 +24,7 @@ class FfmlibAsdEncodeTest {
   private static final Path ASD_FIXTURE = Path.of("..", "asn1_codec", "unit-test-data", "ASD.xml");
 
   @Test
-  void beta2EncodesAndDecodesTimAsd() throws Exception {
+  void encodesAndDecodesTimAsd() throws Exception {
     Path library = FfmlibNativeTestSupport.requireLibraryOrSkip();
     FfmlibProperties properties = new FfmlibProperties();
     MessageFrameCodec nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),

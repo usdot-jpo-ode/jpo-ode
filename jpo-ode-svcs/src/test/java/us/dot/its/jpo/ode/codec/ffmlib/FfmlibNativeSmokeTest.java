@@ -10,7 +10,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.AsnEncoding;
 import j2735ffm.ConvertException;
 import j2735ffm.MessageFrameCodec;
-import j2735ffm.AsnEncoding;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,11 +196,32 @@ class FfmlibNativeSmokeTest {
     return Math.max(0L, deadline - System.nanoTime());
   }
 
-  private static Path nativeLibraryOrNull() {
-    try {
-      return FfmlibNativeLibraryLoader.resolve("");
-    } catch (IllegalStateException missing) {
-      return null;
-    }
+  @Test
+  void nativeCodecRejectsUnknownHashAlgorithmAndRecoversForValidBsm() {
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
+    FfmlibProperties properties = new FfmlibProperties();
+    properties.setNativeLibraryPath(nativeLibrary.toString());
+    MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
+        properties.getTextBufferSize(),
+        properties.getUperBufferSize(),
+        properties.getErrorBufferSize(),
+        Path.of(properties.getNativeLibraryPath()));
+    FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
+        messageFrameCodec, new SimpleMeterRegistry());
+
+    // OER accepts this unknown ENUMERATED value, but XER encoding it must fail safely.
+    RuntimeException failure = assertThrows(RuntimeException.class,
+        () -> codec.convert(new byte[] {0x7f}, "HashAlgorithm", AsnEncoding.OER, AsnEncoding.XER));
+    ConvertException nativeFailure = assertInstanceOf(ConvertException.class, failure.getCause());
+    assertNotNull(nativeFailure.getMessage());
+    assertTrue(nativeFailure.getMessage().contains("Error encoding"),
+        () -> "Expected a native encoding error, got: " + nativeFailure.getMessage());
+
+    byte[] validBsmUper = HexUtils.fromHexString(BSM_HEX);
+    IntermediateDecodeResult recovered = codec.uperToIntermediate(validBsmUper);
+    String jer = new String(recovered.bytes(), java.nio.charset.StandardCharsets.UTF_8);
+    assertTrue(jer.contains("BasicSafetyMessage"));
+    String xer = codec.uperToXer(validBsmUper);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(validBsmUper, codec.xerToUper(xer));
   }
 }

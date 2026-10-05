@@ -58,7 +58,7 @@ class TimAsdFfmRoutingTest {
   }
 
   @Test
-  void generatedTimAsdEncodesAndDecodesWithBeta2NativeCodec() throws Exception {
+  void generatedTimAsdEncodesAndDecodesWithNativeCodec() throws Exception {
     mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     signing.setIsSdwSigningEnabled(false);
     Path library = FfmlibNativeTestSupport.requireLibraryOrSkip();
