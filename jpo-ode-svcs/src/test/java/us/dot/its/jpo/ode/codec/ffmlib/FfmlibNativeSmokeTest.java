@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,6 +13,13 @@ import j2735ffm.AsnEncoding;
 import j2735ffm.ConvertException;
 import j2735ffm.MessageFrameCodec;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
@@ -87,5 +96,93 @@ class FfmlibNativeSmokeTest {
     assertTrue(jer.contains("BasicSafetyMessage"));
     String xer = codec.uperToXer(validBsmUper);
     org.junit.jupiter.api.Assertions.assertArrayEquals(validBsmUper, codec.xerToUper(xer));
+  }
+
+  @Test
+  void sharedNativeCodecSupportsConcurrentConversionsAndRecoversAfterFailures() throws Exception {
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
+
+    FfmlibProperties properties = new FfmlibProperties();
+    properties.setNativeLibraryPath(nativeLibrary.toString());
+    MessageFrameCodec messageFrameCodec = new MessageFrameCodec(
+        properties.getTextBufferSize(),
+        properties.getUperBufferSize(),
+        properties.getErrorBufferSize(),
+        Path.of(properties.getNativeLibraryPath()));
+    FfmlibMessageFrameCodec codec = new FfmlibMessageFrameCodec(
+        messageFrameCodec, new SimpleMeterRegistry());
+
+    byte[] validBsmUper = HexUtils.fromHexString(BSM_HEX);
+    byte[] expectedJer = codec.convert(validBsmUper, "MessageFrame",
+        AsnEncoding.UPER, AsnEncoding.JER).clone();
+    String expectedXer = codec.uperToXer(validBsmUper);
+
+    int threadCount = 8;
+    int iterationsPerThread = 50;
+    ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+    CountDownLatch ready = new CountDownLatch(threadCount);
+    CountDownLatch start = new CountDownLatch(1);
+    List<Future<?>> workers = new ArrayList<>(threadCount);
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+    try {
+      for (int thread = 0; thread < threadCount; thread++) {
+        workers.add(executor.submit(() -> {
+          ready.countDown();
+          assertTrue(start.await(remainingNanos(deadline), TimeUnit.NANOSECONDS),
+              "Concurrent start was not released before the shared deadline");
+          for (int iteration = 0; iteration < iterationsPerThread; iteration++) {
+            byte[] jer = codec.convert(validBsmUper, "MessageFrame",
+                AsnEncoding.UPER, AsnEncoding.JER);
+            assertArrayEquals(expectedJer, jer);
+
+            String xer = codec.uperToXer(validBsmUper);
+            byte[] roundTrip = codec.xerToUper(xer);
+            assertArrayEquals(validBsmUper, roundTrip,
+                "XER-based encoding must preserve the original UPER bytes");
+
+            RuntimeException failure = assertThrows(RuntimeException.class,
+                () -> codec.convert(new byte[] {0x7f}, "HashAlgorithm",
+                    AsnEncoding.OER, AsnEncoding.XER));
+            ConvertException nativeFailure = assertInstanceOf(ConvertException.class,
+                failure.getCause());
+            assertNotNull(nativeFailure.getMessage());
+            assertTrue(nativeFailure.getMessage().contains("Error encoding"),
+                () -> "Expected a native encoding error, got: " + nativeFailure.getMessage());
+
+            byte[] validAfterFailure = codec.convert(validBsmUper, "MessageFrame",
+                AsnEncoding.UPER, AsnEncoding.JER);
+            assertArrayEquals(expectedJer, validAfterFailure);
+
+            // Keep outputs across later native calls to detect reuse that aliases returned arrays.
+            assertArrayEquals(expectedJer, jer,
+                "A later conversion must not overwrite a returned JER array");
+            assertEquals(expectedXer, xer,
+                "A later conversion must not alter a returned XER string");
+            assertArrayEquals(validBsmUper, roundTrip,
+                "A later conversion must not overwrite a returned UPER array");
+          }
+          return null;
+        }));
+      }
+
+      assertTrue(ready.await(remainingNanos(deadline), TimeUnit.NANOSECONDS),
+          "Workers did not reach the coordinated start in time");
+      start.countDown();
+      for (Future<?> worker : workers) {
+        worker.get(remainingNanos(deadline), TimeUnit.NANOSECONDS);
+      }
+    } finally {
+      start.countDown();
+      executor.shutdownNow();
+      try {
+        executor.awaitTermination(remainingNanos(deadline), TimeUnit.NANOSECONDS);
+      } catch (InterruptedException interrupted) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
+  private static long remainingNanos(long deadline) {
+    return Math.max(0L, deadline - System.nanoTime());
   }
 }

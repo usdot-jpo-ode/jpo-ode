@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
  * ODE adapter around the generic, thread-safe native codec.
  *
  * <p>Every conversion records a bounded Micrometer timer tagged by PDU, encoding pair, and
- * outcome. The underlying {@link MessageFrameCodec} is a singleton and confines FFM memory per call.
+ * outcome. The underlying {@link MessageFrameCodec} is a shared thread-safe singleton that uses
+ * library-managed reusable buffers.
  */
 @Component
 @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
