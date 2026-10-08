@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The BsmReceiver class is responsible for receiving UDP packets containing Basic Safety Message
@@ -17,7 +18,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
 @Slf4j
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
-  private final KafkaTemplate<String, String> bsmPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -31,10 +32,22 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    */
   public BsmReceiver(ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs a BsmReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public BsmReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
+      String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
     this.publishTopic = publishTopic;
-    this.bsmPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
   }
 
   @Override
@@ -48,10 +61,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
         log.info("Waiting for UDP BSM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String bsmData = UdpHexDecoder.buildJsonBsmFromPacket(packet);
-          if (bsmData != null) {
-            bsmPublisher.send(publishTopic, bsmData);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.BSM, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);

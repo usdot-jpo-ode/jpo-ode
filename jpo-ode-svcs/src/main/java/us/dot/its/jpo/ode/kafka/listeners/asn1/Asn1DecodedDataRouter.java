@@ -49,6 +49,11 @@ public class Asn1DecodedDataRouter {
    * Exception for Asn1DecodedDataRouter specific failures.
    */
   public static class Asn1DecodedDataRouterException extends Exception {
+    /**
+     * Creates an exception with a message describing the routing failure.
+     *
+     * @param string the routing failure message
+     */
     public Asn1DecodedDataRouterException(String string) {
       super(string);
     }

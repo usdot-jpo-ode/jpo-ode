@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.InvalidPayloadException;
-import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 /**
  * The RtcmReceiver class is responsible for receiving UDP packets containing RTCM data,
@@ -16,7 +17,7 @@ import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverPropertie
  */
 @Slf4j
 public class RtcmReceiver extends AbstractUdpReceiverPublisher {
-  private final KafkaTemplate<String, String> rtcmPublisher;
+  private final UdpIngestPublisher ingestPublisher;
   private final String publishTopic;
 
   /**
@@ -30,10 +31,22 @@ public class RtcmReceiver extends AbstractUdpReceiverPublisher {
    */
   public RtcmReceiver(ReceiverProperties receiverProperties,
       KafkaTemplate<String, String> kafkaTemplate, String publishTopic) {
+    this(receiverProperties, UdpIngestPublisher.rawOnly(kafkaTemplate), publishTopic);
+  }
+
+  /**
+   * Constructs an RtcmReceiver that publishes through the shared UDP ingest publisher.
+   *
+   * @param receiverProperties UDP port and buffer size
+   * @param ingestPublisher raw-topic or direct-JSON publisher
+   * @param publishTopic raw encoded topic used when direct JSON is off
+   */
+  public RtcmReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
+      String publishTopic) {
     super(receiverProperties.getReceiverPort(), receiverProperties.getBufferSize());
 
     this.publishTopic = publishTopic;
-    this.rtcmPublisher = kafkaTemplate;
+    this.ingestPublisher = ingestPublisher;
   }
 
   @Override
@@ -47,10 +60,7 @@ public class RtcmReceiver extends AbstractUdpReceiverPublisher {
         log.info("Waiting for UDP RTCM packets...");
         socket.receive(packet);
         if (packet.getLength() > 0) {
-          String rtcmData = UdpHexDecoder.buildJsonRtcmFromPacket(packet);
-          if (rtcmData != null) {
-            rtcmPublisher.send(publishTopic, rtcmData);
-          }
+          ingestPublisher.publish(packet, SupportedMessageType.RTCM, publishTopic);
         }
       } catch (InvalidPayloadException e) {
         log.error("Error decoding packet", e);

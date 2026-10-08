@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.importer.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
@@ -78,6 +80,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
   private final JsonTopics jsonTopics;
   private final KafkaTemplate<String, String> template;
   private final SerialId serialId;
+  private final Asn1CodecModeProperties codecMode;
+  private final FfmlibDecodeService ffmDecoder;
 
   /**
    * Constructs a LogFileToAsn1CodecPublisher instance used for converting log files into {@link OdeData} objects and publishing
@@ -89,10 +93,19 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
    */
   public LogFileToAsn1CodecPublisher(KafkaTemplate<String, String> template, JsonTopics jsonTopics,
                                      RawEncodedJsonTopics rawEncodedJsonTopics) {
+    this(template, jsonTopics, rawEncodedJsonTopics, new Asn1CodecModeProperties(), null);
+  }
+
+  /** Creates a mode-aware log publisher for the application importer. */
+  public LogFileToAsn1CodecPublisher(KafkaTemplate<String, String> template, JsonTopics jsonTopics,
+      RawEncodedJsonTopics rawEncodedJsonTopics, Asn1CodecModeProperties codecMode,
+      FfmlibDecodeService ffmDecoder) {
     this.jsonTopics = jsonTopics;
     this.rawEncodedJsonTopics = rawEncodedJsonTopics;
     this.template = template;
     this.serialId = new SerialId();
+    this.codecMode = codecMode;
+    this.ffmDecoder = ffmDecoder;
   }
 
   /**
@@ -169,6 +182,11 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
       if (isDriverAlertRecord(fileParser)) {
         template.send(jsonTopics.getDriverAlert(), JsonUtils.toJson(odeData, false));
+      } else if (codecMode.isFfm()) {
+        if (ffmDecoder == null) {
+          throw new IllegalStateException("FFM mode requires the in-process log decoder");
+        }
+        ffmDecoder.decode((OdeAsn1Data) odeData, null);
       } else {
         String messageType = UperUtil.determineMessageType(msgPayload);
         switch (messageType) {
