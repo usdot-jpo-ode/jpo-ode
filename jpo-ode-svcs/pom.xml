@@ -13,7 +13,7 @@
   <name>jpo-ode-svcs</name>
   <description>Services and web interface for US DOT ITS JPO ODE</description>
   <properties>
-    <ffmlib.version>3.0.0-beta3</ffmlib.version>
+    <ffmlib.version>3.0.0-beta6</ffmlib.version>
     <!-- SonarQube Properties -->
     <sonar.exclusions>src/main/**/OdeSvcsApplication.java</sonar.exclusions>
   </properties>
