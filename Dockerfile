@@ -45,6 +45,7 @@ RUN test -s /home/jpo-ode-svcs/target/libs/libasnapplication.so \
 FROM eclipse-temurin:25-jre-noble
 
 WORKDIR /home
+ENV ODE_FFMLIB_NATIVE_LIBRARY_PATH=/home/libs
 
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
