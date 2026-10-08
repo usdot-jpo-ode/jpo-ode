@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -93,18 +95,12 @@ class FfmlibNativeSmokeTest {
     String jer = new String(recovered.bytes(), java.nio.charset.StandardCharsets.UTF_8);
     assertTrue(jer.contains("BasicSafetyMessage"));
     String xer = codec.uperToXer(validBsmUper);
-    assertArrayEquals(validBsmUper, codec.xerToUper(xer));
+    org.junit.jupiter.api.Assertions.assertArrayEquals(validBsmUper, codec.xerToUper(xer));
   }
 
   @Test
   void sharedNativeCodecSupportsConcurrentConversionsAndRecoversAfterFailures() throws Exception {
-    Path nativeLibrary = nativeLibraryOrNull();
-    if (Boolean.getBoolean("ffmlib.smoke.required")) {
-      assertNotNull(nativeLibrary,
-          "Required FFMLib native library not present under target/libs");
-    }
-    assumeTrue(nativeLibrary != null,
-        "FFMLib native library not present under target/libs");
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
 
     FfmlibProperties properties = new FfmlibProperties();
     properties.setNativeLibraryPath(nativeLibrary.toString());
@@ -132,7 +128,8 @@ class FfmlibNativeSmokeTest {
       for (int thread = 0; thread < threadCount; thread++) {
         workers.add(executor.submit(() -> {
           ready.countDown();
-          assertTrue(start.await(30, TimeUnit.SECONDS), "Concurrent start was not released");
+          assertTrue(start.await(remainingNanos(deadline), TimeUnit.NANOSECONDS),
+              "Concurrent start was not released before the shared deadline");
           for (int iteration = 0; iteration < iterationsPerThread; iteration++) {
             byte[] jer = codec.convert(validBsmUper, "MessageFrame",
                 AsnEncoding.UPER, AsnEncoding.JER);
@@ -187,13 +184,5 @@ class FfmlibNativeSmokeTest {
 
   private static long remainingNanos(long deadline) {
     return Math.max(0L, deadline - System.nanoTime());
-  }
-
-  private static Path nativeLibraryOrNull() {
-    try {
-      return FfmlibNativeLibraryLoader.resolve("");
-    } catch (IllegalStateException missing) {
-      return null;
-    }
   }
 }
