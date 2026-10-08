@@ -37,3 +37,5 @@ The suggested cheaper designs are valid for deployments that explicitly accept t
 - Independent final review found no material correctness or regression issues. `git diff --check` passed.
 - Service Checkstyle passed at the configured error threshold (zero error-level violations). Existing warning-level findings remain in the service module.
 - The packaged Spring Boot jar/container startup was not rerun; the loader regression explicitly exercises `jar:` and `jar:nested:` code-source URIs. Throughput/latency benchmarks were not rerun for these review fixes.
+
+Both PR branches received the reviewed code and documentation updates. Updated PR descriptions were prepared, but GitHub rejected both GraphQL and REST description updates because the current personal access token lacks pull-request write permission; their existing descriptions therefore remain stale.
