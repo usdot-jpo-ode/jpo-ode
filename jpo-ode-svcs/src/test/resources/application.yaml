@@ -81,6 +81,8 @@ ode:
         rsm: "topic.OdeRawEncodedRSMJson"
       sdx-depositor:
         input: "topic.SDWDepositorInput"
+  asn1:
+    codec-mode: ${ODE_ASN1_CODEC_MODE:external}
   receivers:
     generic:
       buffer-size: 2000
