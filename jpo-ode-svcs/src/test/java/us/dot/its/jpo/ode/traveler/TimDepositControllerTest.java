@@ -20,6 +20,7 @@
  import com.fasterxml.jackson.databind.JsonNode;
  import com.fasterxml.jackson.databind.node.ObjectNode;
  import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+ import j2735ffm.ConvertException;
  import java.io.IOException;
  import java.nio.file.Files;
  import java.nio.file.Paths;
@@ -39,6 +40,7 @@
  import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
  import org.springframework.boot.context.properties.EnableConfigurationProperties;
  import org.springframework.boot.test.context.SpringBootTest;
+ import org.springframework.http.HttpStatus;
  import org.springframework.http.ResponseEntity;
  import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
  import org.springframework.kafka.core.KafkaTemplate;
@@ -525,6 +527,49 @@
     * Helper method to create a consumer for String messages with String keys.
     */
 
+
+  @Test
+  void nativeMalformedInputErrorsReturnBadRequest() throws Exception {
+    odeKafkaProperties.setDisabledTopics(Set.of());
+    jsonTopics.setTim("test.nativeTimInputErrors.tim.json");
+    EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
+
+    assertNativeErrorStatus("Unrecognized PDU: UnknownPdu", HttpStatus.BAD_REQUEST);
+    assertNativeErrorStatus("MessageFrame: Error decoding PDU", HttpStatus.BAD_REQUEST);
+    assertNativeErrorStatus(
+        "Decoding was successful, but constraint check failed, can't re-encode: MessageFrame",
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void nativeEncodingAndBufferErrorsReturnInternalServerError() throws Exception {
+    odeKafkaProperties.setDisabledTopics(Set.of());
+    jsonTopics.setTim("test.nativeTimInfrastructureErrors.tim.json");
+    EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
+
+    assertNativeErrorStatus("MessageFrame: Error encoding to UPER",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+    assertNativeErrorStatus("Error, truncating output. Max buffer size 64 is too small",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+    assertNativeErrorStatus("Error, output of 4096 bytes is too large to return",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private void assertNativeErrorStatus(String nativeError, HttpStatus expectedStatus)
+      throws Exception {
+    TimDepositController controller = newController();
+    RuntimeException wrappedNativeFailure = new RuntimeException("FFM service failure",
+        new IllegalStateException("Codec conversion failure", new ConvertException(nativeError)));
+    when(lastEncodeService.encodeMessageFrame(any(), any())).thenThrow(wrappedNativeFailure);
+
+    String requestBody = "{\"request\":{\"rsus\":[],\"snmp\":{}},"
+        + "\"tim\":{\"msgCnt\":\"13\","
+        + "\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+    ResponseEntity<String> response = controller.postTim(requestBody);
+
+    Assertions.assertEquals(expectedStatus.value(), response.getStatusCode().value());
+    Assertions.assertTrue(response.getBody().contains(nativeError), response.getBody());
+  }
 
   @Test
   void externalModePublishesKeyedEncoderInputXml() throws Exception {
