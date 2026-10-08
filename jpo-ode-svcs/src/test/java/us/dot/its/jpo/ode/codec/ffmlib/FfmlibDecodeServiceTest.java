@@ -412,33 +412,67 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void rawTopicSignedEnvelopeIsCheckedBeforeStrippedUperDecode() {
+  void rawTopicSignedEnvelopeDecodesStrippedUperAndPreservesSecurityMetadata()
+      throws Exception {
+    stubSuccessfulDecode();
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
-    byte[] originalSignedBytes = {(byte) 0x03, (byte) 0x81, 0x00, 0x00, 0x14};
+    metadata.setAsn1("038100" + BSM_HEX);
+    metadata.setCertPresent(true);
+    metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
+    byte[] originalSignedBytes = CodecUtils.fromHex("038100" + BSM_HEX);
+    byte[] strippedUperBytes = CodecUtils.fromHex(BSM_HEX);
 
-    assertThrows(UnsupportedOperationException.class, () -> decodeService.prepareRaw(metadata,
-        new byte[] {0x00, 0x14}, "replayed-signed", SupportedMessageType.BSM,
-        originalSignedBytes));
+    var prepared = decodeService.prepareRaw(metadata, strippedUperBytes, "replayed-signed",
+        SupportedMessageType.BSM, originalSignedBytes);
 
-    verify(ffmlibCodec, never()).uperToIntermediate(any());
-    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", "BSM").tag("source", "udp").tag("reason", "signed_payload")
-        .counter().count(), 0.0);
+    verify(ffmlibCodec).uperToIntermediate(eq(strippedUperBytes));
+    var publishedMetadata = new ObjectMapper().readTree(prepared.json()).path("metadata");
+    assertEquals("038100" + BSM_HEX, publishedMetadata.path("asn1").asText());
+    assertTrue(publishedMetadata.path("isCertPresent").asBoolean());
+    assertEquals("spduCryptoVerificationFailure",
+        publishedMetadata.path("securityResultCode").asText());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+
+    decodeService.recordRawConfirmed(prepared);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
   }
 
   @ParameterizedTest
   @EnumSource(SupportedMessageType.class)
-  void rawTopicSignedEnvelopeBehindWsmpHeadersIsRejected(SupportedMessageType type) {
+  void rawTopicSignedEnvelopeBehindWsmpHeadersDecodesItsExtractedMessageFrame(
+      SupportedMessageType type) throws Exception {
+    stubSuccessfulDecode();
+    String topic = stubJsonTopic(type);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setCertPresent(true);
+    metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
+    byte[] strippedUper = CodecUtils.fromHex(type.getStartFlag() + "AA");
     byte[] original = CodecUtils.fromHex("0001038100" + type.getStartFlag() + "AA");
 
-    assertThrows(UnsupportedOperationException.class, () -> decodeService.prepareRaw(metadata,
-        type.getStartFlagBytes(), "signed-wsmp", type, original));
+    var prepared = decodeService.prepareRaw(metadata, strippedUper, "signed-wsmp", type, original);
+
+    verify(ffmlibCodec).uperToIntermediate(eq(strippedUper));
+    assertEquals(topic, prepared.topic());
+    assertTrue(metadata.isCertPresent());
+    assertEquals(SecurityResultCode.spduCryptoVerificationFailure,
+        metadata.getSecurityResultCode());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  void directRawDecodeStillRejectsAnUnstrippedSignedEnvelope() {
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+    byte[] unstripped = CodecUtils.fromHex("0381000014");
+
+    assertThrows(UnsupportedOperationException.class,
+        () -> decodeService.decode(metadata, unstripped, "unstripped-signed"));
 
     verify(ffmlibCodec, never()).uperToIntermediate(any());
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", type.name()).tag("source", "udp").tag("reason", "signed_payload")
+        .tag("type", "unknown").tag("source", "udp").tag("reason", "signed_payload")
         .counter().count(), 0.0);
   }
 
@@ -483,29 +517,41 @@ class FfmlibDecodeServiceTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  void signedUdpPacketBehindWsmpHeadersIsQuarantinedBeforeAcknowledgement() throws Exception {
+  void signedUdpPacketBehindWsmpHeadersDecodesAndConfirmsBeforeAcknowledgement()
+      throws Exception {
+    stubSuccessfulDecode();
     byte[] original = CodecUtils.fromHex("0001038100" + BSM_HEX);
     DatagramPacket packet = new DatagramPacket(original, original.length,
         InetAddress.getLoopbackAddress(), 12345);
-    String rawJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
-    RawEncodedJsonService rawService = new RawEncodedJsonService(new ObjectMapper());
+    ObjectMapper mapper = new ObjectMapper();
+    var rawTree = (com.fasterxml.jackson.databind.node.ObjectNode)
+        mapper.readTree(UdpHexDecoder.buildJsonBsmFromPacket(packet));
+    var rawMetadata = (com.fasterxml.jackson.databind.node.ObjectNode) rawTree.get("metadata");
+    rawMetadata.put("isCertPresent", true);
+    rawMetadata.put("securityResultCode",
+        SecurityResultCode.spduCryptoVerificationFailure.name());
+    String rawJson = mapper.writeValueAsString(rawTree);
+    RawEncodedJsonService rawService = new RawEncodedJsonService(mapper);
     var parsed = rawService.parseFfmRecord(rawJson, SupportedMessageType.BSM);
     OdeAsn1Data external = rawService.addEncodingAndMutateBytes(rawJson,
         SupportedMessageType.BSM, OdeMessageFrameMetadata.class);
     assertArrayEquals(original, parsed.originalBytes());
+    assertEquals(CodecUtils.toHex(original), parsed.metadata().getAsn1());
     assertEquals(BSM_HEX, CodecUtils.toHex(parsed.uperBytes()));
     assertEquals(((OdeHexByteArray) external.getPayload().getData()).getBytes(),
         CodecUtils.toHex(parsed.uperBytes()));
+    assertTrue(parsed.metadata().isCertPresent());
+    assertEquals(SecurityResultCode.spduCryptoVerificationFailure,
+        parsed.metadata().getSecurityResultCode());
     assertTrue(parsed.metadata().getEncodings().stream()
         .allMatch(encoding -> "MessageFrame".equals(encoding.getElementType())));
 
     KafkaTemplate<String, String> quarantineProducer = mock(KafkaTemplate.class);
-    CompletableFuture<org.springframework.kafka.support.SendResult<String, String>> confirmation =
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> confirmation =
         new CompletableFuture<>();
-    when(quarantineProducer.send(any(ProducerRecord.class))).thenReturn(confirmation);
+    when(outputPublisher.publish(any())).thenReturn(confirmation);
     RawEncodedJsonTopics rawTopics = mock(RawEncodedJsonTopics.class);
     String rawTopic = "topic.OdeRawEncodedBSMJson";
-    when(rawTopics.getBsm()).thenReturn(rawTopic);
     FfmlibRawJsonListener listener = new FfmlibRawJsonListener(rawService, decodeService,
         outputPublisher, quarantineProducer, rawTopics, mock(FfmlibCommitTracker.class),
         meterRegistry);
@@ -523,24 +569,29 @@ class FfmlibDecodeServiceTest {
     });
     worker.start();
     try {
-      var captor = ArgumentCaptor.forClass(ProducerRecord.class);
-      verify(quarantineProducer, timeout(1000)).send(captor.capture());
-      ProducerRecord<String, String> quarantined = captor.getValue();
-      assertEquals("dlq.OdeRawEncodedBSMJson", quarantined.topic());
-      assertEquals(record.key(), quarantined.key());
-      assertEquals(rawJson, quarantined.value());
-      assertEquals("unsupported_signed", new String(
-          quarantined.headers().lastHeader("failure-category").value(), StandardCharsets.UTF_8));
+      ArgumentCaptor<FfmlibDecodeService.PreparedDecodedMessage> captor =
+          ArgumentCaptor.forClass(FfmlibDecodeService.PreparedDecodedMessage.class);
+      verify(outputPublisher, timeout(1000)).publish(captor.capture());
+      var decoded = captor.getValue();
+      var decodedMetadata = mapper.readTree(decoded.json()).path("metadata");
+      assertEquals(CodecUtils.toHex(original), decodedMetadata.path("asn1").asText());
+      assertTrue(decodedMetadata.path("isCertPresent").asBoolean());
+      assertEquals("spduCryptoVerificationFailure",
+          decodedMetadata.path("securityResultCode").asText());
       verify(acknowledgment, never()).acknowledge();
+      verify(quarantineProducer, never()).send(any(ProducerRecord.class));
+      verify(ffmlibCodec).uperToIntermediate(eq(parsed.uperBytes()));
+
+      confirmation.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
     } finally {
-      confirmation.complete(null);
       worker.join(1000);
     }
     assertFalse(worker.isAlive());
     assertEquals(null, failure.get());
     verify(acknowledgment).acknowledge();
-    verify(ffmlibCodec, never()).uperToIntermediate(any());
-    verify(outputPublisher, never()).publish(any());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
   }
 
   @Test
@@ -613,5 +664,22 @@ class FfmlibDecodeServiceTest {
     lenient().when(frame.getMessageId()).thenReturn(msgId);
     lenient().when(msgId.name()).thenReturn(Optional.of("basicSafetyMessage"));
     lenient().when(messageFrameReader.readValue(any(byte[].class))).thenReturn(frame);
+  }
+
+  private String stubJsonTopic(SupportedMessageType type) {
+    String topic = "topic." + type.name();
+    switch (type) {
+      case BSM -> when(jsonTopics.getBsm()).thenReturn(topic);
+      case TIM -> when(jsonTopics.getTim()).thenReturn(topic);
+      case SPAT -> when(jsonTopics.getSpat()).thenReturn(topic);
+      case SSM -> when(jsonTopics.getSsm()).thenReturn(topic);
+      case SRM -> when(jsonTopics.getSrm()).thenReturn(topic);
+      case MAP -> when(jsonTopics.getMap()).thenReturn(topic);
+      case PSM -> when(jsonTopics.getPsm()).thenReturn(topic);
+      case SDSM -> when(jsonTopics.getSdsm()).thenReturn(topic);
+      case RTCM -> when(jsonTopics.getRtcm()).thenReturn(topic);
+      case RSM -> when(jsonTopics.getRsm()).thenReturn(topic);
+    }
+    return topic;
   }
 }

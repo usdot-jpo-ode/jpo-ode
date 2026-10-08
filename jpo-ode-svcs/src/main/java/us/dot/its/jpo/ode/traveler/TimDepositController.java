@@ -23,10 +23,14 @@ package us.dot.its.jpo.ode.traveler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import j2735ffm.ConvertException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
@@ -295,17 +299,11 @@ public class TimDepositController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (RuntimeException e) {
-      String nativeError = e.getCause() instanceof j2735ffm.ConvertException convertException
-          ? convertException.getMessage()
-          : e.getMessage();
+      ConvertException nativeException = findConvertException(e);
+      String nativeError = nativeException == null ? e.getMessage() : nativeException.getMessage();
       String errMsg = "Error encoding TIM with FFM: " + nativeError;
       log.error(errMsg, e);
-      boolean requestFailure = nativeError != null
-          && (nativeError.startsWith("INVALID_ARGUMENT")
-              || nativeError.startsWith("MALFORMED_INPUT")
-              || nativeError.startsWith("TRUNCATED_INPUT")
-              || nativeError.startsWith("CONSTRAINT_INVALID")
-              || nativeError.startsWith("UNKNOWN_PDU"));
+      boolean requestFailure = nativeException != null && isMalformedNativeInput(nativeError);
       return ResponseEntity.status(requestFailure ? HttpStatus.BAD_REQUEST
               : HttpStatus.INTERNAL_SERVER_ERROR)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
@@ -318,6 +316,26 @@ public class TimDepositController {
 
     INGEST_MONITOR.incrementTotalMessagesReceived();
     return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(SUCCESS, "true"));
+  }
+
+  private static ConvertException findConvertException(Throwable error) {
+    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (Throwable cause = error; cause != null && visited.add(cause); cause = cause.getCause()) {
+      if (cause instanceof ConvertException convertException) {
+        return convertException;
+      }
+    }
+    return null;
+  }
+
+  private static boolean isMalformedNativeInput(String nativeError) {
+    if (nativeError == null) {
+      return false;
+    }
+    return nativeError.startsWith("Unrecognized PDU:")
+        || nativeError.endsWith(": Error decoding PDU")
+        || nativeError.startsWith(
+            "Decoding was successful, but constraint check failed, can't re-encode:");
   }
 
   /**

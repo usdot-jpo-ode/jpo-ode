@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,6 +29,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService.PreparedDecodedMessage;
 import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
@@ -127,32 +127,46 @@ class FfmlibRawJsonListenerTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  void checksOriginalPayloadBytesForSignedReplayWithoutAsn1Metadata() throws Exception {
+  void signedStrippedUperIsPublishedAndConfirmedBeforeAcknowledgement() throws Exception {
     String signedJson = "{\"payload\":{\"data\":{\"bytes\":\"03810014\"}}}";
     byte[] originalBytes = {0x03, (byte) 0x81, 0x00, 0x14};
+    byte[] strippedBytes = {0x00, 0x14};
     metadata.setAsn1((String) null);
-    var rawData = new RawEncodedJsonService.FfmRawRecord(metadata, new byte[] {0, 20},
-        originalBytes);
+    metadata.setCertPresent(true);
+    metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
+    var rawData = new RawEncodedJsonService.FfmRawRecord(metadata, strippedBytes, originalBytes);
     when(rawService.parseFfmRecord(eq(signedJson), eq(SupportedMessageType.BSM)))
         .thenReturn(rawData);
-    when(decoder.prepareRaw(eq(metadata), any(byte[].class), eq("packet-key"),
-        eq(SupportedMessageType.BSM), any(byte[].class))).thenAnswer(invocation -> {
-          assertArrayEquals(originalBytes, invocation.getArgument(4));
-          throw new UnsupportedOperationException("signed payload");
-        });
-    when(quarantineProducer.send(any(ProducerRecord.class)))
-        .thenReturn(CompletableFuture.completedFuture(null));
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> confirmation =
+        new CompletableFuture<>();
+    when(output.publish(prepared)).thenReturn(confirmation);
     ConsumerRecord<String, String> signedRecord = new ConsumerRecord<>(RAW_TOPIC, 0, 8,
         "packet-key", signedJson);
+    AtomicReference<Throwable> listenerFailure = new AtomicReference<>();
+    Thread worker = new Thread(() -> {
+      try {
+        listener.bsm(signedRecord, acknowledgment);
+      } catch (Throwable error) {
+        listenerFailure.set(error);
+      }
+    });
+    worker.start();
 
-    listener.bsm(signedRecord, acknowledgment);
+    verify(output, timeout(1000)).publish(prepared);
+    verify(decoder).prepareRaw(eq(metadata), eq(strippedBytes), eq("packet-key"),
+        eq(SupportedMessageType.BSM), eq(originalBytes));
+    verify(acknowledgment, never()).acknowledge();
+    verify(quarantineProducer, never()).send(any(ProducerRecord.class));
 
-    var captor = org.mockito.ArgumentCaptor.forClass(ProducerRecord.class);
-    verify(quarantineProducer).send(captor.capture());
-    ProducerRecord<String, String> quarantined = captor.getValue();
-    assertEquals(signedJson, quarantined.value());
-    assertEquals("unsupported_signed",
-        new String(quarantined.headers().lastHeader("failure-category").value()));
+    confirmation.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+    worker.join(1000);
+
+    assertFalse(worker.isAlive());
+    assertEquals(null, listenerFailure.get());
+    assertTrue(metadata.isCertPresent());
+    assertEquals(SecurityResultCode.spduCryptoVerificationFailure,
+        metadata.getSecurityResultCode());
+    verify(decoder).recordRawConfirmed(prepared);
     verify(acknowledgment).acknowledge();
   }
 

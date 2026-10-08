@@ -195,22 +195,22 @@ public class FfmlibDecodeService {
     return prepareRaw(metadata, uperBytes, key, null, uperBytes);
   }
 
-  /** Prepares a known raw-topic type after checking its original received bytes for signatures. */
+  /**
+   * Prepares a known raw-topic type from UPER bytes whose transport and security envelopes have
+   * already been stripped by the raw-record parser.
+   *
+   * <p>The original bytes parameter remains for compatibility with raw-record callers. The FFM
+   * path decodes the extracted MessageFrame bytes and does not inspect or verify the original
+   * security envelope.
+   */
   public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
       String key, SupportedMessageType knownType, byte[] originalBytes) {
     if (!modeProperties.isFfm()) {
       throw new IllegalStateException("Raw-topic decode requires FFM mode");
     }
-    if (isIeee1609(originalBytes, metadata, knownType)) {
-      recordFailure(knownType == null ? TYPE_UNKNOWN : knownType.name(), SOURCE_UDP,
-          "signed_payload");
-      throw new UnsupportedOperationException(
-          "Signed IEEE 1609.2 payloads are not decoded by the FFM raw-topic path; "
-              + "use external codec mode for signed UDP messages");
-    }
     long start = System.nanoTime();
     try {
-      return prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_UDP, start);
+      return prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_UDP, start, true);
     } catch (RuntimeException error) {
       totalTimer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
       throw error;
@@ -272,11 +272,23 @@ public class FfmlibDecodeService {
       SupportedMessageType knownType,
       String source,
       long startNanos) {
+    return prepareDecoded(metadata, uperBytes, key, knownType, source, startNanos,
+        SOURCE_IMPORT.equals(source));
+  }
+
+  private PreparedDecodedMessage prepareDecoded(
+      OdeMessageFrameMetadata metadata,
+      byte[] uperBytes,
+      String key,
+      SupportedMessageType knownType,
+      String source,
+      long startNanos,
+      boolean messageFrameAlreadyExtracted) {
     String type = knownType == null ? TYPE_UNKNOWN : knownType.name();
     try {
       long nativeStart = System.nanoTime();
-      // Imports already stripped the envelope; retain the certificate flag from the log.
-      byte[] messageFrameBytes = SOURCE_IMPORT.equals(source)
+      // Imports and raw-topic records already stripped the envelope; retain security metadata.
+      byte[] messageFrameBytes = messageFrameAlreadyExtracted
           ? uperBytes : unwrapIeee1609IfPresent(metadata, uperBytes);
       IntermediateDecodeResult intermediate = codec().uperToIntermediate(messageFrameBytes);
       long nativeNanos = System.nanoTime() - nativeStart;
@@ -509,8 +521,8 @@ public class FfmlibDecodeService {
     }
 
     throw new UnsupportedOperationException(
-        "Signed IEEE 1609.2 payloads are not decoded by the FFM raw-topic path; "
-            + "use external codec mode for signed UDP messages");
+        "Unstripped IEEE 1609.2 payloads are not decoded by direct FFM decode; "
+            + "provide extracted MessageFrame UPER bytes or use external codec mode");
   }
 
   private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata) {

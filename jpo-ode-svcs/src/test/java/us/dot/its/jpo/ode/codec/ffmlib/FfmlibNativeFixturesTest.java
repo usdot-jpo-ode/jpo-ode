@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,7 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeHexByteArray;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
@@ -29,7 +33,7 @@ import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-/** Exercises the real native decoder and mapper against every unsigned UDP type fixture. */
+/** Exercises the real native decoder and mapper against UDP type fixtures. */
 class FfmlibNativeFixturesTest {
 
   private static final List<Fixture> FIXTURES = List.of(
@@ -55,7 +59,7 @@ class FfmlibNativeFixturesTest {
           "topic.OdeRsmJson"));
 
   @Test
-  void decodesAndMapsAllUnsignedUdpFixturesWithTheNativeLibrary() throws Exception {
+  void decodesAndMapsUdpFixturesWithTheNativeLibrary() throws Exception {
     Path nativeLibrary;
     try {
       nativeLibrary = FfmlibNativeLibraryLoader.resolve("");
@@ -100,6 +104,7 @@ class FfmlibNativeFixturesTest {
         JsonNode actualPayload = jsonMapper.readTree(decoded.json()).path("payload");
         assertEquals(expectedPayload, actualPayload,
             fixture.path() + " direct BSM JER mapping must preserve the generic JSON model");
+        decodesSyntheticSignedBsmThroughTheRawParser(decoder, received, jsonMapper);
       }
 
       assertEquals(fixture.type().name(), decoded.type(), fixture.path());
@@ -115,6 +120,37 @@ class FfmlibNativeFixturesTest {
     Path fixture = Path.of("src/test/resources/us/dot/its/jpo/ode", relativePath);
     String hex = Files.readString(fixture).trim();
     return org.apache.tomcat.util.buf.HexUtils.fromHexString(hex);
+  }
+
+  private static void decodesSyntheticSignedBsmThroughTheRawParser(
+      FfmlibDecodeService decoder, byte[] validBsmUper, ObjectMapper jsonMapper) throws Exception {
+    // This synthetic wrapper exercises header stripping only; it carries no real signature.
+    byte[] wrapper = org.apache.tomcat.util.buf.HexUtils.fromHexString("0001038100");
+    byte[] received = new byte[wrapper.length + validBsmUper.length];
+    System.arraycopy(wrapper, 0, received, 0, wrapper.length);
+    System.arraycopy(validBsmUper, 0, received, wrapper.length, validBsmUper.length);
+    DatagramPacket packet = new DatagramPacket(received, received.length,
+        InetAddress.getLoopbackAddress(), 12345);
+    String rawJson = UdpHexDecoder.buildJsonBsmFromPacket(packet);
+    RawEncodedJsonService rawService = new RawEncodedJsonService(new ObjectMapper());
+    var parsed = rawService.parseFfmRecord(rawJson, SupportedMessageType.BSM);
+    OdeAsn1Data external = rawService.addEncodingAndMutateBytes(rawJson,
+        SupportedMessageType.BSM, us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.class);
+    byte[] externalUper = org.apache.tomcat.util.buf.HexUtils.fromHexString(
+        ((OdeHexByteArray) external.getPayload().getData()).getBytes());
+
+    assertArrayEquals(received, parsed.originalBytes());
+    assertArrayEquals(validBsmUper, externalUper);
+    assertArrayEquals(externalUper, parsed.uperBytes());
+
+    FfmlibDecodeService.PreparedDecodedMessage decoded = decoder.prepareRaw(parsed.metadata(),
+        parsed.uperBytes(), "synthetic-signed-bsm", SupportedMessageType.BSM,
+        parsed.originalBytes());
+    assertEquals("BSM", decoded.type());
+    assertEquals("topic.OdeBsmJson", decoded.topic());
+    JsonNode output = jsonMapper.readTree(decoded.json());
+    assertNotNull(output.get("payload"));
+    assertTrue(output.path("payload").size() > 0);
   }
 
   private static JsonTopics jsonTopics() {
