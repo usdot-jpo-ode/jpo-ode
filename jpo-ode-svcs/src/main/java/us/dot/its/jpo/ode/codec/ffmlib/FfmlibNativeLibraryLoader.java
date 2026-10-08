@@ -1,10 +1,12 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Resolves the platform native library unpacked from the FFMLib artifact. */
 final class FfmlibNativeLibraryLoader {
@@ -50,13 +52,30 @@ final class FfmlibNativeLibraryLoader {
       if (codeSource == null || codeSource.getLocation() == null) {
         return;
       }
-      Path location = Path.of(codeSource.getLocation().toURI());
-      Path buildDirectory = location.getParent();
-      if (buildDirectory != null) {
-        candidates.add(buildDirectory.resolve("libs").resolve(libraryName));
-      }
+      buildOutputLibraryCandidate(codeSource.getLocation().toURI(), libraryName)
+          .ifPresent(candidates::add);
     } catch (URISyntaxException | IllegalArgumentException ignored) {
       // Working-directory candidates still apply.
+    }
+  }
+
+  /**
+   * Returns the native library beside a Maven build output when the code source is a directory on
+   * disk. Packaged jars and nested jars do not have a filesystem path that can be used here.
+   */
+  static Optional<Path> buildOutputLibraryCandidate(URI codeSourceUri, String libraryName) {
+    if (!"file".equalsIgnoreCase(codeSourceUri.getScheme())) {
+      return Optional.empty();
+    }
+
+    try {
+      Path location = Path.of(codeSourceUri);
+      Path buildDirectory = Files.isDirectory(location) ? location.getParent() : null;
+      return buildDirectory == null
+          ? Optional.empty()
+          : Optional.of(buildDirectory.resolve("libs").resolve(libraryName));
+    } catch (IllegalArgumentException ignored) {
+      return Optional.empty();
     }
   }
 
