@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,12 +19,15 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import j2735ffm.ConvertException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,8 +48,26 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapData;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.DSRCmsgID;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.RoadSafetyMessage.RoadSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.RoadSafetyMessage.RoadSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.RTCMcorrections.RTCMcorrections;
+import us.dot.its.jpo.asn.j2735.r2024.RTCMcorrections.RTCMcorrectionsMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SensorDataSharingMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SensorDataSharingMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPAT;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.TravelerInformation.TravelerInformation;
+import us.dot.its.jpo.asn.j2735.r2024.TravelerInformation.TravelerInformationMessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateEncoding;
 import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
@@ -77,6 +99,25 @@ class FfmlibDecodeServiceTest {
           + "B8405B72C3C7A398C3CAFF63338526C646F4FFF524AD9E404039D5DA2FA62FEB57E305B552C7BE088B61E52A6BFC8CAF"
           + "5AF64414F3E4513FEC189F8B5E1138B824A48B29BA1F43CB12CE296BCA3DFA8F651AB44AB1B81B633B797D5645DAA4ED"
           + "ADAB4AC22A0BC38AB361443395BAA2C81CC4538E7413E9C8C3F696BB2C9B6B0000";
+  private static final List<KnownJerFixture> KNOWN_JER_FIXTURES = List.of(
+      new KnownJerFixture(SupportedMessageType.BSM, 20, "BasicSafetyMessage",
+          BasicSafetyMessageMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.MAP, 18, "MapData", MapDataMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.SPAT, 19, "SPAT", SPATMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.TIM, 31, "TravelerInformation",
+          TravelerInformationMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.PSM, 32, "PersonalSafetyMessage",
+          PersonalSafetyMessageMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.SRM, 29, "SignalRequestMessage",
+          SignalRequestMessageMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.SSM, 30, "SignalStatusMessage",
+          SignalStatusMessageMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.SDSM, 41, "SensorDataSharingMessage",
+          SensorDataSharingMessageMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.RTCM, 28, "RTCMcorrections",
+          RTCMcorrectionsMessageFrame.class),
+      new KnownJerFixture(SupportedMessageType.RSM, 33, "RoadSafetyMessage",
+          RoadSafetyMessageMessageFrame.class));
   @Mock
   private FfmlibMessageFrameCodec ffmlibCodec;
   @Mock
@@ -113,6 +154,25 @@ class FfmlibDecodeServiceTest {
     lenient().when(simpleObjectMapper.readerFor(MessageFrame.class)).thenReturn(messageFrameReader);
     lenient().when(simpleObjectMapper.readerFor(us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage.class))
         .thenReturn(bsmValueReader);
+    ObjectMapper leafMapper = new ObjectMapper();
+    lenient().when(simpleObjectMapper.readerFor(MapData.class))
+        .thenReturn(leafMapper.readerFor(MapData.class));
+    lenient().when(simpleObjectMapper.readerFor(SPAT.class))
+        .thenReturn(leafMapper.readerFor(SPAT.class));
+    lenient().when(simpleObjectMapper.readerFor(TravelerInformation.class))
+        .thenReturn(leafMapper.readerFor(TravelerInformation.class));
+    lenient().when(simpleObjectMapper.readerFor(PersonalSafetyMessage.class))
+        .thenReturn(leafMapper.readerFor(PersonalSafetyMessage.class));
+    lenient().when(simpleObjectMapper.readerFor(SignalRequestMessage.class))
+        .thenReturn(leafMapper.readerFor(SignalRequestMessage.class));
+    lenient().when(simpleObjectMapper.readerFor(SignalStatusMessage.class))
+        .thenReturn(leafMapper.readerFor(SignalStatusMessage.class));
+    lenient().when(simpleObjectMapper.readerFor(SensorDataSharingMessage.class))
+        .thenReturn(leafMapper.readerFor(SensorDataSharingMessage.class));
+    lenient().when(simpleObjectMapper.readerFor(RTCMcorrections.class))
+        .thenReturn(leafMapper.readerFor(RTCMcorrections.class));
+    lenient().when(simpleObjectMapper.readerFor(RoadSafetyMessage.class))
+        .thenReturn(leafMapper.readerFor(RoadSafetyMessage.class));
     lenient().when(simpleObjectMapper.getFactory()).thenReturn(new JsonFactory());
     FfmlibProperties properties = new FfmlibProperties();
     decodeService = new FfmlibDecodeService(
@@ -176,8 +236,9 @@ class FfmlibDecodeServiceTest {
 
     verify(outputPublisher).publish(any());
     verify(kafkaTemplate, never()).send(any(), any(), any());
-    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
         .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.total").timer().count());
     assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
   }
 
@@ -211,7 +272,7 @@ class FfmlibDecodeServiceTest {
       jsonUtils.when(() -> JsonUtils.toJson(any(), eq(false))).thenReturn("");
       assertThrows(IllegalArgumentException.class,
           () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "empty-json-raw",
-              SupportedMessageType.BSM, new byte[] {0x00, 0x14}));
+              SupportedMessageType.BSM));
     }
 
     verify(outputPublisher, never()).publish(any());
@@ -256,24 +317,85 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void bsmWithUnexpectedMessageIdUsesGenericFrameReader() throws Exception {
+  void mismatchedGeneratedTimFrameFromKnownBsmFallbackIsRejected() throws Exception {
     byte[] jer = "{\"messageId\":31,\"value\":{\"TravelerInformation\":{}}}"
         .getBytes(StandardCharsets.UTF_8);
-    when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
     when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
-    MessageFrame<?> frame = mock(BasicSafetyMessageMessageFrame.class);
-    when(messageFrameReader.readValue(jer)).thenReturn(frame);
+    TravelerInformationMessageFrame timFrame = new TravelerInformationMessageFrame();
+    timFrame.setValue(new TravelerInformation());
+    when(messageFrameReader.readValue(jer)).thenReturn(timFrame);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
 
-    FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(metadata,
-        new byte[] {0x00, 0x14}, "unexpected-frame", SupportedMessageType.BSM,
-        new byte[] {0x00, 0x14});
+    IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
+        () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "unexpected-frame",
+            SupportedMessageType.BSM));
 
-    assertEquals(BSM_TOPIC, decoded.topic());
-    assertEquals("BSM", decoded.type());
+    assertTrue(failure.getMessage().contains("does not match"));
     verify(messageFrameReader).readValue(jer);
+    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "udp").counter().count());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "mapping")
+        .counter().count());
+  }
+
+  @Test
+  void wrappedRecognizedConvertExceptionRemainsMalformedInput() throws Exception {
+    ConvertException nativeFailure = mock(ConvertException.class);
+    when(nativeFailure.getMessage()).thenReturn("MessageFrame: Error decoding PDU");
+    RuntimeException wrappedFailure = new IllegalStateException("native conversion wrapper",
+        nativeFailure);
+    when(ffmlibCodec.uperToIntermediate(any())).thenThrow(wrappedFailure);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
+        () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "malformed-native",
+            SupportedMessageType.BSM));
+
+    assertSame(wrappedFailure, failure.getCause());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "native_input")
+        .counter().count());
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().stream()
+        .allMatch(counter -> counter.count() == 1.0));
+  }
+
+  @Test
+  void malformedLookingPlainRuntimeFromNativeIsInfrastructureFailure() {
+    RuntimeException nativeFailure = new IllegalStateException("MessageFrame: Error decoding PDU");
+    when(ffmlibCodec.uperToIntermediate(any())).thenThrow(nativeFailure);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    FfmlibDecodeService.InfrastructureFailure failure = assertThrows(
+        FfmlibDecodeService.InfrastructureFailure.class,
+        () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "unknown-native",
+            SupportedMessageType.BSM));
+
+    assertSame(nativeFailure, failure.getCause());
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "infrastructure")
+        .counter().count());
+  }
+
+  @Test
+  void missingNativeCodecIsInfrastructureFailureAndCountsOnce() {
+    when(ffmlibCodecProvider.getIfAvailable()).thenReturn(null);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    FfmlibDecodeService.InfrastructureFailure failure = assertThrows(
+        FfmlibDecodeService.InfrastructureFailure.class,
+        () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "missing-native",
+            SupportedMessageType.BSM));
+
+    assertTrue(failure.getCause().getMessage().contains("codec is unavailable"));
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "infrastructure")
+        .counter().count());
   }
 
   @Test
@@ -283,17 +405,174 @@ class FfmlibDecodeServiceTest {
     when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
     when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
-    when(bsmValueReader.readValue(any(JsonParser.class))).thenReturn(new BasicSafetyMessage());
+    when(bsmValueReader.readValue(any(JsonParser.class))).thenAnswer(invocation -> {
+      JsonParser parser = invocation.getArgument(0);
+      parser.skipChildren();
+      return new BasicSafetyMessage();
+    });
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
 
     FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(metadata,
-        new byte[] {0x00, 0x14}, "direct-bsm", SupportedMessageType.BSM,
-        new byte[] {0x00, 0x14});
+        new byte[] {0x00, 0x14}, "direct-bsm", SupportedMessageType.BSM);
 
     assertEquals(BSM_TOPIC, decoded.topic());
     verify(bsmValueReader).readValue(any(JsonParser.class));
     verify(messageFrameReader, never()).readValue(any(byte[].class));
+  }
+
+  @Test
+  void knownJerFramesMapAllTenTypesAndAllowValueBeforeMessageId() throws Exception {
+    when(bsmValueReader.readValue(any(JsonParser.class))).thenAnswer(invocation -> {
+      JsonParser parser = invocation.getArgument(0);
+      parser.skipChildren();
+      return new BasicSafetyMessage();
+    });
+    List<byte[]> jers = KNOWN_JER_FIXTURES.stream()
+        .map(fixture -> ("{\"unrelated\":{\"items\":[1,2]},\"value\":{\""
+            + fixture.choiceName() + "\":{}},\"messageId\":" + fixture.messageId()
+            + ",\"ignored\":true}").getBytes(StandardCharsets.UTF_8))
+        .toList();
+    when(ffmlibCodec.uperToIntermediate(any())).thenAnswer(invocation -> {
+      byte[] input = invocation.getArgument(0);
+      int fixtureIndex = Byte.toUnsignedInt(input[0]) - 1;
+      return new IntermediateDecodeResult(jers.get(fixtureIndex), IntermediateEncoding.JER);
+    });
+
+    ObjectMapper outputMapper = new ObjectMapper();
+    for (int index = 0; index < KNOWN_JER_FIXTURES.size(); index++) {
+      KnownJerFixture fixture = KNOWN_JER_FIXTURES.get(index);
+      String expectedTopic = stubJsonTopic(fixture.type());
+      byte[] uper = {(byte) (index + 1)};
+      OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+      metadata.setSchemaVersion(9);
+
+      FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(
+          metadata, uper, "direct-" + fixture.type().name(), fixture.type());
+
+      assertEquals(fixture.type().name(), decoded.type());
+      assertEquals(expectedTopic, decoded.topic());
+      JsonNode frame = outputMapper.readTree(decoded.json()).path("payload");
+      assertEquals(fixture.frameClass().getName(), frame.path("dataType").asText());
+      assertEquals(fixture.messageId(), frame.path("data").path("messageId").asInt());
+      assertTrue(frame.path("data").path("value").path(fixture.choiceName()).isObject());
+    }
+    verify(messageFrameReader, never()).readValue(any(byte[].class));
+  }
+
+  @Test
+  void knownJerFallsBackToGenericReaderForAmbiguousOrMalformedFrames() throws Exception {
+    List<String> fallbackJers = List.of(
+        "{\"messageId\":31,\"value\":{\"TravelerInformation\":{}}}",
+        "{\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":20}",
+        "{\"messageId\":\"20\",\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":20.0,\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":true,\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":null,\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":{},\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":[],\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":20,\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}},\"value\":{}}",
+        "{\"messageId\":20,\"value\":null}",
+        "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":[]}}",
+        "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{},\"Other\":{}}}",
+        "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{},\"BasicSafetyMessage\":{}}}",
+        "{\"messageId\":20,\"value\":{\"Other\":{}}}",
+        "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}} []",
+        "{\"messageId\":");
+    when(ffmlibCodec.uperToIntermediate(any())).thenAnswer(invocation ->
+        new IntermediateDecodeResult(invocation.getArgument(0), IntermediateEncoding.JER));
+    when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
+    BasicSafetyMessageMessageFrame genericFrame = new BasicSafetyMessageMessageFrame();
+    genericFrame.setValue(new BasicSafetyMessage());
+
+    for (String jerText : fallbackJers) {
+      byte[] jer = jerText.getBytes(StandardCharsets.UTF_8);
+      when(messageFrameReader.readValue(jer)).thenReturn(genericFrame);
+      OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+      metadata.setSchemaVersion(9);
+
+      FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(metadata,
+          jer, "fallback-jer", SupportedMessageType.BSM);
+
+      assertEquals(BSM_TOPIC, decoded.topic());
+      verify(messageFrameReader).readValue(jer);
+    }
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  void knownJerFallsBackWhenDirectBsmValueMappingThrows() throws Exception {
+    byte[] jer = "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}}"
+        .getBytes(StandardCharsets.UTF_8);
+    when(ffmlibCodec.uperToIntermediate(any()))
+        .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
+    when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
+    when(bsmValueReader.readValue(any(JsonParser.class)))
+        .thenThrow(new JsonProcessingException("Cannot map BSM value") {});
+    BasicSafetyMessageMessageFrame genericFrame = new BasicSafetyMessageMessageFrame();
+    genericFrame.setValue(new BasicSafetyMessage());
+    when(messageFrameReader.readValue(any(byte[].class))).thenReturn(genericFrame);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(metadata,
+        new byte[] {0x00, 0x14}, "direct-reader-fallback", SupportedMessageType.BSM);
+
+    assertEquals(BSM_TOPIC, decoded.topic());
+    assertEquals("BSM", decoded.type());
+    ArgumentCaptor<byte[]> genericInput = ArgumentCaptor.forClass(byte[].class);
+    verify(messageFrameReader).readValue(genericInput.capture());
+    assertSame(jer, genericInput.getValue());
+    verify(bsmValueReader).readValue(any(JsonParser.class));
+    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+  }
+
+  @Test
+  void knownJerRecordsOneMappingFailureWhenDirectAndGenericReadersThrow() throws Exception {
+    byte[] jer = "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}}"
+        .getBytes(StandardCharsets.UTF_8);
+    when(ffmlibCodec.uperToIntermediate(any()))
+        .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
+    when(bsmValueReader.readValue(any(JsonParser.class)))
+        .thenThrow(new JsonProcessingException("Cannot map BSM value") {});
+    when(messageFrameReader.readValue(any(byte[].class)))
+        .thenThrow(new JsonProcessingException("Cannot map generic frame") {});
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    assertThrows(IllegalArgumentException.class,
+        () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14},
+            "direct-and-generic-reader-failure", SupportedMessageType.BSM));
+
+    verify(bsmValueReader).readValue(any(JsonParser.class));
+    verify(messageFrameReader).readValue(jer);
+    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
+        .tag("type", "BSM").tag("source", "udp").tag("reason", "mapping")
+        .counter().count());
+  }
+
+  @Test
+  void unknownKnownTypeCallerRetainsGenericMessageFrameMapping() throws Exception {
+    byte[] jer = "{\"messageId\":20,\"value\":{\"BasicSafetyMessage\":{}}}"
+        .getBytes(StandardCharsets.UTF_8);
+    when(ffmlibCodec.uperToIntermediate(any()))
+        .thenReturn(new IntermediateDecodeResult(jer, IntermediateEncoding.JER));
+    when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
+    BasicSafetyMessageMessageFrame genericFrame = new BasicSafetyMessageMessageFrame();
+    genericFrame.setValue(new BasicSafetyMessage());
+    when(messageFrameReader.readValue(jer)).thenReturn(genericFrame);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    metadata.setSchemaVersion(9);
+
+    FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(
+        metadata, new byte[] {0x00, 0x14}, "generic-frame");
+
+    assertEquals(BSM_TOPIC, decoded.topic());
+    assertEquals("BSM", decoded.type());
+    verify(messageFrameReader).readValue(jer);
+    verify(bsmValueReader, never()).readValue(any(JsonParser.class));
   }
 
   @Test
@@ -308,7 +587,7 @@ class FfmlibDecodeServiceTest {
 
     IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
         () -> decodeService.prepareRaw(metadata, new byte[] {0x00, 0x14}, "malformed-jer",
-            SupportedMessageType.BSM, new byte[] {0x00, 0x14}));
+            SupportedMessageType.BSM));
 
     assertTrue(failure.getMessage().contains("JER"));
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
@@ -420,11 +699,10 @@ class FfmlibDecodeServiceTest {
     metadata.setAsn1("038100" + BSM_HEX);
     metadata.setCertPresent(true);
     metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
-    byte[] originalSignedBytes = CodecUtils.fromHex("038100" + BSM_HEX);
     byte[] strippedUperBytes = CodecUtils.fromHex(BSM_HEX);
 
     var prepared = decodeService.prepareRaw(metadata, strippedUperBytes, "replayed-signed",
-        SupportedMessageType.BSM, originalSignedBytes);
+        SupportedMessageType.BSM);
 
     verify(ffmlibCodec).uperToIntermediate(eq(strippedUperBytes));
     var publishedMetadata = new ObjectMapper().readTree(prepared.json()).path("metadata");
@@ -443,15 +721,14 @@ class FfmlibDecodeServiceTest {
   @EnumSource(SupportedMessageType.class)
   void rawTopicSignedEnvelopeBehindWsmpHeadersDecodesItsExtractedMessageFrame(
       SupportedMessageType type) throws Exception {
-    stubSuccessfulDecode();
+    stubSuccessfulDecode(type);
     String topic = stubJsonTopic(type);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setCertPresent(true);
     metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
     byte[] strippedUper = CodecUtils.fromHex(type.getStartFlag() + "AA");
-    byte[] original = CodecUtils.fromHex("0001038100" + type.getStartFlag() + "AA");
 
-    var prepared = decodeService.prepareRaw(metadata, strippedUper, "signed-wsmp", type, original);
+    var prepared = decodeService.prepareRaw(metadata, strippedUper, "signed-wsmp", type);
 
     verify(ffmlibCodec).uperToIntermediate(eq(strippedUper));
     assertEquals(topic, prepared.topic());
@@ -503,11 +780,10 @@ class FfmlibDecodeServiceTest {
   void unsignedWsmpPayloadWithSignatureMarkerInsideMessageFrameStillDecodes() throws Exception {
     stubSuccessfulDecode();
     byte[] uper = CodecUtils.fromHex(BSM_HEX + "038100");
-    byte[] original = CodecUtils.fromHex("0001038000" + CodecUtils.toHex(uper));
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
 
     var prepared = decodeService.prepareRaw(metadata, uper, "unsigned-wsmp",
-        SupportedMessageType.BSM, original);
+        SupportedMessageType.BSM);
 
     verify(ffmlibCodec).uperToIntermediate(eq(uper));
     assertEquals(BSM_TOPIC, prepared.topic());
@@ -654,16 +930,32 @@ class FfmlibDecodeServiceTest {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   private void stubSuccessfulDecode() throws Exception {
+    stubSuccessfulDecode(SupportedMessageType.BSM);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private void stubSuccessfulDecode(SupportedMessageType type) throws Exception {
     lenient().when(jsonTopics.getBsm()).thenReturn(BSM_TOPIC);
     lenient().when(ffmlibCodec.uperToIntermediate(any()))
         .thenReturn(new IntermediateDecodeResult("{}".getBytes(StandardCharsets.UTF_8),
             IntermediateEncoding.JER));
-    MessageFrame frame = mock(BasicSafetyMessageMessageFrame.class);
-    DSRCmsgID msgId = mock(DSRCmsgID.class);
-    // Import path resolves topic from messageId; UDP path uses knownType and may skip these.
-    lenient().when(frame.getMessageId()).thenReturn(msgId);
-    lenient().when(msgId.name()).thenReturn(Optional.of("basicSafetyMessage"));
+    MessageFrame frame = generatedFrame(type);
     lenient().when(messageFrameReader.readValue(any(byte[].class))).thenReturn(frame);
+  }
+
+  private MessageFrame<?> generatedFrame(SupportedMessageType type) {
+    return switch (type) {
+      case BSM -> new BasicSafetyMessageMessageFrame();
+      case MAP -> new MapDataMessageFrame();
+      case SPAT -> new SPATMessageFrame();
+      case TIM -> new TravelerInformationMessageFrame();
+      case PSM -> new PersonalSafetyMessageMessageFrame();
+      case SRM -> new SignalRequestMessageMessageFrame();
+      case SSM -> new SignalStatusMessageMessageFrame();
+      case SDSM -> new SensorDataSharingMessageMessageFrame();
+      case RTCM -> new RTCMcorrectionsMessageFrame();
+      case RSM -> new RoadSafetyMessageMessageFrame();
+    };
   }
 
   private String stubJsonTopic(SupportedMessageType type) {
@@ -681,5 +973,9 @@ class FfmlibDecodeServiceTest {
       case RSM -> when(jsonTopics.getRsm()).thenReturn(topic);
     }
     return topic;
+  }
+
+  private record KnownJerFixture(SupportedMessageType type, int messageId, String choiceName,
+      Class<?> frameClass) {
   }
 }

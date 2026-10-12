@@ -1,15 +1,21 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -47,7 +53,13 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private final Timer rawAgeTimer;
   private final Timer parseTimer;
   private final long publishConfirmationBudgetNanos;
+  private final MeterRegistry meters;
+  private final int infrastructureHaltThreshold;
   private final Map<String, String> unhealthyListeners = new ConcurrentHashMap<>();
+  private final Map<String, AtomicInteger> consecutiveInfrastructureFailures =
+      new ConcurrentHashMap<>();
+  private final Map<SupportedMessageType, Counter> infrastructureQuarantines =
+      new ConcurrentHashMap<>();
   private volatile boolean startupComplete;
 
   /**
@@ -58,30 +70,49 @@ public class FfmlibRawJsonListener implements HealthIndicator {
    * @param output confirms decoded JSON publication
    * @param quarantineProducer confirms dead-letter publication
    * @param topics configured raw topic names
+   * @param commitTracker tracks in-flight offset commits
+   * @param meters metric registry
+   * @param properties FFM halt settings
    */
   @Autowired
   public FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
       FfmlibOutputPublisher output,
       @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
       KafkaTemplate<String, String> quarantineProducer,
-      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters) {
+      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters,
+      FfmlibProperties properties) {
     this(rawService, decoder, output, quarantineProducer, topics, commitTracker, meters,
-        PUBLISH_CONFIRMATION_BUDGET);
+        PUBLISH_CONFIRMATION_BUDGET, properties);
   }
 
   FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
-      FfmlibOutputPublisher output,
-      @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
-      KafkaTemplate<String, String> quarantineProducer,
+      FfmlibOutputPublisher output, KafkaTemplate<String, String> quarantineProducer,
+      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters) {
+    this(rawService, decoder, output, quarantineProducer, topics, commitTracker, meters,
+        PUBLISH_CONFIRMATION_BUDGET, new FfmlibProperties());
+  }
+
+  FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
+      FfmlibOutputPublisher output, KafkaTemplate<String, String> quarantineProducer,
       RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters,
       Duration publishConfirmationBudget) {
+    this(rawService, decoder, output, quarantineProducer, topics, commitTracker, meters,
+        publishConfirmationBudget, new FfmlibProperties());
+  }
+
+  FfmlibRawJsonListener(RawEncodedJsonService rawService, FfmlibDecodeService decoder,
+      FfmlibOutputPublisher output, KafkaTemplate<String, String> quarantineProducer,
+      RawEncodedJsonTopics topics, FfmlibCommitTracker commitTracker, MeterRegistry meters,
+      Duration publishConfirmationBudget, FfmlibProperties properties) {
     this.rawService = rawService;
     this.decoder = decoder;
     this.output = output;
     this.quarantineProducer = quarantineProducer;
     this.topics = topics;
     this.commitTracker = commitTracker;
+    this.meters = meters;
     this.publishConfirmationBudgetNanos = publishConfirmationBudget.toNanos();
+    this.infrastructureHaltThreshold = Math.max(1, properties.getInfrastructureHaltThreshold());
     this.rawAgeTimer = Timer.builder("ode.ffmlib.raw.record.age")
         .description("Millisecond-quantized Kafka CreateTime to listener-entry age")
         .minimumExpectedValue(Duration.ofMillis(1)).publishPercentileHistogram().register(meters);
@@ -93,7 +124,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedBSMJsonRouter", groupId = "RawEncodedBSMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.bsm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void bsm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.BSM, "RawEncodedBSMJsonRouter", record, acknowledgment);
   }
@@ -101,7 +132,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedSPATJsonRouter", groupId = "RawEncodedSPATJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.spat}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void spat(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.SPAT, "RawEncodedSPATJsonRouter", record, acknowledgment);
   }
@@ -109,7 +140,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedMAPJsonRouter", groupId = "RawEncodedMAPJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.map}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void map(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.MAP, "RawEncodedMAPJsonRouter", record, acknowledgment);
   }
@@ -117,7 +148,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedTIMJsonRouter", groupId = "RawEncodedTIMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.tim}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void tim(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.TIM, "RawEncodedTIMJsonRouter", record, acknowledgment);
   }
@@ -125,7 +156,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedSRMJsonRouter", groupId = "RawEncodedSRMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.srm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void srm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.SRM, "RawEncodedSRMJsonRouter", record, acknowledgment);
   }
@@ -133,7 +164,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedSSMJsonRouter", groupId = "RawEncodedSSMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.ssm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void ssm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.SSM, "RawEncodedSSMJsonRouter", record, acknowledgment);
   }
@@ -141,7 +172,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedPSMJsonRouter", groupId = "RawEncodedPSMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.psm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void psm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.PSM, "RawEncodedPSMJsonRouter", record, acknowledgment);
   }
@@ -149,7 +180,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedSDSMJsonRouter", groupId = "RawEncodedSDSMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.sdsm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void sdsm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.SDSM, "RawEncodedSDSMJsonRouter", record, acknowledgment);
   }
@@ -157,7 +188,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedRTCMJsonRouter", groupId = "RawEncodedRTCMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.rtcm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void rtcm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.RTCM, "RawEncodedRTCMJsonRouter", record, acknowledgment);
   }
@@ -165,7 +196,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   @KafkaListener(id = "RawEncodedRSMJsonRouter", groupId = "RawEncodedRSMJsonRouter",
       topics = "${ode.kafka.topics.raw-encoded-json.rsm}",
       containerFactory = "ffmlibKafkaListenerContainerFactory",
-      concurrency = "${ode.ffmlib.listener-concurrency:4}", autoStartup = "false")
+      concurrency = "${ode.ffmlib.listener-concurrency:1}", autoStartup = "false")
   public void rsm(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
     consume(SupportedMessageType.RSM, "RawEncodedRSMJsonRouter", record, acknowledgment);
   }
@@ -208,23 +239,20 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       rawAgeTimer.record(Math.max(0, listenerEntry - record.timestamp()), TimeUnit.MILLISECONDS);
     }
     long parseStart = System.nanoTime();
-    RawEncodedJsonService.FfmRawRecord raw;
+    RawEncodedJsonService.FfmDecodeInput raw;
     try {
-      raw = rawService.parseFfmRecord(record.value(), type);
+      raw = rawService.parseFfmDecodeInput(record.value(), type);
     } catch (Exception error) {
       parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
-      quarantine(record, listenerId, rawTopic(type), category(error), 1);
-      acknowledge(listenerId, acknowledgment);
+      rejectRecord(type, listenerId, record, acknowledgment, error, false);
       return;
     }
     parseTimer.record(System.nanoTime() - parseStart, TimeUnit.NANOSECONDS);
 
     try {
-      prepared = decoder.prepareRaw(raw.metadata(), raw.uperBytes(), record.key(), type,
-          raw.originalBytes());
+      prepared = decoder.prepareRaw(raw.metadata(), raw.uperBytes(), record.key(), type);
     } catch (Exception error) {
-      quarantine(record, listenerId, rawTopic(type), category(error), 1);
-      acknowledge(listenerId, acknowledgment);
+      rejectRecord(type, listenerId, record, acknowledgment, error, true);
       return;
     }
 
@@ -235,12 +263,56 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       unhealthyListeners.put(listenerId, error.getClass().getSimpleName());
       throw error;
     }
+    resetInfrastructureFailures(listenerId);
     if (outcome == PublicationOutcome.SKIPPED_DISABLED) {
       acknowledge(listenerId, acknowledgment);
       return;
     }
     decoder.recordRawConfirmed(prepared);
     acknowledge(listenerId, acknowledgment);
+    // A confirmed and committed record shows the listener has recovered from earlier failures.
+    unhealthyListeners.remove(listenerId);
+  }
+
+  /**
+   * Quarantines a record that could not be parsed or decoded. Operational failures are counted:
+   * once enough consecutive records fail that way, the fault is treated as systemic, so the
+   * listener stops and leaves the record uncommitted instead of quarantining it.
+   */
+  private void rejectRecord(SupportedMessageType type, String listenerId,
+      ConsumerRecord<String, String> record, Acknowledgment acknowledgment, Exception error,
+      boolean decodedMapping) {
+    FfmlibDecodeService.InfrastructureFailure failure = findInfrastructureFailure(error);
+    if (failure == null) {
+      quarantine(record, listenerId, rawTopic(type), category(error, decodedMapping), 1);
+      resetInfrastructureFailures(listenerId);
+      acknowledge(listenerId, acknowledgment);
+      return;
+    }
+
+    int consecutive = consecutiveInfrastructureFailures
+        .computeIfAbsent(listenerId, id -> new AtomicInteger()).incrementAndGet();
+    if (consecutive >= infrastructureHaltThreshold) {
+      unhealthyListeners.put(listenerId, "infrastructure_" + failure.getClass().getSimpleName());
+      log.error("FFM native decode failed operationally for {} consecutive records on listener {};"
+          + " stopping it and leaving {} offset {} uncommitted", consecutive, listenerId,
+          record.topic(), record.offset(), failure);
+      throw failure;
+    }
+    log.error("FFM native decode failed operationally for {} offset {}; quarantining it"
+        + " ({} of {} consecutive failures before the listener stops)", record.topic(),
+        record.offset(), consecutive, infrastructureHaltThreshold, failure);
+    infrastructureQuarantines.computeIfAbsent(type, key -> meters.counter(
+        "ode.ffmlib.infrastructure.quarantined", "type", key.name())).increment();
+    quarantine(record, listenerId, rawTopic(type), "infrastructure", 1);
+    acknowledge(listenerId, acknowledgment);
+  }
+
+  private void resetInfrastructureFailures(String listenerId) {
+    AtomicInteger failures = consecutiveInfrastructureFailures.get(listenerId);
+    if (failures != null) {
+      failures.set(0);
+    }
   }
 
   private void acknowledge(String listenerId, Acknowledgment acknowledgment) {
@@ -346,15 +418,43 @@ public class FfmlibRawJsonListener implements HealthIndicator {
     };
   }
 
-  private static String category(Exception error) {
-    if (error instanceof UnsupportedOperationException
-        || error.getCause() instanceof UnsupportedOperationException) {
+  private static FfmlibDecodeService.InfrastructureFailure findInfrastructureFailure(
+      Throwable error) {
+    for (Throwable cause : causes(error)) {
+      if (cause instanceof FfmlibDecodeService.InfrastructureFailure failure) {
+        return failure;
+      }
+    }
+    return null;
+  }
+
+  private static String category(Exception error, boolean decodedMapping) {
+    boolean unsupportedSigned = false;
+    boolean jsonProcessing = false;
+    for (Throwable cause : causes(error)) {
+      unsupportedSigned |= cause instanceof UnsupportedOperationException;
+      jsonProcessing |= cause instanceof JsonProcessingException;
+    }
+    if (unsupportedSigned) {
       return "unsupported_signed";
     }
     if (error instanceof ExhaustedPublishAttemptsException) {
       return "publish_failure";
     }
+    if (decodedMapping && jsonProcessing) {
+      return "mapping_failure";
+    }
     return error instanceof JsonProcessingException ? "malformed_json" : "malformed_payload";
+  }
+
+  private static Iterable<Throwable> causes(Throwable error) {
+    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    ArrayList<Throwable> result = new ArrayList<>();
+    for (Throwable current = error; current != null && visited.add(current);
+        current = current.getCause()) {
+      result.add(current);
+    }
+    return result;
   }
 
   private static byte[] bytes(String value) {

@@ -47,8 +47,8 @@ public class GenericReceiver extends AbstractUdpReceiverPublisher {
    * Constructs a GenericReceiver that publishes through the shared UDP ingest publisher.
    *
    * @param props UDP port and buffer size
-   * @param publisher raw-topic or direct-JSON publisher
-   * @param rawEncodedJsonTopics raw topics used when direct JSON is off
+   * @param publisher publisher that writes the durable raw-topic record
+   * @param rawEncodedJsonTopics raw encoded topics by message type
    */
   public GenericReceiver(ReceiverProperties props, UdpIngestPublisher publisher,
       RawEncodedJsonTopics rawEncodedJsonTopics) {

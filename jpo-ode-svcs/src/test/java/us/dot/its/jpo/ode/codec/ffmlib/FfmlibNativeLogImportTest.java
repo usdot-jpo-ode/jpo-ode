@@ -18,12 +18,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.MessageFrameCodec;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.GZIPInputStream;
 import org.junit.jupiter.api.io.TempDir;
@@ -152,6 +154,98 @@ class FfmlibNativeLogImportTest {
     }
   }
 
+  @org.junit.jupiter.api.Test
+  void malformedMiddleLogEntryPublishesPrefixStopsBeforeSuffixAndReplayDuplicatesPrefix()
+      throws Exception {
+    Harness harness = new Harness();
+    Path source = Path.of("..", "data", "bsmTx_commsignia.gz");
+    byte[] validEntry = firstBsmTxEntry(source);
+    // Keep a well-formed BSM log entry header and length field; only its two-byte ASN.1 payload is
+    // invalid so the failure occurs during native decoding after the complete file is parsed.
+    byte[] malformedEntry = Arrays.copyOf(validEntry, 28);
+    malformedEntry[24] = 2;
+    malformedEntry[25] = 0;
+    malformedEntry[26] = 0;
+    malformedEntry[27] = 0x14;
+    ByteArrayOutputStream contents = new ByteArrayOutputStream();
+    contents.write(validEntry);
+    contents.write(malformedEntry);
+    contents.write(validEntry);
+    byte[] replayBytes = contents.toByteArray();
+    List<String> published = new ArrayList<>();
+    when(harness.outputKafka.send(anyString(), isNull(), anyString())).thenAnswer(invocation -> {
+      published.add((String) invocation.getArgument(2));
+      return CompletableFuture.completedFuture(null);
+    });
+
+    Path imported = harness.inbox.resolve("bsmTx_partial.bin");
+    Files.write(imported, replayBytes);
+    try {
+      assertEquals(0, harness.processor.processDirectory(
+          harness.inbox, harness.backup, harness.failed));
+      assertEquals(1, published.size());
+      assertEquals(0, fileCount(harness.backup));
+      assertEquals(1, fileCount(harness.failed));
+
+      Files.move(harness.failed.resolve(imported.getFileName()), imported);
+      assertEquals(0, harness.processor.processDirectory(
+          harness.inbox, harness.backup, harness.failed));
+
+      assertEquals(2, published.size());
+      JsonNode firstPayload = harness.jsonMapper.readTree(published.get(0)).path("payload");
+      JsonNode replayedPayload = harness.jsonMapper.readTree(published.get(1)).path("payload");
+      assertEquals(20, firstPayload.path("data").path("messageId").asInt());
+      assertEquals(firstPayload, replayedPayload);
+      assertEquals(0, fileCount(harness.backup));
+      assertEquals(1, fileCount(harness.failed));
+      assertEquals(2.0, harness.meters.get("ode.ffmlib.decode.messages")
+          .tag("source", "import").tag("type", "BSM").counter().count());
+    } finally {
+      harness.decoder.shutdown();
+    }
+  }
+
+  @org.junit.jupiter.api.Test
+  void disabledDecodedTopicStillBacksUpImportedFileWithoutCountingItAsDecoded()
+      throws Exception {
+    Harness harness = new Harness(Set.of("topic.OdeBsmJson"));
+    Path imported = harness.inbox.resolve("bsmTx_disabled.bin");
+    Files.write(imported, firstBsmTxEntry(Path.of("..", "data", "bsmTx_commsignia.gz")));
+
+    try {
+      assertEquals(1, harness.processor.processDirectory(
+          harness.inbox, harness.backup, harness.failed));
+
+      assertFalse(Files.exists(imported));
+      assertEquals(1, fileCount(harness.backup));
+      assertEquals(0, fileCount(harness.failed));
+      assertEquals(0.0, harness.meters.get("ode.ffmlib.decode.messages")
+          .tag("source", "import").tag("type", "BSM").counter().count());
+      assertEquals(1.0, harness.meters.get("ode.ffmlib.output.skipped")
+          .tag("topic", "topic.OdeBsmJson").tag("reason", "disabled_topic")
+          .counter().count());
+      verify(harness.outputKafka, never()).send(anyString(), isNull(), anyString());
+    } finally {
+      harness.decoder.shutdown();
+    }
+  }
+
+  private static byte[] firstBsmTxEntry(Path compressedLog) throws Exception {
+    try (InputStream input = new GZIPInputStream(Files.newInputStream(compressedLog))) {
+      byte[] header = input.readNBytes(26);
+      int payloadLength = Byte.toUnsignedInt(header[24])
+          | (Byte.toUnsignedInt(header[25]) << 8);
+      byte[] payload = input.readNBytes(payloadLength);
+      if (header.length != 26 || payload.length != payloadLength) {
+        throw new IllegalStateException("The BSM log fixture does not contain a full first entry");
+      }
+      ByteArrayOutputStream entry = new ByteArrayOutputStream(header.length + payload.length);
+      entry.write(header);
+      entry.write(payload);
+      return entry.toByteArray();
+    }
+  }
+
   private static long fileCount(Path directory) throws Exception {
     try (var files = Files.list(directory)) {
       return files.count();
@@ -172,6 +266,11 @@ class FfmlibNativeLogImportTest {
 
     @SuppressWarnings("unchecked")
     Harness() throws Exception {
+      this(Set.of());
+    }
+
+    @SuppressWarnings("unchecked")
+    Harness(Set<String> disabledTopics) throws Exception {
       Path library = FfmlibNativeTestSupport.requireLibraryOrSkip();
       FfmlibProperties properties = new FfmlibProperties();
       nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),
@@ -181,8 +280,9 @@ class FfmlibNativeLogImportTest {
       when(codecProvider.getIfAvailable()).thenReturn(codec);
       externalKafka = mock(KafkaTemplate.class);
       outputKafka = mock(KafkaTemplate.class);
-      FfmlibOutputPublisher output = new FfmlibOutputPublisher(
-          outputKafka, new OdeKafkaProperties(), meters);
+      OdeKafkaProperties kafkaProperties = new OdeKafkaProperties();
+      kafkaProperties.setDisabledTopics(disabledTopics);
+      FfmlibOutputPublisher output = new FfmlibOutputPublisher(outputKafka, kafkaProperties, meters);
       ObjectProvider<FfmlibOutputPublisher> outputProvider = mock(ObjectProvider.class);
       when(outputProvider.getObject()).thenReturn(output);
       Asn1CodecModeProperties mode = new Asn1CodecModeProperties();

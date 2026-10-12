@@ -31,12 +31,15 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,8 +49,10 @@ import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher.LogFileToAsn1CodecPublisherException;
 import us.dot.its.jpo.ode.importer.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.FileParser;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParserFactory;
+import us.dot.its.jpo.ode.importer.parser.PayloadParser;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -56,6 +61,7 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -161,6 +167,39 @@ class LogFileToAsn1CodecPublisherTest {
             ImporterFileType.LOG_FILE, mockLogFileParser);
 
     assertTrue(dataList.isEmpty());
+  }
+
+  @ParameterizedTest
+  @EnumSource(SupportedMessageType.class)
+  void externalLogImportForwardsAllConfiguredTypes(SupportedMessageType type) throws Exception {
+    String topic = "topic.Raw" + type.name();
+    RawEncodedJsonTopics rawTopics = new RawEncodedJsonTopics();
+    switch (type) {
+      case BSM -> rawTopics.setBsm(topic);
+      case SPAT -> rawTopics.setSpat(topic);
+      case MAP -> rawTopics.setMap(topic);
+      case TIM -> rawTopics.setTim(topic);
+      case SRM -> rawTopics.setSrm(topic);
+      case SSM -> rawTopics.setSsm(topic);
+      case PSM -> rawTopics.setPsm(topic);
+      case SDSM -> rawTopics.setSdsm(topic);
+      case RTCM -> rawTopics.setRtcm(topic);
+      case RSM -> rawTopics.setRsm(topic);
+    }
+    KafkaTemplate<String, String> kafkaTemplate = mock(KafkaTemplate.class);
+    PayloadParser payloadParser = new PayloadParser(RecordType.rxMsg, "rxMsg_test.log");
+    payloadParser.setPayload(type.getStartFlagBytes());
+    StubLogFileParser fileParser = new StubLogFileParser(payloadParser);
+    LogFileToAsn1CodecPublisher publisher = new LogFileToAsn1CodecPublisher(kafkaTemplate,
+        new JsonTopics(), rawTopics);
+
+    List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> data = publisher.publish(
+        new BufferedInputStream(new ByteArrayInputStream(new byte[0])), "rxMsg_test.log",
+        ImporterFileType.LOG_FILE, fileParser);
+
+    assertEquals(1, data.size());
+    verify(kafkaTemplate).send(org.mockito.ArgumentMatchers.eq(topic),
+        org.mockito.ArgumentMatchers.any(String.class));
   }
 
   @Test
@@ -432,5 +471,30 @@ class LogFileToAsn1CodecPublisherTest {
     File file = new File(resourceName);
     byte[] data = Files.readAllBytes(file.toPath());
     return new String(data, StandardCharsets.UTF_8);
+  }
+
+  private static final class StubLogFileParser extends LogFileParser {
+    private int calls;
+
+    private StubLogFileParser(PayloadParser payloadParser) {
+      super(RecordType.rxMsg, "rxMsg_test.log");
+      setPayloadParser(payloadParser);
+    }
+
+    @Override
+    public ParserStatus parseFile(BufferedInputStream input) {
+      return calls++ == 0 ? ParserStatus.ENTRY_PARSING_COMPLETE
+          : ParserStatus.FILE_PARSING_COMPLETE;
+    }
+
+    @Override
+    public void updateMetadata(OdeLogMetadata metadata) {
+      metadata.setRecordType(RecordType.rxMsg);
+    }
+
+    @Override
+    public void writeTo(OutputStream output) throws IOException {
+      // The test parser only emits already-populated entries.
+    }
   }
 }

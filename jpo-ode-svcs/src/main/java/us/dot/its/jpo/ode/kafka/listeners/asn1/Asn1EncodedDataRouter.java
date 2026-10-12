@@ -27,6 +27,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONArray;
@@ -34,6 +40,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
@@ -71,6 +78,7 @@ public class Asn1EncodedDataRouter {
   private static final String BYTES = "bytes";
   private static final String MESSAGE_FRAME = "MessageFrame";
   private static final String ADVISORY_SITUATION_DATA_STRING = "AdvisorySituationData";
+  private static final long KAFKA_SEND_WAIT_BUDGET_NANOS = TimeUnit.SECONDS.toNanos(10);
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final XmlMapper xmlMapper;
   private final Asn1CodecModeProperties asn1CodecMode;
@@ -82,6 +90,10 @@ public class Asn1EncodedDataRouter {
   public static class Asn1EncodedDataRouterException extends Exception {
     public Asn1EncodedDataRouterException(String string) {
       super(string);
+    }
+
+    public Asn1EncodedDataRouterException(String string, Throwable cause) {
+      super(string, cause);
     }
   }
 
@@ -137,7 +149,9 @@ public class Asn1EncodedDataRouter {
    */
   public void processEncodedAsn1Xml(String encoderOutputXml)
       throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
-    processEncodedAsn1XmlWithPublishedTim(encoderOutputXml, null);
+    List<CompletableFuture<SendResult<String, String>>> sendFutures = new ArrayList<>();
+    processEncodedAsn1XmlInternal(encoderOutputXml, null, sendFutures);
+    awaitKafkaSends(sendFutures);
   }
 
   /** Consumes AEM output, including the external ASD second pass in FFM mode. */
@@ -153,6 +167,31 @@ public class Asn1EncodedDataRouter {
    * update when encoding occurs in-process.
    */
   public void processEncodedAsn1XmlWithPublishedTim(String encoderOutputXml, String publishedTimJson)
+      throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
+    List<CompletableFuture<SendResult<String, String>>> sendFutures = new ArrayList<>();
+    processEncodedAsn1XmlInternal(encoderOutputXml, publishedTimJson, sendFutures);
+    awaitKafkaSends(sendFutures);
+  }
+
+  /**
+   * Processes encoder output while including the request's initial TIM JSON publication in the
+   * same FFM-mode completion wait as any selected routing publications.
+   */
+  public void processEncodedAsn1XmlWithPublishedTim(String encoderOutputXml, String publishedTimJson,
+      CompletableFuture<SendResult<String, String>> initialTimSendFuture)
+      throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
+    List<CompletableFuture<SendResult<String, String>>> sendFutures = new ArrayList<>();
+    if (initialTimSendFuture != null) {
+      sendFutures.add(initialTimSendFuture);
+    } else if (asn1CodecMode.isFfm()) {
+      throw new IllegalStateException("Initial TIM Kafka send returned a null future.");
+    }
+    processEncodedAsn1XmlInternal(encoderOutputXml, publishedTimJson, sendFutures);
+    awaitKafkaSends(sendFutures);
+  }
+
+  private void processEncodedAsn1XmlInternal(String encoderOutputXml, String publishedTimJson,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures)
       throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
     JSONObject consumedObj = XmlUtils.toJSONObject(encoderOutputXml)
         .getJSONObject(OdeAsn1Data.class.getSimpleName());
@@ -179,9 +218,9 @@ public class Asn1EncodedDataRouter {
           "ASN.1 encoding failed with code %s and message %s.".formatted(code, message));
     }
     if (!payloadData.has(ADVISORY_SITUATION_DATA_STRING)) {
-      processUnsignedMessage(request, metadata, payloadData, publishedTimJson);
+      processUnsignedMessage(request, metadata, payloadData, publishedTimJson, sendFutures);
     } else if (request.getSdw() != null) {
-      processDoubleEncodedMessage(request, payloadData);
+      processDoubleEncodedMessage(request, payloadData, sendFutures);
     } else {
       log.warn(
           "Received encoded AdvisorySituationData message without SDW data. This should never happen.");
@@ -245,13 +284,16 @@ public class Asn1EncodedDataRouter {
   }
 
   // If SDW in metadata and ASD in body (double encoding complete) -> send to SDX
-  private void processDoubleEncodedMessage(ServiceRequest request, JSONObject dataObj)
+  private void processDoubleEncodedMessage(ServiceRequest request, JSONObject dataObj,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures)
       throws JsonProcessingException {
-    depositToSdx(request, dataObj.getJSONObject(ADVISORY_SITUATION_DATA_STRING).getString(BYTES));
+    depositToSdx(request, dataObj.getJSONObject(ADVISORY_SITUATION_DATA_STRING).getString(BYTES),
+        sendFutures);
   }
 
   private void processUnsignedMessage(ServiceRequest request, JSONObject metadataJson,
-      JSONObject payloadJson, String publishedTimJson) {
+      JSONObject payloadJson, String publishedTimJson,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures) {
     log.info("Processing unsigned message.");
     JSONObject messageFrameJson = payloadJson.getJSONObject(MESSAGE_FRAME);
     var hexEncodedTimBytes = messageFrameJson.getString(BYTES);
@@ -265,7 +307,7 @@ public class Asn1EncodedDataRouter {
       // (unsigned integer valid 0 to 2^32-1 in units of milliseconds) from metadata
       int maxDurationTime = Integer.parseInt(metadataJson.get("maxDurationTime").toString()) * 60 * 1000;
       var signedResponse = securityServicesClient.signMessage(base64EncodedTim, maxDurationTime);
-      depositToTimCertExpirationTopic(metadataJson, signedResponse, maxDurationTime);
+      depositToTimCertExpirationTopic(metadataJson, signedResponse, maxDurationTime, sendFutures);
       bytesToSend = signedResponse.getHexEncodedMessageSigned();
     } else {
       log.debug(
@@ -277,16 +319,17 @@ public class Asn1EncodedDataRouter {
     var encodedTimWithoutHeaders = stripHeader(bytesToSend);
 
     sendToRsus(request, encodedTimWithoutHeaders);
-    depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders, publishedTimJson);
+    depositToFilteredTopic(metadataJson, encodedTimWithoutHeaders, publishedTimJson, sendFutures);
     if (dataSigningEnabledSDW) {
-      publishForSecondEncoding(request, bytesToSend);
+      publishForSecondEncoding(request, bytesToSend, sendFutures);
     } else {
-      publishForSecondEncoding(request, encodedTimWithoutHeaders);
+      publishForSecondEncoding(request, encodedTimWithoutHeaders, sendFutures);
     }
   }
 
   private void depositToTimCertExpirationTopic(JSONObject metadataJson,
-      SignatureResultModel signedResponse, int maxDurationTime) {
+      SignatureResultModel signedResponse, int maxDurationTime,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures) {
     String packetId = metadataJson.getString("odePacketID");
     String timStartDateTime = metadataJson.getString("odeTimStartDateTime");
     JSONObject timWithExpiration = new JSONObject();
@@ -297,13 +340,16 @@ public class Asn1EncodedDataRouter {
     setExpiryDate(signedResponse, timWithExpiration, dateFormat);
     setRequiredExpiryDate(dateFormat, timStartDateTime, maxDurationTime, timWithExpiration);
 
-    kafkaTemplate.send(jsonTopics.getTimCertExpiration(), timWithExpiration.toString());
+    collectKafkaSend(kafkaTemplate.send(jsonTopics.getTimCertExpiration(), timWithExpiration.toString()),
+        sendFutures);
   }
 
-  private void depositToSdx(ServiceRequest request, String asdBytes)
+  private void depositToSdx(ServiceRequest request, String asdBytes,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures)
       throws JsonProcessingException {
     SDXDeposit sdxDeposit = new SDXDeposit(request.getSdw().getEstimatedRemovalDate(), asdBytes);
-    kafkaTemplate.send(this.sdxDepositTopic, mapper.writeValueAsString(sdxDeposit));
+    collectKafkaSend(kafkaTemplate.send(this.sdxDepositTopic, mapper.writeValueAsString(sdxDeposit)),
+        sendFutures);
   }
 
   /**
@@ -433,7 +479,7 @@ public class Asn1EncodedDataRouter {
   }
 
   private void depositToFilteredTopic(JSONObject metadataObj, String hexEncodedTim,
-      String publishedTimJson) {
+      String publishedTimJson, List<CompletableFuture<SendResult<String, String>>> sendFutures) {
     String generatedBy = metadataObj.getString("recordGeneratedBy");
     String streamId = metadataObj.getJSONObject("serialId").getString("streamId");
     if (!generatedBy.equalsIgnoreCase("TMC")) {
@@ -452,13 +498,15 @@ public class Asn1EncodedDataRouter {
       timJSON.put("metadata", metadataJSON);
 
       // Send the message w/ asn1 data to the TMC-filtered topic
-      kafkaTemplate.send(jsonTopics.getTimTmcFiltered(), timJSON.toString());
+      collectKafkaSend(kafkaTemplate.send(jsonTopics.getTimTmcFiltered(), timJSON.toString()),
+          sendFutures);
     } else {
       log.debug("TIM not found in k-table. Skipping deposit to TMC-filtered topic.");
     }
   }
 
-  private void publishForSecondEncoding(ServiceRequest request, String encodedTimWithoutHeaders) {
+  private void publishForSecondEncoding(ServiceRequest request, String encodedTimWithoutHeaders,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures) {
     if (request.getSdw() == null) {
       log.debug("SDW not present. No second encoding required.");
       return;
@@ -468,14 +516,65 @@ public class Asn1EncodedDataRouter {
       log.debug("Submitting ASD package for round 2 encoding");
       String asdPackagedTim = packageSignedTimIntoAsd(request, encodedTimWithoutHeaders);
       if (asn1CodecMode.isFfm()) {
-        processEncodedAsn1Xml(ffmlibEncodeService.encodeOdeAsn1Xml(asdPackagedTim));
+        processEncodedAsn1XmlInternal(
+            ffmlibEncodeService.encodeOdeAsn1Xml(asdPackagedTim), null, sendFutures);
       } else {
-        kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim);
+        collectKafkaSend(kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), asdPackagedTim),
+            sendFutures);
       }
     } catch (Exception e) {
       log.error("Error packaging/encoding ASD for round 2", e);
       if (asn1CodecMode.isFfm()) {
         throw new IllegalStateException("Error encoding TIM ASD with FFM", e);
+      }
+    }
+  }
+
+  private void collectKafkaSend(CompletableFuture<SendResult<String, String>> sendFuture,
+      List<CompletableFuture<SendResult<String, String>>> sendFutures) {
+    if (sendFuture == null) {
+      if (asn1CodecMode.isFfm()) {
+        throw new IllegalStateException("Kafka send returned a null future.");
+      }
+      return;
+    }
+    if (asn1CodecMode.isFfm()) {
+      sendFutures.add(sendFuture);
+    }
+  }
+
+  private void awaitKafkaSends(List<CompletableFuture<SendResult<String, String>>> sendFutures)
+      throws Asn1EncodedDataRouterException {
+    awaitKafkaSends(sendFutures, KAFKA_SEND_WAIT_BUDGET_NANOS);
+  }
+
+  // Package-private timeout seam keeps the production budget fixed while allowing focused tests
+  // to verify deadline behavior without waiting ten seconds.
+  void awaitKafkaSends(List<CompletableFuture<SendResult<String, String>>> sendFutures,
+      long waitBudgetNanos) throws Asn1EncodedDataRouterException {
+    if (!asn1CodecMode.isFfm() || sendFutures.isEmpty()) {
+      return;
+    }
+
+    long deadline = System.nanoTime() + waitBudgetNanos;
+    for (CompletableFuture<SendResult<String, String>> sendFuture : sendFutures) {
+      long remainingNanos = deadline - System.nanoTime();
+      if (remainingNanos <= 0) {
+        throw new Asn1EncodedDataRouterException(
+            "Timed out waiting for Kafka publications after encoding.");
+      }
+      try {
+        sendFuture.get(remainingNanos, TimeUnit.NANOSECONDS);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new Asn1EncodedDataRouterException(
+            "Interrupted while waiting for Kafka publications after encoding.", e);
+      } catch (ExecutionException e) {
+        throw new Asn1EncodedDataRouterException(
+            "Kafka publication failed after encoding: " + e.getCause(), e.getCause());
+      } catch (TimeoutException e) {
+        throw new Asn1EncodedDataRouterException(
+            "Timed out waiting for Kafka publications after encoding.", e);
       }
     }
   }

@@ -27,10 +27,7 @@ import j2735ffm.ConvertException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.Date;
-import java.util.IdentityHashMap;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibNativeErrors;
 import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
@@ -268,47 +266,71 @@ public class TimDepositController {
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
-    // Publish the resulting ASN XML and JSON to the appropriate topics
+    // Serialize all initial-message data before publishing its TIM JSON. In FFM mode the native
+    // encode must also succeed before that publication begins.
+    String xmlMsg;
+    String obfuscatedJ2735Tim;
+    OdeMessageFrameData odeTimMessageFrameData;
     try {
-      String xmlMsg;
       xmlMsg = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialIdJ2735);
       log.debug("XML representation: {}", xmlMsg);
 
       // Convert XML into ODE TIM JSON object and obfuscate RSU password
-      OdeMessageFrameData odeTimMessageFrameData = OdeMessageFrameDataCreatorHelper
+      odeTimMessageFrameData = OdeMessageFrameDataCreatorHelper
           .createOdeMessageFrameData(xmlMsg, simpleXmlMapper);
 
       // Create the TIM string and obfuscate the RSU password
       String j2735Tim = JsonUtils.toJson(odeTimMessageFrameData, false);
-      String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
-
-      // Publish TIM JSON to the OdeTimJson topic for the TIM topology KTable
-      kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
-      if (asn1CodecMode.isFfm()) {
-        // Encode in-process via FFM, then route (sign / RSU / SDX).
-        String encodedXml = ffmlibEncodeService.encodeMessageFrame(
-            odeTimMessageFrameData.getPayload().getData(), odeTimMessageFrameData.getMetadata());
-        asn1EncodedDataRouter.processEncodedAsn1XmlWithPublishedTim(encodedXml, obfuscatedJ2735Tim);
-      } else {
-        kafkaTemplate.send(
-            asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
-      }
+      obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
     } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | JsonProcessingException e) {
       String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
-    } catch (RuntimeException e) {
-      ConvertException nativeException = findConvertException(e);
-      String nativeError = nativeException == null ? e.getMessage() : nativeException.getMessage();
-      String errMsg = "Error encoding TIM with FFM: " + nativeError;
-      log.error(errMsg, e);
-      boolean requestFailure = nativeException != null && isMalformedNativeInput(nativeError);
-      return ResponseEntity.status(requestFailure ? HttpStatus.BAD_REQUEST
-              : HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (Exception e) {
-      String errMsg = "Error encoding TIM with FFMLib: " + e.getMessage();
+      String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+      log.error(errMsg, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    }
+
+    String encodedXml = null;
+    if (asn1CodecMode.isFfm()) {
+      try {
+        encodedXml = ffmlibEncodeService.encodeMessageFrame(
+            odeTimMessageFrameData.getPayload().getData(), odeTimMessageFrameData.getMetadata());
+      } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | JsonProcessingException e) {
+        String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+        log.error(errMsg, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      } catch (Exception e) {
+        ConvertException nativeException = FfmlibNativeErrors.findConvertException(e);
+        String nativeError = nativeException == null ? e.getMessage() : nativeException.getMessage();
+        String errMsg = "Error encoding TIM with FFM: " + nativeError;
+        log.error(errMsg, e);
+        boolean requestFailure = FfmlibNativeErrors.isMalformedInput(nativeException);
+        return ResponseEntity.status(requestFailure ? HttpStatus.BAD_REQUEST
+                : HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      }
+    }
+
+    // Publish and route only after initial FFM encoding has completed successfully. Any failure
+    // from this point is a server-side publication or routing failure, including native ASD work.
+    try {
+      if (asn1CodecMode.isFfm()) {
+        var initialTimSendFuture = kafkaTemplate.send(
+            jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+        asn1EncodedDataRouter.processEncodedAsn1XmlWithPublishedTim(
+            encodedXml, obfuscatedJ2735Tim, initialTimSendFuture);
+      } else {
+        // External mode keeps its existing fire-and-forget Kafka publication flow.
+        kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+        kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
+      }
+    } catch (Exception e) {
+      String errMsg = "Error publishing or routing TIM after encoding: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
@@ -316,26 +338,6 @@ public class TimDepositController {
 
     INGEST_MONITOR.incrementTotalMessagesReceived();
     return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(SUCCESS, "true"));
-  }
-
-  private static ConvertException findConvertException(Throwable error) {
-    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    for (Throwable cause = error; cause != null && visited.add(cause); cause = cause.getCause()) {
-      if (cause instanceof ConvertException convertException) {
-        return convertException;
-      }
-    }
-    return null;
-  }
-
-  private static boolean isMalformedNativeInput(String nativeError) {
-    if (nativeError == null) {
-      return false;
-    }
-    return nativeError.startsWith("Unrecognized PDU:")
-        || nativeError.endsWith(": Error decoding PDU")
-        || nativeError.startsWith(
-            "Decoding was successful, but constraint check failed, can't re-encode:");
   }
 
   /**

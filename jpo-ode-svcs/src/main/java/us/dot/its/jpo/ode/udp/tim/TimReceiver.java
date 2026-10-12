@@ -40,8 +40,8 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
    * Constructs a TimReceiver that publishes through the shared UDP ingest publisher.
    *
    * @param receiverProperties UDP port and buffer size
-   * @param ingestPublisher raw-topic or direct-JSON publisher
-   * @param publishTopic raw encoded topic used when direct JSON is off
+   * @param ingestPublisher publisher that writes the durable raw-topic record
+   * @param publishTopic raw encoded topic for this message type
    */
   public TimReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
       String publishTopic) {

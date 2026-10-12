@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.udp.portmapped;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,8 +41,8 @@ public class PortMappedConfigurableReceiver extends GenericReceiver {
    * Constructs a port-mapped receiver that publishes through the shared UDP ingest publisher.
    *
    * @param props UDP port and buffer size
-   * @param ingestPublisher raw-topic or direct-JSON publisher
-   * @param rawEncodedJsonTopics raw topics used when direct JSON is off
+   * @param ingestPublisher publisher that writes the durable raw-topic record
+   * @param rawEncodedJsonTopics raw encoded topics by message type
    * @param ingestConfig origin address and message type for this port
    */
   public PortMappedConfigurableReceiver(ReceiverProperties props, UdpIngestPublisher ingestPublisher,

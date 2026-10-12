@@ -56,10 +56,19 @@ public class FfmlibProperties {
   /** Strategy for null-key FFM raw records; keyed records retain Kafka's default hash mapping. */
   private String rawPartitionStrategy = "round_robin";
 
-  /** Number of Kafka consumers created for each FFM message type. */
-  private int listenerConcurrency = 4;
+  /**
+   * Number of Kafka consumers created for each FFM message type. Consumers beyond the raw topic's
+   * partition count stay idle.
+   */
+  private int listenerConcurrency = 1;
 
   /** Maximum time to wait for every FFM consumer to join its group during startup. */
   private Duration startupTimeout = Duration.ofSeconds(120);
+
+  /**
+   * Consecutive raw records that fail with operational (non-input) decode errors before the
+   * listener stops. Earlier failing records are quarantined so one record cannot block its type.
+   */
+  private int infrastructureHaltThreshold = 3;
 
 }

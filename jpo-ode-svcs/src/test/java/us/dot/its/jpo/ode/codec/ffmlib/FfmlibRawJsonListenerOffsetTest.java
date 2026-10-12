@@ -76,13 +76,12 @@ class FfmlibRawJsonListenerOffsetTest {
     var quarantine = mock(KafkaTemplate.class);
     when(topics.getBsm()).thenReturn(RAW_TOPIC);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
-    when(rawService.parseFfmRecord(eq(RAW_JSON), eq(SupportedMessageType.BSM)))
-        .thenReturn(new RawEncodedJsonService.FfmRawRecord(metadata, new byte[] {0, 20},
-            new byte[] {0, 20}));
+    when(rawService.parseFfmDecodeInput(eq(RAW_JSON), eq(SupportedMessageType.BSM)))
+        .thenReturn(new RawEncodedJsonService.FfmDecodeInput(metadata, new byte[] {0, 20}));
     PreparedDecodedMessage prepared = new PreparedDecodedMessage("topic.OdeBsmJson", "key", "{}",
         metadata, "BSM", "udp", 1L, 1L);
     when(decoder.prepareRaw(eq(metadata), any(byte[].class), eq("key"),
-        eq(SupportedMessageType.BSM), any(byte[].class))).thenReturn(prepared);
+        eq(SupportedMessageType.BSM))).thenReturn(prepared);
     AtomicInteger publicationAttempt = new AtomicInteger();
     when(output.publish(any())).thenAnswer(invocation -> {
       if (publicationAttempt.incrementAndGet() <= 3) {

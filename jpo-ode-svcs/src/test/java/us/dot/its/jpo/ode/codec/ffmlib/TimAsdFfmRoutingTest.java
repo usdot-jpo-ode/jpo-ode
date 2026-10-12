@@ -1,10 +1,12 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,9 +19,12 @@ import j2735ffm.AsnEncoding;
 import j2735ffm.MessageFrameCodec;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.beans.factory.ObjectProvider;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
 import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
@@ -42,6 +47,15 @@ class TimAsdFfmRoutingTest {
   private final SecurityServicesClient security = mock(SecurityServicesClient.class);
   private final SecurityServicesProperties signing = new SecurityServicesProperties();
   private final Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+
+  @org.junit.jupiter.api.BeforeEach
+  void kafkaAndRouterMocksHaveDeliberateDefaults() throws Exception {
+    signing.setIsRsuSigningEnabled(false);
+    signing.setIsSdwSigningEnabled(false);
+    when(kafka.send(anyString(), anyString())).thenReturn(completedSend());
+    when(encoder.encodeOdeAsn1Xml(anyString())).thenReturn(fixture(
+        "asn1-encoder-output-tim-with-advisory-data.xml"));
+  }
 
   @Test
   void ffmEncodesUnsignedAsdAndDepositsWithoutExternalEncoder() throws Exception {
@@ -128,6 +142,132 @@ class TimAsdFfmRoutingTest {
     verify(encoder, never()).encodeOdeAsn1Xml(anyString());
   }
 
+  @Test
+  void ffmWaitsForRecursiveSdxPublicationFailure() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+    CompletableFuture<SendResult<String, String>> failedSdx = new CompletableFuture<>();
+    failedSdx.completeExceptionally(new IllegalStateException("SDX unavailable"));
+    when(kafka.send(eq(SDX_INPUT), anyString())).thenReturn(failedSdx);
+
+    Asn1EncodedDataRouter.Asn1EncodedDataRouterException failure = assertThrows(
+        Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
+        () -> router().processEncodedAsn1Xml(
+            fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml")));
+
+    assertTrue(failure.getCause().getMessage().contains("SDX unavailable"));
+    verify(kafka).send(eq(SDX_INPUT), anyString());
+  }
+
+  @Test
+  void ffmWaitsForFilteredTimAndInitialTimFutures() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+    CompletableFuture<SendResult<String, String>> failedFiltered = new CompletableFuture<>();
+    failedFiltered.completeExceptionally(new IllegalStateException("filtered topic unavailable"));
+    when(kafka.send(eq("topic.TimFiltered"), anyString())).thenReturn(failedFiltered);
+
+    var failure = assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
+        () -> router().processEncodedAsn1XmlWithPublishedTim(
+            fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"),
+            "{\"metadata\":{}}"));
+
+    assertTrue(failure.getCause().getMessage().contains("filtered topic unavailable"));
+
+    CompletableFuture<SendResult<String, String>> failedInitialTim = new CompletableFuture<>();
+    failedInitialTim.completeExceptionally(new IllegalStateException("initial TIM unavailable"));
+    failure = assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
+        () -> router().processEncodedAsn1XmlWithPublishedTim(
+            fixture("asn1-encoder-output-tim-with-rsus.xml"), "{\"metadata\":{}}",
+            failedInitialTim));
+    assertTrue(failure.getCause().getMessage().contains("initial TIM unavailable"));
+  }
+
+  @Test
+  void ffmWaitsForCertificateExpirationPublicationFailure() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(true);
+    SignatureResultModel signature = new SignatureResultModel();
+    signature.setMessageSigned(CodecUtils.toBase64(CodecUtils.fromHex("0380001F01020304")));
+    signature.setMessageExpiry(1710000000L);
+    when(security.signMessage(anyString(), anyInt())).thenReturn(signature);
+    CompletableFuture<SendResult<String, String>> failedCertificate = new CompletableFuture<>();
+    failedCertificate.completeExceptionally(new IllegalStateException("certificate topic unavailable"));
+    when(kafka.send(eq("topic.TimCertExpiration"), anyString())).thenReturn(failedCertificate);
+    when(encoder.encodeOdeAsn1Xml(anyString())).thenReturn(fixture(
+        "asn1-encoder-output-tim-with-advisory-data.xml"));
+
+    var failure = assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
+        () -> router().processEncodedAsn1XmlWithPublishedTim(
+            fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"),
+            "{\"metadata\":{}}"));
+
+    assertTrue(failure.getCause().getMessage().contains("certificate topic unavailable"));
+    verify(kafka).send(eq("topic.TimFiltered"), anyString());
+    verify(kafka).send(eq(SDX_INPUT), anyString());
+  }
+
+  @Test
+  void ffmSynchronousKafkaSendFailurePropagatesAsServerFailure() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+    when(kafka.send(eq(SDX_INPUT), anyString()))
+        .thenThrow(new IllegalStateException("synchronous Kafka send failure"));
+
+    IllegalStateException failure = assertThrows(IllegalStateException.class,
+        () -> router().processEncodedAsn1Xml(
+            fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml")));
+
+    assertTrue(failure.getCause().getMessage().contains("synchronous Kafka send failure"));
+  }
+
+  @Test
+  void ffmTreatsNullKafkaFutureAsFailure() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+    when(kafka.send(eq(SDX_INPUT), anyString())).thenReturn(null);
+
+    IllegalStateException failure = assertThrows(IllegalStateException.class,
+        () -> router().processEncodedAsn1Xml(
+            fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml")));
+
+    assertTrue(failure.getCause().getMessage().contains("null future"));
+  }
+
+  @Test
+  void ffmRestoresInterruptWhenASelectedSendWaitIsInterrupted() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+    CompletableFuture<SendResult<String, String>> interrupted = new CompletableFuture<>() {
+      @Override
+      public SendResult<String, String> get(long timeout, TimeUnit unit)
+          throws InterruptedException {
+        throw new InterruptedException("test interruption");
+      }
+    };
+    when(kafka.send(eq(SDX_INPUT), anyString())).thenReturn(interrupted);
+
+    try {
+      assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
+          () -> router().processEncodedAsn1Xml(
+              fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml")));
+      assertTrue(Thread.currentThread().isInterrupted());
+    } finally {
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  void externalModeDoesNotWaitForSendCompletion() throws Exception {
+    CompletableFuture<SendResult<String, String>> pending = new CompletableFuture<>();
+    when(kafka.send(eq(ENCODER_INPUT), anyString())).thenReturn(pending);
+
+    router().processEncodedAsn1Xml(
+        fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"));
+
+    assertFalse(pending.isDone());
+  }
+
   private Asn1EncodedDataRouter router() {
     return router(encoder);
   }
@@ -141,6 +281,11 @@ class TimAsdFfmRoutingTest {
     return new Asn1EncodedDataRouter(asn1Topics, jsonTopics, signing,
         mock(OdeTimJsonTopology.class), mock(RsuDepositor.class), security, kafka, SDX_INPUT,
         new ObjectMapper(), new XmlMapper(), mode, selectedEncoder);
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static CompletableFuture<SendResult<String, String>> completedSend() {
+    return CompletableFuture.completedFuture(mock(SendResult.class));
   }
 
   private static String fixture(String name) throws Exception {
