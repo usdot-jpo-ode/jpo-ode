@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.micrometer.core.instrument.Counter;
@@ -23,8 +24,26 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapData;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.DSRCmsgID;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.RTCMcorrections.RTCMcorrections;
+import us.dot.its.jpo.asn.j2735.r2024.RTCMcorrections.RTCMcorrectionsMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.RoadSafetyMessage.RoadSafetyMessage;
+import us.dot.its.jpo.asn.j2735.r2024.RoadSafetyMessage.RoadSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPAT;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SensorDataSharingMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SensorDataSharingMessage.SensorDataSharingMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessage;
+import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.TravelerInformation.TravelerInformation;
+import us.dot.its.jpo.asn.j2735.r2024.TravelerInformation.TravelerInformationMessageFrame;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibMessageFrameCodec.IntermediateDecodeResult;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -73,6 +92,7 @@ public class FfmlibDecodeService {
   private final Timer sendTimer;
   private final Timer totalTimer;
   private final Map<String, Timer> endToEndTimers = new ConcurrentHashMap<>();
+  private final Map<SupportedMessageType, JerBinding> jerBindings;
 
   /**
    * Constructs the FFMLib decode service with the native codec, topic, and metric dependencies.
@@ -105,6 +125,33 @@ public class FfmlibDecodeService {
     this.outputPublisher = outputPublisher;
     this.messageFrameReader = simpleObjectMapper.readerFor(MessageFrame.class);
     this.bsmValueReader = simpleObjectMapper.readerFor(BasicSafetyMessage.class);
+    this.jerBindings = Map.of(
+        SupportedMessageType.BSM,
+        new JerBinding(20, "BasicSafetyMessage", bsmValueReader),
+        SupportedMessageType.MAP,
+        new JerBinding(18, "MapData", simpleObjectMapper.readerFor(MapData.class)),
+        SupportedMessageType.SPAT,
+        new JerBinding(19, "SPAT", simpleObjectMapper.readerFor(SPAT.class)),
+        SupportedMessageType.TIM,
+        new JerBinding(31, "TravelerInformation",
+            simpleObjectMapper.readerFor(TravelerInformation.class)),
+        SupportedMessageType.PSM,
+        new JerBinding(32, "PersonalSafetyMessage",
+            simpleObjectMapper.readerFor(PersonalSafetyMessage.class)),
+        SupportedMessageType.SRM,
+        new JerBinding(29, "SignalRequestMessage",
+            simpleObjectMapper.readerFor(SignalRequestMessage.class)),
+        SupportedMessageType.SSM,
+        new JerBinding(30, "SignalStatusMessage",
+            simpleObjectMapper.readerFor(SignalStatusMessage.class)),
+        SupportedMessageType.SDSM,
+        new JerBinding(41, "SensorDataSharingMessage",
+            simpleObjectMapper.readerFor(SensorDataSharingMessage.class)),
+        SupportedMessageType.RTCM,
+        new JerBinding(28, "RTCMcorrections", simpleObjectMapper.readerFor(RTCMcorrections.class)),
+        SupportedMessageType.RSM,
+        new JerBinding(33, "RoadSafetyMessage",
+            simpleObjectMapper.readerFor(RoadSafetyMessage.class)));
     this.jerFactory = simpleObjectMapper.getFactory();
     this.meterRegistry = meterRegistry;
     for (SupportedMessageType type : SupportedMessageType.values()) {
@@ -164,9 +211,7 @@ public class FfmlibDecodeService {
       metadata.setOdeTimStartDateTime(
           metadata.getOdeTimStartDateTime() == null ? "" : metadata.getOdeTimStartDateTime());
       runPublishDecoded(metadata, uperBytes, key, null, SOURCE_IMPORT);
-    } catch (UnsupportedOperationException failure) {
-      throw failure;
-    } catch (DecodeFailure failure) {
+    } catch (UnsupportedOperationException | InfrastructureFailure | DecodeFailure failure) {
       throw failure;
     } catch (ClassCastException e) {
       recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, "invalid_payload");
@@ -192,19 +237,22 @@ public class FfmlibDecodeService {
   /** Prepares one raw-topic output; the listener confirms it before acknowledging its input. */
   public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
       String key) {
-    return prepareRaw(metadata, uperBytes, key, null, uperBytes);
+    return prepareRaw(metadata, uperBytes, key, null);
   }
 
   /**
-   * Prepares a known raw-topic type from UPER bytes whose transport and security envelopes have
-   * already been stripped by the raw-record parser.
+   * Prepares a raw-topic output from UPER bytes whose transport and security envelopes have
+   * already been stripped by the raw-record parser. The FFM path decodes the extracted
+   * MessageFrame bytes and does not inspect or verify the original security envelope.
    *
-   * <p>The original bytes parameter remains for compatibility with raw-record callers. The FFM
-   * path decodes the extracted MessageFrame bytes and does not inspect or verify the original
-   * security envelope.
+   * @param metadata raw-record metadata, updated in place for the decoded output
+   * @param uperBytes extracted MessageFrame UPER bytes
+   * @param key Kafka record key
+   * @param knownType message type of the raw topic, or {@code null} when unknown
+   * @return the decoded output, ready for confirmed publication
    */
   public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
-      String key, SupportedMessageType knownType, byte[] originalBytes) {
+      String key, SupportedMessageType knownType) {
     if (!modeProperties.isFfm()) {
       throw new IllegalStateException("Raw-topic decode requires FFM mode");
     }
@@ -247,7 +295,11 @@ public class FfmlibDecodeService {
           prepareDecoded(metadata, uperBytes, key, knownType, source, totalStart);
       try {
         if (modeProperties.isFfm()) {
-          outputPublisher.getObject().publish(prepared).get(10, TimeUnit.SECONDS);
+          FfmlibOutputPublisher.PublicationOutcome outcome =
+              outputPublisher.getObject().publish(prepared).get(10, TimeUnit.SECONDS);
+          if (outcome == FfmlibOutputPublisher.PublicationOutcome.SKIPPED_DISABLED) {
+            return;
+          }
         } else {
           kafkaTemplate.send(prepared.topic(), key, prepared.json()).get(10, TimeUnit.SECONDS);
         }
@@ -290,15 +342,37 @@ public class FfmlibDecodeService {
       // Imports and raw-topic records already stripped the envelope; retain security metadata.
       byte[] messageFrameBytes = messageFrameAlreadyExtracted
           ? uperBytes : unwrapIeee1609IfPresent(metadata, uperBytes);
-      IntermediateDecodeResult intermediate = codec().uperToIntermediate(messageFrameBytes);
+      IntermediateDecodeResult intermediate;
+      try {
+        intermediate = codec().uperToIntermediate(messageFrameBytes);
+      } catch (RuntimeException nativeError) {
+        if (FfmlibNativeErrors.isMalformedInput(nativeError)) {
+          throw new NativeInputFailure(nativeError);
+        }
+        throw new InfrastructureFailure("FFMLib native UPER conversion failed", nativeError);
+      }
       long nativeNanos = System.nanoTime() - nativeStart;
       nativeTimer.record(nativeNanos, TimeUnit.NANOSECONDS);
 
       long pojoStart = System.nanoTime();
-      final MessageFrame<?> messageFrame = parseMessageFrame(intermediate, knownType);
+      final MessageFrame<?> messageFrame;
+      try {
+        messageFrame = parseMessageFrame(intermediate, knownType);
+      } catch (IOException | RuntimeException mappingError) {
+        recordFailure(type, source, "mapping");
+        Throwable mappingCause = mappingError instanceof JsonProcessingException
+            ? mappingError
+            : JsonMappingException.from((JsonParser) null,
+                "Unable to map decoded ASN.1 JER", mappingError);
+        throw new DecodeFailure("Unable to map decoded ASN.1 JER", mappingCause);
+      }
       long pojoNanos = System.nanoTime() - pojoStart;
       pojoTimer.record(pojoNanos, TimeUnit.NANOSECONDS);
       type = messageType(knownType, messageFrame);
+      if (knownType != null && !matchesKnownMessageType(messageFrame, knownType)) {
+        recordFailure(type, source, "mapping");
+        throw new DecodeFailure("Decoded MessageFrame id does not match the raw topic type", null);
+      }
 
       long asnDecodeNanos = nativeNanos + pojoNanos;
       asnDecodeTimer.record(asnDecodeNanos, TimeUnit.NANOSECONDS);
@@ -346,19 +420,18 @@ public class FfmlibDecodeService {
     } catch (UnsupportedOperationException failure) {
       recordFailure(type, source, "signed_payload");
       throw failure;
-    } catch (DecodeFailure failure) {
+    } catch (InfrastructureFailure failure) {
+      recordFailure(type, source, "infrastructure");
       throw failure;
-    } catch (PublishFailure failure) {
+    } catch (NativeInputFailure failure) {
+      recordFailure(type, source, "native_input");
+      throw new DecodeFailure("Native codec rejected malformed ASN.1 input", failure.getCause());
+    } catch (DecodeFailure | PublishFailure failure) {
       throw failure;
-    } catch (JsonProcessingException e) {
-      log.error("FFMLib decode failed (JER/JSON processing) for key {}: {}", key, e.getMessage(), e);
-      recordFailure(type, source, "mapping");
-      throw new DecodeFailure("Unable to map decoded ASN.1 JER", e);
     } catch (Exception e) {
-      String reason = e instanceof UnsupportedOperationException ? "signed_payload" : "unexpected";
-      log.error("FFMLib decode unexpected error for key {}: {}", key, e.getMessage(), e);
-      recordFailure(type, source, reason);
-      throw new DecodeFailure("Unable to decode ASN.1 payload", e);
+      log.error("FFMLib decode infrastructure failure for key {}: {}", key, e.getMessage(), e);
+      recordFailure(type, source, "infrastructure");
+      throw new InfrastructureFailure("Unable to decode ASN.1 payload", e);
     }
   }
 
@@ -448,6 +521,30 @@ public class FfmlibDecodeService {
     }
   }
 
+  /** Native codec operational failure that must not be quarantined as bad input. */
+  public static final class InfrastructureFailure extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
+    public InfrastructureFailure(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
+  private static final class NativeInputFailure extends RuntimeException {
+    private NativeInputFailure(Throwable cause) {
+      super(cause);
+    }
+  }
+
+  private boolean matchesKnownMessageType(MessageFrame<?> messageFrame,
+      SupportedMessageType knownType) {
+    if (messageFrame == null || messageFrame.getMessageId() == null) {
+      return false;
+    }
+    JerBinding binding = jerBindings.get(knownType);
+    return binding != null && messageFrame.getMessageId().getValue() == binding.expectedMessageId();
+  }
+
   /** Retriable failure while confirming an output Kafka record. */
   public static final class PublishFailure extends RuntimeException {
     public PublishFailure(String message, Throwable cause) {
@@ -457,53 +554,173 @@ public class FfmlibDecodeService {
 
   private MessageFrame<?> parseMessageFrame(IntermediateDecodeResult intermediate,
       SupportedMessageType knownType) throws IOException {
-    if (knownType == SupportedMessageType.BSM) {
+    if (knownType != null) {
       try {
-        MessageFrame<?> bsmFrame = parseBsmFrame(intermediate.bytes());
-        if (bsmFrame != null) {
-          return bsmFrame;
+        MessageFrame<?> directFrame = parseKnownJerFrame(intermediate.bytes(), knownType);
+        if (directFrame != null) {
+          return directFrame;
         }
-      } catch (JsonProcessingException error) {
-        log.debug("Direct BSM JER mapping failed; falling back to generic MessageFrame mapping",
-            error);
+      } catch (IOException error) {
+        log.debug("Direct JER mapping failed; falling back to generic MessageFrame mapping", error);
       }
     }
     return messageFrameReader.readValue(intermediate.bytes());
   }
 
-  private MessageFrame<?> parseBsmFrame(byte[] jer) throws IOException {
-    BasicSafetyMessage bsm = null;
-    int messageId = -1;
+  private MessageFrame<?> parseKnownJerFrame(byte[] jer, SupportedMessageType knownType)
+      throws IOException {
+    JerBinding binding = jerBindings.get(knownType);
+    if (binding == null) {
+      return null;
+    }
+
     try (JsonParser parser = jerFactory.createParser(jer)) {
       if (parser.nextToken() != JsonToken.START_OBJECT) {
         return null;
       }
-      while (parser.nextToken() == JsonToken.FIELD_NAME) {
-        String field = parser.currentName();
-        JsonToken value = parser.nextToken();
-        if ("messageId".equals(field) && value == JsonToken.VALUE_NUMBER_INT) {
-          messageId = parser.getIntValue();
-        } else if ("value".equals(field) && value == JsonToken.START_OBJECT) {
-          while (parser.nextToken() == JsonToken.FIELD_NAME) {
-            String choice = parser.currentName();
-            JsonToken choiceValue = parser.nextToken();
-            if ("BasicSafetyMessage".equals(choice) && choiceValue == JsonToken.START_OBJECT) {
-              bsm = bsmValueReader.readValue(parser);
-            } else {
-              parser.skipChildren();
-            }
-          }
-        } else {
-          parser.skipChildren();
-        }
+      ParsedJerFrame parsed = parseKnownJerObject(parser, binding);
+      if (parsed == null || parser.nextToken() != null
+          || !parsed.messageIdSeen || !parsed.valueSeen
+          || parsed.messageId != binding.expectedMessageId()) {
+        return null;
+      }
+      return buildKnownFrame(knownType, parsed.value);
+    }
+  }
+
+  private ParsedJerFrame parseKnownJerObject(JsonParser parser, JerBinding binding)
+      throws IOException {
+    ParsedJerFrame parsed = new ParsedJerFrame();
+    JsonToken token;
+    while ((token = parser.nextToken()) != JsonToken.END_OBJECT) {
+      if (token != JsonToken.FIELD_NAME
+          || !parseKnownJerField(parser, parser.currentName(), binding, parsed)) {
+        return null;
       }
     }
-    if (messageId != 20 || bsm == null) {
+    return parsed;
+  }
+
+  private boolean parseKnownJerField(JsonParser parser, String field, JerBinding binding,
+      ParsedJerFrame parsed) throws IOException {
+    JsonToken fieldValue = parser.nextToken();
+    if (fieldValue == null) {
+      return false;
+    }
+    if ("messageId".equals(field)) {
+      if (parsed.messageIdSeen || fieldValue != JsonToken.VALUE_NUMBER_INT) {
+        return false;
+      }
+      parsed.messageIdSeen = true;
+      parsed.messageId = parser.getIntValue();
+      return true;
+    }
+    if ("value".equals(field)) {
+      if (parsed.valueSeen || fieldValue != JsonToken.START_OBJECT) {
+        return false;
+      }
+      parsed.valueSeen = true;
+      parsed.value = parseKnownJerValue(parser, binding);
+      return parsed.value != null;
+    }
+    parser.skipChildren();
+    return true;
+  }
+
+  private Object parseKnownJerValue(JsonParser parser, JerBinding binding) throws IOException {
+    int choiceCount = 0;
+    Object candidateValue = null;
+    boolean expectedChoiceSeen = false;
+    JsonToken choiceToken;
+    while ((choiceToken = parser.nextToken()) != JsonToken.END_OBJECT) {
+      if (choiceToken != JsonToken.FIELD_NAME) {
+        return null;
+      }
+      String choice = parser.currentName();
+      JsonToken choiceValue = parser.nextToken();
+      if (choiceValue == null) {
+        return null;
+      }
+      choiceCount++;
+      if (binding.choiceName().equals(choice)) {
+        if (choiceCount != 1 || choiceValue != JsonToken.START_OBJECT) {
+          return null;
+        }
+        expectedChoiceSeen = true;
+        candidateValue = binding.valueReader().readValue(parser);
+      } else {
+        parser.skipChildren();
+      }
+    }
+    if (choiceCount != 1 || !expectedChoiceSeen || candidateValue == null) {
       return null;
     }
-    BasicSafetyMessageMessageFrame messageFrame = new BasicSafetyMessageMessageFrame();
-    messageFrame.setValue(bsm);
-    return messageFrame;
+    return candidateValue;
+  }
+
+  private MessageFrame<?> buildKnownFrame(SupportedMessageType knownType, Object value) {
+    return switch (knownType) {
+      case BSM -> {
+        BasicSafetyMessageMessageFrame frame = new BasicSafetyMessageMessageFrame();
+        frame.setValue((BasicSafetyMessage) value);
+        yield frame;
+      }
+      case MAP -> {
+        MapDataMessageFrame frame = new MapDataMessageFrame();
+        frame.setValue((MapData) value);
+        yield frame;
+      }
+      case SPAT -> {
+        SPATMessageFrame frame = new SPATMessageFrame();
+        frame.setValue((SPAT) value);
+        yield frame;
+      }
+      case TIM -> {
+        TravelerInformationMessageFrame frame = new TravelerInformationMessageFrame();
+        frame.setValue((TravelerInformation) value);
+        yield frame;
+      }
+      case PSM -> {
+        PersonalSafetyMessageMessageFrame frame = new PersonalSafetyMessageMessageFrame();
+        frame.setValue((PersonalSafetyMessage) value);
+        yield frame;
+      }
+      case SRM -> {
+        SignalRequestMessageMessageFrame frame = new SignalRequestMessageMessageFrame();
+        frame.setValue((SignalRequestMessage) value);
+        yield frame;
+      }
+      case SSM -> {
+        SignalStatusMessageMessageFrame frame = new SignalStatusMessageMessageFrame();
+        frame.setValue((SignalStatusMessage) value);
+        yield frame;
+      }
+      case SDSM -> {
+        SensorDataSharingMessageMessageFrame frame = new SensorDataSharingMessageMessageFrame();
+        frame.setValue((SensorDataSharingMessage) value);
+        yield frame;
+      }
+      case RTCM -> {
+        RTCMcorrectionsMessageFrame frame = new RTCMcorrectionsMessageFrame();
+        frame.setValue((RTCMcorrections) value);
+        yield frame;
+      }
+      case RSM -> {
+        RoadSafetyMessageMessageFrame frame = new RoadSafetyMessageMessageFrame();
+        frame.setValue((RoadSafetyMessage) value);
+        yield frame;
+      }
+    };
+  }
+
+  private record JerBinding(int expectedMessageId, String choiceName, ObjectReader valueReader) {
+  }
+
+  private static final class ParsedJerFrame {
+    private int messageId = -1;
+    private boolean messageIdSeen;
+    private boolean valueSeen;
+    private Object value;
   }
 
   private FfmlibMessageFrameCodec codec() {

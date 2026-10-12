@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.udp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -14,9 +15,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.mockito.MockedStatic;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
@@ -82,6 +85,42 @@ class UdpIngestPublisherTest {
     }
 
     verify(producer, never()).send(any(), any());
+    assertEquals(1.0, meters.counter("ode.ffmlib.raw.publication.failures", "topic", RAW_TOPIC)
+        .count());
+  }
+
+  @Test
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  void skippedRawPublicationReleasesInFlightWithoutConfirmationOrFailure() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    SimpleMeterRegistry meters = new SimpleMeterRegistry();
+    when(producer.send(eq(RAW_TOPIC), any(String.class)))
+        .thenReturn(CompletableFuture.completedFuture(null));
+    UdpIngestPublisher publisher = new UdpIngestPublisher(producer, meters);
+
+    publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+
+    assertEquals(0.0, meters.get("ode.ffmlib.raw.publication.in.flight").gauge().value());
+    assertEquals(0.0, meters.counter("ode.ffmlib.raw.publication.failures", "topic", RAW_TOPIC)
+        .count());
+    assertNull(meters.find("ode.ffmlib.raw.publication.confirmation").tag("topic", RAW_TOPIC).timer());
+    assertNull(meters.find("ode.ffmlib.udp.receipt.to.raw.confirmation")
+        .tag("topic", RAW_TOPIC).timer());
+  }
+
+  @Test
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  void rawKafkaFailureReleasesInFlightAndIncrementsFailureCounter() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    SimpleMeterRegistry meters = new SimpleMeterRegistry();
+    CompletableFuture<SendResult<String, String>> failed = new CompletableFuture<>();
+    failed.completeExceptionally(new IllegalStateException("broker unavailable"));
+    when(producer.send(eq(RAW_TOPIC), any(String.class))).thenReturn(failed);
+    UdpIngestPublisher publisher = new UdpIngestPublisher(producer, meters);
+
+    publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+
+    assertEquals(0.0, meters.get("ode.ffmlib.raw.publication.in.flight").gauge().value());
     assertEquals(1.0, meters.counter("ode.ffmlib.raw.publication.failures", "topic", RAW_TOPIC)
         .count());
   }

@@ -43,8 +43,8 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
    * Constructs a SpatReceiver that publishes through the shared UDP ingest publisher.
    *
    * @param receiverProperties UDP port and buffer size
-   * @param ingestPublisher raw-topic or direct-JSON publisher
-   * @param publishTopic raw encoded topic used when direct JSON is off
+   * @param ingestPublisher publisher that writes the durable raw-topic record
+   * @param publishTopic raw encoded topic for this message type
    */
   public SpatReceiver(ReceiverProperties receiverProperties, UdpIngestPublisher ingestPublisher,
       String publishTopic) {

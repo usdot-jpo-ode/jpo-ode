@@ -102,6 +102,8 @@ public class UdpIngestPublisher {
             failures.computeIfAbsent(rawTopic, topic -> meters.counter(
                 "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
             log.error("Unable to publish UDP raw record to {}", rawTopic, error);
+          } else if (result == null) {
+            log.debug("UDP raw record publication to {} was skipped by the producer", rawTopic);
           } else {
             confirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
                 "ode.ffmlib.raw.publication.confirmation").tag("topic", topic)

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
@@ -87,14 +88,8 @@ public class FfmlibEncodeService {
       wrapRsuArrayForXml(metadataNode);
       return buildEncoderOutputXml(metadataNode, ADVISORY_SITUATION_DATA, CodecUtils.toHex(uper));
     } else if (payloadData.has(MESSAGE_FRAME)) {
-      var messageFrameNode = simpleXmlMapper.readTree(odeAsn1Xml)
-          .path(OdeMsgPayload.PAYLOAD_STRING)
-          .path(OdeMsgPayload.DATA_STRING)
-          .path(MESSAGE_FRAME);
-      if (messageFrameNode.isMissingNode()) {
-        throw new IllegalArgumentException("MessageFrame XML not found in encode input");
-      }
-      MessageFrame<?> messageFrame = simpleXmlMapper.convertValue(messageFrameNode, MessageFrame.class);
+      MessageFrame<?> messageFrame = OdeMessageFrameDataCreatorHelper
+          .readMessageFrame(odeAsn1Xml, simpleXmlMapper);
       return encodeMessageFrameWithMetadata(messageFrame, JsonUtils.toObjectNode(metadata.toString()));
     } else {
       throw new IllegalArgumentException(

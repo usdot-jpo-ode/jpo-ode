@@ -2,7 +2,9 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
@@ -10,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import j2735ffm.MessageFrameCodec;
 import java.net.DatagramPacket;
@@ -17,10 +21,12 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
 import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -31,6 +37,7 @@ import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 /** Exercises the real native decoder and mapper against UDP type fixtures. */
@@ -86,6 +93,7 @@ class FfmlibNativeFixturesTest {
     FfmlibDecodeService decoder = new FfmlibDecodeService(codecProvider, properties, mode, topics,
         kafka, outputProvider, jerMapper, new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
     ObjectMapper jsonMapper = new ObjectMapper();
+    RawEncodedJsonService rawService = new RawEncodedJsonService(jsonMapper);
 
     for (Fixture fixture : FIXTURES) {
       byte[] received = hexFixture(fixture.path());
@@ -95,15 +103,15 @@ class FfmlibNativeFixturesTest {
           fixture.type(), RecordType.bsmTx, Source.RSU, GeneratedBy.UNKNOWN, false);
 
       FfmlibDecodeService.PreparedDecodedMessage decoded = decoder.prepareRaw(input.metadata(),
-          input.uperBytes(), "fixture-key", fixture.type(), received);
+          input.uperBytes(), "fixture-key", fixture.type());
+      byte[] jer = codec.uperToIntermediate(input.uperBytes()).bytes();
+      MessageFrame<?> genericFrame = jerMapper.readValue(jer, MessageFrame.class);
+      JsonNode expectedPayload = jsonMapper.readTree(
+          JsonUtils.toJson(new OdeMessageFramePayload(genericFrame), false));
+      JsonNode actualPayload = jsonMapper.readTree(decoded.json()).path("payload");
+      assertEquals(expectedPayload, actualPayload,
+          fixture.path() + " direct JER mapping must preserve the generic JSON model");
       if (fixture.type() == SupportedMessageType.BSM) {
-        byte[] jer = codec.uperToIntermediate(input.uperBytes()).bytes();
-        MessageFrame<?> genericFrame = jerMapper.readValue(jer, MessageFrame.class);
-        JsonNode expectedPayload = jsonMapper.readTree(
-            JsonUtils.toJson(new OdeMessageFramePayload(genericFrame), false));
-        JsonNode actualPayload = jsonMapper.readTree(decoded.json()).path("payload");
-        assertEquals(expectedPayload, actualPayload,
-            fixture.path() + " direct BSM JER mapping must preserve the generic JSON model");
         decodesSyntheticSignedBsmThroughTheRawParser(decoder, received, jsonMapper);
       }
 
@@ -113,7 +121,102 @@ class FfmlibNativeFixturesTest {
       assertNotNull(json.get("metadata"), fixture.path());
       assertNotNull(json.get("payload"), fixture.path());
       assertTrue(json.get("payload").size() > 0, fixture.path());
+
+      String rawJson = rawJsonForFixture(jsonMapper, received);
+      RawEncodedJsonService.FfmRawRecord legacyInput =
+          rawService.parseFfmRecord(rawJson, fixture.type());
+      RawEncodedJsonService.FfmDecodeInput leanInput =
+          rawService.parseFfmDecodeInput(rawJson, fixture.type());
+      assertNotSame(legacyInput.metadata(), leanInput.metadata(), fixture.path());
+
+      FfmlibDecodeService.PreparedDecodedMessage legacyDecoded = decoder.prepareRaw(
+          legacyInput.metadata(), legacyInput.uperBytes(), "fixture-equivalence", null);
+      FfmlibDecodeService.PreparedDecodedMessage leanDecoded = decoder.prepareRaw(
+          leanInput.metadata(), leanInput.uperBytes(), "fixture-equivalence", fixture.type());
+
+      assertEquals(legacyDecoded.topic(), leanDecoded.topic(), fixture.path());
+      assertEquals(legacyDecoded.type(), leanDecoded.type(), fixture.path());
+      JsonNode legacyJson = jsonMapper.readTree(legacyDecoded.json());
+      JsonNode leanJson = jsonMapper.readTree(leanDecoded.json());
+      assertEquals(legacyJson, leanJson, fixture.path());
+      assertEquals(legacyJson.path("metadata"), leanJson.path("metadata"), fixture.path());
+      assertEquals(legacyJson.path("payload"), leanJson.path("payload"), fixture.path());
     }
+  }
+
+  @Test
+  void readMessageFrameSelectsTopLevelFrameOverMetadataDecoy() throws Exception {
+    FfmlibMessageFrameCodec codec = nativeCodec();
+    String odeXml = odeXmlWithMetadataDecoy(
+        codec.uperToXer(hexFixture("udp/rsm/RsmReceiverTest_ValidRSM.txt")));
+
+    MessageFrame<?> frame = OdeMessageFrameDataCreatorHelper.readMessageFrame(odeXml,
+        new XmlMapper());
+
+    assertInstanceOf(us.dot.its.jpo.asn.j2735.r2024.RoadSafetyMessage
+        .RoadSafetyMessageMessageFrame.class, frame,
+        "a metadata payload/data/MessageFrame decoy must not replace the top-level frame");
+  }
+
+  @Test
+  @Disabled("Requires the jpo-asn-pojos ordered XER generic binding fix (follow-up)")
+  void reencodesNativeRsmFixtureWithOriginalUperBytes() throws Exception {
+    FfmlibMessageFrameCodec codec = nativeCodec();
+    byte[] originalUper = hexFixture("udp/rsm/RsmReceiverTest_ValidRSM.txt");
+    String odeXml = odeXmlWithMetadataDecoy(codec.uperToXer(originalUper));
+    XmlMapper xmlMapper = new XmlMapper();
+
+    MessageFrame<?> frame = OdeMessageFrameDataCreatorHelper.readMessageFrame(odeXml, xmlMapper);
+    String canonicalXer = xmlMapper.writeValueAsString(frame);
+    assertArrayEquals(originalUper, codec.xerToUper(canonicalXer),
+        "generic wrapper binding and XER serialization must preserve RSM choice order");
+
+    ObjectProvider<FfmlibMessageFrameCodec> codecProvider = mock(ObjectProvider.class);
+    when(codecProvider.getIfAvailable()).thenReturn(codec);
+    FfmlibEncodeService encoder = new FfmlibEncodeService(codecProvider, xmlMapper);
+    String encodedXml = encoder.encodeOdeAsn1Xml(odeXml);
+    JsonNode encodedBytes = xmlMapper.readTree(encodedXml).path("payload").path("data")
+        .path("MessageFrame").path("bytes");
+    assertTrue(encodedBytes.isTextual(), "FFMLib encode branch must return MessageFrame bytes");
+    assertArrayEquals(originalUper, CodecUtils.fromHex(encodedBytes.asText()),
+        "FFMLib XML encode must preserve the original RSM UPER bytes");
+  }
+
+  private static FfmlibMessageFrameCodec nativeCodec() {
+    Path nativeLibrary = FfmlibNativeTestSupport.requireLibraryOrSkip();
+    FfmlibProperties properties = new FfmlibProperties();
+    MessageFrameCodec nativeCodec = new MessageFrameCodec(properties.getTextBufferSize(),
+        properties.getUperBufferSize(), properties.getErrorBufferSize(), nativeLibrary);
+    return new FfmlibMessageFrameCodec(nativeCodec, new SimpleMeterRegistry());
+  }
+
+  private static String odeXmlWithMetadataDecoy(String nativeXer) {
+    String decoyFrame = "<MessageFrame><messageId>19</messageId><value><SPAT/>"
+        + "</value></MessageFrame>";
+    return "<OdeAsn1Data><metadata><payload><data>" + decoyFrame
+        + "</data></payload><payloadType>us.dot.its.jpo.ode.model.OdeAsn1Payload</payloadType>"
+        + "</metadata><payload><dataType>MessageFrame</dataType><data>" + nativeXer
+        + "</data></payload></OdeAsn1Data>";
+  }
+
+  private static String rawJsonForFixture(ObjectMapper mapper, byte[] received)
+      throws Exception {
+    String hex = CodecUtils.toHex(received);
+    ObjectNode raw = mapper.createObjectNode();
+    ObjectNode metadata = raw.putObject("metadata");
+    metadata.put("asn1", hex);
+    metadata.put("odeReceivedAt", "2026-10-09T00:00:00.000Z");
+    metadata.put("schemaVersion", 9);
+    ObjectNode serialId = metadata.putObject("serialId");
+    serialId.put("streamId", "native-fixture-equivalence");
+    serialId.put("bundleSize", 1);
+    serialId.put("bundleId", 0);
+    serialId.put("recordId", 0);
+    serialId.put("serialNumber", 0);
+    raw.putObject("payload").putObject("data")
+        .put("encoding", "UPER")
+        .put("bytes", hex);
+    return mapper.writeValueAsString(raw);
   }
 
   private static byte[] hexFixture(String relativePath) throws Exception {
@@ -144,8 +247,7 @@ class FfmlibNativeFixturesTest {
     assertArrayEquals(externalUper, parsed.uperBytes());
 
     FfmlibDecodeService.PreparedDecodedMessage decoded = decoder.prepareRaw(parsed.metadata(),
-        parsed.uperBytes(), "synthetic-signed-bsm", SupportedMessageType.BSM,
-        parsed.originalBytes());
+        parsed.uperBytes(), "synthetic-signed-bsm", SupportedMessageType.BSM);
     assertEquals("BSM", decoded.type());
     assertEquals("topic.OdeBsmJson", decoded.topic());
     JsonNode output = jsonMapper.readTree(decoded.json());

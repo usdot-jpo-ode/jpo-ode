@@ -197,6 +197,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
           case "SSM" -> template.send(rawEncodedJsonTopics.getSsm(), JsonUtils.toJson(odeData, false));
           case "SRM" -> template.send(rawEncodedJsonTopics.getSrm(), JsonUtils.toJson(odeData, false));
           case "PSM" -> template.send(rawEncodedJsonTopics.getPsm(), JsonUtils.toJson(odeData, false));
+          case "SDSM" -> template.send(rawEncodedJsonTopics.getSdsm(), JsonUtils.toJson(odeData, false));
+          case "RTCM" -> template.send(rawEncodedJsonTopics.getRtcm(), JsonUtils.toJson(odeData, false));
+          case "RSM" -> template.send(rawEncodedJsonTopics.getRsm(), JsonUtils.toJson(odeData, false));
           default -> log.warn("Unknown message type: {}", messageType);
         }
       }

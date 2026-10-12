@@ -28,6 +28,7 @@
  import java.time.Duration;
  import java.time.Instant;
  import java.time.ZoneId;
+import java.util.concurrent.CompletableFuture;
  import java.util.List;
  import java.util.Set;
  import org.apache.commons.io.IOUtils;
@@ -44,6 +45,7 @@
  import org.springframework.http.ResponseEntity;
  import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
  import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
  import org.springframework.kafka.test.EmbeddedKafkaBroker;
  import org.springframework.kafka.test.utils.KafkaTestUtils;
  import org.springframework.test.annotation.DirtiesContext;
@@ -62,10 +64,13 @@
  import static org.mockito.ArgumentMatchers.any;
  import static org.mockito.Mockito.mock;
  import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
  import static org.mockito.Mockito.mockStatic;
  import static org.mockito.Mockito.verify;
  import static org.mockito.Mockito.when;
  import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
  import org.mockito.MockedStatic;
  import us.dot.its.jpo.ode.model.OdeMsgMetadata;
  import us.dot.its.jpo.ode.model.OdeObject;
@@ -555,6 +560,128 @@
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @Test
+  void initialNativeFailuresDoNotPublishTimJson() throws Exception {
+    assertInitialNativeFailureDoesNotPublish("Unrecognized PDU: malformed TIM",
+        HttpStatus.BAD_REQUEST);
+    assertInitialNativeFailureDoesNotPublish("MessageFrame: Error encoding to UPER",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void initialEncodingSerializationFailureReturnsBadRequestWithoutPublishing() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+    Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+    when(encoder.encodeMessageFrame(any(), any())).thenThrow(
+        new com.fasterxml.jackson.core.JsonProcessingException("initial serialization failed") {});
+    TimDepositController controller = newFfmController(producer, encoder, router);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+    verify(producer, never()).send(any(String.class), any(String.class), any(String.class));
+    verify(router, never()).processEncodedAsn1XmlWithPublishedTim(
+        any(String.class), any(String.class), any());
+  }
+
+  @Test
+  void postEncodeSerializationAndMalformedNativeRoutingFailuresReturnInternalServerError()
+      throws Exception {
+    List<Exception> failures = List.of(
+        new com.fasterxml.jackson.core.JsonProcessingException("ASD serialization failed") {},
+        new Asn1EncodedDataRouter.Asn1EncodedDataRouterException("initial TIM publication failed",
+            new IllegalStateException("broker unavailable")),
+        new IllegalStateException("ASD encode failed",
+            new ConvertException("Unrecognized PDU: malformed ASD")));
+
+    for (Exception failure : failures) {
+      KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+      FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+      Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+      when(encoder.encodeMessageFrame(any(), any()))
+          .thenReturn("<OdeAsn1Data><metadata/><payload/></OdeAsn1Data>");
+      when(producer.send(any(String.class), any(String.class), any(String.class)))
+          .thenReturn(successfulSendFuture());
+      doThrow(failure).when(router).processEncodedAsn1XmlWithPublishedTim(
+          any(String.class), any(String.class), any());
+      TimDepositController controller = newFfmController(producer, encoder, router);
+
+      ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+      Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+          response.getStatusCode().value());
+      InOrder deliveryOrder = inOrder(encoder, producer);
+      deliveryOrder.verify(encoder).encodeMessageFrame(any(), any());
+      deliveryOrder.verify(producer).send(any(String.class), any(String.class), any(String.class));
+    }
+  }
+
+  @Test
+  void externalModeDoesNotWaitForKafkaSendCompletion() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    CompletableFuture<SendResult<String, String>> pendingSend = new CompletableFuture<>();
+    when(producer.send(any(String.class), any(String.class), any(String.class)))
+        .thenReturn(pendingSend);
+    String timTopic = "test.externalModeDoesNotWaitForKafkaSendCompletion.tim.json";
+    jsonTopics.setTim(timTopic);
+    String encoderInputTopic = "test.externalModeDoesNotWaitForKafkaSendCompletion.encoder.input";
+    Asn1CoderTopics asn1Topics = new Asn1CoderTopics();
+    asn1Topics.setEncoderInput(encoderInputTopic);
+    TimDepositController controller = new TimDepositController(jsonTopics,
+        timIngestTrackerProperties, securityServicesProperties, producer, simpleXmlMapper,
+        mock(FfmlibEncodeService.class), mock(Asn1EncodedDataRouter.class),
+        new Asn1CodecModeProperties(), asn1Topics);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals("{\"success\":\"true\"}", response.getBody());
+    Assertions.assertFalse(pendingSend.isDone());
+    verify(producer).send(org.mockito.ArgumentMatchers.eq(timTopic),
+        any(String.class), any(String.class));
+    verify(producer).send(org.mockito.ArgumentMatchers.eq(encoderInputTopic),
+        any(String.class), any(String.class));
+  }
+
+  private void assertInitialNativeFailureDoesNotPublish(String nativeError, HttpStatus status)
+      throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+    Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+    when(encoder.encodeMessageFrame(any(), any())).thenThrow(new RuntimeException(
+        "FFM service failure", new IllegalStateException("Codec conversion failure",
+            new ConvertException(nativeError))));
+    TimDepositController controller = newFfmController(producer, encoder, router);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals(status.value(), response.getStatusCode().value());
+    Assertions.assertTrue(response.getBody().contains(nativeError), response.getBody());
+    verify(producer, never()).send(any(String.class), any(String.class), any(String.class));
+    verify(router, never()).processEncodedAsn1XmlWithPublishedTim(
+        any(String.class), any(String.class), any());
+  }
+
+  private TimDepositController newFfmController(KafkaTemplate<String, String> producer,
+      FfmlibEncodeService encoder, Asn1EncodedDataRouter router) {
+    Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    return new TimDepositController(jsonTopics, timIngestTrackerProperties,
+        securityServicesProperties, producer, simpleXmlMapper, encoder, router, mode,
+        new Asn1CoderTopics());
+  }
+
+  private static String validRsuTimRequest() {
+    return "{\"request\":{\"rsus\":[],\"snmp\":{}},"
+        + "\"tim\":{\"msgCnt\":\"13\","
+        + "\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static CompletableFuture<SendResult<String, String>> successfulSendFuture() {
+    return CompletableFuture.completedFuture(mock(SendResult.class));
+  }
+
   private void assertNativeErrorStatus(String nativeError, HttpStatus expectedStatus)
       throws Exception {
     TimDepositController controller = newController();
@@ -604,7 +731,7 @@
     verify(lastEncodeService).encodeMessageFrame(messageFrameCaptor.capture(), any());
     verify(lastRouter).processEncodedAsn1XmlWithPublishedTim(
         org.mockito.ArgumentMatchers.eq("<OdeAsn1Data><metadata/><payload/></OdeAsn1Data>"),
-        any());
+        any(), any());
     var actualXml = simpleXmlMapper.writeValueAsString(messageFrameCaptor.getValue());
     var expectedXml = loadTestResource(expectedResource);
     var expectedData = OdeMessageFrameDataCreatorHelper

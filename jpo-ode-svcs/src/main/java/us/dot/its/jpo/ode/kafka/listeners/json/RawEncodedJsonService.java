@@ -130,6 +130,130 @@ public class RawEncodedJsonService {
     return new FfmRawRecord(metadata, uperBytes, originalBytes);
   }
 
+  /**
+   * Parses a raw record for in-process decoding without materializing original bytes or adding a
+   * synthesized encoding to its metadata on the usual single-metadata path.
+   *
+   * <p>Repeated metadata fields and metadata mapping failures use the legacy parser to preserve
+   * its last-field-wins behavior and error classification. That compatibility fallback retains
+   * the legacy allocation and encoding behavior.
+   *
+   * @param json raw-topic JSON value
+   * @param messageType message type used to locate the UPER start flag
+   * @return metadata and stripped UPER bytes
+   * @throws IOException if the raw JSON or metadata is malformed
+   * @throws StartFlagNotFoundException if the message start flag cannot be located
+   */
+  public FfmDecodeInput parseFfmDecodeInput(String json, SupportedMessageType messageType)
+      throws IOException, StartFlagNotFoundException {
+    DecodeScan scan = scanFfmDecodeInput(json);
+    if (scan.requiresLegacyParse) {
+      return toDecodeInput(parseFfmRecord(json, messageType));
+    }
+    if (scan.payloadHex == null || scan.payloadHex.isBlank()) {
+      throw new IllegalArgumentException("Raw record has no original ASN.1 payload bytes");
+    }
+    if (scan.metadata == null) {
+      throw new IllegalArgumentException("Raw record has no metadata object");
+    }
+
+    // Keep payload decode and metadata.asn1 validation ahead of UPER header stripping, matching
+    // the legacy parser's order while avoiding an unused decoded copy of metadata.asn1.
+    byte[] packetBytes = CodecUtils.fromHex(scan.payloadHex);
+    validateMetadataAsn1(scan.metadata.getAsn1());
+    byte[] uperBytes = UperUtil.stripDot2Header(packetBytes, messageType.getStartFlagBytes());
+    return new FfmDecodeInput(scan.metadata, uperBytes);
+  }
+
+  private DecodeScan scanFfmDecodeInput(String json) throws IOException {
+    DecodeScan scan = new DecodeScan();
+    try (JsonParser parser = mapper.createParser(json)) {
+      if (parser.nextToken() != JsonToken.START_OBJECT) {
+        throw new IllegalArgumentException("Raw record must be a JSON object");
+      }
+      JsonToken token;
+      while ((token = parser.nextToken()) != JsonToken.END_OBJECT) {
+        if (token != JsonToken.FIELD_NAME) {
+          throw new IllegalArgumentException("Raw record has an invalid JSON object");
+        }
+        if (readFfmDecodeField(parser, scan)) {
+          break;
+        }
+      }
+    }
+    return scan;
+  }
+
+  private boolean readFfmDecodeField(JsonParser parser, DecodeScan scan) throws IOException {
+    String field = parser.currentName();
+    JsonToken value = parser.nextToken();
+    if (value == null) {
+      throw new IllegalArgumentException("Raw record has an invalid JSON object");
+    }
+    if ("metadata".equals(field)) {
+      return readFfmDecodeMetadata(parser, value, scan);
+    }
+    if ("payload".equals(field)) {
+      scan.payloadHex = readPayloadHex(parser, value);
+    } else {
+      parser.skipChildren();
+    }
+    return false;
+  }
+
+  private boolean readFfmDecodeMetadata(JsonParser parser, JsonToken value, DecodeScan scan)
+      throws IOException {
+    if (scan.metadataSeen) {
+      // The legacy parser applies last-field-wins semantics to metadata. Stop scanning and
+      // let it parse the complete record after this parser has closed.
+      scan.requiresLegacyParse = true;
+      return true;
+    }
+    scan.metadataSeen = true;
+    if (value != JsonToken.START_OBJECT) {
+      // Keep scanning so a later metadata field can replace this one under the legacy
+      // last-field-wins behavior. If this is the final value, reject it after the scan.
+      parser.skipChildren();
+      return false;
+    }
+    try {
+      scan.metadata = ffmMetadataReader.readValue(parser);
+    } catch (IOException | RuntimeException error) {
+      // The legacy parser deserializes only the final metadata field. Use it when eager
+      // mapping could change that result or the legacy parse-error category.
+      scan.requiresLegacyParse = true;
+      return true;
+    }
+    return false;
+  }
+
+  private static final class DecodeScan {
+    private OdeMessageFrameMetadata metadata;
+    private String payloadHex;
+    private boolean metadataSeen;
+    private boolean requiresLegacyParse;
+  }
+
+  private static FfmDecodeInput toDecodeInput(FfmRawRecord raw) {
+    return new FfmDecodeInput(raw.metadata(), raw.uperBytes());
+  }
+
+  private static void validateMetadataAsn1(String asn1) {
+    if (asn1 == null || asn1.isBlank()) {
+      return;
+    }
+    if ((asn1.length() & 1) != 0) {
+      throw new IllegalArgumentException("Metadata ASN.1 hex must contain complete bytes");
+    }
+    for (int i = 0; i < asn1.length(); i++) {
+      char digit = asn1.charAt(i);
+      if (!((digit >= '0' && digit <= '9') || (digit >= 'a' && digit <= 'f')
+          || (digit >= 'A' && digit <= 'F'))) {
+        throw new IllegalArgumentException("Metadata ASN.1 must contain ASCII hexadecimal data");
+      }
+    }
+  }
+
   private static String readPayloadHex(JsonParser parser, JsonToken payloadToken)
       throws IOException {
     if (payloadToken != JsonToken.START_OBJECT) {
@@ -177,6 +301,10 @@ public class RawEncodedJsonService {
   /** Raw UDP input parsed for the FFMLib listener. */
   public record FfmRawRecord(OdeMessageFrameMetadata metadata, byte[] uperBytes,
       byte[] originalBytes) {
+  }
+
+  /** Raw UDP input required by the FFMLib decoder's normal path. */
+  public record FfmDecodeInput(OdeMessageFrameMetadata metadata, byte[] uperBytes) {
   }
 
   /**
