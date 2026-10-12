@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.time.Duration;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>Native {@code MessageFrameCodec} buffer parameters map to:
  * <ul>
- *   <li>{@code textBufferSize} — XER/JER text buffer</li>
+ *   <li>{@code textBufferSize} — XER encode and JER decode text buffer</li>
  *   <li>{@code uperBufferSize} — UPER binary buffer</li>
  *   <li>{@code errorBufferSize} — native error message buffer</li>
  * </ul>
@@ -27,8 +28,8 @@ public class FfmlibProperties {
   private String nativeLibraryPath = "";
 
   /**
-   * Text buffer size in bytes for XER encode and JER decode (native {@code textBufferSize}).
-   * Default 2 MiB — large MAP/TIM intermediate output can exceed smaller sizes.
+   * Text buffer size in bytes for XER encoding and JER decoding (native
+   * {@code textBufferSize}). Default 2 MiB accommodates large MAP/TIM messages.
    */
   private long textBufferSize = 2097152L;
 
@@ -42,5 +43,32 @@ public class FfmlibProperties {
    * Native error buffer size in bytes (native {@code errorBufferSize}).
    */
   private long errorBufferSize = 1024L;
+
+  /** Kafka producer linger for FFM raw and decoded records. Zero keeps the latency boundary low. */
+  private int producerLingerMs;
+
+  /** Kafka producer compression for FFM raw and decoded records. */
+  private String producerCompressionType = "none";
+
+  /** Whether FFM input offsets use synchronous commits instead of async callbacks. */
+  private boolean syncCommits;
+
+  /** Strategy for null-key FFM raw records; keyed records retain Kafka's default hash mapping. */
+  private String rawPartitionStrategy = "round_robin";
+
+  /**
+   * Number of Kafka consumers created for each FFM message type. Consumers beyond the raw topic's
+   * partition count stay idle.
+   */
+  private int listenerConcurrency = 1;
+
+  /** Maximum time to wait for every FFM consumer to join its group during startup. */
+  private Duration startupTimeout = Duration.ofSeconds(120);
+
+  /**
+   * Consecutive raw records that fail with operational (non-input) decode errors before the
+   * listener stops. Earlier failing records are quarantined so one record cannot block its type.
+   */
+  private int infrastructureHaltThreshold = 3;
 
 }

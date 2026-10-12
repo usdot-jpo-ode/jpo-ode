@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.uper;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -15,6 +16,9 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
  */
 @Slf4j
 public class UperUtil {
+
+  /** IEEE 1609.2 signed content marker ({@code 03 81 00}). */
+  private static final byte[] SIGNED_DOT2_MARKER = {0x03, (byte) 0x81, 0x00};
 
   private UperUtil() {
     throw new UnsupportedOperationException();
@@ -42,6 +46,23 @@ public class UperUtil {
           "Start flag '%s' not found in message: '%s'".formatted(payloadStartFlag, hexString));
     }
     return hexString.substring(startIndex);
+  }
+
+  /**
+   * Byte-oriented equivalent of {@link #stripDot2Header(String, String)}.
+   */
+  public static byte[] stripDot2Header(byte[] packet, byte[] payloadStartFlag)
+      throws StartFlagNotFoundException {
+    int startIndex = findValidStartFlagLocation(packet, payloadStartFlag);
+    if (startIndex == -1) {
+      throw new StartFlagNotFoundException(
+          "Start flag not found in binary message (flag length=%d, packet length=%d)"
+              .formatted(payloadStartFlag.length, packet.length));
+    }
+    if (startIndex == 0) {
+      return packet;
+    }
+    return Arrays.copyOfRange(packet, startIndex, packet.length);
   }
 
   /**
@@ -80,6 +101,23 @@ public class UperUtil {
   }
 
   /**
+   * Byte-oriented strip of 1609.3 / unsigned 1609.2 headers for a known message start flag.
+   * Avoids allocating hex strings on the UDP hot path.
+   */
+  public static byte[] stripDot3Header(byte[] packet, byte[] payloadStartFlag) {
+    int payloadStartIndex = findValidStartFlagLocation(packet, payloadStartFlag);
+    if (payloadStartIndex == -1) {
+      return packet;
+    }
+    int signedDot2StartIndex = indexOf(packet, SIGNED_DOT2_MARKER, 0, payloadStartIndex);
+    int from = signedDot2StartIndex == -1 ? payloadStartIndex : signedDot2StartIndex;
+    if (from == 0) {
+      return packet;
+    }
+    return Arrays.copyOfRange(packet, from, packet.length);
+  }
+
+  /**
    * Strips the 1609.3 and unsigned 1609.2 headers if they are present. Will return the payload with
    * a signed 1609.2 header if it is present. Otherwise, returns just the payload.
    */
@@ -87,7 +125,9 @@ public class UperUtil {
     int payloadStartIndex = findValidStartFlagLocation(hexString, payloadStartFlag);
     String headers = hexString.substring(0, payloadStartIndex);
     String payload = hexString.substring(payloadStartIndex);
-    log.debug("Base payload: {}", payload);
+    if (log.isDebugEnabled()) {
+      log.debug("Base payload: {}", payload);
+    }
     // Look for the index of the start flag of a signed 1609.2 header
     int signedDot2StartIndex = headers.indexOf("038100");
     if (signedDot2StartIndex == -1) {
@@ -163,6 +203,28 @@ public class UperUtil {
   }
 
   /**
+   * Determines message type from raw packet bytes without hex-encoding the payload.
+   *
+   * @param packet payload bytes (already trimmed to {@code DatagramPacket} length)
+   * @return message type name such as {@code "BSM"}, or empty string if unknown
+   */
+  public static String determinePacketType(byte[] packet) {
+    int lowestIndex = Integer.MAX_VALUE;
+    String messageType = "";
+    for (SupportedMessageType type : SupportedMessageType.values()) {
+      int index = findValidStartFlagLocation(packet, type.getStartFlagBytes());
+      if (index == -1) {
+        continue;
+      }
+      if (index < lowestIndex) {
+        messageType = type.name();
+        lowestIndex = index;
+      }
+    }
+    return messageType;
+  }
+
+  /**
    * Searches for the location of the given start flag in the provided hex string and ensures it is
    * on an even numbered byte. If the start flag is found at the beginning of the string or not
    * found at all, it returns immediately. Otherwise, it continues searching from the fifth
@@ -192,5 +254,36 @@ public class UperUtil {
     return index;
   }
 
+  /**
+   * Byte-oriented start-flag search. Matches the hex variant's semantics: accept a hit at offset 0,
+   * otherwise search from byte offset 2 (skipping a possible 2-byte header prefix).
+   *
+   * @return byte offset of the start flag, or {@code -1} if not found
+   */
+  public static int findValidStartFlagLocation(byte[] data, byte[] startFlag) {
+    int index = indexOf(data, startFlag, 0, data.length);
+    if (index == 0 || index == -1) {
+      return index;
+    }
+    return indexOf(data, startFlag, 2, data.length);
+  }
+
+  private static int indexOf(byte[] data, byte[] pattern, int from, int toExclusive) {
+    if (data == null || pattern == null || pattern.length == 0
+        || from < 0 || toExclusive > data.length || from > toExclusive) {
+      return -1;
+    }
+    int lastStart = toExclusive - pattern.length;
+    outer:
+    for (int i = from; i <= lastStart; i++) {
+      for (int j = 0; j < pattern.length; j++) {
+        if (data[i + j] != pattern[j]) {
+          continue outer;
+        }
+      }
+      return i;
+    }
+    return -1;
+  }
 
 }

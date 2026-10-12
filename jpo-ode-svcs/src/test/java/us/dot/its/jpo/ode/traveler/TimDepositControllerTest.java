@@ -16,15 +16,20 @@
 
  package us.dot.its.jpo.ode.traveler;
 
+ import com.fasterxml.jackson.core.JsonProcessingException;
  import com.fasterxml.jackson.databind.JsonNode;
  import com.fasterxml.jackson.databind.node.ObjectNode;
  import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+ import j2735ffm.ConvertException;
  import java.io.IOException;
  import java.nio.file.Files;
  import java.nio.file.Paths;
  import java.time.Clock;
+ import java.time.Duration;
  import java.time.Instant;
  import java.time.ZoneId;
+import java.util.concurrent.CompletableFuture;
+ import java.util.List;
  import java.util.Set;
  import org.apache.commons.io.IOUtils;
  import org.apache.kafka.clients.consumer.Consumer;
@@ -32,121 +37,131 @@
  import org.json.JSONObject;
  import org.junit.jupiter.api.Assertions;
  import org.junit.jupiter.api.Test;
- import static org.mockito.ArgumentMatchers.any;
- import static org.mockito.Mockito.mockStatic;
- import org.mockito.MockedStatic;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
  import org.springframework.boot.context.properties.EnableConfigurationProperties;
  import org.springframework.boot.test.context.SpringBootTest;
+ import org.springframework.http.HttpStatus;
  import org.springframework.http.ResponseEntity;
  import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
  import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
  import org.springframework.kafka.test.EmbeddedKafkaBroker;
- import org.springframework.kafka.test.context.EmbeddedKafka;
  import org.springframework.kafka.test.utils.KafkaTestUtils;
  import org.springframework.test.annotation.DirtiesContext;
  import org.springframework.test.context.ContextConfiguration;
- import org.springframework.test.context.TestPropertySource;
  import us.dot.its.jpo.ode.kafka.KafkaConsumerConfig;
  import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
  import us.dot.its.jpo.ode.kafka.TestMetricsConfig;
  import us.dot.its.jpo.ode.kafka.producer.KafkaProducerConfig;
+ import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+ import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
+ import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+ import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
+ import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
  import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
  import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
+ import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.Mockito.mock;
+ import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+ import static org.mockito.Mockito.mockStatic;
+ import static org.mockito.Mockito.verify;
+ import static org.mockito.Mockito.when;
+ import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+ import org.mockito.MockedStatic;
  import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+ import us.dot.its.jpo.ode.model.OdeObject;
  import us.dot.its.jpo.ode.model.SerialId;
  import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
  import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
  import us.dot.its.jpo.ode.security.SecurityServicesProperties;
+ import us.dot.its.jpo.ode.test.utilities.EmbeddedKafkaHolder;
  import us.dot.its.jpo.ode.util.DateTimeUtils;
  import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
  import us.dot.its.jpo.ode.util.XmlUtils;
 
+
  @EnableConfigurationProperties
  @SpringBootTest(classes = {KafkaProducerConfig.class, KafkaConsumerConfig.class,
-     OdeKafkaProperties.class, Asn1CoderTopics.class, JsonTopics.class,
+     OdeKafkaProperties.class, JsonTopics.class,
      SecurityServicesProperties.class, KafkaProperties.class, TimIngestTrackerProperties.class,
-     XmlMapper.class, TestMetricsConfig.class, TimDepositController.class}, properties = {"ode.kafka.brokers=localhost:4242"})
-@EmbeddedKafka
-@TestPropertySource(properties = {"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
-        "ode.kafka.brokers=${spring.embedded.kafka.brokers}"})
+     XmlMapper.class, TestMetricsConfig.class}, properties = {"ode.kafka.brokers=localhost:4242"})
+ @ContextConfiguration(classes = {
+     JsonTopics.class, TimIngestTrackerProperties.class,
+     SecurityServicesProperties.class, OdeKafkaProperties.class})
  @DirtiesContext
  class TimDepositControllerTest {
- 
+
    @Autowired
    OdeKafkaProperties odeKafkaProperties;
- 
-   @Autowired
-   Asn1CoderTopics asn1CoderTopics;
- 
+
    @Autowired
    JsonTopics jsonTopics;
- 
+
+   private FfmlibEncodeService lastEncodeService;
+   private Asn1EncodedDataRouter lastRouter;
+
    @Autowired
    TimIngestTrackerProperties timIngestTrackerProperties;
- 
+
    @Autowired
    SecurityServicesProperties securityServicesProperties;
- 
+
    @Autowired
    KafkaTemplate<String, String> kafkaTemplate;
 
    @Autowired
-   private XmlMapper simpleXmlMapper;
+   KafkaTemplate<String, OdeObject> timDataKafkaTemplate;
 
    @Autowired
-   EmbeddedKafkaBroker embeddedKafka;
+   private XmlMapper simpleXmlMapper;
+
+   EmbeddedKafkaBroker embeddedKafka = EmbeddedKafkaHolder.getEmbeddedKafka();
+
+   int consumerCount = 0;
 
    @Test
-   void nullRequestShouldReturnEmptyError() {
+   void nullRequestShouldReturnEmptyError() throws com.fasterxml.jackson.core.JsonProcessingException {
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(null);
      Assertions.assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
    }
- 
+
    @Test
-   void emptyRequestShouldReturnEmptyError() {
+   void emptyRequestShouldReturnEmptyError() throws com.fasterxml.jackson.core.JsonProcessingException {
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      ResponseEntity<String> actualResponse = testTimDepositController.postTim("");
      Assertions.assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
    }
- 
+
    @Test
-   void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
+   void invalidJsonSyntaxShouldReturnJsonSyntaxError() throws com.fasterxml.jackson.core.JsonProcessingException {
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"in\"va}}}on\"}}");
      Assertions.assertEquals("{\"error\":\"Malformed or non-compliant JSON syntax.\"}",
          actualResponse.getBody());
    }
- 
+
    @Test
-   void missingRequestElementShouldReturnMissingRequestError() {
+   void missingRequestElementShouldReturnMissingRequestError() throws com.fasterxml.jackson.core.JsonProcessingException {
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"tim\":{}}");
      Assertions.assertEquals(
          "{\"error\":\"Missing or invalid argument: Request element is required as of version 3.\"}",
          actualResponse.getBody());
    }
- 
+
    @Test
-   void invalidTimestampShouldReturnInvalidTimestampError() {
+   void invalidTimestampShouldReturnInvalidTimestampError() throws com.fasterxml.jackson.core.JsonProcessingException {
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(
          "{\"request\":{\"ode\":{},\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"201-03-13T01:07:11-05:00\"}}");
      // verify
@@ -154,26 +169,24 @@
          "{\"error\":\"Invalid timestamp in tim record: 201-03-13T01:07:11-05:00\"}",
          actualResponse.getBody());
    }
- 
+
    @Test
-   void messageWithNoRSUsOrSDWShouldReturnWarning() {
+   void messageWithNoRSUsOrSDWShouldReturnWarning() throws IOException {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody = "{\"request\":{},\"tim\":{\"timeStamp\":\"2018-03-13T01:07:11-05:00\"}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody =
          "{\"warning\":\"Warning: TIM contains no RSU, SNMP, or SDW fields.\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
    }
- 
+
    @Test
    void failedObjectNodeConversionShouldReturnConvertingError()
        throws JsonUtilsException, TravelerMessageFromHumanToAsnConverter.NoncompliantFieldsException,
@@ -183,13 +196,12 @@
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      try (MockedStatic<TravelerMessageFromHumanToAsnConverter> converterStatic =
               mockStatic(TravelerMessageFromHumanToAsnConverter.class)) {
        converterStatic.when(() ->
-           TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(any(JsonNode.class)))
+           TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(
+               any(JsonNode.class)))
            .thenThrow(new JsonUtilsException("testException123", null));
 
        String requestBody =
@@ -206,18 +218,16 @@
        DateTimeUtils.setClock(prevClock);
      }
    }
- 
+
    @Test
    void failedXmlConversionShouldReturnConversionError()
-       throws XmlUtils.XmlUtilsException, JsonUtilsException {
+       throws XmlUtils.XmlUtilsException, JsonUtilsException, JsonProcessingException {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
 
      try (MockedStatic<TimTransmogrifier> transmogrifierStatic =
               mockStatic(TimTransmogrifier.class, org.mockito.Mockito.CALLS_REAL_METHODS)) {
@@ -233,45 +243,36 @@
 
        // verify
        String expectedResponseBody =
-           "{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}";
+           "{\"error\":\"Error preparing TIM for FFMLib encode: testException123\"}";
        Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
      } finally {
        DateTimeUtils.setClock(prevClock);
      }
    }
- 
+
    @Test
-   void testSuccessfulMessageReturnsSuccessMessagePost() throws IOException {
+   void testSuccessfulMessageReturnsSuccessMessagePost() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulMessageReturnsSuccessMessagePost.tim.json");
-     asn1CoderTopics.setEncoderInput("test.successfulMessageReturnsSuccessMessagePost.encoderInput");
-     String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-     embeddedKafka.addTopics(topics);
-
-     var jsonTimConsumer = createConsumer("postSuccessJsonTimGroup");
-     var asn1CoderEncoderInputConsumer = createConsumer("postSuccessEncoderInputGroup");
-     embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-     embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson = new JSONObject(
          loadTestResource("successfulMessageReturnsSuccessMessagePost_tim_expected.json"));
@@ -281,60 +282,37 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml =
-         loadTestResource("successfulMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    @Test
    void testSuccessfulSdwRequestMessageReturnsSuccessMessagePost() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulSdwRequestMessageReturnsSuccessMessagePost.tim.json");
-     asn1CoderTopics.setEncoderInput(
-         "test.successfulSdwRequestMessageReturnsSuccessMessagePost.encoderInput");
-    String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-    embeddedKafka.addTopics(topics);
-
-    var jsonTimConsumer = createConsumer("sdwPostSuccessJsonTimGroup");
-    var asn1CoderEncoderInputConsumer = createConsumer("sdwPostSuccessEncoderInputGroup");
-    embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-    embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String file = "/sdwRequest.json";
      String requestBody =
          IOUtils.toString(TimDepositControllerTest.class.getResourceAsStream(file), "UTF-8");
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson = new JSONObject(
          loadTestResource("successfulSdwRequestMessageReturnsSuccessMessagePost_tim_expected.json"));
@@ -344,59 +322,36 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml = loadTestResource(
-         "successfulSdwRequestMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulSdwRequestMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    @Test
-   void testSuccessfulMessageReturnsSuccessMessagePostWithOde() throws IOException {
+   void testSuccessfulMessageReturnsSuccessMessagePostWithOde() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulMessageReturnsSuccessMessagePostWithOde.tim.json");
-     asn1CoderTopics.setEncoderInput(
-         "test.successfulMessageReturnsSuccessMessagePostWithOde.encoderInput");
-    String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-    embeddedKafka.addTopics(topics);
-
-    var jsonTimConsumer = createConsumer("postWithOdeJsonTimGroup");
-    var asn1CoderEncoderInputConsumer = createConsumer("postWithOdeEncoderInputGroup");
-    embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-    embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\":{\"ode\":{},\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson = new JSONObject(
          loadTestResource("successfulMessageReturnsSuccessMessagePostWithOde_tim_expected.json"));
@@ -406,58 +361,36 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml = loadTestResource(
-         "successfulMessageReturnsSuccessMessagePostWithOde_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulMessageReturnsSuccessMessagePostWithOde_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    @Test
-   void testSuccessfulMessageReturnsSuccessMessagePut() throws IOException {
+   void testSuccessfulMessageReturnsSuccessMessagePut() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulMessageReturnsSuccessMessagePut.tim.json");
-     asn1CoderTopics.setEncoderInput("test.successfulMessageReturnsSuccessMessagePut.encoderInput");
-     String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-     embeddedKafka.addTopics(topics);
-
-     var jsonTimConsumer = createConsumer("putSuccessJsonTimGroup");
-     var asn1CoderEncoderInputConsumer = createConsumer("putSuccessEncoderInputGroup");
-     embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-     embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.putTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson = new JSONObject(
          loadTestResource("successfulMessageReturnsSuccessMessagePut_tim_expected.json"));
@@ -467,58 +400,36 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml =
-         loadTestResource("successfulMessageReturnsSuccessMessagePut_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulMessageReturnsSuccessMessagePut_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    @Test
-   void testDepositingTimWithExtraProperties() throws IOException {
+   void testDepositingTimWithExtraProperties() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.depositingTimWithExtraProperties.tim.json");
-     asn1CoderTopics.setEncoderInput("test.depositingTimWithExtraProperties.encoderInput");
-     String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-     embeddedKafka.addTopics(topics);
-
-     var jsonTimConsumer = createConsumer("extraPropsJsonTimGroup");
-     var asn1CoderEncoderInputConsumer = createConsumer("extraPropsEncoderInputGroup");
-     embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-     embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson =
          new JSONObject(loadTestResource("depositingTimWithExtraProperties_tim_expected.json"));
@@ -528,61 +439,39 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml =
-         loadTestResource("depositingTimWithExtraProperties_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("depositingTimWithExtraProperties_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    @Test
-   void testSuccessfulTimIngestIsTracked() throws IOException {
+   void testSuccessfulTimIngestIsTracked() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulTimIngestIsTracked.tim.json");
-     asn1CoderTopics.setEncoderInput("test.successfulTimIngestIsTracked.encoderInput");
-     String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-     embeddedKafka.addTopics(topics);
-
-     var jsonTimConsumer = createConsumer("ingestTrackedJsonTimGroup");
-     var asn1CoderEncoderInputConsumer = createConsumer("ingestTrackedEncoderInputGroup");
-     embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-     embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
      long priorIngestCount = TimIngestTracker.getInstance().getTotalMessagesReceived();
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
      Assertions.assertEquals(priorIngestCount + 1,
          TimIngestTracker.getInstance().getTotalMessagesReceived());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson =
          new JSONObject(loadTestResource("successfulTimIngestIsTracked_tim_expected.json"));
@@ -592,59 +481,37 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     var expectedXml = loadTestResource("successfulTimIngestIsTracked_encoderInput_expected.xml");
-     actualStreamId = getStreamId(actualXml);
-     expectedStreamId = getStreamId(expectedXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     expectedXml = removeStreamId(expectedXml, expectedStreamId);
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulTimIngestIsTracked_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
- 
+
    // This serves as an integration test without mocking the TimTransmogrifier and XmlUtils
    @Test
-   void testSuccessfulRsuMessageReturnsSuccessMessagePost() throws IOException {
+   void testSuccessfulRsuMessageReturnsSuccessMessagePost() throws Exception {
      // prepare
      odeKafkaProperties.setDisabledTopics(Set.of());
      jsonTopics.setTim("test.successfulRsuMessageReturnsSuccessMessagePost.tim.json");
-     asn1CoderTopics.setEncoderInput(
-         "test.successfulRsuMessageReturnsSuccessMessagePost.encoderInput");
-     String[] topics = {jsonTopics.getTim(), asn1CoderTopics.getEncoderInput()};
-     embeddedKafka.addTopics(topics);
-
-     var jsonTimConsumer = createConsumer("rsuPostSuccessJsonTimGroup");
-     var asn1CoderEncoderInputConsumer = createConsumer("rsuPostSuccessEncoderInputGroup");
-     embeddedKafka.consumeFromAnEmbeddedTopic(jsonTimConsumer, jsonTopics.getTim());
-     embeddedKafka.consumeFromAnEmbeddedTopic(asn1CoderEncoderInputConsumer, asn1CoderTopics.getEncoderInput());
-
+     EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
      final Clock prevClock = DateTimeUtils.setClock(
          Clock.fixed(Instant.parse("2018-03-13T01:07:11.120Z"), ZoneId.of("UTC")));
      TimDepositController testTimDepositController =
-         new TimDepositController(asn1CoderTopics, jsonTopics,
-             timIngestTrackerProperties, securityServicesProperties, kafkaTemplate,
-             simpleXmlMapper);
+         newController();
      String requestBody =
          "{\"request\": {\"rsus\": [{\"latitude\": 30.123456, \"longitude\": -100.12345, \"rsuId\": 123, \"route\": \"myroute\", \"milepost\": 10, \"rsuTarget\": \"172.0.0.1\", \"rsuRetries\": 3, \"rsuTimeout\": 5000, \"rsuIndex\": 7, \"rsuUsername\": \"myusername\", \"rsuPassword\": \"mypassword\"}], \"snmp\": {\"rsuid\": \"83\", \"msgid\": 31, \"mode\": 1, \"channel\": 183, \"interval\": 2000, \"deliverystart\": \"2024-05-13T14:30:00Z\", \"deliverystop\": \"2024-05-13T22:30:00Z\", \"enable\": 1, \"status\": 4}}, \"tim\": {\"msgCnt\": \"1\", \"timeStamp\": \"2024-05-10T19:01:22Z\", \"packetID\": \"123451234512345123\", \"urlB\": \"null\", \"dataframes\": [{\"startDateTime\": \"2024-05-13T20:30:05.014Z\", \"durationTime\": \"30\", \"doNotUse1\": 0, \"frameType\": \"advisory\", \"msgId\": {\"roadSignID\": {\"mutcdCode\": \"warning\", \"viewAngle\": \"1111111111111111\", \"position\": {\"latitude\": 30.123456, \"longitude\": -100.12345}}}, \"priority\": \"5\", \"doNotUse2\": 0, \"regions\": [{\"name\": \"I_myroute_RSU_172.0.0.1\", \"anchorPosition\": {\"latitude\": 30.123456, \"longitude\": -100.12345}, \"laneWidth\": \"50\", \"directionality\": \"3\", \"closedPath\": \"false\", \"description\": \"path\", \"path\": {\"scale\": 0, \"nodes\": [{\"delta\": \"node-LL\", \"nodeLat\": 0.0, \"nodeLong\": 0.0}, {\"delta\": \"node-LL\", \"nodeLat\": 0.0, \"nodeLong\": 0.0}], \"type\": \"ll\"}, \"direction\": \"0000000000010000\"}], \"doNotUse4\": 0, \"doNotUse3\": 0, \"content\": \"workZone\", \"items\": [\"771\"], \"url\": \"null\"}]}}";
- 
+
      // execute
      ResponseEntity<String> actualResponse = testTimDepositController.postTim(requestBody);
- 
+
      // verify
      String expectedResponseBody = "{\"success\":\"true\"}";
      Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
- 
+
      // verify JSON tim message
-     var jsonTimRecord = KafkaTestUtils.getSingleRecord(jsonTimConsumer, jsonTopics.getTim());
+     var jsonTimConsumer = createStr2StrConsumer();
+     var jsonTimRecord = consumeOne(jsonTimConsumer, jsonTopics.getTim());
      var actualTimJson = new JSONObject(jsonTimRecord.value());
      var expectedTimJson = new JSONObject(
          loadTestResource("successfulRsuMessageReturnsSuccessMessagePost_tim_expected.json"));
@@ -654,33 +521,266 @@
      removeStreamId(actualTimJson);
      removeStreamId(expectedTimJson);
      Assertions.assertEquals(expectedTimJson.toString(2), actualTimJson.toString(2));
- 
-     // verify ASN.1 coder encoder input message
-     var asn1CoderEncoderInputRecord = KafkaTestUtils.getSingleRecord(asn1CoderEncoderInputConsumer,
-         asn1CoderTopics.getEncoderInput());
-     var actualXml = asn1CoderEncoderInputRecord.value();
-     actualStreamId = getStreamId(actualXml);
-     Assertions.assertNotEquals(expectedStreamId, actualStreamId);
-     actualXml = removeStreamId(actualXml, actualStreamId);
-     var expectedXml =
-         loadTestResource("successfulRsuMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
-     Assertions.assertEquals(expectedXml, actualXml);
- 
-     // cleanup
+
+    assertEncodeInputXml("successfulRsuMessageReturnsSuccessMessagePost_encoderInput_expected.xml");
+
      jsonTimConsumer.close();
-     asn1CoderEncoderInputConsumer.close();
      DateTimeUtils.setClock(prevClock);
    }
 
-  /**
-   * Helper method to create a consumer with an explicit, stable group ID for String messages with String keys.
-   */
-  private Consumer<String, String> createConsumer(String groupId) {
-    java.util.Map<String, Object> consumerProps =
-         KafkaTestUtils.consumerProps(embeddedKafka, groupId, true);
-    return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new StringDeserializer()).createConsumer();
+   /**
+    * Helper method to create a consumer for String messages with String keys.
+    */
+
+
+  @Test
+  void nativeMalformedInputErrorsReturnBadRequest() throws Exception {
+    odeKafkaProperties.setDisabledTopics(Set.of());
+    jsonTopics.setTim("test.nativeTimInputErrors.tim.json");
+    EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
+
+    assertNativeErrorStatus("Unrecognized PDU: UnknownPdu", HttpStatus.BAD_REQUEST);
+    assertNativeErrorStatus("MessageFrame: Error decoding PDU", HttpStatus.BAD_REQUEST);
+    assertNativeErrorStatus(
+        "Decoding was successful, but constraint check failed, can't re-encode: MessageFrame",
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  void nativeEncodingAndBufferErrorsReturnInternalServerError() throws Exception {
+    odeKafkaProperties.setDisabledTopics(Set.of());
+    jsonTopics.setTim("test.nativeTimInfrastructureErrors.tim.json");
+    EmbeddedKafkaHolder.addTopics(jsonTopics.getTim());
+
+    assertNativeErrorStatus("MessageFrame: Error encoding to UPER",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+    assertNativeErrorStatus("Error, truncating output. Max buffer size 64 is too small",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+    assertNativeErrorStatus("Error, output of 4096 bytes is too large to return",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void initialNativeFailuresDoNotPublishTimJson() throws Exception {
+    assertInitialNativeFailureDoesNotPublish("Unrecognized PDU: malformed TIM",
+        HttpStatus.BAD_REQUEST);
+    assertInitialNativeFailureDoesNotPublish("MessageFrame: Error encoding to UPER",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void initialEncodingSerializationFailureReturnsBadRequestWithoutPublishing() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+    Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+    when(encoder.encodeMessageFrame(any(), any())).thenThrow(
+        new com.fasterxml.jackson.core.JsonProcessingException("initial serialization failed") {});
+    TimDepositController controller = newFfmController(producer, encoder, router);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+    verify(producer, never()).send(any(String.class), any(String.class), any(String.class));
+    verify(router, never()).processEncodedAsn1XmlWithPublishedTim(
+        any(String.class), any(String.class), any());
+  }
+
+  @Test
+  void postEncodeSerializationAndMalformedNativeRoutingFailuresReturnInternalServerError()
+      throws Exception {
+    List<Exception> failures = List.of(
+        new com.fasterxml.jackson.core.JsonProcessingException("ASD serialization failed") {},
+        new Asn1EncodedDataRouter.Asn1EncodedDataRouterException("initial TIM publication failed",
+            new IllegalStateException("broker unavailable")),
+        new IllegalStateException("ASD encode failed",
+            new ConvertException("Unrecognized PDU: malformed ASD")));
+
+    for (Exception failure : failures) {
+      KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+      FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+      Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+      when(encoder.encodeMessageFrame(any(), any()))
+          .thenReturn("<OdeAsn1Data><metadata/><payload/></OdeAsn1Data>");
+      when(producer.send(any(String.class), any(String.class), any(String.class)))
+          .thenReturn(successfulSendFuture());
+      doThrow(failure).when(router).processEncodedAsn1XmlWithPublishedTim(
+          any(String.class), any(String.class), any());
+      TimDepositController controller = newFfmController(producer, encoder, router);
+
+      ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+      Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+          response.getStatusCode().value());
+      InOrder deliveryOrder = inOrder(encoder, producer);
+      deliveryOrder.verify(encoder).encodeMessageFrame(any(), any());
+      deliveryOrder.verify(producer).send(any(String.class), any(String.class), any(String.class));
+    }
+  }
+
+  @Test
+  void externalModeDoesNotWaitForKafkaSendCompletion() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    CompletableFuture<SendResult<String, String>> pendingSend = new CompletableFuture<>();
+    when(producer.send(any(String.class), any(String.class), any(String.class)))
+        .thenReturn(pendingSend);
+    String timTopic = "test.externalModeDoesNotWaitForKafkaSendCompletion.tim.json";
+    jsonTopics.setTim(timTopic);
+    String encoderInputTopic = "test.externalModeDoesNotWaitForKafkaSendCompletion.encoder.input";
+    Asn1CoderTopics asn1Topics = new Asn1CoderTopics();
+    asn1Topics.setEncoderInput(encoderInputTopic);
+    TimDepositController controller = new TimDepositController(jsonTopics,
+        timIngestTrackerProperties, securityServicesProperties, producer, simpleXmlMapper,
+        mock(FfmlibEncodeService.class), mock(Asn1EncodedDataRouter.class),
+        new Asn1CodecModeProperties(), asn1Topics);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals("{\"success\":\"true\"}", response.getBody());
+    Assertions.assertFalse(pendingSend.isDone());
+    verify(producer).send(org.mockito.ArgumentMatchers.eq(timTopic),
+        any(String.class), any(String.class));
+    verify(producer).send(org.mockito.ArgumentMatchers.eq(encoderInputTopic),
+        any(String.class), any(String.class));
+  }
+
+  private void assertInitialNativeFailureDoesNotPublish(String nativeError, HttpStatus status)
+      throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    FfmlibEncodeService encoder = mock(FfmlibEncodeService.class);
+    Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+    when(encoder.encodeMessageFrame(any(), any())).thenThrow(new RuntimeException(
+        "FFM service failure", new IllegalStateException("Codec conversion failure",
+            new ConvertException(nativeError))));
+    TimDepositController controller = newFfmController(producer, encoder, router);
+
+    ResponseEntity<String> response = controller.postTim(validRsuTimRequest());
+
+    Assertions.assertEquals(status.value(), response.getStatusCode().value());
+    Assertions.assertTrue(response.getBody().contains(nativeError), response.getBody());
+    verify(producer, never()).send(any(String.class), any(String.class), any(String.class));
+    verify(router, never()).processEncodedAsn1XmlWithPublishedTim(
+        any(String.class), any(String.class), any());
+  }
+
+  private TimDepositController newFfmController(KafkaTemplate<String, String> producer,
+      FfmlibEncodeService encoder, Asn1EncodedDataRouter router) {
+    Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    return new TimDepositController(jsonTopics, timIngestTrackerProperties,
+        securityServicesProperties, producer, simpleXmlMapper, encoder, router, mode,
+        new Asn1CoderTopics());
+  }
+
+  private static String validRsuTimRequest() {
+    return "{\"request\":{\"rsus\":[],\"snmp\":{}},"
+        + "\"tim\":{\"msgCnt\":\"13\","
+        + "\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static CompletableFuture<SendResult<String, String>> successfulSendFuture() {
+    return CompletableFuture.completedFuture(mock(SendResult.class));
+  }
+
+  private void assertNativeErrorStatus(String nativeError, HttpStatus expectedStatus)
+      throws Exception {
+    TimDepositController controller = newController();
+    RuntimeException wrappedNativeFailure = new RuntimeException("FFM service failure",
+        new IllegalStateException("Codec conversion failure", new ConvertException(nativeError)));
+    when(lastEncodeService.encodeMessageFrame(any(), any())).thenThrow(wrappedNativeFailure);
+
+    String requestBody = "{\"request\":{\"rsus\":[],\"snmp\":{}},"
+        + "\"tim\":{\"msgCnt\":\"13\","
+        + "\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+    ResponseEntity<String> response = controller.postTim(requestBody);
+
+    Assertions.assertEquals(expectedStatus.value(), response.getStatusCode().value());
+    Assertions.assertTrue(response.getBody().contains(nativeError), response.getBody());
+  }
+
+  @Test
+  void externalModePublishesKeyedEncoderInputXml() throws Exception {
+    odeKafkaProperties.setDisabledTopics(Set.of());
+    jsonTopics.setTim("test.externalModePublishesKeyedEncoderInputXml.tim.json");
+    Asn1CoderTopics asn1Topics = new Asn1CoderTopics();
+    asn1Topics.setEncoderInput("test.externalModePublishesKeyedEncoderInputXml.encoder.input");
+    EmbeddedKafkaHolder.addTopics(jsonTopics.getTim(), asn1Topics.getEncoderInput());
+    FfmlibEncodeService encodeService = mock(FfmlibEncodeService.class);
+    Asn1EncodedDataRouter router = mock(Asn1EncodedDataRouter.class);
+    Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+    TimDepositController controller = new TimDepositController(jsonTopics,
+        timIngestTrackerProperties, securityServicesProperties, kafkaTemplate, simpleXmlMapper,
+        encodeService, router, mode, asn1Topics);
+    String requestBody = "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\","
+        + "\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}";
+
+    ResponseEntity<String> response = controller.postTim(requestBody);
+
+    Assertions.assertEquals("{\"success\":\"true\"}", response.getBody());
+    var consumer = createStr2StrConsumer();
+    var encoderRecord = consumeOne(consumer, asn1Topics.getEncoderInput());
+    Assertions.assertTrue(encoderRecord.value().contains("<OdeAsn1Data>"));
+    Assertions.assertTrue(encoderRecord.value().contains("<MessageFrame>"));
+    Assertions.assertNotNull(encoderRecord.key());
+    verify(encodeService, never()).encodeMessageFrame(any(), any());
+    consumer.close();
+  }
+
+  private void assertEncodeInputXml(String expectedResource) throws Exception {
+    ArgumentCaptor<MessageFrame> messageFrameCaptor = ArgumentCaptor.forClass(MessageFrame.class);
+    verify(lastEncodeService).encodeMessageFrame(messageFrameCaptor.capture(), any());
+    verify(lastRouter).processEncodedAsn1XmlWithPublishedTim(
+        org.mockito.ArgumentMatchers.eq("<OdeAsn1Data><metadata/><payload/></OdeAsn1Data>"),
+        any(), any());
+    var actualXml = simpleXmlMapper.writeValueAsString(messageFrameCaptor.getValue());
+    var expectedXml = loadTestResource(expectedResource);
+    var expectedData = OdeMessageFrameDataCreatorHelper
+        .createOdeMessageFrameData(expectedXml, simpleXmlMapper);
+    expectedXml = simpleXmlMapper.writeValueAsString(expectedData.getPayload().getData());
+    Assertions.assertEquals(expectedXml, actualXml);
+  }
+
+  private org.apache.kafka.clients.consumer.ConsumerRecord<String, String> consumeOne(
+      Consumer<String, String> consumer, String topic) {
+    consumer.subscribe(List.of(topic));
+    long deadline = System.currentTimeMillis() + 15_000;
+    while (System.currentTimeMillis() < deadline) {
+      var records = consumer.poll(Duration.ofMillis(500));
+      var iter = records.records(topic).iterator();
+      if (iter.hasNext()) {
+        return iter.next();
+      }
+    }
+    throw new IllegalStateException("No record received from topic " + topic);
+  }
+
+  private TimDepositController newController() {
+    lastEncodeService = mock(FfmlibEncodeService.class);
+    lastRouter = mock(Asn1EncodedDataRouter.class);
+    try {
+      when(lastEncodeService.encodeMessageFrame(any(), any()))
+          .thenReturn("<OdeAsn1Data><metadata/><payload/></OdeAsn1Data>");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Asn1CodecModeProperties modeProperties = new Asn1CodecModeProperties();
+    modeProperties.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    return new TimDepositController(jsonTopics, timIngestTrackerProperties,
+        securityServicesProperties, kafkaTemplate, simpleXmlMapper, lastEncodeService, lastRouter,
+        modeProperties, new Asn1CoderTopics());
+  }
+
+  private Consumer<String, String> createStr2StrConsumer() {
+     consumerCount++;
+     var consumerProps =
+         KafkaTestUtils.consumerProps("TimDepositControllerTest", "true", embeddedKafka);
+     DefaultKafkaConsumerFactory<String, String> stringConsumerFactory =
+         new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(),
+             new StringDeserializer());
+     return stringConsumerFactory.createConsumer(String.format("groupid%d", consumerCount),
+         String.format("clientidsuffix%d", consumerCount));
    }
- 
+
    /**
     * Helper method to load the contents of a test resource file as a string.
     *
@@ -692,7 +792,7 @@
      String baseDirectory = "src/test/resources/us/dot/its/jpo/ode/traveler/";
      return new String(Files.readAllBytes(Paths.get(baseDirectory + resourceName)));
    }
- 
+
    /**
     * Helper method to retrieve the stream id from a JSON object.
     *
@@ -702,7 +802,7 @@
    private static String getStreamId(JSONObject jsonObject) {
      return jsonObject.getJSONObject("metadata").getJSONObject("serialId").getString("streamId");
    }
- 
+
    /**
     * Helper method to retrieve the stream id from an XML string.
     *
@@ -713,7 +813,7 @@
      return xmlString.substring(xmlString.indexOf("<streamId>"),
          xmlString.indexOf("</streamId>") + "</streamId>".length());
    }
- 
+
    /**
     * Helper method to remove the stream id from a JSON object.
     *

@@ -175,7 +175,6 @@
           <version>${checkstyle-maven-plugin.version}</version>
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
-            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
             <inputEncoding>UTF-8</inputEncoding>
             <outputEncoding>UTF-8</outputEncoding>
             <consoleOutput>true</consoleOutput>
