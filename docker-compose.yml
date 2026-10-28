@@ -65,6 +65,7 @@ services:
       ODE_ROCKSDB_N_MEMTABLES: ${ODE_ROCKSDB_N_MEMTABLES}
       ODE_ROCKSDB_MEMTABLE_SIZE: ${ODE_ROCKSDB_MEMTABLE_SIZE}
       ODE_KAFKA_LISTENER_CONCURRENCY: ${ODE_KAFKA_LISTENER_CONCURRENCY}
+      ODE_ASN1_CODEC_MODE: ${ODE_ASN1_CODEC_MODE:-external}
     depends_on:
       kafka:
         condition: service_healthy
@@ -72,7 +73,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
       - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:8080"]
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
       interval: 5s
       timeout: 30s
       retries: 5
