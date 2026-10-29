@@ -10,7 +10,7 @@ import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
  * Shared Kafka client settings for ODE producers and consumers.
  *
  * <p>FFM decode uses these maps so its clients follow the same brokers, Confluent credentials,
- * linger, and retries as the rest of the application.
+ * and producer delivery settings as the rest of the application.
  */
 public final class OdeKafkaClients {
 
@@ -38,10 +38,12 @@ public final class OdeKafkaClients {
   }
 
   /**
-   * Producer settings from Spring Kafka, plus ODE linger and retries.
+   * Producer settings from Spring Kafka, plus the ODE delivery settings in
+   * {@code ode.kafka.producer}.
    *
-   * <p>Linger is applied here because it is not part of {@link KafkaProperties} and the Kafka
-   * default would otherwise wait until the batch fills.
+   * <p>{@code ode.kafka.producer} is the single source for acks, batching, buffering, linger,
+   * retries, and compression on every ODE producer. Serializers and partitioners are chosen by
+   * each producer factory.
    */
   public static Map<String, Object> producerProperties(KafkaProperties kafkaProperties,
       OdeKafkaProperties odeKafkaProperties) {
@@ -49,10 +51,21 @@ public final class OdeKafkaClients {
     applyConfluent(properties, odeKafkaProperties);
     OdeKafkaProperties.Producer producer = odeKafkaProperties.getProducer();
     if (producer != null) {
-      properties.put(ProducerConfig.LINGER_MS_CONFIG, producer.getLingerMs());
-      properties.put(ProducerConfig.RETRIES_CONFIG, producer.getRetries());
+      putIfPresent(properties, ProducerConfig.ACKS_CONFIG, producer.getAcks());
+      putIfPresent(properties, ProducerConfig.BATCH_SIZE_CONFIG, producer.getBatchSize());
+      putIfPresent(properties, ProducerConfig.BUFFER_MEMORY_CONFIG, producer.getBufferMemory());
+      putIfPresent(properties, ProducerConfig.LINGER_MS_CONFIG, producer.getLingerMs());
+      putIfPresent(properties, ProducerConfig.RETRIES_CONFIG, producer.getRetries());
+      putIfPresent(properties, ProducerConfig.COMPRESSION_TYPE_CONFIG,
+          producer.getCompressionType());
     }
     return properties;
+  }
+
+  private static void putIfPresent(Map<String, Object> properties, String key, Object value) {
+    if (value != null && !(value instanceof String text && text.isBlank())) {
+      properties.put(key, value);
+    }
   }
 
   private static void applyConfluent(Map<String, Object> properties,

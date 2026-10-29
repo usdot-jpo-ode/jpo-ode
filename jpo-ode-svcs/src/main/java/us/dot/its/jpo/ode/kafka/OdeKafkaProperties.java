@@ -50,7 +50,7 @@ import org.springframework.validation.annotation.Validated;
 public class OdeKafkaProperties {
   private String brokers;
   private Set<String> disabledTopics;
-  private Producer producer;
+  private Producer producer = new Producer();
   private String kafkaType = "";
   private ConfluentProperties confluent;
 
@@ -59,6 +59,12 @@ public class OdeKafkaProperties {
    * various parameters that control producer behavior and the serialization mechanisms
    * used for keys and values. This class provides default values for all its properties,
    * which can be overridden by values set in the application configuration file.
+   *
+   * <p>{@code acks}, {@code batchSize}, {@code bufferMemory}, {@code lingerMs}, {@code retries},
+   * and {@code compressionType} are applied to every ODE producer by {@link OdeKafkaClients}.
+   * {@code keySerializer}, {@code valueSerializer}, {@code partitionerClass}, and {@code type} are
+   * retained for configuration compatibility but are not applied; each producer factory selects
+   * its own serializers and partitioner.
    */
   @Data
   public static class Producer {
