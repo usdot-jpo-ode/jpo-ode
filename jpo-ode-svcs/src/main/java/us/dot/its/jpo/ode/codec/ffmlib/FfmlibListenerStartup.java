@@ -11,25 +11,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
-/** Starts FFM consumers after warming producer metadata for externally provisioned topics. */
+/**
+ * Starts FFM raw-topic consumers after warming producer metadata for externally provisioned
+ * topics. Active only for raw-topic UDP routing; direct routing uses {@link FfmlibDirectStartup}.
+ */
 @Component
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
+@Conditional(FfmlibUdpRoutingConditions.RawTopic.class)
 public class FfmlibListenerStartup implements ApplicationRunner {
 
   private static final List<String> LISTENER_IDS = List.of(
@@ -48,6 +51,7 @@ public class FfmlibListenerStartup implements ApplicationRunner {
   private final boolean syncCommits;
   private final int listenerConcurrency;
   private final Duration startupTimeout;
+  private final Set<String> disabledTopics;
 
   /**
    * Creates the listener startup coordinator for the configured Kafka cluster.
@@ -60,6 +64,7 @@ public class FfmlibListenerStartup implements ApplicationRunner {
    * @param outputProducer dedicated decoded JSON and quarantine producer
    * @param jsonTopics configured decoded JSON topic names
    * @param ffmlibProperties FFM listener and startup configuration
+   * @param odeKafkaProperties disabled-topic configuration checked against the raw topics
    */
   public FfmlibListenerStartup(
       RawEncodedJsonTopics rawTopics,
@@ -70,7 +75,8 @@ public class FfmlibListenerStartup implements ApplicationRunner {
       @org.springframework.beans.factory.annotation.Qualifier("ffmlibOutputKafkaTemplate")
       KafkaTemplate<String, String> outputProducer,
       JsonTopics jsonTopics,
-      FfmlibProperties ffmlibProperties) {
+      FfmlibProperties ffmlibProperties,
+      OdeKafkaProperties odeKafkaProperties) {
     this.rawTopics = rawTopics;
     this.registry = registry;
     this.rawJsonListener = rawJsonListener;
@@ -81,14 +87,17 @@ public class FfmlibListenerStartup implements ApplicationRunner {
     this.syncCommits = ffmlibProperties.isSyncCommits();
     this.listenerConcurrency = ffmlibProperties.getListenerConcurrency();
     this.startupTimeout = ffmlibProperties.getStartupTimeout();
+    this.disabledTopics = odeKafkaProperties.getDisabledTopics();
   }
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
     List<org.springframework.kafka.listener.MessageListenerContainer> started = new ArrayList<>();
     try {
-      warmProducerMetadata(rawProducer, rawTopics.allTopics());
-      warmProducerMetadata(outputProducer, outputTopics());
+      FfmlibTopicWarmup.requireRawTopicsEnabled(rawTopics.allTopics(), disabledTopics);
+      FfmlibTopicWarmup.warmProducerMetadata(rawProducer, rawTopics.allTopics());
+      FfmlibTopicWarmup.warmProducerMetadata(outputProducer,
+          FfmlibTopicWarmup.outputTopics(jsonTopics, rawTopics));
       commitTracker.setSynchronous(syncCommits);
       Map<String, AssignmentTracker> assignments = new HashMap<>();
       for (String listenerId : LISTENER_IDS) {
@@ -173,27 +182,4 @@ public class FfmlibListenerStartup implements ApplicationRunner {
       return assignedConsumers.size() >= expectedConsumers;
     }
   }
-
-  private void warmProducerMetadata(KafkaTemplate<String, String> producer,
-      List<String> topicNames) {
-    for (String topicName : topicNames) {
-      List<PartitionInfo> partitions = producer.partitionsFor(topicName);
-      if (partitions == null || partitions.isEmpty()) {
-        throw new IllegalStateException("No producer metadata available for FFM topic "
-            + topicName);
-      }
-    }
-  }
-
-  private List<String> outputTopics() {
-    List<String> topics = List.of(jsonTopics.getBsm(), jsonTopics.getMap(), jsonTopics.getPsm(),
-        jsonTopics.getSpat(), jsonTopics.getSrm(), jsonTopics.getSsm(), jsonTopics.getTim(),
-        jsonTopics.getSdsm(), jsonTopics.getRtcm(), jsonTopics.getRsm());
-    List<String> withDeadLetters = new ArrayList<>(topics);
-    for (String rawTopic : rawTopics.allTopics()) {
-      withDeadLetters.add(FfmlibDeadLetterTopics.forRawTopic(rawTopic));
-    }
-    return withDeadLetters;
-  }
-
 }

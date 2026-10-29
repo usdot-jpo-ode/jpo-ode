@@ -6,11 +6,9 @@ spring:
       enable-auto-commit: true
       auto-commit-interval: ${KAFKA_AUTO_COMMIT_INTERVAL:1000}
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
+    # Producer delivery settings (acks, batching, linger, retries, compression) are configured
+    # once under ode.kafka.producer and applied to every ODE producer.
     producer:
-      acks: "all"
-      batch-size: 16384
-      compression-type: "zstd"
-      buffer-memory: 33554432
       bootstrap-servers: ${ODE_KAFKA_BROKERS}
     retry:
       topic:
@@ -41,15 +39,15 @@ ode:
       username: ${CONFLUENT_KEY}
     producer:
       type: "sync"
-      acks: ${KAFKA_ACKS}
-      retries: ${KAFKA_RETRIES}
-      batch-size: ${KAFKA_BATCH_SIZE}
-      linger-ms: ${KAFKA_LINGER_MS}
-      buffer-memory: ${KAFKA_BUFFER_MEMORY}
-      key-serializer: ${KAFKA_KEY_SERIALIZER}
-      value-serializer: ${KAFKA_VALUE_SERIALIZER}
-      partitioner-class: ${KAFKA_PARTITIONER_CLASS}
-      compression-type: ${KAFKA_COMPRESSION_TYPE}
+      acks: ${KAFKA_ACKS:all}
+      retries: ${KAFKA_RETRIES:0}
+      batch-size: ${KAFKA_BATCH_SIZE:16384}
+      linger-ms: ${KAFKA_LINGER_MS:1}
+      buffer-memory: ${KAFKA_BUFFER_MEMORY:33554432}
+      key-serializer: ${KAFKA_KEY_SERIALIZER:org.apache.kafka.common.serialization.StringSerializer}
+      value-serializer: ${KAFKA_VALUE_SERIALIZER:org.apache.kafka.common.serialization.StringSerializer}
+      partitioner-class: ${KAFKA_PARTITIONER_CLASS:org.apache.kafka.clients.producer.internals.DefaultPartitioner}
+      compression-type: ${KAFKA_COMPRESSION_TYPE:zstd}
     topics:
       asn1:
         decoder-input: "topic.Asn1DecoderInput"
@@ -93,8 +91,8 @@ ode:
     listener-concurrency: ${ODE_FFM_LISTENER_CONCURRENCY:1}
     infrastructure-halt-threshold: ${ODE_FFM_INFRA_HALT_THRESHOLD:3}
     startup-timeout: ${ODE_FFM_STARTUP_TIMEOUT:120s}
-    producer-linger-ms: ${ODE_FFM_PRODUCER_LINGER_MS:0}
-    producer-compression-type: ${ODE_FFM_PRODUCER_COMPRESSION_TYPE:none}
+    udp-routing: ${ODE_FFM_UDP_ROUTING:raw-topic}
+    raw-publish: ${ODE_FFM_RAW_PUBLISH:true}
     sync-commits: ${ODE_FFM_SYNC_COMMITS:false}
     raw-partition-strategy: ${ODE_FFM_RAW_PARTITION_STRATEGY:round_robin}
 

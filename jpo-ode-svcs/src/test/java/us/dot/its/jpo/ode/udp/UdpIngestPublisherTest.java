@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -16,12 +18,17 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.mockito.MockedStatic;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDirectUdpDecoder;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibProperties;
+import us.dot.its.jpo.ode.udp.UdpHexDecoder.UdpDecodeInput;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -42,8 +49,8 @@ class UdpIngestPublisherTest {
     KafkaTemplate<String, String> ffmlibRaw = mock(KafkaTemplate.class);
     ObjectProvider<KafkaTemplate<String, String>> ffmlibProvider = mock(ObjectProvider.class);
     Asn1CodecModeProperties mode = codecMode(Asn1CodecModeProperties.CodecMode.external);
-    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode,
-        new SimpleMeterRegistry());
+    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider,
+        mock(ObjectProvider.class), mode, new FfmlibProperties(), new SimpleMeterRegistry());
 
     publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
 
@@ -61,8 +68,8 @@ class UdpIngestPublisherTest {
     ObjectProvider<KafkaTemplate<String, String>> ffmlibProvider = mock(ObjectProvider.class);
     when(ffmlibProvider.getIfAvailable()).thenReturn(ffmlibRaw);
     Asn1CodecModeProperties mode = codecMode(Asn1CodecModeProperties.CodecMode.ffm);
-    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider, mode,
-        new SimpleMeterRegistry());
+    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider,
+        mock(ObjectProvider.class), mode, new FfmlibProperties(), new SimpleMeterRegistry());
 
     publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
 
@@ -123,6 +130,73 @@ class UdpIngestPublisherTest {
     assertEquals(0.0, meters.get("ode.ffmlib.raw.publication.in.flight").gauge().value());
     assertEquals(1.0, meters.counter("ode.ffmlib.raw.publication.failures", "topic", RAW_TOPIC)
         .count());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void directRoutingPublishesRawBeforeDecodingOnTheReceiverThread() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    when(producer.send(eq(RAW_TOPIC), any(String.class))).thenReturn(new CompletableFuture<>());
+    FfmlibDirectUdpDecoder direct = mock(FfmlibDirectUdpDecoder.class);
+    AtomicReference<String> failureJson = new AtomicReference<>();
+    doAnswer(invocation -> {
+      // Direct decoding updates the metadata in place; the raw record must not see it.
+      invocation.<UdpDecodeInput>getArgument(0).metadata().setOriginIp("mutated-by-decode");
+      failureJson.set(invocation.<Supplier<String>>getArgument(3).get());
+      return null;
+    }).when(direct).decodeAndPublish(any(), eq(SupportedMessageType.BSM), eq(RAW_TOPIC), any());
+    UdpIngestPublisher publisher = new UdpIngestPublisher(producer, direct, true,
+        new SimpleMeterRegistry());
+
+    publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+
+    var sent = org.mockito.ArgumentCaptor.forClass(String.class);
+    var order = inOrder(producer, direct);
+    order.verify(producer).send(eq(RAW_TOPIC), sent.capture());
+    order.verify(direct).decodeAndPublish(any(), eq(SupportedMessageType.BSM), eq(RAW_TOPIC),
+        any());
+    assertRawContract(sent.getValue());
+    assertEquals(sent.getValue(), failureJson.get());
+    org.junit.jupiter.api.Assertions.assertFalse(sent.getValue().contains("mutated-by-decode"));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void directRoutingWithoutRawPublishingRebuildsTheRawRecordOnlyForFailures() throws Exception {
+    KafkaTemplate<String, String> producer = mock(KafkaTemplate.class);
+    FfmlibDirectUdpDecoder direct = mock(FfmlibDirectUdpDecoder.class);
+    AtomicReference<String> failureJson = new AtomicReference<>();
+    doAnswer(invocation -> {
+      invocation.<UdpDecodeInput>getArgument(0).metadata().setOriginIp("mutated-by-decode");
+      failureJson.set(invocation.<Supplier<String>>getArgument(3).get());
+      return null;
+    }).when(direct).decodeAndPublish(any(), eq(SupportedMessageType.BSM), eq(RAW_TOPIC), any());
+    UdpIngestPublisher publisher = new UdpIngestPublisher(producer, direct, false,
+        new SimpleMeterRegistry());
+
+    publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+
+    verify(producer, never()).send(any(), any());
+    assertRawContract(failureJson.get());
+    org.junit.jupiter.api.Assertions.assertFalse(failureJson.get().contains("mutated-by-decode"));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void rawTopicRoutingIgnoresRawPublishSettingAndNeverDecodesOnReceiver() throws Exception {
+    KafkaTemplate<String, String> external = mock(KafkaTemplate.class);
+    KafkaTemplate<String, String> ffmlibRaw = mock(KafkaTemplate.class);
+    when(ffmlibRaw.send(eq(RAW_TOPIC), any(String.class))).thenReturn(new CompletableFuture<>());
+    ObjectProvider<KafkaTemplate<String, String>> ffmlibProvider = mock(ObjectProvider.class);
+    when(ffmlibProvider.getIfAvailable()).thenReturn(ffmlibRaw);
+    ObjectProvider<FfmlibDirectUdpDecoder> directProvider = mock(ObjectProvider.class);
+    UdpIngestPublisher publisher = new UdpIngestPublisher(external, ffmlibProvider,
+        directProvider, codecMode(Asn1CodecModeProperties.CodecMode.ffm), new FfmlibProperties(),
+        new SimpleMeterRegistry());
+
+    publisher.publish(bsmPacket(), SupportedMessageType.BSM, RAW_TOPIC);
+
+    verify(ffmlibRaw).send(eq(RAW_TOPIC), any(String.class));
   }
 
   private static void assertRawContract(String json) throws Exception {
