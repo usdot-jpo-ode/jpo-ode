@@ -3,9 +3,9 @@ package us.dot.its.jpo.ode.codec.ffmlib;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 
 /** Configures durable FFM raw-topic consumers independently from the external consumer defaults. */
 @Configuration
-@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
+@Conditional(FfmlibUdpRoutingConditions.RawTopic.class)
 public class FfmlibKafkaListenerConfiguration {
 
   /** Creates a consumer factory with one record per poll and automatic commits disabled. */

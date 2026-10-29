@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -24,6 +26,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
@@ -65,7 +68,7 @@ class FfmlibListenerStartupTest {
 
     FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics(), registry, rawJsonListener,
         commitTracker, rawProducer,
-        outputProducer, jsonTopics(), ffmlibProperties);
+        outputProducer, jsonTopics(), ffmlibProperties, new OdeKafkaProperties());
     startup.run(null);
 
     for (String listenerId : listenerIds()) {
@@ -110,7 +113,7 @@ class FfmlibListenerStartupTest {
         containers.get(invocation.getArgument(0)));
     FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics("topic.StartupTimeoutRaw"), registry, rawJsonListener,
         commitTracker, rawProducer,
-        outputProducer, jsonTopics(), ffmlibProperties);
+        outputProducer, jsonTopics(), ffmlibProperties, new OdeKafkaProperties());
 
     assertThrows(IllegalStateException.class, () -> startup.run(null));
 
@@ -156,11 +159,36 @@ class FfmlibListenerStartupTest {
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
     FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics("topic.StartupDelayedRaw"), registry, rawJsonListener,
-        commitTracker, rawProducer, outputProducer, jsonTopics(), ffmlibProperties);
+        commitTracker, rawProducer, outputProducer, jsonTopics(), ffmlibProperties,
+        new OdeKafkaProperties());
 
     startup.run(null);
 
     verify(rawJsonListener).markStartupComplete();
+  }
+
+  @Test
+  void disabledRawTopicFailsRawTopicRoutingBeforeAnyListenerStarts() throws Exception {
+    KafkaListenerEndpointRegistry registry = mock(KafkaListenerEndpointRegistry.class);
+    FfmlibRawJsonListener rawJsonListener = mock(FfmlibRawJsonListener.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> rawProducer = mock(KafkaTemplate.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> outputProducer = mock(KafkaTemplate.class);
+    OdeKafkaProperties odeKafkaProperties = new OdeKafkaProperties();
+    odeKafkaProperties.setDisabledTopics(Set.of("topic.StartupDisabledBSM"));
+    FfmlibListenerStartup startup = new FfmlibListenerStartup(
+        rawTopics("topic.StartupDisabled"), registry, rawJsonListener,
+        mock(FfmlibCommitTracker.class), rawProducer, outputProducer, jsonTopics(),
+        new FfmlibProperties(), odeKafkaProperties);
+
+    IllegalStateException error = assertThrows(IllegalStateException.class,
+        () -> startup.run(null));
+
+    org.junit.jupiter.api.Assertions.assertTrue(
+        error.getMessage().contains("topic.StartupDisabledBSM"));
+    verify(registry, never()).getListenerContainer(anyString());
+    verify(rawJsonListener).markStartupFailure(any(Throwable.class));
   }
 
   private static RawEncodedJsonTopics rawTopics() {

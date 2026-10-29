@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -44,11 +45,28 @@ public class FfmlibProperties {
    */
   private long errorBufferSize = 1024L;
 
-  /** Kafka producer linger for FFM raw and decoded records. Zero keeps the latency boundary low. */
-  private int producerLingerMs;
+  /** Selects how FFM mode routes UDP datagrams to the in-process decoder. */
+  public enum UdpRouting {
+    /**
+     * Publish each datagram to its raw encoded topic, then decode from Kafka consumers that
+     * confirm output before committing input (at-least-once).
+     */
+    RAW_TOPIC,
+    /**
+     * Decode on the UDP receiver thread and publish decoded JSON without waiting for
+     * confirmation (at-most-once). Raw-topic publication is controlled by {@code rawPublish}.
+     */
+    DIRECT
+  }
 
-  /** Kafka producer compression for FFM raw and decoded records. */
-  private String producerCompressionType = "none";
+  /** UDP routing in FFM mode: {@code raw-topic} (default) or {@code direct}. */
+  private UdpRouting udpRouting = UdpRouting.RAW_TOPIC;
+
+  /**
+   * Whether direct routing also publishes raw encoded JSON for downstream consumers. Raw-topic
+   * routing always publishes raw records because its decoder reads them.
+   */
+  private boolean rawPublish = true;
 
   /** Whether FFM input offsets use synchronous commits instead of async callbacks. */
   private boolean syncCommits;
@@ -70,5 +88,28 @@ public class FfmlibProperties {
    * listener stops. Earlier failing records are quarantined so one record cannot block its type.
    */
   private int infrastructureHaltThreshold = 3;
+
+  /** Whether UDP datagrams are decoded on the receiver thread. */
+  public boolean isDirectUdpRouting() {
+    return udpRouting == UdpRouting.DIRECT;
+  }
+
+  /** Whether UDP datagrams are published to their raw encoded topics. */
+  public boolean publishesRawUdp() {
+    return !isDirectUdpRouting() || rawPublish;
+  }
+
+  /**
+   * Rejects settings that would leave UDP traffic undecoded.
+   *
+   * @throws IllegalStateException when raw-topic routing is combined with raw publishing disabled
+   */
+  @PostConstruct
+  public void validate() {
+    if (udpRouting == UdpRouting.RAW_TOPIC && !rawPublish) {
+      throw new IllegalStateException("ode.ffmlib.raw-publish=false requires "
+          + "ode.ffmlib.udp-routing=direct; raw-topic routing decodes from the raw topics");
+    }
+  }
 
 }

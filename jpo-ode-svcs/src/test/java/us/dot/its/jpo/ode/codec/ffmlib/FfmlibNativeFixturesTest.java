@@ -7,7 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,9 +25,13 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
@@ -36,6 +45,7 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
 import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.udp.UdpHexDecoder;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -142,6 +152,68 @@ class FfmlibNativeFixturesTest {
       assertEquals(legacyJson.path("metadata"), leanJson.path("metadata"), fixture.path());
       assertEquals(legacyJson.path("payload"), leanJson.path("payload"), fixture.path());
     }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void directRouteDecodesTheSameJsonAsTheRawTopicRoundTrip() throws Exception {
+    FfmlibMessageFrameCodec codec = nativeCodec();
+    FfmlibDecodeService decoder = ffmDecoder(codec);
+    RawEncodedJsonService rawService = new RawEncodedJsonService(new ObjectMapper());
+    ObjectMapper jsonMapper = new ObjectMapper();
+    List<Fixture> fixtures = new ArrayList<>(FIXTURES);
+    fixtures.add(new Fixture(SupportedMessageType.BSM, "signed-wsmp-bsm", "topic.OdeBsmJson"));
+
+    for (Fixture fixture : fixtures) {
+      byte[] received = fixture.path().equals("signed-wsmp-bsm")
+          ? signedBsm(hexFixture("udp/bsm/BsmReceiverTest_ValidBSM.txt"))
+          : hexFixture(fixture.path());
+      DatagramPacket packet = new DatagramPacket(received, received.length,
+          InetAddress.getLoopbackAddress(), 12345);
+      String rawTopic = "topic.OdeRawEncoded" + fixture.type().name() + "Json";
+      KafkaTemplate<String, String> rawKafka = mock(KafkaTemplate.class);
+      when(rawKafka.send(anyString(), anyString())).thenReturn(new CompletableFuture<>());
+      FfmlibDirectUdpDecoder direct = mock(FfmlibDirectUdpDecoder.class);
+      AtomicReference<String> directJson = new AtomicReference<>();
+      doAnswer(invocation -> {
+        UdpHexDecoder.UdpDecodeInput input = invocation.getArgument(0);
+        directJson.set(decoder.prepareRaw(input.metadata(), input.uperBytes(), null,
+            fixture.type()).json());
+        return null;
+      }).when(direct).decodeAndPublish(any(), eq(fixture.type()), eq(rawTopic), any());
+
+      UdpIngestPublisher.direct(rawKafka, direct, true).publish(packet, fixture.type(), rawTopic);
+
+      ArgumentCaptor<String> rawJson = ArgumentCaptor.forClass(String.class);
+      verify(rawKafka).send(eq(rawTopic), rawJson.capture());
+      RawEncodedJsonService.FfmDecodeInput rawInput =
+          rawService.parseFfmDecodeInput(rawJson.getValue(), fixture.type());
+      String rawRouteJson = decoder.prepareRaw(rawInput.metadata(), rawInput.uperBytes(), null,
+          fixture.type()).json();
+      assertNotNull(directJson.get(), fixture.path());
+      assertEquals(jsonMapper.readTree(rawRouteJson), jsonMapper.readTree(directJson.get()),
+          fixture.path() + " direct routing must publish the raw-topic route's JSON");
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static FfmlibDecodeService ffmDecoder(FfmlibMessageFrameCodec codec) {
+    ObjectProvider<FfmlibMessageFrameCodec> codecProvider = mock(ObjectProvider.class);
+    when(codecProvider.getIfAvailable()).thenReturn(codec);
+    Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    return new FfmlibDecodeService(codecProvider, new FfmlibProperties(), mode, jsonTopics(),
+        mock(KafkaTemplate.class), mock(ObjectProvider.class), new ObjectMapper(),
+        new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
+  }
+
+  private static byte[] signedBsm(byte[] validBsmUper) {
+    // Synthetic IEEE 1609.2 wrapper for header stripping only; it carries no real signature.
+    byte[] wrapper = org.apache.tomcat.util.buf.HexUtils.fromHexString("0001038100");
+    byte[] received = new byte[wrapper.length + validBsmUper.length];
+    System.arraycopy(wrapper, 0, received, 0, wrapper.length);
+    System.arraycopy(validBsmUper, 0, received, wrapper.length, validBsmUper.length);
+    return received;
   }
 
   @Test

@@ -1,16 +1,11 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -20,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
@@ -36,7 +31,7 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 /** Consumes durable raw UDP records, confirms decoded JSON or quarantine, then commits the input. */
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
+@Conditional(FfmlibUdpRoutingConditions.RawTopic.class)
 public class FfmlibRawJsonListener implements HealthIndicator {
 
   private static final int MAX_PUBLISH_ATTEMPTS = 3;
@@ -282,9 +277,11 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private void rejectRecord(SupportedMessageType type, String listenerId,
       ConsumerRecord<String, String> record, Acknowledgment acknowledgment, Exception error,
       boolean decodedMapping) {
-    FfmlibDecodeService.InfrastructureFailure failure = findInfrastructureFailure(error);
+    FfmlibDecodeService.InfrastructureFailure failure =
+        FfmlibFailures.findInfrastructureFailure(error);
     if (failure == null) {
-      quarantine(record, listenerId, rawTopic(type), category(error, decodedMapping), 1);
+      quarantine(record, listenerId, rawTopic(type), FfmlibFailures.category(error,
+          decodedMapping, error instanceof ExhaustedPublishAttemptsException), 1);
       resetInfrastructureFailures(listenerId);
       acknowledge(listenerId, acknowledgment);
       return;
@@ -304,7 +301,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
         record.offset(), consecutive, infrastructureHaltThreshold, failure);
     infrastructureQuarantines.computeIfAbsent(type, key -> meters.counter(
         "ode.ffmlib.infrastructure.quarantined", "type", key.name())).increment();
-    quarantine(record, listenerId, rawTopic(type), "infrastructure", 1);
+    quarantine(record, listenerId, rawTopic(type), FfmlibFailures.INFRASTRUCTURE, 1);
     acknowledge(listenerId, acknowledgment);
   }
 
@@ -416,45 +413,6 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       case RTCM -> topics.getRtcm();
       case RSM -> topics.getRsm();
     };
-  }
-
-  private static FfmlibDecodeService.InfrastructureFailure findInfrastructureFailure(
-      Throwable error) {
-    for (Throwable cause : causes(error)) {
-      if (cause instanceof FfmlibDecodeService.InfrastructureFailure failure) {
-        return failure;
-      }
-    }
-    return null;
-  }
-
-  private static String category(Exception error, boolean decodedMapping) {
-    boolean unsupportedSigned = false;
-    boolean jsonProcessing = false;
-    for (Throwable cause : causes(error)) {
-      unsupportedSigned |= cause instanceof UnsupportedOperationException;
-      jsonProcessing |= cause instanceof JsonProcessingException;
-    }
-    if (unsupportedSigned) {
-      return "unsupported_signed";
-    }
-    if (error instanceof ExhaustedPublishAttemptsException) {
-      return "publish_failure";
-    }
-    if (decodedMapping && jsonProcessing) {
-      return "mapping_failure";
-    }
-    return error instanceof JsonProcessingException ? "malformed_json" : "malformed_payload";
-  }
-
-  private static Iterable<Throwable> causes(Throwable error) {
-    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    ArrayList<Throwable> result = new ArrayList<>();
-    for (Throwable current = error; current != null && visited.add(current);
-        current = current.getCause()) {
-      result.add(current);
-    }
-    return result;
   }
 
   private static byte[] bytes(String value) {

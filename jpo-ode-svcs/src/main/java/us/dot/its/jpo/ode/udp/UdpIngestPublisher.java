@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDirectUdpDecoder;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibProperties;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
@@ -27,7 +29,12 @@ import us.dot.its.jpo.ode.udp.UdpHexDecoder.UdpDecodeInput;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-/** Publishes every received UDP datagram to its durable raw encoded Kafka topic. */
+/**
+ * Publishes received UDP datagrams. External mode and FFM raw-topic routing publish every datagram
+ * to its raw encoded Kafka topic for later decoding. FFM direct routing decodes on the receiver
+ * thread and publishes decoded JSON, publishing the raw record too unless
+ * {@code ode.ffmlib.raw-publish=false}.
+ */
 @Component
 @Slf4j
 public class UdpIngestPublisher {
@@ -35,24 +42,39 @@ public class UdpIngestPublisher {
   private static final Map<SupportedMessageType, Profile> PROFILES = profiles();
 
   private final KafkaTemplate<String, String> rawKafka;
+  private final FfmlibDirectUdpDecoder direct;
+  private final boolean rawPublish;
   private final MeterRegistry meters;
   private final AtomicInteger inFlight = new AtomicInteger();
   private final Map<String, Timer> confirmations = new ConcurrentHashMap<>();
   private final Map<String, Timer> receiptToConfirmations = new ConcurrentHashMap<>();
   private final Map<String, Counter> failures = new ConcurrentHashMap<>();
 
-  /** Creates the raw-topic producer, using FFM-specific Kafka settings when FFM mode is active. */
+  /**
+   * Creates the UDP publisher, using the FFM raw producer and, for direct routing, the receiver
+   * decoder when FFM mode is active.
+   */
   @Autowired
   public UdpIngestPublisher(
       @Qualifier("kafkaTemplate") KafkaTemplate<String, String> externalKafka,
       @Qualifier("ffmlibRawKafkaTemplate")
       ObjectProvider<KafkaTemplate<String, String>> ffmlibRawKafka,
-      Asn1CodecModeProperties mode, MeterRegistry meters) {
-    this(selectProducer(externalKafka, ffmlibRawKafka, mode.isFfm()), meters);
+      ObjectProvider<FfmlibDirectUdpDecoder> directDecoder,
+      Asn1CodecModeProperties mode, FfmlibProperties ffmlibProperties, MeterRegistry meters) {
+    this(selectProducer(externalKafka, ffmlibRawKafka, mode.isFfm()),
+        mode.isFfm() ? directDecoder.getIfAvailable() : null,
+        !mode.isFfm() || ffmlibProperties.publishesRawUdp(), meters);
   }
 
   UdpIngestPublisher(KafkaTemplate<String, String> rawKafka, MeterRegistry meters) {
+    this(rawKafka, null, true, meters);
+  }
+
+  UdpIngestPublisher(KafkaTemplate<String, String> rawKafka, FfmlibDirectUdpDecoder direct,
+      boolean rawPublish, MeterRegistry meters) {
     this.rawKafka = rawKafka;
+    this.direct = direct;
+    this.rawPublish = direct == null || rawPublish;
     this.meters = meters;
     Gauge.builder("ode.ffmlib.raw.publication.in.flight", inFlight, AtomicInteger::get)
         .register(meters);
@@ -61,6 +83,13 @@ public class UdpIngestPublisher {
   /** Test helper that uses the supplied raw producer. */
   public static UdpIngestPublisher rawOnly(KafkaTemplate<String, String> rawKafka) {
     return new UdpIngestPublisher(rawKafka,
+        new io.micrometer.core.instrument.simple.SimpleMeterRegistry());
+  }
+
+  /** Test helper for FFM direct routing with the supplied raw producer and decoder. */
+  public static UdpIngestPublisher direct(KafkaTemplate<String, String> rawKafka,
+      FfmlibDirectUdpDecoder direct, boolean rawPublish) {
+    return new UdpIngestPublisher(rawKafka, direct, rawPublish,
         new io.micrometer.core.instrument.simple.SimpleMeterRegistry());
   }
 
@@ -73,7 +102,7 @@ public class UdpIngestPublisher {
   }
 
   /**
-   * Publishes one UDP datagram to the existing raw JSON topic contract in both codec modes.
+   * Publishes one UDP datagram. The raw JSON contract is unchanged in every route.
    *
    * @param packet received UDP datagram
    * @param type J2735 type used to strip transport headers and prepare metadata
@@ -83,46 +112,78 @@ public class UdpIngestPublisher {
   public void publish(DatagramPacket packet, SupportedMessageType type, String rawTopic)
       throws InvalidPayloadException {
     long receivedAt = System.nanoTime();
+    UdpDecodeInput input = prepare(packet, type);
+    // Serialize the raw record before direct decoding, which updates the metadata in place.
+    String rawJson = rawPublish ? toRawJson(input) : null;
+    if (rawPublish) {
+      publishRaw(rawTopic, rawJson, receivedAt);
+    }
+    if (direct != null) {
+      direct.decodeAndPublish(input, type, rawTopic,
+          () -> rawJson != null ? rawJson : rebuildRawJson(packet, type));
+    }
+  }
+
+  private static UdpDecodeInput prepare(DatagramPacket packet, SupportedMessageType type)
+      throws InvalidPayloadException {
     Profile profile = PROFILES.get(type);
-    UdpDecodeInput input = UdpHexDecoder.prepareDecodeInput(packet, type, profile.recordType(),
+    return UdpHexDecoder.prepareDecodeInput(packet, type, profile.recordType(),
         profile.source(), profile.generatedBy(), profile.includeDetails());
+  }
+
+  private static String toRawJson(UdpDecodeInput input) {
     OdeAsn1Data data = new OdeAsn1Data(input.metadata(), new OdeAsn1Payload(input.uperBytes()));
-    String json = JsonUtils.toJson(data, false);
+    return JsonUtils.toJson(data, false);
+  }
+
+  /**
+   * Rebuilds the raw record for a dead-letter write when raw publishing is off. Decode failures
+   * are reported synchronously, so the receiver has not reused the packet buffer yet.
+   */
+  private static String rebuildRawJson(DatagramPacket packet, SupportedMessageType type) {
+    try {
+      return toRawJson(prepare(packet, type));
+    } catch (InvalidPayloadException error) {
+      throw new IllegalStateException("UDP datagram could not be prepared a second time", error);
+    }
+  }
+
+  private void publishRaw(String rawTopic, String json, long receivedAt) {
     if (json == null || json.isBlank()) {
       failures.computeIfAbsent(rawTopic, topic -> meters.counter(
           "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
       log.error("Unable to serialize UDP raw record for {}", rawTopic);
-    } else {
-      long start = System.nanoTime();
-      inFlight.incrementAndGet();
-      try {
-        rawKafka.send(rawTopic, json).whenComplete((result, error) -> {
-          inFlight.decrementAndGet();
-          if (error != null) {
-            failures.computeIfAbsent(rawTopic, topic -> meters.counter(
-                "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
-            log.error("Unable to publish UDP raw record to {}", rawTopic, error);
-          } else if (result == null) {
-            log.debug("UDP raw record publication to {} was skipped by the producer", rawTopic);
-          } else {
-            confirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
-                "ode.ffmlib.raw.publication.confirmation").tag("topic", topic)
-                .minimumExpectedValue(Duration.ofNanos(1_000))
-                .publishPercentileHistogram().register(meters))
-                .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
-            receiptToConfirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
-                "ode.ffmlib.udp.receipt.to.raw.confirmation").tag("topic", topic)
-                .minimumExpectedValue(Duration.ofNanos(1_000))
-                .publishPercentileHistogram().register(meters))
-                .record(System.nanoTime() - receivedAt, TimeUnit.NANOSECONDS);
-          }
-        });
-      } catch (RuntimeException error) {
+      return;
+    }
+    long start = System.nanoTime();
+    inFlight.incrementAndGet();
+    try {
+      rawKafka.send(rawTopic, json).whenComplete((result, error) -> {
         inFlight.decrementAndGet();
-        failures.computeIfAbsent(rawTopic, topic -> meters.counter(
-            "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
-        log.error("Unable to submit UDP raw record to {}", rawTopic, error);
-      }
+        if (error != null) {
+          failures.computeIfAbsent(rawTopic, topic -> meters.counter(
+              "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
+          log.error("Unable to publish UDP raw record to {}", rawTopic, error);
+        } else if (result == null) {
+          log.debug("UDP raw record publication to {} was skipped by the producer", rawTopic);
+        } else {
+          confirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
+              "ode.ffmlib.raw.publication.confirmation").tag("topic", topic)
+              .minimumExpectedValue(Duration.ofNanos(1_000))
+              .publishPercentileHistogram().register(meters))
+              .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+          receiptToConfirmations.computeIfAbsent(rawTopic, topic -> Timer.builder(
+              "ode.ffmlib.udp.receipt.to.raw.confirmation").tag("topic", topic)
+              .minimumExpectedValue(Duration.ofNanos(1_000))
+              .publishPercentileHistogram().register(meters))
+              .record(System.nanoTime() - receivedAt, TimeUnit.NANOSECONDS);
+        }
+      });
+    } catch (RuntimeException error) {
+      inFlight.decrementAndGet();
+      failures.computeIfAbsent(rawTopic, topic -> meters.counter(
+          "ode.ffmlib.raw.publication.failures", "topic", topic)).increment();
+      log.error("Unable to submit UDP raw record to {}", rawTopic, error);
     }
   }
 
