@@ -34,6 +34,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AcknowledgingMessageListener;
 import org.springframework.kafka.listener.CommonContainerStoppingErrorHandler;
+import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.support.Acknowledgment;
@@ -41,6 +42,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.util.backoff.FixedBackOff;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService.PreparedDecodedMessage;
 import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
@@ -49,10 +51,12 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 
 @SpringBootTest(classes = FfmlibRawJsonListenerOffsetTest.TestContext.class,
     properties = {"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
-@EmbeddedKafka(partitions = 1, topics = {FfmlibRawJsonListenerOffsetTest.RAW_TOPIC})
+@EmbeddedKafka(partitions = 1, topics = {FfmlibRawJsonListenerOffsetTest.RAW_TOPIC,
+    FfmlibRawJsonListenerOffsetTest.RETRY_TOPIC})
 class FfmlibRawJsonListenerOffsetTest {
 
   static final String RAW_TOPIC = "topic.FfmOffsetRecoveryRaw";
+  static final String RETRY_TOPIC = "topic.FfmPublicationRetryRaw";
   private static final String GROUP_ID = "RawEncodedBSMJsonRouter";
   private static final String RAW_JSON = "{\"payload\":{\"data\":{\"bytes\":\"0014\"}}}";
 
@@ -127,8 +131,64 @@ class FfmlibRawJsonListenerOffsetTest {
     }
   }
 
+  @Test
+  @SuppressWarnings("unchecked")
+  void publicationOutageIsRetriedInPlaceAndCommitsOnceOutputIsConfirmed() throws Exception {
+    var rawService = mock(RawEncodedJsonService.class);
+    var decoder = mock(FfmlibDecodeService.class);
+    var output = mock(FfmlibOutputPublisher.class);
+    var topics = mock(RawEncodedJsonTopics.class);
+    var meters = new SimpleMeterRegistry();
+    when(topics.getBsm()).thenReturn(RETRY_TOPIC);
+    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+    when(rawService.parseFfmDecodeInput(eq(RAW_JSON), eq(SupportedMessageType.BSM)))
+        .thenReturn(new RawEncodedJsonService.FfmDecodeInput(metadata, new byte[] {0, 20}));
+    PreparedDecodedMessage prepared = new PreparedDecodedMessage("topic.OdeBsmJson", "key", "{}",
+        metadata, "BSM", "udp", 1L, 1L);
+    when(decoder.prepareRaw(eq(metadata), any(byte[].class), eq("key"),
+        eq(SupportedMessageType.BSM))).thenReturn(prepared);
+    AtomicInteger publicationAttempt = new AtomicInteger();
+    // Two rounds of three failed attempts each, then Kafka recovers.
+    when(output.publish(any())).thenAnswer(invocation -> {
+      if (publicationAttempt.incrementAndGet() <= 6) {
+        return CompletableFuture.failedFuture(new IllegalStateException("broker unavailable"));
+      }
+      return CompletableFuture.completedFuture(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+    });
+
+    FfmlibRawJsonListener listener = new FfmlibRawJsonListener(rawService, decoder, output,
+        mock(KafkaTemplate.class), topics, new FfmlibCommitTracker(meters), meters);
+    listener.markStartupComplete();
+    TopicPartition inputPartition = new TopicPartition(RETRY_TOPIC, 0);
+    try (AdminClient admin = AdminClient.create(Map.of(
+        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString()))) {
+      KafkaTemplate<String, String> producer = producer(embeddedKafka);
+      KafkaMessageListenerContainer<String, String> container = container(embeddedKafka,
+          listener, RETRY_TOPIC, FfmlibKafkaListenerConfiguration.errorHandler(
+              new FixedBackOff(50, FixedBackOff.UNLIMITED_ATTEMPTS)));
+      container.start();
+      ContainerTestUtils.waitForAssignment(container, 1);
+      try {
+        producer.send(RETRY_TOPIC, "key", RAW_JSON).get(10, TimeUnit.SECONDS);
+        awaitCommittedOffset(admin, inputPartition, 1L);
+        assertTrue(container.isRunning(), "a publication outage must not stop the listener");
+        assertEquals(7, publicationAttempt.get());
+        assertEquals("UP", listener.health().getStatus().getCode());
+      } finally {
+        container.stop();
+        producer.destroy();
+      }
+    }
+  }
+
   private static KafkaMessageListenerContainer<String, String> container(
       EmbeddedKafkaBroker broker, FfmlibRawJsonListener listener) {
+    return container(broker, listener, RAW_TOPIC, new CommonContainerStoppingErrorHandler());
+  }
+
+  private static KafkaMessageListenerContainer<String, String> container(
+      EmbeddedKafkaBroker broker, FfmlibRawJsonListener listener, String topic,
+      CommonErrorHandler errorHandler) {
     Map<String, Object> consumerProperties = new HashMap<>(
         KafkaTestUtils.consumerProps(broker, GROUP_ID, false));
     consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -136,13 +196,13 @@ class FfmlibRawJsonListenerOffsetTest {
     consumerProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
     var consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProperties,
         new StringDeserializer(), new StringDeserializer());
-    ContainerProperties properties = new ContainerProperties(RAW_TOPIC);
+    ContainerProperties properties = new ContainerProperties(topic);
     properties.setGroupId(GROUP_ID);
     properties.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
     properties.setSyncCommits(false);
     KafkaMessageListenerContainer<String, String> container =
         new KafkaMessageListenerContainer<>(consumerFactory, properties);
-    container.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());
+    container.setCommonErrorHandler(errorHandler);
     container.setupMessageListener((AcknowledgingMessageListener<String, String>)
         (ConsumerRecord<String, String> record, Acknowledgment acknowledgment) ->
             listener.bsm(record, acknowledgment));

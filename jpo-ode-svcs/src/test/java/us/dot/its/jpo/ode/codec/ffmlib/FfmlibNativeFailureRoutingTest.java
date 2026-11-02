@@ -109,8 +109,7 @@ class FfmlibNativeFailureRoutingTest {
     JsonTopics jsonTopics = new JsonTopics();
     jsonTopics.setBsm("topic.OdeBsmJson");
     FfmlibDecodeService decoder = new FfmlibDecodeService(codecProvider, properties, mode,
-        jsonTopics, mock(KafkaTemplate.class), outputProvider, new ObjectMapper(), meters,
-        "topic.Asn1DecoderInput");
+        jsonTopics, outputProvider, new ObjectMapper(), meters);
 
     RawEncodedJsonService rawService = mock(RawEncodedJsonService.class);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();

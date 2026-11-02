@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -180,16 +180,9 @@ class FfmlibDecodeServiceTest {
         properties,
         modeProperties,
         jsonTopics,
-        kafkaTemplate,
         outputPublisherProvider,
         simpleObjectMapper,
-        meterRegistry,
-        "topic.Asn1DecoderInput");
-  }
-
-  @AfterEach
-  void tearDown() {
-    decodeService.shutdown();
+        meterRegistry);
   }
 
   @Test
@@ -243,23 +236,53 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void failedJsonPublicationIsRetriableAndNotCountedAsDecoded() throws Exception {
+  void failedImportPublicationIsAPublishFailureNotABadInput() throws Exception {
     stubSuccessfulDecode();
     when(outputPublisher.publish(any()))
         .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker unavailable")));
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setOdeReceivedAt(DateTimeUtils.now());
     metadata.setSchemaVersion(9);
+    OdeAsn1Data input = new OdeAsn1Data(metadata,
+        new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX)));
 
-    assertThrows(FfmlibDecodeService.PublishFailure.class,
-        () -> decodeService.decode(metadata, new byte[] {0x00, 0x14}, "key-1"));
+    FfmlibDecodeService.PublishFailure failure = assertThrows(
+        FfmlibDecodeService.PublishFailure.class, () -> decodeService.decode(input, "key-1"));
 
+    assertEquals("broker unavailable", failure.getCause().getMessage());
     assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
-        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", "BSM").tag("source", "udp")
+        .tag("type", "BSM").tag("source", "import")
         .tag("reason", "publish").counter().count(), 0.0);
-    assertTrue(meterRegistry.find("ode.ffmlib.decode.end.to.end").timers().isEmpty());
+    assertEquals(1.0, meterRegistry.find("ode.ffmlib.decode.failures").counters().stream()
+        .mapToDouble(counter -> counter.count()).sum(), 0.0,
+        "the publish failure must not also be counted as an unexpected decode failure");
+  }
+
+  @Test
+  void importPublicationsShareOneConfirmationWait() throws Exception {
+    stubSuccessfulDecode();
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> first = new CompletableFuture<>();
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> second = new CompletableFuture<>();
+    when(outputPublisher.publish(any())).thenReturn(first, second);
+    OdeMessageFrameMetadata firstMetadata = new OdeMessageFrameMetadata();
+    firstMetadata.setSchemaVersion(9);
+    OdeMessageFrameMetadata secondMetadata = new OdeMessageFrameMetadata();
+    secondMetadata.setSchemaVersion(9);
+
+    var firstPublication = decodeService.submitDecode(new OdeAsn1Data(firstMetadata,
+        new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))), "first");
+    var secondPublication = decodeService.submitDecode(new OdeAsn1Data(secondMetadata,
+        new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))), "second");
+
+    verify(outputPublisher, times(2)).publish(any());
+    assertFalse(firstPublication.isDone());
+    first.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+    second.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+    decodeService.awaitImportPublications(List.of(firstPublication, secondPublication));
+    assertEquals(2.0, meterRegistry.get("ode.ffmlib.decode.messages")
+        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
   }
 
   @Test
@@ -308,7 +331,8 @@ class FfmlibDecodeServiceTest {
     metadata.setOdeReceivedAt(DateTimeUtils.now());
     metadata.setSchemaVersion(9);
 
-    decodeService.decode(metadata, new byte[] {0x00, 0x14}, "udp-key");
+    decodeService.recordRawConfirmed(decodeService.prepareRaw(metadata,
+        new byte[] {0x00, 0x14}, "udp-key", SupportedMessageType.BSM));
 
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.messages")
         .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
@@ -567,7 +591,7 @@ class FfmlibDecodeServiceTest {
     metadata.setSchemaVersion(9);
 
     FfmlibDecodeService.PreparedDecodedMessage decoded = decodeService.prepareRaw(
-        metadata, new byte[] {0x00, 0x14}, "generic-frame");
+        metadata, new byte[] {0x00, 0x14}, "generic-frame", null);
 
     assertEquals(BSM_TOPIC, decoded.topic());
     assertEquals("BSM", decoded.type());
@@ -738,26 +762,12 @@ class FfmlibDecodeServiceTest {
     assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
   }
 
-  @Test
-  void directRawDecodeStillRejectsAnUnstrippedSignedEnvelope() {
-    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
-    metadata.setSchemaVersion(9);
-    byte[] unstripped = CodecUtils.fromHex("0381000014");
-
-    assertThrows(UnsupportedOperationException.class,
-        () -> decodeService.decode(metadata, unstripped, "unstripped-signed"));
-
-    verify(ffmlibCodec, never()).uperToIntermediate(any());
-    assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.failures")
-        .tag("type", "unknown").tag("source", "udp").tag("reason", "signed_payload")
-        .counter().count(), 0.0);
-  }
-
   @ParameterizedTest
   @EnumSource(SupportedMessageType.class)
   void importedSignedEnvelopeMatchesExternalHeaderStripping(SupportedMessageType type)
       throws Exception {
-    stubSuccessfulDecode();
+    stubSuccessfulDecode(type);
+    stubJsonTopic(type);
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setCertPresent(true);
     metadata.setSecurityResultCode(SecurityResultCode.spduCryptoVerificationFailure);
@@ -811,7 +821,6 @@ class FfmlibDecodeServiceTest {
     var parsed = rawService.parseFfmRecord(rawJson, SupportedMessageType.BSM);
     OdeAsn1Data external = rawService.addEncodingAndMutateBytes(rawJson,
         SupportedMessageType.BSM, OdeMessageFrameMetadata.class);
-    assertArrayEquals(original, parsed.originalBytes());
     assertEquals(CodecUtils.toHex(original), parsed.metadata().getAsn1());
     assertEquals(BSM_HEX, CodecUtils.toHex(parsed.uperBytes()));
     assertEquals(((OdeHexByteArray) external.getPayload().getData()).getBytes(),
@@ -871,8 +880,7 @@ class FfmlibDecodeServiceTest {
   }
 
   @Test
-  void externalModeRetainsKafkaDecoderInputRollbackPath() {
-    decodeService.shutdown();
+  void importDecodeRequiresFfmMode() {
     Asn1CodecModeProperties modeProperties = new Asn1CodecModeProperties();
     modeProperties.setCodecMode(Asn1CodecModeProperties.CodecMode.external);
     decodeService = new FfmlibDecodeService(
@@ -880,22 +888,15 @@ class FfmlibDecodeServiceTest {
         new FfmlibProperties(),
         modeProperties,
         jsonTopics,
-        kafkaTemplate,
         outputPublisherProvider,
         simpleObjectMapper,
-        meterRegistry,
-        "topic.Asn1DecoderInput");
-    OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+        meterRegistry);
     OdeAsn1Data input = new OdeAsn1Data(
-        metadata, new OdeAsn1Payload(new OdeHexByteArray("0014")));
+        new OdeMessageFrameMetadata(), new OdeAsn1Payload(new OdeHexByteArray("0014")));
 
-    decodeService.decode(input, "external-key");
+    assertThrows(IllegalStateException.class, () -> decodeService.decode(input, "external-key"));
 
-    verify(kafkaTemplate).send(
-        eq("topic.Asn1DecoderInput"), eq("external-key"), any(String.class));
-    assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
-        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
-    assertTrue(meterRegistry.find("ode.ffmlib.decode.failures").counters().isEmpty());
+    verify(outputPublisher, never()).publish(any());
   }
 
   @Test
@@ -912,20 +913,19 @@ class FfmlibDecodeServiceTest {
 
     OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
     metadata.setSchemaVersion(9);
-    assertThrows(IllegalArgumentException.class, () -> decodeService.decode(
-        new OdeAsn1Data(metadata, new OdeAsn1Payload(new OdeHexByteArray(BSM_HEX))),
-        "drop-key"));
+    // Only an untyped raw record falls back to the decoded message ID to choose its topic.
+    assertThrows(IllegalArgumentException.class, () -> decodeService.prepareRaw(metadata,
+        new byte[] {0x00, 0x14}, "drop-key", null));
 
     verify(outputPublisher, never()).publish(any());
-    verify(kafkaTemplate, never()).send(any(), any(), any());
     assertEquals(1.0, meterRegistry.get("ode.ffmlib.decode.dropped")
         .tag("type", "unknown")
-        .tag("source", "import")
+        .tag("source", "udp")
         .tag("reason", "unmapped_topic")
         .counter()
         .count(), 0.0);
     assertEquals(0.0, meterRegistry.get("ode.ffmlib.decode.messages")
-        .tag("type", "BSM").tag("source", "import").counter().count(), 0.0);
+        .tag("type", "BSM").tag("source", "udp").counter().count(), 0.0);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

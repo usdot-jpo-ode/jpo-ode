@@ -89,7 +89,7 @@ class LogFileToAsn1CodecPublisherTest {
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
     verify(template).send(org.mockito.ArgumentMatchers.eq("topic.OdeRawEncodedBSMJson"),
         org.mockito.ArgumentMatchers.any(String.class));
-    verify(decoder, never()).decode(org.mockito.ArgumentMatchers.any(OdeAsn1Data.class),
+    verify(decoder, never()).submitDecode(org.mockito.ArgumentMatchers.any(OdeAsn1Data.class),
         org.mockito.ArgumentMatchers.any());
 
     org.mockito.Mockito.clearInvocations(template, decoder);
@@ -98,10 +98,57 @@ class LogFileToAsn1CodecPublisherTest {
     ffm.publish(new BufferedInputStream(new ByteArrayInputStream(logEntry)), filename,
         ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
     ArgumentCaptor<OdeAsn1Data> captured = ArgumentCaptor.forClass(OdeAsn1Data.class);
-    verify(decoder).decode(captured.capture(), org.mockito.ArgumentMatchers.isNull());
+    verify(decoder).submitDecode(captured.capture(), org.mockito.ArgumentMatchers.isNull());
     assertEquals(bsmTx, captured.getValue().getMetadata().getRecordType());
     verify(template, never()).send(org.mockito.ArgumentMatchers.anyString(),
         org.mockito.ArgumentMatchers.anyString());
+  }
+
+  @Test
+  void ffmImportSkipsAnUndecodableRecordButFailsTheFileOnPublicationFailure(
+      @Mock JsonTopics jsonTopics, @Mock RawEncodedJsonTopics rawTopics,
+      @Mock KafkaTemplate<String, String> template, @Mock FfmlibDecodeService decoder)
+      throws Exception {
+    byte[] logEntry = new byte[] {
+        0x00, 0x6f, 0x75, 0x4d, 0x19, (byte) 0xa4, (byte) 0xa1, 0x5c, (byte) 0xce,
+        0x67, 0x06, 0x00, 0x00, 0x04, 0x00, 0x09, 0x27, (byte) 0xa9, 0x2c,
+        (byte) 0xe2, 0x5a, (byte) 0x8f, 0x01, 0x00, 0x06, 0x00,
+        0x03, (byte) 0x81, 0x00, 0x14, 0x03, (byte) 0x80};
+    String filename = bsmTx.name() + GZ;
+    Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    var publisher = new LogFileToAsn1CodecPublisher(template, jsonTopics, rawTopics, mode,
+        decoder);
+
+    org.mockito.Mockito.when(decoder.submitDecode(org.mockito.ArgumentMatchers.any(),
+        org.mockito.ArgumentMatchers.isNull()))
+        .thenThrow(new IllegalArgumentException("malformed record"));
+    publisher.publish(new BufferedInputStream(new ByteArrayInputStream(logEntry)), filename,
+        ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
+    verify(decoder, never()).awaitImportPublications(org.mockito.ArgumentMatchers.any());
+
+    // An operational native failure is skipped only while the codec decodes its reference message.
+    org.mockito.Mockito.reset(decoder);
+    org.mockito.Mockito.when(decoder.submitDecode(org.mockito.ArgumentMatchers.any(),
+        org.mockito.ArgumentMatchers.isNull()))
+        .thenThrow(new FfmlibDecodeService.InfrastructureFailure("unrecognized native error",
+            null));
+    org.mockito.Mockito.when(decoder.codecDecodesReferenceMessage()).thenReturn(true, false);
+    publisher.publish(new BufferedInputStream(new ByteArrayInputStream(logEntry)), filename,
+        ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename));
+    assertThrows(LogFileToAsn1CodecPublisherException.class, () -> publisher.publish(
+        new BufferedInputStream(new ByteArrayInputStream(logEntry)), filename,
+        ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename)));
+
+    org.mockito.Mockito.reset(decoder);
+    org.mockito.Mockito.when(decoder.submitDecode(org.mockito.ArgumentMatchers.any(),
+        org.mockito.ArgumentMatchers.isNull()))
+        .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
+    org.mockito.Mockito.doThrow(new FfmlibDecodeService.PublishFailure("broker unavailable", null))
+        .when(decoder).awaitImportPublications(org.mockito.ArgumentMatchers.any());
+    assertThrows(LogFileToAsn1CodecPublisherException.class, () -> publisher.publish(
+        new BufferedInputStream(new ByteArrayInputStream(logEntry)), filename,
+        ImporterFileType.LOG_FILE, LogFileParserFactory.getLogFileParser(filename)));
   }
 
   @Test

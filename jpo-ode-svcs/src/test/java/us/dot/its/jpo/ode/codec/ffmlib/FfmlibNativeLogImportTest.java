@@ -82,7 +82,7 @@ class FfmlibNativeLogImportTest {
       expected.add(harness.jsonMapper.readTree(JsonUtils.toJson(
           OdeMessageFrameDataCreatorHelper.createOdeMessageFrameData(xml, xmlMapper), false)));
       return invocation.callRealMethod();
-    }).when(harness.decoder).decode(any(OdeAsn1Data.class), isNull());
+    }).when(harness.decoder).submitDecode(any(OdeAsn1Data.class), isNull());
     when(harness.outputKafka.send(anyString(), isNull(), anyString())).thenAnswer(invocation -> {
       assertEquals(topic, invocation.getArgument(0));
       actual.add(harness.jsonMapper.readTree((String) invocation.getArgument(2)));
@@ -91,72 +91,73 @@ class FfmlibNativeLogImportTest {
 
     Path imported = harness.inbox.resolve(filename);
     Files.copy(Path.of("..", "data", filename), imported);
-    try {
-      assertEquals(1, harness.processor.processDirectory(
-          harness.inbox, harness.backup, harness.failed));
-      assertEquals(recordCount, actual.size());
-      assertEquals(recordCount, expected.size());
-      for (int record = 0; record < recordCount; record++) {
-        assertEquals(expected.get(record).path("metadata"), actual.get(record).path("metadata"),
-            filename + " record " + record + " metadata");
-        assertEquals(expected.get(record).path("payload"), actual.get(record).path("payload"),
-            filename + " record " + record + " payload");
-      }
-      assertFalse(Files.exists(imported));
-      assertEquals(1, fileCount(harness.backup));
-      assertEquals(0, fileCount(harness.failed));
-      assertEquals(recordCount, harness.meters.get("ode.ffmlib.decode.messages")
-          .tag("source", "import").tag("type", type.name()).counter().count());
-      assertTrue(harness.meters.find("ode.ffmlib.decode.failures").counters().isEmpty());
-      verify(harness.externalKafka, never()).send(anyString(), anyString(), anyString());
-    } finally {
-      harness.decoder.shutdown();
+    assertEquals(1, harness.processor.processDirectory(
+        harness.inbox, harness.backup, harness.failed));
+    assertEquals(recordCount, actual.size());
+    assertEquals(recordCount, expected.size());
+    for (int record = 0; record < recordCount; record++) {
+      assertEquals(expected.get(record).path("metadata"), actual.get(record).path("metadata"),
+          filename + " record " + record + " metadata");
+      assertEquals(expected.get(record).path("payload"), actual.get(record).path("payload"),
+          filename + " record " + record + " payload");
     }
-  }
-
-  @ParameterizedTest
-  @ValueSource(booleans = {false, true})
-  void decodeAndPublicationFailuresKeepTheFileInTheFailedDirectory(boolean publicationFailure)
-      throws Exception {
-    Harness harness = new Harness();
-    Path imported = harness.inbox.resolve("rxMsg_commsignia_map.gz");
-    if (publicationFailure) {
-      Files.copy(Path.of("..", "data", imported.getFileName().toString()), imported);
-      when(harness.outputKafka.send(anyString(), isNull(), anyString()))
-          .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("Broker unavailable")));
-    } else {
-      // Keep a valid log header but truncate the ASN.1 content to just the MAP start flag.
-      byte[] entry;
-      try (InputStream input = new GZIPInputStream(Files.newInputStream(
-          Path.of("..", "data", imported.getFileName().toString())))) {
-        entry = Arrays.copyOf(input.readNBytes(26), 28);
-      }
-      entry[24] = 2;
-      entry[25] = 0;
-      entry[26] = 0;
-      entry[27] = 0x12;
-      imported = harness.inbox.resolve("rxMsg_invalid.bin");
-      Files.write(imported, entry);
-    }
-    try {
-      assertEquals(0, harness.processor.processDirectory(
-          harness.inbox, harness.backup, harness.failed));
-      assertFalse(Files.exists(imported));
-      assertTrue(Files.exists(harness.failed.resolve(imported.getFileName())));
-      assertEquals(0, fileCount(harness.backup));
-      assertEquals(0, harness.meters.get("ode.ffmlib.decode.messages")
-          .tag("source", "import").tag("type", "MAP").counter().count());
-      if (!publicationFailure) {
-        verify(harness.outputKafka, never()).send(anyString(), isNull(), anyString());
-      }
-    } finally {
-      harness.decoder.shutdown();
-    }
+    assertFalse(Files.exists(imported));
+    assertEquals(1, fileCount(harness.backup));
+    assertEquals(0, fileCount(harness.failed));
+    assertEquals(recordCount, harness.meters.get("ode.ffmlib.decode.messages")
+        .tag("source", "import").tag("type", type.name()).counter().count());
+    assertTrue(harness.meters.find("ode.ffmlib.decode.failures").counters().isEmpty());
+    verify(harness.externalKafka, never()).send(anyString(), anyString(), anyString());
   }
 
   @org.junit.jupiter.api.Test
-  void malformedMiddleLogEntryPublishesPrefixStopsBeforeSuffixAndReplayDuplicatesPrefix()
-      throws Exception {
+  void publicationFailureKeepsTheFileInTheFailedDirectory() throws Exception {
+    Harness harness = new Harness();
+    Path imported = harness.inbox.resolve("rxMsg_commsignia_map.gz");
+    Files.copy(Path.of("..", "data", imported.getFileName().toString()), imported);
+    when(harness.outputKafka.send(anyString(), isNull(), anyString()))
+        .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("Broker unavailable")));
+
+    assertEquals(0, harness.processor.processDirectory(
+        harness.inbox, harness.backup, harness.failed));
+    assertFalse(Files.exists(imported));
+    assertTrue(Files.exists(harness.failed.resolve(imported.getFileName())));
+    assertEquals(0, fileCount(harness.backup));
+    assertEquals(0, harness.meters.get("ode.ffmlib.decode.messages")
+        .tag("source", "import").tag("type", "MAP").counter().count());
+  }
+
+  @org.junit.jupiter.api.Test
+  void undecodableRecordIsSkippedAndTheFileIsBackedUp() throws Exception {
+    Harness harness = new Harness();
+    // Keep a valid log header but truncate the ASN.1 content to just the MAP start flag.
+    byte[] entry;
+    try (InputStream input = new GZIPInputStream(Files.newInputStream(
+        Path.of("..", "data", "rxMsg_commsignia_map.gz")))) {
+      entry = Arrays.copyOf(input.readNBytes(26), 28);
+    }
+    entry[24] = 2;
+    entry[25] = 0;
+    entry[26] = 0;
+    entry[27] = 0x12;
+    Path imported = harness.inbox.resolve("rxMsg_invalid.bin");
+    Files.write(imported, entry);
+
+    assertEquals(1, harness.processor.processDirectory(
+        harness.inbox, harness.backup, harness.failed));
+    assertFalse(Files.exists(imported));
+    assertEquals(1, fileCount(harness.backup));
+    assertEquals(0, fileCount(harness.failed));
+    assertEquals(0, harness.meters.get("ode.ffmlib.decode.messages")
+        .tag("source", "import").tag("type", "MAP").counter().count());
+    assertEquals(1.0, harness.meters.get("ode.ffmlib.decode.failures")
+        .tag("source", "import").counters().stream().mapToDouble(counter -> counter.count())
+        .sum());
+    verify(harness.outputKafka, never()).send(anyString(), isNull(), anyString());
+  }
+
+  @org.junit.jupiter.api.Test
+  void malformedMiddleLogEntryIsSkippedAndTheRestOfTheFileIsPublished() throws Exception {
     Harness harness = new Harness();
     Path source = Path.of("..", "data", "bsmTx_commsignia.gz");
     byte[] validEntry = firstBsmTxEntry(source);
@@ -171,7 +172,6 @@ class FfmlibNativeLogImportTest {
     contents.write(validEntry);
     contents.write(malformedEntry);
     contents.write(validEntry);
-    byte[] replayBytes = contents.toByteArray();
     List<String> published = new ArrayList<>();
     when(harness.outputKafka.send(anyString(), isNull(), anyString())).thenAnswer(invocation -> {
       published.add((String) invocation.getArgument(2));
@@ -179,30 +179,19 @@ class FfmlibNativeLogImportTest {
     });
 
     Path imported = harness.inbox.resolve("bsmTx_partial.bin");
-    Files.write(imported, replayBytes);
-    try {
-      assertEquals(0, harness.processor.processDirectory(
-          harness.inbox, harness.backup, harness.failed));
-      assertEquals(1, published.size());
-      assertEquals(0, fileCount(harness.backup));
-      assertEquals(1, fileCount(harness.failed));
+    Files.write(imported, contents.toByteArray());
 
-      Files.move(harness.failed.resolve(imported.getFileName()), imported);
-      assertEquals(0, harness.processor.processDirectory(
-          harness.inbox, harness.backup, harness.failed));
-
-      assertEquals(2, published.size());
-      JsonNode firstPayload = harness.jsonMapper.readTree(published.get(0)).path("payload");
-      JsonNode replayedPayload = harness.jsonMapper.readTree(published.get(1)).path("payload");
-      assertEquals(20, firstPayload.path("data").path("messageId").asInt());
-      assertEquals(firstPayload, replayedPayload);
-      assertEquals(0, fileCount(harness.backup));
-      assertEquals(1, fileCount(harness.failed));
-      assertEquals(2.0, harness.meters.get("ode.ffmlib.decode.messages")
-          .tag("source", "import").tag("type", "BSM").counter().count());
-    } finally {
-      harness.decoder.shutdown();
-    }
+    assertEquals(1, harness.processor.processDirectory(
+        harness.inbox, harness.backup, harness.failed));
+    assertEquals(2, published.size());
+    JsonNode firstPayload = harness.jsonMapper.readTree(published.get(0)).path("payload");
+    JsonNode lastPayload = harness.jsonMapper.readTree(published.get(1)).path("payload");
+    assertEquals(20, firstPayload.path("data").path("messageId").asInt());
+    assertEquals(firstPayload, lastPayload);
+    assertEquals(1, fileCount(harness.backup));
+    assertEquals(0, fileCount(harness.failed));
+    assertEquals(2.0, harness.meters.get("ode.ffmlib.decode.messages")
+        .tag("source", "import").tag("type", "BSM").counter().count());
   }
 
   @org.junit.jupiter.api.Test
@@ -212,22 +201,18 @@ class FfmlibNativeLogImportTest {
     Path imported = harness.inbox.resolve("bsmTx_disabled.bin");
     Files.write(imported, firstBsmTxEntry(Path.of("..", "data", "bsmTx_commsignia.gz")));
 
-    try {
-      assertEquals(1, harness.processor.processDirectory(
-          harness.inbox, harness.backup, harness.failed));
+    assertEquals(1, harness.processor.processDirectory(
+        harness.inbox, harness.backup, harness.failed));
 
-      assertFalse(Files.exists(imported));
-      assertEquals(1, fileCount(harness.backup));
-      assertEquals(0, fileCount(harness.failed));
-      assertEquals(0.0, harness.meters.get("ode.ffmlib.decode.messages")
-          .tag("source", "import").tag("type", "BSM").counter().count());
-      assertEquals(1.0, harness.meters.get("ode.ffmlib.output.skipped")
-          .tag("topic", "topic.OdeBsmJson").tag("reason", "disabled_topic")
-          .counter().count());
-      verify(harness.outputKafka, never()).send(anyString(), isNull(), anyString());
-    } finally {
-      harness.decoder.shutdown();
-    }
+    assertFalse(Files.exists(imported));
+    assertEquals(1, fileCount(harness.backup));
+    assertEquals(0, fileCount(harness.failed));
+    assertEquals(0.0, harness.meters.get("ode.ffmlib.decode.messages")
+        .tag("source", "import").tag("type", "BSM").counter().count());
+    assertEquals(1.0, harness.meters.get("ode.ffmlib.output.skipped")
+        .tag("topic", "topic.OdeBsmJson").tag("reason", "disabled_topic")
+        .counter().count());
+    verify(harness.outputKafka, never()).send(anyString(), isNull(), anyString());
   }
 
   private static byte[] firstBsmTxEntry(Path compressedLog) throws Exception {
@@ -292,7 +277,7 @@ class FfmlibNativeLogImportTest {
       topics.setBsm("topic.OdeBsmJson");
       topics.setTim("topic.OdeTimJson");
       decoder = spy(new FfmlibDecodeService(codecProvider, properties, mode, topics,
-          externalKafka, outputProvider, jsonMapper, meters, "topic.Asn1DecoderInput"));
+          outputProvider, jsonMapper, meters));
       processor = new ImporterProcessor(new LogFileToAsn1CodecPublisher(externalKafka,
           topics, new RawEncodedJsonTopics(), mode, decoder), ImporterFileType.LOG_FILE, 4096);
     }

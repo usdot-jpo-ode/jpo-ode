@@ -123,7 +123,7 @@ class FfmlibRawJsonListenerTest {
         CompletableFuture.failedFuture(new IllegalStateException("two")),
         CompletableFuture.failedFuture(new IllegalStateException("three")));
 
-    assertThrows(RuntimeException.class, () -> listener.bsm(record, acknowledgment));
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
 
     verify(output, times(3)).publish(prepared);
     verify(decoder).recordRawPublishFailure(prepared);
@@ -211,7 +211,7 @@ class FfmlibRawJsonListenerTest {
     when(quarantineProducer.send(any(ProducerRecord.class)))
         .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker down")));
 
-    assertThrows(IllegalStateException.class, () -> listener.bsm(record, acknowledgment));
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
 
     verify(acknowledgment, never()).acknowledge();
     assertEquals("DOWN", listener.health().getStatus().getCode());
@@ -294,6 +294,53 @@ class FfmlibRawJsonListenerTest {
     verify(nextAcknowledgment, never()).acknowledge();
     verify(quarantineProducer, times(1)).send(any(ProducerRecord.class));
     assertEquals("DOWN", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void thresholdFailuresWhileTheCodecDecodesAReferenceMessageAreQuarantined() {
+    FfmlibDecodeService.InfrastructureFailure failure =
+        new FfmlibDecodeService.InfrastructureFailure("unrecognized native error", null);
+    when(decoder.prepareRaw(eq(metadata), any(byte[].class), eq("packet-key"),
+        eq(SupportedMessageType.BSM))).thenThrow(failure);
+    when(decoder.codecDecodesReferenceMessage()).thenReturn(true);
+    when(quarantineProducer.send(any(ProducerRecord.class)))
+        .thenReturn(CompletableFuture.completedFuture(null));
+    listener = listenerWithHaltThreshold(2);
+
+    for (int offset = 0; offset < 5; offset++) {
+      listener.bsm(new ConsumerRecord<>(RAW_TOPIC, 0, offset, "packet-key", RAW_JSON),
+          acknowledgment);
+    }
+
+    verify(quarantineProducer, times(5)).send(any(ProducerRecord.class));
+    verify(acknowledgment, times(5)).acknowledge();
+    verify(decoder, times(2)).codecDecodesReferenceMessage();
+    assertEquals("UP", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void failedQuarantineIsRetriableAndARedeliveryIsNotCountedTwice() {
+    FfmlibDecodeService.InfrastructureFailure failure =
+        new FfmlibDecodeService.InfrastructureFailure("native capacity", null);
+    when(decoder.prepareRaw(eq(metadata), any(byte[].class), eq("packet-key"),
+        eq(SupportedMessageType.BSM))).thenThrow(failure);
+    when(quarantineProducer.send(any(ProducerRecord.class)))
+        .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker down")))
+        .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker down")))
+        .thenReturn(CompletableFuture.completedFuture(null));
+    listener = listenerWithHaltThreshold(2);
+
+    // The same record is redelivered after each failed quarantine publication.
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
+    assertEquals("DOWN", listener.health().getStatus().getCode());
+    listener.bsm(record, acknowledgment);
+
+    verify(acknowledgment, times(1)).acknowledge();
+    verify(decoder, never()).codecDecodesReferenceMessage();
+    assertEquals("UP", listener.health().getStatus().getCode());
   }
 
   @Test
@@ -385,7 +432,7 @@ class FfmlibRawJsonListenerTest {
     when(quarantineProducer.send(any(ProducerRecord.class)))
         .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("broker down")));
 
-    assertThrows(IllegalStateException.class, () -> realListener.bsm(record, acknowledgment));
+    assertThrows(FfmlibPublicationFailure.class, () -> realListener.bsm(record, acknowledgment));
 
     var captor = org.mockito.ArgumentCaptor.forClass(ProducerRecord.class);
     verify(quarantineProducer).send(captor.capture());
@@ -546,9 +593,7 @@ class FfmlibRawJsonListenerTest {
     Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
     mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     FfmlibDecodeService realDecoder = new FfmlibDecodeService(codecProvider,
-        new FfmlibProperties(), mode, new JsonTopics(),
-        mock(KafkaTemplate.class), outputProvider, new ObjectMapper(), meters,
-        "topic.Asn1DecoderInput");
+        new FfmlibProperties(), mode, new JsonTopics(), outputProvider, new ObjectMapper(), meters);
     FfmlibRawJsonListener realListener = new FfmlibRawJsonListener(rawService, realDecoder,
         output, quarantineProducer, topics, commitTracker, meters);
     realListener.markStartupComplete();

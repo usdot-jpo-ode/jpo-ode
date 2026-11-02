@@ -33,4 +33,17 @@ class FfmlibKafkaListenerConfigurationTest {
         odeProperties, ffmlibProperties);
     assertTrue(syncFactory.getContainerProperties().isSyncCommits());
   }
+
+  @Test
+  void partitionsWithoutCommittedOffsetsStartAtTheOldestRecord() {
+    KafkaProperties kafkaProperties = new KafkaProperties();
+    kafkaProperties.setBootstrapServers(List.of("localhost:9092"));
+    kafkaProperties.getConsumer().setAutoOffsetReset("latest");
+
+    var factory = new FfmlibKafkaListenerConfiguration().ffmlibKafkaListenerContainerFactory(
+        kafkaProperties, new OdeKafkaProperties(), new FfmlibProperties());
+
+    assertEquals("earliest", factory.getConsumerFactory().getConfigurationProperties()
+        .get(org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG));
+  }
 }

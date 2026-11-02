@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
@@ -174,6 +175,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
   private void publishList(List<OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>>> dataList, LogFileParser fileParser) {
     serialId.setBundleSize(dataList.size());
+    List<CompletableFuture<Void>> ffmPublications = new ArrayList<>();
 
     for (OdeData<OdeLogMetadata, OdeMsgPayload<OdeObject>> odeData : dataList) {
       OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
@@ -183,10 +185,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       if (isDriverAlertRecord(fileParser)) {
         template.send(jsonTopics.getDriverAlert(), JsonUtils.toJson(odeData, false));
       } else if (codecMode.isFfm()) {
-        if (ffmDecoder == null) {
-          throw new IllegalStateException("FFM mode requires the in-process log decoder");
-        }
-        ffmDecoder.decode((OdeAsn1Data) odeData, null);
+        submitFfmDecode((OdeAsn1Data) odeData, msgMetadata, ffmPublications);
       } else {
         String messageType = UperUtil.determineMessageType(msgPayload);
         switch (messageType) {
@@ -205,6 +204,31 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       }
 
       serialId.increment();
+    }
+    if (!ffmPublications.isEmpty()) {
+      ffmDecoder.awaitImportPublications(ffmPublications);
+    }
+  }
+
+  private void submitFfmDecode(OdeAsn1Data odeData, OdeLogMetadata msgMetadata,
+      List<CompletableFuture<Void>> ffmPublications) {
+    if (ffmDecoder == null) {
+      throw new IllegalStateException("FFM mode requires the in-process log decoder");
+    }
+    try {
+      ffmPublications.add(ffmDecoder.submitDecode(odeData, null));
+    } catch (IllegalArgumentException | UnsupportedOperationException e) {
+      // As on the external route, a record that cannot be decoded is skipped and the rest of the
+      // file is still imported. Operational failures propagate and fail the file.
+      log.warn("Skipping record {} of log file {} that cannot be decoded: {}",
+          serialId.getRecordId(), msgMetadata.getLogFileName(), e.getMessage());
+    } catch (FfmlibDecodeService.InfrastructureFailure e) {
+      // A codec that still decodes its reference message is working, so this record caused it.
+      if (!ffmDecoder.codecDecodesReferenceMessage()) {
+        throw e;
+      }
+      log.warn("Skipping record {} of log file {} that the native codec rejected: {}",
+          serialId.getRecordId(), msgMetadata.getLogFileName(), e.getMessage());
     }
   }
 

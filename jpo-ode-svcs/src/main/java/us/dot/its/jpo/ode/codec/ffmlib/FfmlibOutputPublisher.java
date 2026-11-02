@@ -66,7 +66,8 @@ public class FfmlibOutputPublisher {
     try {
       produced(message.topic()).increment();
       String originIp = message.metadata().getOriginIp();
-      if (originIp != null) {
+      // Absent origins are rendered as empty strings in the decoded metadata.
+      if (originIp != null && !originIp.isEmpty()) {
         meters.counter("kafka.produced.rsu.messages", "topic", message.topic(),
             "rsu_ip", originIp).increment();
       }

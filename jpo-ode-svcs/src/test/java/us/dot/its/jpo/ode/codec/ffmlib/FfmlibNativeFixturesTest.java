@@ -101,7 +101,7 @@ class FfmlibNativeFixturesTest {
     KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
     ObjectMapper jerMapper = new ObjectMapper();
     FfmlibDecodeService decoder = new FfmlibDecodeService(codecProvider, properties, mode, topics,
-        kafka, outputProvider, jerMapper, new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
+        outputProvider, jerMapper, new SimpleMeterRegistry());
     ObjectMapper jsonMapper = new ObjectMapper();
     RawEncodedJsonService rawService = new RawEncodedJsonService(jsonMapper);
 
@@ -203,8 +203,7 @@ class FfmlibNativeFixturesTest {
     Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
     mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     return new FfmlibDecodeService(codecProvider, new FfmlibProperties(), mode, jsonTopics(),
-        mock(KafkaTemplate.class), mock(ObjectProvider.class), new ObjectMapper(),
-        new SimpleMeterRegistry(), "topic.Asn1DecoderInput");
+        mock(ObjectProvider.class), new ObjectMapper(), new SimpleMeterRegistry());
   }
 
   private static byte[] signedBsm(byte[] validBsmUper) {
@@ -252,6 +251,57 @@ class FfmlibNativeFixturesTest {
     assertTrue(encodedBytes.isTextual(), "FFMLib encode branch must return MessageFrame bytes");
     assertArrayEquals(originalUper, CodecUtils.fromHex(encodedBytes.asText()),
         "FFMLib XML encode must preserve the original RSM UPER bytes");
+  }
+
+  @Test
+  void malformedNativeInputIsClassifiedAsInputWhileTheReferenceMessageDecodes() {
+    FfmlibDecodeService decoder = ffmDecoder(nativeCodec());
+
+    IllegalArgumentException failure = org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class, () -> decoder.prepareRaw(
+            new us.dot.its.jpo.ode.model.OdeMessageFrameMetadata(), CodecUtils.fromHex("0012"),
+            "truncated-map", SupportedMessageType.MAP));
+
+    assertTrue(FfmlibNativeErrors.isMalformedInput(failure),
+        "a truncated MessageFrame is bad input, not an operational codec failure");
+    assertTrue(decoder.codecDecodesReferenceMessage());
+  }
+
+  @Test
+  void udpDecodedMetadataHasTheExternalRouteFields() throws Exception {
+    FfmlibDecodeService decoder = ffmDecoder(nativeCodec());
+    ObjectMapper jsonMapper = new ObjectMapper();
+    byte[] received = hexFixture("udp/map/MapReceiverTest_ValidMAP.txt");
+    DatagramPacket packet = new DatagramPacket(received, received.length,
+        InetAddress.getLoopbackAddress(), 12345);
+    KafkaTemplate<String, String> rawKafka = mock(KafkaTemplate.class);
+    when(rawKafka.send(anyString(), anyString())).thenReturn(new CompletableFuture<>());
+    UdpIngestPublisher.rawOnly(rawKafka).publish(packet, SupportedMessageType.MAP,
+        "topic.OdeRawEncodedMAPJson");
+    ArgumentCaptor<String> rawJson = ArgumentCaptor.forClass(String.class);
+    verify(rawKafka).send(eq("topic.OdeRawEncodedMAPJson"), rawJson.capture());
+    RawEncodedJsonService.FfmDecodeInput input = new RawEncodedJsonService(jsonMapper)
+        .parseFfmDecodeInput(rawJson.getValue(), SupportedMessageType.MAP);
+
+    JsonNode ffmMetadata = jsonMapper.readTree(decoder.prepareRaw(input.metadata(),
+        input.uperBytes(), null, SupportedMessageType.MAP).json()).path("metadata");
+
+    JsonNode externalCase = jsonMapper.readTree(Path.of("src/test/resources",
+            "us.dot.its.jpo.ode.udp.map", "Asn1DecoderRouter_ApprovalTestCases_MapJson.json")
+        .toFile()).path("cases").path(0).path("expected");
+    JsonNode externalMetadata = (externalCase.isTextual()
+        ? jsonMapper.readTree(externalCase.asText()) : externalCase).path("metadata");
+    List<String> externalFields = new ArrayList<>();
+    externalMetadata.fieldNames().forEachRemaining(externalFields::add);
+    List<String> ffmFields = new ArrayList<>();
+    ffmMetadata.fieldNames().forEachRemaining(ffmFields::add);
+    assertEquals(new java.util.TreeSet<>(externalFields), new java.util.TreeSet<>(ffmFields),
+        "FFM UDP output must carry the same metadata fields as the external route");
+    for (String field : externalFields) {
+      if ("".equals(externalMetadata.path(field).asText(null))) {
+        assertEquals("", ffmMetadata.path(field).asText(null), field);
+      }
+    }
   }
 
   private static FfmlibMessageFrameCodec nativeCodec() {
@@ -314,7 +364,6 @@ class FfmlibNativeFixturesTest {
     byte[] externalUper = org.apache.tomcat.util.buf.HexUtils.fromHexString(
         ((OdeHexByteArray) external.getPayload().getData()).getBytes());
 
-    assertArrayEquals(received, parsed.originalBytes());
     assertArrayEquals(validBsmUper, externalUper);
     assertArrayEquals(externalUper, parsed.uperBytes());
 

@@ -27,12 +27,11 @@ final class FfmlibFailures {
   /**
    * Names the dead-letter {@code failure-category} for a rejected input.
    *
-   * @param error the parse, decode, or publication failure
+   * @param error the parse or decode failure
    * @param decodedMapping whether the failure happened after the raw input was parsed
-   * @param publishFailure whether output publication was exhausted
    * @return the category header value
    */
-  static String category(Exception error, boolean decodedMapping, boolean publishFailure) {
+  static String category(Exception error, boolean decodedMapping) {
     boolean unsupportedSigned = false;
     boolean jsonProcessing = false;
     for (Throwable cause : causes(error)) {
@@ -41,9 +40,6 @@ final class FfmlibFailures {
     }
     if (unsupportedSigned) {
       return "unsupported_signed";
-    }
-    if (publishFailure) {
-      return "publish_failure";
     }
     if (decodedMapping && jsonProcessing) {
       return "mapping_failure";

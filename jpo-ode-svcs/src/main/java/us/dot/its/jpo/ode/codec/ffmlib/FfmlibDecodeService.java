@@ -13,14 +13,16 @@ import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
@@ -51,6 +53,7 @@ import us.dot.its.jpo.ode.model.OdeHexByteArray;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
+import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
 import us.dot.its.jpo.ode.uper.SupportedMessageType;
@@ -69,17 +72,17 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 @Service
 public class FfmlibDecodeService {
 
-  private static final byte[] SIGNED_DOT2_PREFIX = {0x03, (byte) 0x81, 0x00};
-  private static final String IEEE_PDU = "Ieee1609Dot2Data";
   private static final String SOURCE_UDP = "udp";
   private static final String SOURCE_IMPORT = "import";
   private static final String TYPE_UNKNOWN = "unknown";
+  private static final Duration IMPORT_CONFIRMATION_TIMEOUT = Duration.ofSeconds(10);
+  // A valid SignalStatusMessage MessageFrame, used to check that the native codec still works.
+  private static final byte[] REFERENCE_MESSAGE_FRAME =
+      CodecUtils.fromHex("001e120000000005e9c04071a26614c06000040ba0");
 
   private final ObjectProvider<FfmlibMessageFrameCodec> ffmlibCodec;
   private final Asn1CodecModeProperties modeProperties;
-  private final String externalDecoderInputTopic;
   private final JsonTopics jsonTopics;
-  private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectProvider<FfmlibOutputPublisher> outputPublisher;
   private final ObjectReader messageFrameReader;
   private final ObjectReader bsmValueReader;
@@ -101,27 +104,21 @@ public class FfmlibDecodeService {
    * @param properties FFMLib runtime properties
    * @param modeProperties codec-mode selection
    * @param jsonTopics decoded JSON topic names
-   * @param kafkaTemplate Kafka producer used for the external decoder path
    * @param outputPublisher FFM JSON publisher used by the optional in-process route
    * @param simpleObjectMapper JSON mapper for J2735 JER processing
    * @param meterRegistry Micrometer registry for decode timers
-   * @param externalDecoderInputTopic legacy external decoder input topic name
    */
   public FfmlibDecodeService(
       ObjectProvider<FfmlibMessageFrameCodec> ffmlibCodec,
       FfmlibProperties properties,
       Asn1CodecModeProperties modeProperties,
       JsonTopics jsonTopics,
-      @Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
       ObjectProvider<FfmlibOutputPublisher> outputPublisher,
       @Qualifier("simpleObjectMapper") ObjectMapper simpleObjectMapper,
-      MeterRegistry meterRegistry,
-      @Value("${ode.kafka.topics.asn1.decoder-input}") String externalDecoderInputTopic) {
+      MeterRegistry meterRegistry) {
     this.ffmlibCodec = ffmlibCodec;
     this.modeProperties = modeProperties;
-    this.externalDecoderInputTopic = externalDecoderInputTopic;
     this.jsonTopics = jsonTopics;
-    this.kafkaTemplate = kafkaTemplate;
     this.outputPublisher = outputPublisher;
     this.messageFrameReader = simpleObjectMapper.readerFor(MessageFrame.class);
     this.bsmValueReader = simpleObjectMapper.readerFor(BasicSafetyMessage.class);
@@ -179,15 +176,34 @@ public class FfmlibDecodeService {
         .register(meterRegistry);
   }
 
-  /** Decodes an imported log record directly to its Ode JSON topic. */
+  /**
+   * Decodes an imported log record and waits until Kafka confirms its Ode JSON publication.
+   *
+   * @param asn1Data the imported record
+   * @param key Kafka record key
+   * @throws PublishFailure when Kafka does not confirm the output; the record itself is valid
+   * @throws IllegalArgumentException when the record cannot be decoded or mapped
+   * @throws InfrastructureFailure when the native codec fails operationally
+   */
   public void decode(OdeAsn1Data asn1Data, String key) {
+    awaitImportPublications(List.of(submitDecode(asn1Data, key)));
+  }
+
+  /**
+   * Decodes an imported log record and submits its Ode JSON publication without waiting for
+   * Kafka, so that a file's records can be confirmed together with
+   * {@link #awaitImportPublications(List)}.
+   *
+   * @param asn1Data the imported record
+   * @param key Kafka record key
+   * @return completes when Kafka confirms the output or its destination is disabled, and fails
+   *     with {@link PublishFailure} otherwise
+   * @throws IllegalArgumentException when the record cannot be decoded or mapped
+   * @throws InfrastructureFailure when the native codec fails operationally
+   */
+  public CompletableFuture<Void> submitDecode(OdeAsn1Data asn1Data, String key) {
     if (!modeProperties.isFfm()) {
-      try {
-        kafkaTemplate.send(externalDecoderInputTopic, key, JsonUtils.toJson(asn1Data, false));
-      } catch (Exception error) {
-        throw new IllegalArgumentException("Unable to publish external ASN.1 decoder input", error);
-      }
-      return;
+      throw new IllegalStateException("Import decode requires FFM mode");
     }
     try {
       long prepStart = System.nanoTime();
@@ -205,12 +221,9 @@ public class FfmlibDecodeService {
           (System.nanoTime() - prepStart) / 1000);
 
       OdeMessageFrameMetadata metadata = (OdeMessageFrameMetadata) asn1Data.getMetadata();
-      // The external route's XML round trip renders absent optional strings as empty strings.
-      metadata.setOriginIp(metadata.getOriginIp() == null ? "" : metadata.getOriginIp());
-      metadata.setOdePacketID(metadata.getOdePacketID() == null ? "" : metadata.getOdePacketID());
-      metadata.setOdeTimStartDateTime(
-          metadata.getOdeTimStartDateTime() == null ? "" : metadata.getOdeTimStartDateTime());
-      runPublishDecoded(metadata, uperBytes, key, null, SOURCE_IMPORT);
+      // The stripped bytes start with the start flag of the detected type, so it is the type of
+      // the decoded MessageFrame and selects the direct JER binding.
+      return submitDecoded(metadata, uperBytes, key, type);
     } catch (UnsupportedOperationException | InfrastructureFailure | DecodeFailure failure) {
       throw failure;
     } catch (ClassCastException e) {
@@ -226,18 +239,47 @@ public class FfmlibDecodeService {
     }
   }
 
-  /** Decodes bytes extracted from a raw Kafka record without another hex conversion. */
-  public void decode(OdeMessageFrameMetadata metadata, byte[] uperBytes, String key) {
-    if (!modeProperties.isFfm()) {
-      throw new IllegalStateException("Raw-topic decode requires FFM mode");
+  /**
+   * Waits for submitted import publications, sharing one confirmation budget among them.
+   *
+   * @param publications futures returned by {@link #submitDecode(OdeAsn1Data, String)}
+   * @throws PublishFailure when any publication is not confirmed within the budget
+   */
+  public void awaitImportPublications(List<CompletableFuture<Void>> publications) {
+    long deadline = System.nanoTime() + IMPORT_CONFIRMATION_TIMEOUT.toNanos();
+    for (CompletableFuture<Void> publication : publications) {
+      try {
+        publication.get(Math.max(0, deadline - System.nanoTime()), TimeUnit.NANOSECONDS);
+      } catch (InterruptedException error) {
+        Thread.currentThread().interrupt();
+        throw new PublishFailure("Interrupted while publishing decoded ASN.1 payload", error);
+      } catch (ExecutionException error) {
+        if (error.getCause() instanceof PublishFailure failure) {
+          throw failure;
+        }
+        throw new PublishFailure("Unable to publish decoded ASN.1 payload", error.getCause());
+      } catch (TimeoutException error) {
+        throw new PublishFailure("Decoded ASN.1 payload was not confirmed within "
+            + IMPORT_CONFIRMATION_TIMEOUT.toSeconds() + " seconds", error);
+      }
     }
-    runPublishDecoded(metadata, uperBytes, key, null, SOURCE_UDP);
   }
 
-  /** Prepares one raw-topic output; the listener confirms it before acknowledging its input. */
-  public PreparedDecodedMessage prepareRaw(OdeMessageFrameMetadata metadata, byte[] uperBytes,
-      String key) {
-    return prepareRaw(metadata, uperBytes, key, null);
+  /**
+   * Reports whether the native codec still decodes a known-valid MessageFrame. Listeners check
+   * this before treating repeated operational failures as a systemic fault, so inputs that raise
+   * unrecognized native errors cannot stop decoding while the codec itself works.
+   *
+   * @return true when the reference message decodes
+   */
+  public boolean codecDecodesReferenceMessage() {
+    try {
+      codec().uperToIntermediate(REFERENCE_MESSAGE_FRAME);
+      return true;
+    } catch (RuntimeException error) {
+      log.error("FFMLib native codec cannot decode its reference message", error);
+      return false;
+    }
   }
 
   /**
@@ -258,7 +300,7 @@ public class FfmlibDecodeService {
     }
     long start = System.nanoTime();
     try {
-      return prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_UDP, start, true);
+      return prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_UDP, start);
     } catch (RuntimeException error) {
       totalTimer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
       throw error;
@@ -283,40 +325,36 @@ public class FfmlibDecodeService {
       long sendStartedNanos) {
   }
 
-  private void runPublishDecoded(
+  private CompletableFuture<Void> submitDecoded(
       OdeMessageFrameMetadata metadata,
       byte[] uperBytes,
       String key,
-      SupportedMessageType knownType,
-      String source) {
+      SupportedMessageType knownType) {
     long totalStart = System.nanoTime();
+    PreparedDecodedMessage prepared;
     try {
-      PreparedDecodedMessage prepared =
-          prepareDecoded(metadata, uperBytes, key, knownType, source, totalStart);
-      try {
-        if (modeProperties.isFfm()) {
-          FfmlibOutputPublisher.PublicationOutcome outcome =
-              outputPublisher.getObject().publish(prepared).get(10, TimeUnit.SECONDS);
-          if (outcome == FfmlibOutputPublisher.PublicationOutcome.SKIPPED_DISABLED) {
-            return;
-          }
-        } else {
-          kafkaTemplate.send(prepared.topic(), key, prepared.json()).get(10, TimeUnit.SECONDS);
-        }
-      } catch (InterruptedException error) {
-        Thread.currentThread().interrupt();
-        recordFailure(prepared.type(), source, "publish");
-        throw new PublishFailure("Interrupted while publishing decoded ASN.1 payload", error);
-      } catch (Exception error) {
-        recordFailure(prepared.type(), source, "publish");
+      prepared = prepareDecoded(metadata, uperBytes, key, knownType, SOURCE_IMPORT, totalStart);
+    } catch (RuntimeException error) {
+      totalTimer.record(System.nanoTime() - totalStart, TimeUnit.NANOSECONDS);
+      throw error;
+    }
+    return outputPublisher.getObject().publish(prepared).handle((outcome, error) -> {
+      totalTimer.record(System.nanoTime() - totalStart, TimeUnit.NANOSECONDS);
+      if (error != null) {
+        recordFailure(prepared.type(), SOURCE_IMPORT, "publish");
         throw new PublishFailure("Unable to publish decoded ASN.1 payload", error);
       }
-      recordConfirmed(prepared);
-    } finally {
-      totalTimer.record(System.nanoTime() - totalStart, TimeUnit.NANOSECONDS);
-    }
+      if (outcome == FfmlibOutputPublisher.PublicationOutcome.PUBLISHED) {
+        recordConfirmed(prepared);
+      }
+      return null;
+    });
   }
 
+  /**
+   * Decodes and maps MessageFrame bytes whose transport and security envelopes the caller has
+   * already stripped; the security metadata set while stripping is retained.
+   */
   private PreparedDecodedMessage prepareDecoded(
       OdeMessageFrameMetadata metadata,
       byte[] uperBytes,
@@ -324,27 +362,12 @@ public class FfmlibDecodeService {
       SupportedMessageType knownType,
       String source,
       long startNanos) {
-    return prepareDecoded(metadata, uperBytes, key, knownType, source, startNanos,
-        SOURCE_IMPORT.equals(source));
-  }
-
-  private PreparedDecodedMessage prepareDecoded(
-      OdeMessageFrameMetadata metadata,
-      byte[] uperBytes,
-      String key,
-      SupportedMessageType knownType,
-      String source,
-      long startNanos,
-      boolean messageFrameAlreadyExtracted) {
     String type = knownType == null ? TYPE_UNKNOWN : knownType.name();
     try {
       long nativeStart = System.nanoTime();
-      // Imports and raw-topic records already stripped the envelope; retain security metadata.
-      byte[] messageFrameBytes = messageFrameAlreadyExtracted
-          ? uperBytes : unwrapIeee1609IfPresent(metadata, uperBytes);
       IntermediateDecodeResult intermediate;
       try {
-        intermediate = codec().uperToIntermediate(messageFrameBytes);
+        intermediate = codec().uperToIntermediate(uperBytes);
       } catch (RuntimeException nativeError) {
         if (FfmlibNativeErrors.isMalformedInput(nativeError)) {
           throw new NativeInputFailure(nativeError);
@@ -379,9 +402,14 @@ public class FfmlibDecodeService {
       if (metadata.getOdeReceivedAt() == null || metadata.getOdeReceivedAt().isBlank()) {
         metadata.setOdeReceivedAt(DateTimeUtils.now());
       }
+      renderAbsentStringsAsEmpty(metadata);
       metadata.setEncodings(null);
-      if (metadata.getReceivedMessageDetails() != null
-          && metadata.getReceivedMessageDetails().getRxSource() == null) {
+      // The external route's XML round trip turns absent details into an empty object, and its
+      // schema requires an rxSource.
+      if (metadata.getReceivedMessageDetails() == null) {
+        metadata.setReceivedMessageDetails(new ReceivedMessageDetails());
+      }
+      if (metadata.getReceivedMessageDetails().getRxSource() == null) {
         metadata.getReceivedMessageDetails().setRxSource(RxSource.NA);
       }
       if (metadata.getSchemaVersion() <= 4) {
@@ -435,6 +463,28 @@ public class FfmlibDecodeService {
     }
   }
 
+  /**
+   * Renders absent optional metadata strings as empty strings, as the external route's XML round
+   * trip does. The JSON serializer drops null fields, and the ODE schemas require these.
+   */
+  private static void renderAbsentStringsAsEmpty(OdeMessageFrameMetadata metadata) {
+    if (metadata.getOriginIp() == null) {
+      metadata.setOriginIp("");
+    }
+    if (metadata.getOdePacketID() == null) {
+      metadata.setOdePacketID("");
+    }
+    if (metadata.getOdeTimStartDateTime() == null) {
+      metadata.setOdeTimStartDateTime("");
+    }
+    if (metadata.getRecordGeneratedAt() == null) {
+      metadata.setRecordGeneratedAt("");
+    }
+    if (metadata.getLogFileName() == null) {
+      metadata.setLogFileName("");
+    }
+  }
+
   private void recordConfirmed(PreparedDecodedMessage prepared) {
     sendTimer.record(System.nanoTime() - prepared.sendStartedNanos(), TimeUnit.NANOSECONDS);
     recordDecoded(prepared.type(), prepared.source());
@@ -446,13 +496,14 @@ public class FfmlibDecodeService {
   }
 
   private void recordEndToEndLatency(OdeMessageFrameMetadata metadata, String type) {
-    if (metadata.getOdeReceivedAt() == null || metadata.getLogFileName() != null) {
+    // Imported records carry a log file name; their timestamps are not live UDP latency samples.
+    if (metadata.getOdeReceivedAt() == null
+        || (metadata.getLogFileName() != null && !metadata.getLogFileName().isEmpty())) {
       return;
     }
     try {
       Duration elapsed = Duration.between(Instant.parse(metadata.getOdeReceivedAt()),
           Instant.now());
-      // Imported historical timestamps are not live UDP latency samples.
       if (!elapsed.isNegative() && elapsed.compareTo(Duration.ofMinutes(5)) < 0) {
         endToEndTimers.computeIfAbsent(type, messageType ->
             Timer.builder("ode.ffmlib.decode.end.to.end")
@@ -731,54 +782,6 @@ public class FfmlibDecodeService {
     return codec;
   }
 
-  private byte[] unwrapIeee1609IfPresent(OdeMessageFrameMetadata metadata, byte[] encoded) {
-    if (!isIeee1609(encoded, metadata)) {
-      metadata.setCertPresent(false);
-      return encoded;
-    }
-
-    throw new UnsupportedOperationException(
-        "Unstripped IEEE 1609.2 payloads are not decoded by direct FFM decode; "
-            + "provide extracted MessageFrame UPER bytes or use external codec mode");
-  }
-
-  private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata) {
-    return isIeee1609(encoded, metadata, null);
-  }
-
-  private static boolean isIeee1609(byte[] encoded, OdeMessageFrameMetadata metadata,
-      SupportedMessageType knownType) {
-    if (metadata.getEncodings() != null && metadata.getEncodings().stream()
-        .anyMatch(encoding -> IEEE_PDU.equals(encoding.getElementType()))) {
-      return true;
-    }
-    if (hasSignedDot2Prefix(encoded)) {
-      return true;
-    }
-    String messageType = knownType == null ? UperUtil.determinePacketType(encoded) : knownType.name();
-    if (messageType.isEmpty()) {
-      return false;
-    }
-    // Preserve the external decoder's header handling: only search before the MessageFrame,
-    // and retain the signed 1609.2 envelope while stripping WSMP / unsigned headers.
-    byte[] envelope = UperUtil.stripDot3Header(encoded,
-        SupportedMessageType.valueOf(messageType).getStartFlagBytes());
-    return hasSignedDot2Prefix(envelope);
-  }
-
-  private static boolean hasSignedDot2Prefix(byte[] encoded) {
-    if (encoded.length >= SIGNED_DOT2_PREFIX.length) {
-      boolean prefix = true;
-      for (int i = 0; i < SIGNED_DOT2_PREFIX.length; i++) {
-        prefix &= encoded[i] == SIGNED_DOT2_PREFIX[i];
-      }
-      if (prefix) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private String resolveJsonTopic(SupportedMessageType knownType, MessageFrame<?> messageFrame) {
     if (knownType != null) {
       String topic = resolveJsonTopic(knownType);
@@ -820,9 +823,5 @@ public class FfmlibDecodeService {
       case "roadSafetyMessage" -> jsonTopics.getRsm();
       default -> null;
     };
-  }
-
-  public void shutdown() {
-    // Retained as a source-compatible lifecycle hook after removing the excluded worker pool.
   }
 }

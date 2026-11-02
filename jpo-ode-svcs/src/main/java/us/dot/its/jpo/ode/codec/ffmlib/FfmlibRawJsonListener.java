@@ -271,8 +271,9 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   /**
    * Quarantines a record that could not be parsed or decoded. Operational failures are counted:
-   * once enough consecutive records fail that way, the fault is treated as systemic, so the
-   * listener stops and leaves the record uncommitted instead of quarantining it.
+   * once enough consecutive records fail that way and the codec also fails to decode a known-valid
+   * reference message, the fault is treated as systemic, so the listener stops and leaves the
+   * record uncommitted instead of quarantining it.
    */
   private void rejectRecord(SupportedMessageType type, String listenerId,
       ConsumerRecord<String, String> record, Acknowledgment acknowledgment, Exception error,
@@ -281,28 +282,45 @@ public class FfmlibRawJsonListener implements HealthIndicator {
         FfmlibFailures.findInfrastructureFailure(error);
     if (failure == null) {
       quarantine(record, listenerId, rawTopic(type), FfmlibFailures.category(error,
-          decodedMapping, error instanceof ExhaustedPublishAttemptsException), 1);
+          decodedMapping), 1);
       resetInfrastructureFailures(listenerId);
       acknowledge(listenerId, acknowledgment);
+      // A confirmed quarantine shows that earlier publication failures have cleared.
+      unhealthyListeners.remove(listenerId);
       return;
     }
 
-    int consecutive = consecutiveInfrastructureFailures
-        .computeIfAbsent(listenerId, id -> new AtomicInteger()).incrementAndGet();
+    AtomicInteger failures = consecutiveInfrastructureFailures
+        .computeIfAbsent(listenerId, id -> new AtomicInteger());
+    // The count is stored only after the record is quarantined, so a record redelivered after a
+    // failed quarantine publication is not counted twice.
+    int consecutive = failures.get() + 1;
     if (consecutive >= infrastructureHaltThreshold) {
-      unhealthyListeners.put(listenerId, "infrastructure_" + failure.getClass().getSimpleName());
-      log.error("FFM native decode failed operationally for {} consecutive records on listener {};"
-          + " stopping it and leaving {} offset {} uncommitted", consecutive, listenerId,
-          record.topic(), record.offset(), failure);
-      throw failure;
+      if (!decoder.codecDecodesReferenceMessage()) {
+        unhealthyListeners.put(listenerId, "infrastructure_" + failure.getClass().getSimpleName());
+        log.error("FFM native decode failed operationally for {} consecutive records on listener"
+            + " {} and the codec cannot decode a reference message; stopping it and leaving {}"
+            + " offset {} uncommitted", consecutive, listenerId, record.topic(), record.offset(),
+            failure);
+        throw failure;
+      }
+      // The codec still works, so the failures come from the inputs themselves (for example a
+      // native error the classifier does not recognize). Halting would let input stop the type.
+      log.error("FFM native decode failed operationally for {} consecutive records on listener {},"
+          + " but the codec decodes a reference message; quarantining {} offset {} and"
+          + " continuing", consecutive, listenerId, record.topic(), record.offset(), failure);
+      consecutive = 0;
+    } else {
+      log.error("FFM native decode failed operationally for {} offset {}; quarantining it"
+          + " ({} of {} consecutive failures before the codec is checked)", record.topic(),
+          record.offset(), consecutive, infrastructureHaltThreshold, failure);
     }
-    log.error("FFM native decode failed operationally for {} offset {}; quarantining it"
-        + " ({} of {} consecutive failures before the listener stops)", record.topic(),
-        record.offset(), consecutive, infrastructureHaltThreshold, failure);
+    quarantine(record, listenerId, rawTopic(type), FfmlibFailures.INFRASTRUCTURE, 1);
+    failures.set(consecutive);
     infrastructureQuarantines.computeIfAbsent(type, key -> meters.counter(
         "ode.ffmlib.infrastructure.quarantined", "type", key.name())).increment();
-    quarantine(record, listenerId, rawTopic(type), FfmlibFailures.INFRASTRUCTURE, 1);
     acknowledge(listenerId, acknowledgment);
+    unhealthyListeners.remove(listenerId);
   }
 
   private void resetInfrastructureFailures(String listenerId) {
@@ -369,7 +387,7 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   private RuntimeException failedPublication(PreparedDecodedMessage message, Throwable error) {
     decoder.recordRawPublishFailure(message);
-    return new ExhaustedPublishAttemptsException(error);
+    return new FfmlibPublicationFailure("FFM output publication failed after retries", error);
   }
 
   private void quarantine(ConsumerRecord<String, String> original, String listenerId,
@@ -393,10 +411,10 @@ public class FfmlibRawJsonListener implements HealthIndicator {
           + "uncommitted", dltTopic, original.topic(), original.offset(), error);
       throw new IllegalStateException("FFM quarantine publication interrupted", error);
     } catch (Exception error) {
-      unhealthyListeners.put(listenerId, error.getClass().getSimpleName());
+      unhealthyListeners.put(listenerId, FfmlibPublicationFailure.class.getSimpleName());
       log.error("Unable to publish FFM quarantine record to {}; leaving {} offset {} uncommitted",
           dltTopic, original.topic(), original.offset(), error);
-      throw new IllegalStateException("FFM quarantine publication failed", error);
+      throw new FfmlibPublicationFailure("FFM quarantine publication failed", error);
     }
   }
 
@@ -417,11 +435,5 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   private static byte[] bytes(String value) {
     return value.getBytes(StandardCharsets.UTF_8);
-  }
-
-  private static final class ExhaustedPublishAttemptsException extends RuntimeException {
-    private ExhaustedPublishAttemptsException(Throwable cause) {
-      super("FFM output publication failed after retries", cause);
-    }
   }
 }

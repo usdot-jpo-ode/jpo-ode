@@ -112,7 +112,8 @@ public class FfmlibDirectUdpDecoder implements HealthIndicator {
       category = FfmlibFailures.INFRASTRUCTURE;
       int consecutive = consecutiveInfrastructureFailures
           .computeIfAbsent(type, key -> new AtomicInteger()).incrementAndGet();
-      if (consecutive >= infrastructureHaltThreshold) {
+      // A codec that still decodes a reference message is healthy: the inputs are failing.
+      if (consecutive >= infrastructureHaltThreshold && !decoder.codecDecodesReferenceMessage()) {
         unhealthyTypes.put(type.name(), "infrastructure_failures_" + consecutive);
       }
       infrastructureQuarantines.computeIfAbsent(type, key -> meters.counter(
@@ -120,7 +121,7 @@ public class FfmlibDirectUdpDecoder implements HealthIndicator {
       log.error("FFM native decode failed operationally for a {} datagram ({} consecutive);"
           + " quarantining it", type, consecutive, error);
     } else {
-      category = FfmlibFailures.category(error, true, false);
+      category = FfmlibFailures.category(error, true);
       recordSuccess(type);
       log.debug("Quarantining undecodable {} datagram as {}", type, category, error);
     }
