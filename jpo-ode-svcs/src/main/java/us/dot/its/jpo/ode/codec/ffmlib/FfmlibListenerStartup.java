@@ -10,8 +10,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.RebalanceInProgressException;
+import org.apache.kafka.common.errors.RetriableException;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Conditional;
@@ -95,9 +98,9 @@ public class FfmlibListenerStartup implements ApplicationRunner {
     List<org.springframework.kafka.listener.MessageListenerContainer> started = new ArrayList<>();
     try {
       FfmlibTopicWarmup.requireRawTopicsEnabled(rawTopics.allTopics(), disabledTopics);
-      FfmlibTopicWarmup.warmProducerMetadata(rawProducer, rawTopics.allTopics());
+      FfmlibTopicWarmup.warmProducerMetadata(rawProducer, rawTopics.allTopics(), disabledTopics);
       FfmlibTopicWarmup.warmProducerMetadata(outputProducer,
-          FfmlibTopicWarmup.outputTopics(jsonTopics, rawTopics));
+          FfmlibTopicWarmup.outputTopics(jsonTopics, rawTopics), disabledTopics);
       commitTracker.setSynchronous(syncCommits);
       Map<String, AssignmentTracker> assignments = new HashMap<>();
       for (String listenerId : LISTENER_IDS) {
@@ -109,7 +112,12 @@ public class FfmlibListenerStartup implements ApplicationRunner {
         containerProperties.setSyncCommits(syncCommits);
         containerProperties.setCommitCallback((offsets, error) -> {
           commitTracker.completeCommit(error);
-          if (error != null) {
+          if (error != null && isTransientCommitFailure(error)) {
+            // Spring Kafka does not retry failed async commits. A later commit covers these
+            // offsets, or the records are redelivered after the rebalance (at-least-once).
+            log.warn("Offset commit for FFM listener {} did not complete ({}); a later commit or"
+                + " redelivery covers {}", listenerId, error.getClass().getSimpleName(), offsets);
+          } else if (error != null) {
             rawJsonListener.recordCommitFailure(listenerId, error);
             log.error("Stopping FFM listener {} after offset commit failure for {}", listenerId,
                 offsets);
@@ -138,6 +146,16 @@ public class FfmlibListenerStartup implements ApplicationRunner {
       stopStarted(started);
       throw error;
     }
+  }
+
+  /**
+   * Reports whether an async commit failed only because of a group rebalance or a retriable
+   * broker condition. Such failures are routine and must not stop the listener.
+   */
+  static boolean isTransientCommitFailure(Exception error) {
+    return error instanceof RetriableException
+        || error instanceof RebalanceInProgressException
+        || error instanceof CommitFailedException;
   }
 
   private static void stopStarted(

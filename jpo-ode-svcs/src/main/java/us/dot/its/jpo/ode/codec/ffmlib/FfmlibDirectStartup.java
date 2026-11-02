@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
@@ -9,6 +10,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 
@@ -27,6 +29,7 @@ public class FfmlibDirectStartup implements ApplicationRunner {
   private final KafkaTemplate<String, String> rawProducer;
   private final KafkaTemplate<String, String> outputProducer;
   private final boolean rawPublish;
+  private final Set<String> disabledTopics;
 
   /**
    * Creates the direct-routing startup check.
@@ -36,25 +39,27 @@ public class FfmlibDirectStartup implements ApplicationRunner {
    * @param rawProducer UDP raw-topic producer
    * @param outputProducer decoded JSON and quarantine producer
    * @param ffmlibProperties whether raw topics are published
+   * @param odeKafkaProperties disabled topics, which are not checked
    */
   public FfmlibDirectStartup(RawEncodedJsonTopics rawTopics, JsonTopics jsonTopics,
       @Qualifier("ffmlibRawKafkaTemplate") KafkaTemplate<String, String> rawProducer,
       @Qualifier("ffmlibOutputKafkaTemplate") KafkaTemplate<String, String> outputProducer,
-      FfmlibProperties ffmlibProperties) {
+      FfmlibProperties ffmlibProperties, OdeKafkaProperties odeKafkaProperties) {
     this.rawTopics = rawTopics;
     this.jsonTopics = jsonTopics;
     this.rawProducer = rawProducer;
     this.outputProducer = outputProducer;
     this.rawPublish = ffmlibProperties.isRawPublish();
+    this.disabledTopics = odeKafkaProperties.getDisabledTopics();
   }
 
   @Override
   public void run(ApplicationArguments args) {
     if (rawPublish) {
-      FfmlibTopicWarmup.warmProducerMetadata(rawProducer, rawTopics.allTopics());
+      FfmlibTopicWarmup.warmProducerMetadata(rawProducer, rawTopics.allTopics(), disabledTopics);
     }
     FfmlibTopicWarmup.warmProducerMetadata(outputProducer,
-        FfmlibTopicWarmup.outputTopics(jsonTopics, rawTopics));
+        FfmlibTopicWarmup.outputTopics(jsonTopics, rawTopics), disabledTopics);
     log.info("FFM direct UDP routing ready; raw-topic publication {}",
         rawPublish ? "enabled" : "disabled");
   }

@@ -66,9 +66,12 @@ class FfmlibListenerStartupTest {
     when(registry.getListenerContainer(anyString())).thenAnswer(invocation ->
         containers.get(invocation.getArgument(0)));
 
+    OdeKafkaProperties odeKafkaProperties = new OdeKafkaProperties();
+    odeKafkaProperties.setDisabledTopics(Set.of("topic.OdeRtcmJson"));
+
     FfmlibListenerStartup startup = new FfmlibListenerStartup(rawTopics(), registry, rawJsonListener,
         commitTracker, rawProducer,
-        outputProducer, jsonTopics(), ffmlibProperties, new OdeKafkaProperties());
+        outputProducer, jsonTopics(), ffmlibProperties, odeKafkaProperties);
     startup.run(null);
 
     for (String listenerId : listenerIds()) {
@@ -79,6 +82,7 @@ class FfmlibListenerStartupTest {
     verify(rawProducer).partitionsFor(RAW_BSM);
     verify(outputProducer).partitionsFor("topic.OdeBsmJson");
     verify(outputProducer).partitionsFor(DLT_BSM);
+    verify(outputProducer, never()).partitionsFor("topic.OdeRtcmJson");
 
     var callback = containerProperties.get("RawEncodedBSMJsonRouter").getCommitCallback();
     var commitError = new IllegalStateException("broker unavailable");
@@ -87,6 +91,19 @@ class FfmlibListenerStartupTest {
     verify(rawJsonListener).recordCommitFailure("RawEncodedBSMJsonRouter", commitError);
     verify(containers.get("RawEncodedBSMJsonRouter")).stop(any(Runnable.class));
     verify(commitTracker).completeCommit(commitError);
+
+    var spatCallback = containerProperties.get("RawEncodedSPATJsonRouter").getCommitCallback();
+    for (Exception transientError : List.of(
+        new org.apache.kafka.common.errors.RebalanceInProgressException("rebalancing"),
+        new org.apache.kafka.clients.consumer.CommitFailedException("group rebalanced"),
+        new org.apache.kafka.clients.consumer.RetriableCommitFailedException("coordinator moved"))) {
+      spatCallback.onComplete(Map.of(new TopicPartition(RAW_BSM, 0),
+          new org.apache.kafka.clients.consumer.OffsetAndMetadata(2L)), transientError);
+      verify(commitTracker).completeCommit(transientError);
+    }
+    verify(rawJsonListener, never()).recordCommitFailure(
+        org.mockito.ArgumentMatchers.eq("RawEncodedSPATJsonRouter"), any());
+    verify(containers.get("RawEncodedSPATJsonRouter"), never()).stop(any(Runnable.class));
   }
 
   @Test

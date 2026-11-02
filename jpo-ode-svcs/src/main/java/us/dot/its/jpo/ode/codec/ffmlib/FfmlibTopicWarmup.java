@@ -16,14 +16,18 @@ final class FfmlibTopicWarmup {
   }
 
   /**
-   * Loads producer metadata for each topic so the first UDP send does not block on it.
+   * Loads producer metadata for each enabled topic so the first UDP send does not block on it.
+   * Disabled topics are never sent to, so they are skipped and need not be provisioned.
    *
-   * @throws IllegalStateException when a topic has no partitions, usually because it was not
-   *     provisioned
+   * @throws IllegalStateException when an enabled topic has no partitions, usually because it was
+   *     not provisioned
    */
   static void warmProducerMetadata(KafkaTemplate<String, String> producer,
-      List<String> topicNames) {
+      List<String> topicNames, Set<String> disabledTopics) {
     for (String topicName : topicNames) {
+      if (disabledTopics != null && disabledTopics.contains(topicName)) {
+        continue;
+      }
       List<PartitionInfo> partitions = producer.partitionsFor(topicName);
       if (partitions == null || partitions.isEmpty()) {
         throw new IllegalStateException("No producer metadata available for FFM topic "
