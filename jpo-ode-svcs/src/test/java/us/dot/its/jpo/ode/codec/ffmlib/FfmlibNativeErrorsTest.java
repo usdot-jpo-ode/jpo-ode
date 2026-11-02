@@ -16,6 +16,7 @@ class FfmlibNativeErrorsTest {
   @ValueSource(strings = {
       "Unrecognized PDU: malformed TIM",
       "MessageFrame: Error decoding PDU",
+      "MessageFrame: Error decoding PDU\n",
       "Decoding was successful, but constraint check failed, can't re-encode: value"})
   void malformedInputMessagesAreClassifiedAsInput(String message) {
     assertTrue(FfmlibNativeErrors.isMalformedInputMessage(message));

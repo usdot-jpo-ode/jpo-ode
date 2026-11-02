@@ -61,7 +61,9 @@ public final class FfmlibNativeErrors {
     if (message == null) {
       return false;
     }
-    return MALFORMED_INPUT_PREFIXES.stream().anyMatch(message::startsWith)
-        || MALFORMED_INPUT_SUFFIXES.stream().anyMatch(message::endsWith);
+    // FFMLib ends its native messages with a line break, which must not defeat the suffix match.
+    String text = message.strip();
+    return MALFORMED_INPUT_PREFIXES.stream().anyMatch(text::startsWith)
+        || MALFORMED_INPUT_SUFFIXES.stream().anyMatch(text::endsWith);
   }
 }
