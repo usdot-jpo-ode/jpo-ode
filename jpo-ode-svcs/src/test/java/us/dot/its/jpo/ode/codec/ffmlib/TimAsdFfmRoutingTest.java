@@ -47,6 +47,7 @@ class TimAsdFfmRoutingTest {
   private final SecurityServicesClient security = mock(SecurityServicesClient.class);
   private final SecurityServicesProperties signing = new SecurityServicesProperties();
   private final Asn1CodecModeProperties mode = new Asn1CodecModeProperties();
+  private final OdeTimJsonTopology topology = mock(OdeTimJsonTopology.class);
 
   @org.junit.jupiter.api.BeforeEach
   void kafkaAndRouterMocksHaveDeliberateDefaults() throws Exception {
@@ -184,6 +185,30 @@ class TimAsdFfmRoutingTest {
   }
 
   @Test
+  void ffmPublishedTimRemovesKTableEntryWithoutQuerying() throws Exception {
+    mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
+    signing.setIsSdwSigningEnabled(false);
+
+    router().processEncodedAsn1XmlWithPublishedTim(
+        fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"), "{\"metadata\":{}}");
+
+    verify(topology).removeWhenStored("266e6742-40fb-4c9e-a6b0-72ed2dddddfe");
+    verify(topology, never()).query(anyString());
+    verify(kafka).send(eq("topic.TimFiltered"), anyString());
+  }
+
+  @Test
+  void externalTimQueriesKTableInsteadOfSchedulingRemoval() throws Exception {
+    signing.setIsSdwSigningEnabled(false);
+    when(topology.query(anyString())).thenReturn("{\"metadata\":{}}");
+
+    router().processEncodedAsn1Xml(fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"));
+
+    verify(topology).query("266e6742-40fb-4c9e-a6b0-72ed2dddddfe");
+    verify(topology, never()).removeWhenStored(anyString());
+  }
+
+  @Test
   void ffmWaitsForCertificateExpirationPublicationFailure() throws Exception {
     mode.setCodecMode(Asn1CodecModeProperties.CodecMode.ffm);
     signing.setIsSdwSigningEnabled(true);
@@ -279,7 +304,7 @@ class TimAsdFfmRoutingTest {
     jsonTopics.setTimCertExpiration("topic.TimCertExpiration");
     jsonTopics.setTimTmcFiltered("topic.TimFiltered");
     return new Asn1EncodedDataRouter(asn1Topics, jsonTopics, signing,
-        mock(OdeTimJsonTopology.class), mock(RsuDepositor.class), security, kafka, SDX_INPUT,
+        topology, mock(RsuDepositor.class), security, kafka, SDX_INPUT,
         new ObjectMapper(), new XmlMapper(), mode, selectedEncoder);
   }
 

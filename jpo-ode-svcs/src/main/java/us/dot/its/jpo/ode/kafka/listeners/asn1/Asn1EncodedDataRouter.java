@@ -487,9 +487,14 @@ public class Asn1EncodedDataRouter {
       return;
     }
 
-    String timString = publishedTimJson != null
-        ? publishedTimJson
-        : odeTimJsonTopology.query(streamId);
+    String timString;
+    if (publishedTimJson != null) {
+      timString = publishedTimJson;
+      // The k-table query also tombstones the entry, so remove it separately when skipping it.
+      odeTimJsonTopology.removeWhenStored(streamId);
+    } else {
+      timString = odeTimJsonTopology.query(streamId);
+    }
     if (timString != null) {
       // Set ASN1 data in TIM metadata
       JSONObject timJSON = new JSONObject(timString);
