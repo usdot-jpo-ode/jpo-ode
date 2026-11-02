@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.codec.ffmlib;
 
-import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -100,11 +99,11 @@ public class FfmlibProperties {
   }
 
   /**
-   * Rejects settings that would leave UDP traffic undecoded.
+   * Rejects settings that would leave UDP traffic undecoded. Called only in FFM mode, because
+   * these settings are ignored in external mode.
    *
    * @throws IllegalStateException when raw-topic routing is combined with raw publishing disabled
    */
-  @PostConstruct
   public void validate() {
     if (udpRouting == UdpRouting.RAW_TOPIC && !rawPublish) {
       throw new IllegalStateException("ode.ffmlib.raw-publish=false requires "

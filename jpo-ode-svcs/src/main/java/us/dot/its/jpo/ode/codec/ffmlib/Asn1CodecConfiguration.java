@@ -16,6 +16,8 @@ public class Asn1CodecConfiguration {
   @Primary
   @ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "ffm")
   public MessageFrameCodec messageFrameCodec(FfmlibProperties properties) {
+    // The ode.ffmlib settings apply only in FFM mode, so they are validated here, not on binding.
+    properties.validate();
     Path nativeLibrary = FfmlibNativeLibraryLoader.resolve(properties.getNativeLibraryPath());
     return new MessageFrameCodec(
         properties.getTextBufferSize(),
