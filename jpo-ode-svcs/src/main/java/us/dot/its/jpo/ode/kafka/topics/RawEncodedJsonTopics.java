@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.kafka.topics;
 
+import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -21,4 +22,9 @@ public class RawEncodedJsonTopics {
   private String sdsm;
   private String rtcm;
   private String rsm;
+
+  /** Returns all ten configured raw topics in stable J2735 type order. */
+  public List<String> allTopics() {
+    return List.of(bsm, spat, map, tim, srm, ssm, psm, sdsm, rtcm, rsm);
+  }
 }
