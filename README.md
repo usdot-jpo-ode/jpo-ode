@@ -17,6 +17,7 @@ For a module-by-module description of the components in this diagram, see [Archi
 1. [ODE Architecture](docs/Architecture.md)
 1. [ODE User Guide](docs/UserGuide.md)
 1. [ODE Output Schema Reference Guide](docs/ODE_Output_Schema_Reference.docx)
+1. [Importing S3 Archive Files](docs/archive-import.md)
 1. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
 1. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
@@ -480,6 +481,14 @@ To sink streamed kafka topic data to a MongoDB database, a kafka connect and Mon
 The configuration that defines this is in the jpo-utils submodule [here](jpo-utils\kafka-connect\connect_start.sh). This script is attached to the `connect` container as a volume and if you would like to sink different topics then feel free to make a copy of the `connect_start.sh` script and attach it to the `connect` container to the following path: `/scripts/connect_start.sh`. The script can be overridden by setting the `CONNECT_SCRIPT_RELATIVE_PATH` to a location relative to the `/jpo-utils` repository.
 
 For further documentation on configuring the MongoDB Kafka Connect image refer [to this readme](jpo-utils/README.md).
+
+## Importing S3 Archive Files
+
+Files written to S3 by the jpo-utils S3 archive connectors (`sink.S3Archive` and the compact `sink.S3RawArchive`) can be imported into an ODE, for example to analyze archived data in a local MongoDB.
+- **Volume:** copy the `.json.gz` files to `${DOCKER_SHARED_VOLUME}/uploads/archive`.
+- **Upload:** use the demo console's **S3 archive file** upload, or `POST /upload/archive`.
+
+Imported records keep their original `odeReceivedAt` and `originIp`. See [Importing S3 Archive Files](docs/archive-import.md).
 
 
 

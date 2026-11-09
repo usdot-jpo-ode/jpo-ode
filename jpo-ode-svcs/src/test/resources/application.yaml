@@ -15,10 +15,10 @@ spring:
       client-id: "ode-svcs-consumer"
     admin:
       auto-create: false
-  http:
+  servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 1MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 ode:
   security-services:
     host-ip: "test-host"

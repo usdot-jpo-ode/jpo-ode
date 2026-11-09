@@ -60,6 +60,13 @@ class FileUploadControllerTest {
   }
 
   @Test
+  void archiveUploadIsStoredAsArchive() {
+    Assertions.assertEquals(HttpStatus.OK,
+        testFileUploadController.handleFileUpload(mockMultipartFile, "archive").getStatusCode());
+    org.mockito.Mockito.verify(mockStorageService).store(mockMultipartFile, LogFileType.ARCHIVE);
+  }
+
+  @Test
   void testStorageFileNotFoundException() {
     Assertions.assertEquals(HttpStatus.NOT_FOUND, testFileUploadController
         .handleStorageFileNotFound(new StorageFileNotFoundException("testException123")).getStatusCode());

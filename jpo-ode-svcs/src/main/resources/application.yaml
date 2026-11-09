@@ -18,10 +18,11 @@ spring:
     listener:
       log-container-config: true
       concurrency: ${ODE_KAFKA_LISTENER_CONCURRENCY:10}
-  http:
+  servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 1MB
+      # S3 archive objects hold up to 10000 records each, which can be several MB compressed
+      max-file-size: ${ODE_UPLOAD_MAX_FILE_SIZE:100MB}
+      max-request-size: ${ODE_UPLOAD_MAX_FILE_SIZE:100MB}
 ode:
   security-services:
     host-ip: ${DOCKER_HOST_IP}
@@ -129,6 +130,16 @@ ode:
     time-period: 5
     upload-location-root: "uploads"
     obu-log-upload-location: "bsmlog"
+  # Imports S3 archive files (jpo-utils sink.S3Archive / sink.S3RawArchive) placed in
+  # <upload-location-root>/<inbox-dir> or uploaded with POST /upload/archive, see docs/archive-import.md
+  archive-importer:
+    enabled: ${ODE_ARCHIVE_IMPORTER_ENABLED:true}
+    inbox-dir: "archive"
+    # Decode full decoded records again from metadata.asn1 instead of republishing them unchanged
+    redecode-full-records: ${ODE_ARCHIVE_IMPORTER_REDECODE_FULL_RECORDS:false}
+    min-file-age-seconds: 5
+    send-timeout-seconds: 60
+    send-batch-size: 1000
   tim-ingest-monitoring:
     tracking-enabled: ${ODE_TIM_INGEST_MONITORING_ENABLED}
     interval: ${ODE_TIM_INGEST_MONITORING_INTERVAL}

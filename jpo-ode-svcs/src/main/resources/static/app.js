@@ -50,12 +50,17 @@ function showFilteredMessage(message) {
   }
 }
 
-function upload() {
+function addUploadStatus(status, fileName) {
+    // Use text nodes so that file names are never interpreted as HTML
+    $("#uploadResponse").append($("<tr>").append($("<td>").text(status), $("<td>").text(fileName)));
+}
+
+function uploadFile(file, uploadType) {
     var formData = new FormData();
-    formData.append('file', $('#file').get(0).files[0]);
-    console.log("Ajax call submitted");
+    formData.append('file', file);
+    console.log("Ajax call submitted for " + file.name);
     $.ajax({
-      url: '/upload/obulog',
+        url: '/upload/' + uploadType,
         type: 'POST',
         data: formData,
         cache: false,
@@ -63,11 +68,23 @@ function upload() {
         processData: false
     }).done(function(response) {
         console.log("File upload success.");
-        $( "#uploadResponse" ).append("<tr><td>File Received</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
+        addUploadStatus("File Received", file.name);
     }).fail(function(response) {
-    	console.log("File upload error.");
-    	$( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
+        console.log("File upload error.");
+        addUploadStatus(response.status == 413 ? "Error: file too large" : "Error", file.name);
     });
+}
+
+function upload() {
+    var uploadType = $('#uploadType').val();
+    var files = $('#file').get(0).files;
+    if (files.length == 0) {
+        addUploadStatus("Error: no file selected", "");
+        return;
+    }
+    for (var i = 0; i < files.length; i++) {
+        uploadFile(files[i], uploadType);
+    }
 }
 
 function clearText() {
