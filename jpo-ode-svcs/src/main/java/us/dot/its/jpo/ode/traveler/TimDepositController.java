@@ -23,6 +23,7 @@ package us.dot.its.jpo.ode.traveler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import j2735ffm.ConvertException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
@@ -39,7 +40,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibNativeErrors;
 import us.dot.its.jpo.ode.coder.OdeMessageFrameDataCreatorHelper;
+import us.dot.its.jpo.ode.kafka.listeners.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.kafka.topics.Asn1CoderTopics;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
@@ -72,10 +77,13 @@ public class TimDepositController {
   private static final String WARNING = "warning";
   private static final String SUCCESS = "success";
 
-  private final Asn1CoderTopics asn1CoderTopics;
   private final JsonTopics jsonTopics;
   private final XmlMapper simpleXmlMapper;
   private final KafkaTemplate<String, String> kafkaTemplate;
+  private final FfmlibEncodeService ffmlibEncodeService;
+  private final Asn1EncodedDataRouter asn1EncodedDataRouter;
+  private final Asn1CodecModeProperties asn1CodecMode;
+  private final Asn1CoderTopics asn1CoderTopics;
 
   private SerialId serialIdJ2735;
 
@@ -96,17 +104,24 @@ public class TimDepositController {
    * Spring Autowired constructor for the REST controller to properly initialize.
    */
   @Autowired
-  public TimDepositController(Asn1CoderTopics asn1CoderTopics, JsonTopics jsonTopics,
+  public TimDepositController(JsonTopics jsonTopics,
       TimIngestTrackerProperties ingestTrackerProperties,
       SecurityServicesProperties securityServicesProperties,
       KafkaTemplate<String, String> kafkaTemplate,
-      XmlMapper simpleXmlMapper) {
+      XmlMapper simpleXmlMapper,
+      FfmlibEncodeService ffmlibEncodeService,
+      Asn1EncodedDataRouter asn1EncodedDataRouter,
+      Asn1CodecModeProperties asn1CodecMode,
+      Asn1CoderTopics asn1CoderTopics) {
     super();
 
-    this.asn1CoderTopics = asn1CoderTopics;
     this.jsonTopics = jsonTopics;
     this.simpleXmlMapper = simpleXmlMapper;
     this.kafkaTemplate = kafkaTemplate;
+    this.ffmlibEncodeService = ffmlibEncodeService;
+    this.asn1EncodedDataRouter = asn1EncodedDataRouter;
+    this.asn1CodecMode = asn1CodecMode;
+    this.asn1CoderTopics = asn1CoderTopics;
     serialIdJ2735 = new SerialId();
 
     // start the TIM ingest monitoring service if enabled
@@ -251,28 +266,73 @@ public class TimDepositController {
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 
-    // Publish the resulting ASN XML and JSON to the appropriate topics
+    // Serialize all initial-message data before publishing its TIM JSON. In FFM mode the native
+    // encode must also succeed before that publication begins.
+    String xmlMsg;
+    String obfuscatedJ2735Tim;
+    OdeMessageFrameData odeTimMessageFrameData;
     try {
-      String xmlMsg;
       xmlMsg = TimTransmogrifier.convertToXml(null, encodableTid, timMetadata, serialIdJ2735);
       log.debug("XML representation: {}", xmlMsg);
 
       // Convert XML into ODE TIM JSON object and obfuscate RSU password
-      OdeMessageFrameData odeTimMessageFrameData = OdeMessageFrameDataCreatorHelper
+      odeTimMessageFrameData = OdeMessageFrameDataCreatorHelper
           .createOdeMessageFrameData(xmlMsg, simpleXmlMapper);
 
       // Create the TIM string and obfuscate the RSU password
       String j2735Tim = JsonUtils.toJson(odeTimMessageFrameData, false);
-      String obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
-
-      // Publish TIM JSON to the OdeTimJson topic for the TIM topology KTable
-      kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
-      // Publish TIM XML to the Asn1EncoderInput topic to be encoded by the ASN.1 Encoder module
-      kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
+      obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
     } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | JsonProcessingException e) {
-      String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
+      String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    } catch (Exception e) {
+      String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+      log.error(errMsg, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+    }
+
+    String encodedXml = null;
+    if (asn1CodecMode.isFfm()) {
+      try {
+        encodedXml = ffmlibEncodeService.encodeMessageFrame(
+            odeTimMessageFrameData.getPayload().getData(), odeTimMessageFrameData.getMetadata());
+      } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | JsonProcessingException e) {
+        String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+        log.error(errMsg, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      } catch (Exception e) {
+        ConvertException nativeException = FfmlibNativeErrors.findConvertException(e);
+        String nativeError = nativeException == null ? e.getMessage() : nativeException.getMessage();
+        String errMsg = "Error encoding TIM with FFM: " + nativeError;
+        log.error(errMsg, e);
+        boolean requestFailure = FfmlibNativeErrors.isMalformedInput(nativeException);
+        return ResponseEntity.status(requestFailure ? HttpStatus.BAD_REQUEST
+                : HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      }
+    }
+
+    // Publish and route only after initial FFM encoding has completed successfully. Any failure
+    // from this point is a server-side publication or routing failure, including native ASD work.
+    try {
+      if (asn1CodecMode.isFfm()) {
+        var initialTimSendFuture = kafkaTemplate.send(
+            jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+        asn1EncodedDataRouter.processEncodedAsn1XmlWithPublishedTim(
+            encodedXml, obfuscatedJ2735Tim, initialTimSendFuture);
+      } else {
+        // External mode keeps its existing fire-and-forget Kafka publication flow.
+        kafkaTemplate.send(jsonTopics.getTim(), serialIdJ2735.getStreamId(), obfuscatedJ2735Tim);
+        kafkaTemplate.send(asn1CoderTopics.getEncoderInput(), serialIdJ2735.getStreamId(), xmlMsg);
+      }
+    } catch (Exception e) {
+      String errMsg = "Error publishing or routing TIM after encoding: " + e.getMessage();
+      log.error(errMsg, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     }
 

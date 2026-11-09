@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties;
 import us.dot.its.jpo.ode.udp.controller.UDPReceiverProperties.ReceiverProperties;
 
@@ -23,7 +23,7 @@ public class PortMappedIngestConfigLoader {
   }
 
   public List<AbstractUdpReceiverPublisher> loadReceivers(UDPReceiverProperties udpProps,
-      RawEncodedJsonTopics rawEncodedJsonTopics, KafkaTemplate<String, String> kafkaTemplate) {
+      RawEncodedJsonTopics rawEncodedJsonTopics, UdpIngestPublisher ingestPublisher) {
         log.debug("Loading configurable UDP receivers from config...");
 
     
@@ -44,7 +44,7 @@ public class PortMappedIngestConfigLoader {
 
       PortMappedConfigurableReceiver receiver = new PortMappedConfigurableReceiver(
           buildReceiverProperties(udpProps, source),
-          kafkaTemplate,
+          ingestPublisher,
           rawEncodedJsonTopics,
           source
       );

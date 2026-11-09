@@ -56,6 +56,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import us.dot.its.jpo.ode.OdeTimJsonTopology;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeProperties;
+import us.dot.its.jpo.ode.codec.ffmlib.FfmlibEncodeService;
 import us.dot.its.jpo.ode.config.SerializationConfig;
 import us.dot.its.jpo.ode.http.WebClientConfig;
 import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
@@ -185,7 +187,8 @@ class Asn1EncodedDataRouterTest {
         secServicesClient,
         kafkaTemplate, sdxDepositorTopic,
         objectMapper,
-        xmlMapper);
+        xmlMapper,
+        new Asn1CodecModeProperties(), Mockito.mock(FfmlibEncodeService.class));
 
     final var container = setupListenerContainer(encoderRouter,
         "processDoubleEncodedMessage"
@@ -236,7 +239,8 @@ class Asn1EncodedDataRouterTest {
         secServicesClient,
         kafkaTemplate, sdxDepositorTopic,
         objectMapper,
-        xmlMapper);
+        xmlMapper,
+        new Asn1CodecModeProperties(), Mockito.mock(FfmlibEncodeService.class));
 
     final var container = setupListenerContainer(encoderRouter, "processUnsignedMessage");
 
@@ -321,7 +325,8 @@ class Asn1EncodedDataRouterTest {
         secServicesClient,
         kafkaTemplate, sdxDepositorTopic,
         objectMapper,
-        xmlMapper);
+        xmlMapper,
+        new Asn1CodecModeProperties(), Mockito.mock(FfmlibEncodeService.class));
 
     final var container = setupListenerContainer(encoderRouter, "processUnsignedMessageWithRsus");
 

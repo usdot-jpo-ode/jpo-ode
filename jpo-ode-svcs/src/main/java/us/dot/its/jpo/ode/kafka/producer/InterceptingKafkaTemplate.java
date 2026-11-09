@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.SendResult;
@@ -23,7 +22,9 @@ import org.springframework.lang.NonNull;
  * Kafka topics. This
  * functionality is implemented via a set of "disabledTopics", which contains
  * topic names that
- * should be blocked from receiving messages.
+ * should be blocked from receiving messages. A send to a disabled topic returns an
+ * already-completed future whose {@link SendResult} is {@code null}; callers must treat that
+ * result as an intentional skip rather than a delivery confirmation.
  *
  * @param <K> the type of message key
  * @param <V> the type of message value
@@ -54,7 +55,8 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
    *
    * @param producerRecord the producer record.
    * @param observation    the observation.
-   * @return a Future for the {@link RecordMetadata RecordMetadata}.
+   * @return a future for the send result; an already-completed future with a {@code null} result
+   *         means the topic was disabled and the send was intentionally skipped.
    */
   @Override
   protected CompletableFuture<SendResult<K, V>> doSend(
@@ -62,7 +64,8 @@ public class InterceptingKafkaTemplate<K, V> extends KafkaTemplate<K, V> {
       @NonNull Observation observation) {
     if (disabledTopics != null && disabledTopics.contains(producerRecord.topic())) {
       log.debug("Blocked attempt to send data to disabled topic {}", producerRecord.topic());
-      return new CompletableFuture<>();
+      // A completed future with no result marks an intentional skip for downstream callbacks.
+      return CompletableFuture.completedFuture(null);
     }
 
     // For String values, extract the originIp from the JSON metadata if it is

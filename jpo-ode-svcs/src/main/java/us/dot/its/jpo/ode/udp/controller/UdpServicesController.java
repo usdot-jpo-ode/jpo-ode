@@ -8,10 +8,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.kafka.topics.RawEncodedJsonTopics;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.UdpIngestPublisher;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.generic.GenericReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
@@ -30,41 +34,54 @@ import us.dot.its.jpo.ode.udp.tim.TimReceiver;
  */
 @Controller
 @Slf4j
-public class UdpServicesController {
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class UdpServicesController implements ApplicationRunner {
 
   private final List<ExecutorService> executors = new ArrayList<>();
+  private final UDPReceiverProperties udpProps;
+  private final RawEncodedJsonTopics rawEncodedJsonTopics;
+  private final UdpIngestPublisher ingestPublisher;
+  private final PortMappedIngestConfigLoader portMappedIngestConfigLoader;
 
   /**
    * Constructs a UdpServicesController to manage UDP receiver services for different message
    * types.
    *
    * @param udpProps             Properties containing configuration for each UDP receiver.
-   * @param rawEncodedJsonTopics Topics to which the decoded messages will be published via Kafka.
-   * @param kafkaTemplate        Template to facilitate sending messages to Kafka topics.
+   * @param rawEncodedJsonTopics Topics to which UDP messages are published before decoding.
+   * @param ingestPublisher      Publisher that writes the durable raw-topic contract.
+   * @param portMappedIngestConfigLoader Loader for extra port-mapped receivers.
    */
   @Autowired
   public UdpServicesController(UDPReceiverProperties udpProps,
                                RawEncodedJsonTopics rawEncodedJsonTopics,
-                               KafkaTemplate<String, String> kafkaTemplate,
+                               UdpIngestPublisher ingestPublisher,
                                PortMappedIngestConfigLoader portMappedIngestConfigLoader) {
+    this.udpProps = udpProps;
+    this.rawEncodedJsonTopics = rawEncodedJsonTopics;
+    this.ingestPublisher = ingestPublisher;
+    this.portMappedIngestConfigLoader = portMappedIngestConfigLoader;
+  }
 
+  @Override
+  public void run(ApplicationArguments args) {
     log.debug("Starting UDP receiver services...");
 
-    startReceiver(new BsmReceiver(udpProps.getBsm(), kafkaTemplate, rawEncodedJsonTopics.getBsm()));
-    startReceiver(new TimReceiver(udpProps.getTim(), kafkaTemplate, rawEncodedJsonTopics.getTim()));
-    startReceiver(new SsmReceiver(udpProps.getSsm(), kafkaTemplate, rawEncodedJsonTopics.getSsm()));
-    startReceiver(new SrmReceiver(udpProps.getSrm(), kafkaTemplate, rawEncodedJsonTopics.getSrm()));
-    startReceiver(new SpatReceiver(udpProps.getSpat(), kafkaTemplate, rawEncodedJsonTopics.getSpat()));
-    startReceiver(new MapReceiver(udpProps.getMap(), kafkaTemplate, rawEncodedJsonTopics.getMap()));
-    startReceiver(new PsmReceiver(udpProps.getPsm(), kafkaTemplate, rawEncodedJsonTopics.getPsm()));
-    startReceiver(new SdsmReceiver(udpProps.getSdsm(), kafkaTemplate, rawEncodedJsonTopics.getSdsm()));
-    startReceiver(new RtcmReceiver(udpProps.getRtcm(), kafkaTemplate, rawEncodedJsonTopics.getRtcm()));
-    startReceiver(new RsmReceiver(udpProps.getRsm(), kafkaTemplate, rawEncodedJsonTopics.getRsm()));
-    startReceiver(new GenericReceiver(udpProps.getGeneric(), kafkaTemplate, rawEncodedJsonTopics));
+    startReceiver(new BsmReceiver(udpProps.getBsm(), ingestPublisher, rawEncodedJsonTopics.getBsm()));
+    startReceiver(new TimReceiver(udpProps.getTim(), ingestPublisher, rawEncodedJsonTopics.getTim()));
+    startReceiver(new SsmReceiver(udpProps.getSsm(), ingestPublisher, rawEncodedJsonTopics.getSsm()));
+    startReceiver(new SrmReceiver(udpProps.getSrm(), ingestPublisher, rawEncodedJsonTopics.getSrm()));
+    startReceiver(new SpatReceiver(udpProps.getSpat(), ingestPublisher, rawEncodedJsonTopics.getSpat()));
+    startReceiver(new MapReceiver(udpProps.getMap(), ingestPublisher, rawEncodedJsonTopics.getMap()));
+    startReceiver(new PsmReceiver(udpProps.getPsm(), ingestPublisher, rawEncodedJsonTopics.getPsm()));
+    startReceiver(new SdsmReceiver(udpProps.getSdsm(), ingestPublisher, rawEncodedJsonTopics.getSdsm()));
+    startReceiver(new RtcmReceiver(udpProps.getRtcm(), ingestPublisher, rawEncodedJsonTopics.getRtcm()));
+    startReceiver(new RsmReceiver(udpProps.getRsm(), ingestPublisher, rawEncodedJsonTopics.getRsm()));
+    startReceiver(new GenericReceiver(udpProps.getGeneric(), ingestPublisher, rawEncodedJsonTopics));
 
     
     List<AbstractUdpReceiverPublisher> receivers = portMappedIngestConfigLoader
-      .loadReceivers(udpProps, rawEncodedJsonTopics, kafkaTemplate);
+        .loadReceivers(udpProps, rawEncodedJsonTopics, ingestPublisher);
     for (AbstractUdpReceiverPublisher receiver : receivers) {
       startReceiver(receiver);
     }

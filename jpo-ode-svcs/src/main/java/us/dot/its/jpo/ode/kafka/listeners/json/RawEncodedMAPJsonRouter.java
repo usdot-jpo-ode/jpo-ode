@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "external",
+    matchIfMissing = true)
 public class RawEncodedMAPJsonRouter {
 
   private final KafkaTemplate<String, OdeObject> kafkaTemplate;
@@ -58,6 +61,7 @@ public class RawEncodedMAPJsonRouter {
     var messageToPublish = rawEncodedJsonService.addEncodingAndMutateBytes(
         consumerRecord.value(),
         SupportedMessageType.MAP, OdeMessageFrameMetadata.class);
-    kafkaTemplate.send(publishTopic, consumerRecord.key(), messageToPublish);
+    rawEncodedJsonService.publish(
+        messageToPublish, consumerRecord.key(), kafkaTemplate, publishTopic);
   }
 }

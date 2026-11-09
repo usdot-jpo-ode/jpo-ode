@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.kafka.listeners.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
  * codec
  */
 @Component
+@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "external",
+    matchIfMissing = true)
 public class RawEncodedPSMJsonRouter {
 
   private final KafkaTemplate<String, OdeObject> kafkaTemplate;
@@ -56,6 +59,7 @@ public class RawEncodedPSMJsonRouter {
         rawEncodedJsonService.addEncodingAndMutateBytes(consumerRecord.value(),
             SupportedMessageType.PSM,
             OdeMessageFrameMetadata.class);
-    kafkaTemplate.send(publishTopic, consumerRecord.key(), messageToPublish);
+    rawEncodedJsonService.publish(
+        messageToPublish, consumerRecord.key(), kafkaTemplate, publishTopic);
   }
 }
