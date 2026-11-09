@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.udp;
 
 import java.net.DatagramPacket;
+import java.util.EnumMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -30,10 +32,46 @@ import us.dot.its.jpo.ode.util.JsonUtils;
  * message type start flag. It provides methods to build JSON objects encapsulating metadata about
  * each packet's origin, source, record type, and security information.
  *
+ * <p>The same metadata can be built from packet bytes that were received earlier, for example from
+ * an S3 archive, with {@link #buildAsn1Data(byte[], SupportedMessageType, String, String)}.
+ *
  * <p>Note that this class cannot be instantiated.
  */
 @Slf4j
 public class UdpHexDecoder {
+
+  /**
+   * The metadata values the UDP receivers set for each message type.
+   */
+  private record MessageProfile(RecordType recordType, Source source, GeneratedBy generatedBy,
+                                boolean includeReceivedMessageDetails) {
+  }
+
+  private static final Map<SupportedMessageType, MessageProfile> PROFILES =
+      new EnumMap<>(SupportedMessageType.class);
+
+  static {
+    PROFILES.put(SupportedMessageType.MAP,
+        new MessageProfile(RecordType.mapTx, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.SPAT,
+        new MessageProfile(RecordType.spatTx, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.TIM,
+        new MessageProfile(RecordType.timMsg, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.BSM,
+        new MessageProfile(RecordType.bsmTx, Source.EV, GeneratedBy.OBU, true));
+    PROFILES.put(SupportedMessageType.SSM,
+        new MessageProfile(RecordType.ssmTx, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.SRM,
+        new MessageProfile(RecordType.srmTx, Source.RSU, GeneratedBy.OBU, false));
+    PROFILES.put(SupportedMessageType.PSM,
+        new MessageProfile(RecordType.psmTx, Source.RSU, GeneratedBy.UNKNOWN, false));
+    PROFILES.put(SupportedMessageType.SDSM,
+        new MessageProfile(RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.RTCM,
+        new MessageProfile(RecordType.rtcmTx, Source.RSU, GeneratedBy.RSU, false));
+    PROFILES.put(SupportedMessageType.RSM,
+        new MessageProfile(RecordType.rsmTx, Source.RSU, GeneratedBy.RSU, false));
+  }
 
   private UdpHexDecoder() {
     throw new UnsupportedOperationException();
@@ -59,11 +97,10 @@ public class UdpHexDecoder {
    */
   public static OdeAsn1Payload getPayloadHexString(DatagramPacket packet,
       SupportedMessageType msgType) throws InvalidPayloadException {
-    return extractAsn1PayloadFromPacket(packet, msgType).payload();
+    return extractAsn1Payload(packetBytes(packet), msgType).payload();
   }
 
-  private static Asn1PayloadExtraction extractAsn1PayloadFromPacket(DatagramPacket packet,
-      SupportedMessageType msgType) throws InvalidPayloadException {
+  private static byte[] packetBytes(DatagramPacket packet) throws InvalidPayloadException {
     // retrieve the buffer from the packet
     byte[] buffer = packet.getData();
     if (buffer == null) {
@@ -71,9 +108,14 @@ public class UdpHexDecoder {
     }
 
     // retrieve the payload from the buffer
-    int lengthOfReceivedPacket = packet.getLength();
-    int offsetOfReceivedPacket = packet.getOffset();
-    byte[] payload = retrieveRelevantBytes(lengthOfReceivedPacket, buffer, offsetOfReceivedPacket);
+    return retrieveRelevantBytes(packet.getLength(), buffer, packet.getOffset());
+  }
+
+  private static Asn1PayloadExtraction extractAsn1Payload(byte[] payload,
+      SupportedMessageType msgType) throws InvalidPayloadException {
+    if (payload == null) {
+      throw new InvalidPayloadException("Payload is null, no payload to extract");
+    }
 
     // Lowercase hex for start-flag matching (flags use a-f, e.g. TIM "001f"); uppercase for
     // metadata.asn1 to match OdeHexByteArray / CodecUtils serialization.
@@ -111,8 +153,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonMapFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.MAP,
-        RecordType.mapTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.MAP);
   }
 
   /**
@@ -125,8 +166,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonSpatFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SPAT,
-        RecordType.spatTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.SPAT);
   }
 
   /**
@@ -139,8 +179,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonTimFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.TIM,
-        RecordType.timMsg, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.TIM);
   }
 
   /**
@@ -153,8 +192,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonBsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.BSM,
-        RecordType.bsmTx, Source.EV, GeneratedBy.OBU, true), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.BSM);
   }
 
   /**
@@ -167,8 +205,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonSsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SSM,
-        RecordType.ssmTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.SSM);
   }
 
   /**
@@ -181,8 +218,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonSrmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SRM,
-        RecordType.srmTx, Source.RSU, GeneratedBy.OBU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.SRM);
   }
 
   /**
@@ -195,8 +231,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonPsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.PSM,
-        RecordType.psmTx, Source.RSU, GeneratedBy.UNKNOWN, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.PSM);
   }
 
   /**
@@ -209,8 +244,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonSdsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.SDSM,
-        RecordType.sdsmTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.SDSM);
   }
 
   /**
@@ -223,8 +257,7 @@ public class UdpHexDecoder {
    */
   public static String buildJsonRtcmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.RTCM,
-        RecordType.rtcmTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.RTCM);
   }
 
   /**
@@ -237,8 +270,14 @@ public class UdpHexDecoder {
    */
   public static String buildJsonRsmFromPacket(DatagramPacket packet)
       throws InvalidPayloadException {
-    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, SupportedMessageType.RSM,
-        RecordType.rsmTx, Source.RSU, GeneratedBy.RSU, false), false);
+    return buildJsonFromPacket(packet, SupportedMessageType.RSM);
+  }
+
+  private static String buildJsonFromPacket(DatagramPacket packet,
+      SupportedMessageType messageType) throws InvalidPayloadException {
+    MessageProfile profile = PROFILES.get(messageType);
+    return JsonUtils.toJson(buildAsn1DataFromPacket(packet, messageType, profile.recordType(),
+        profile.source(), profile.generatedBy(), profile.includeReceivedMessageDetails()), false);
   }
 
   /**
@@ -276,16 +315,44 @@ public class UdpHexDecoder {
     int senderPort = packet.getPort();
     log.debug("Packet received from {}:{}", senderIp, senderPort);
 
+    return buildAsn1Data(packetBytes(packet), messageType, recordType, source, generatedBy,
+        includeReceivedMessageDetails, senderIp, DateTimeUtils.now());
+  }
+
+  /**
+   * Builds the same ASN.1 data object that the UDP receiver of the message type builds, from the
+   * bytes of a packet that was received earlier. The metadata keeps the given receive time and
+   * origin IP, so a re-ingested packet can be correlated with its original record.
+   *
+   * @param packetBytes the full received packet, including any 1609.3 and 1609.2 headers
+   * @param messageType the type of message in the packet
+   * @param originIp the IP address the packet was originally received from, may be empty
+   * @param odeReceivedAt the time the ODE originally received the packet
+   * @return The ASN.1 data object
+   * @throws InvalidPayloadException if the packet does not contain the message type's start flag
+   */
+  public static OdeAsn1Data buildAsn1Data(byte[] packetBytes, SupportedMessageType messageType,
+      String originIp, String odeReceivedAt) throws InvalidPayloadException {
+    MessageProfile profile = PROFILES.get(messageType);
+    return buildAsn1Data(packetBytes, messageType, profile.recordType(), profile.source(),
+        profile.generatedBy(), profile.includeReceivedMessageDetails(), originIp, odeReceivedAt);
+  }
+
+  private static OdeAsn1Data buildAsn1Data(byte[] packetBytes, SupportedMessageType messageType,
+      RecordType recordType, Source source, GeneratedBy generatedBy,
+      boolean includeReceivedMessageDetails, String originIp, String odeReceivedAt)
+      throws InvalidPayloadException {
+
     // Create OdeMsgPayload and OdeLogMetadata objects and populate them
-    Asn1PayloadExtraction extracted = extractAsn1PayloadFromPacket(packet, messageType);
+    Asn1PayloadExtraction extracted = extractAsn1Payload(packetBytes, messageType);
     OdeAsn1Payload payload = extracted.payload();
     OdeMessageFrameMetadata metadata =
         new OdeMessageFrameMetadata(payload, extracted.untrimmedPayloadHex());
 
     // Add header data for the decoding process
-    metadata.setOdeReceivedAt(DateTimeUtils.now());
+    metadata.setOdeReceivedAt(odeReceivedAt);
 
-    metadata.setOriginIp(senderIp);
+    metadata.setOriginIp(originIp);
     metadata.setSource(source);
     metadata.setRecordType(recordType);
     metadata.setRecordGeneratedBy(generatedBy);
