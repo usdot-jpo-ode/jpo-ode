@@ -76,7 +76,11 @@ curl -F "file=@topic.OdeBsmJson+0+0000002500.json.gz" http://<ode-host>:8080/upl
 
 ### Results
 
-**Logs:** the ODE logs one line per file with the number of published records and skipped lines. Up to 10 skipped lines per file are logged with the reason.
+**Logs:** at `WARN` (the ODE default), the ODE logs:
+- files that could not be imported
+- up to 10 skipped lines per file, with the reason
+
+Set `LOGGING_LEVEL_US_DOT_ITS_JPO_ODE_ARCHIVE=INFO` on the `ode` service to also log one line per imported file, with its number of published records and skipped lines.
 
 **Metrics:** the counter `ode_archive_import_records_total{topic,format,result}` is exposed on `/actuator/prometheus`.
 
