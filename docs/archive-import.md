@@ -108,7 +108,7 @@ To load archived data into a local MongoDB, run the ODE with the jpo-utils Kafka
    MONGO_DATA_RETENTION_SECONDS=31536000
    ```
 
-   `ode_base` includes the ASN.1 decoder (`adm`) that decodes the compact and raw encoded records. It is not needed if only full decoded records are imported.
+   `ode_base` includes the ASN.1 decoder (`adm`) that decodes the compact and raw encoded records. It is not needed if only full decoded records are imported. With the FFM codec, keep `ODE_FFM_UDP_ROUTING=raw-topic`, see [Caveats](#5-caveats).
 
 2. Start the stack and import files as described above:
 
@@ -143,6 +143,10 @@ The top level `recordGeneratedAt` field that the MongoDB connectors add is the t
 
 ## 5. Caveats
 
+- **FFM codec with direct UDP routing.** Compact and raw encoded records are decoded by the ODE consumers of the `topic.OdeRawEncoded<TYPE>Json` topics. Those consumers run with the external codec (`ODE_ASN1_CODEC_MODE=external`, the default) and with the FFM codec's raw-topic routing (`ODE_ASN1_CODEC_MODE=ffm` with `ODE_FFM_UDP_ROUTING=raw-topic`, the default).
+  - With `ODE_ASN1_CODEC_MODE=ffm` and `ODE_FFM_UDP_ROUTING=direct`, no consumer reads the raw encoded topics. Imported compact and raw encoded records are then published but never decoded.
+  - Full decoded records are imported in every mode, because they are published straight to their decoded topics.
+  - Use raw-topic routing, or the external codec, on an ODE used to import compact or raw encoded files.
 - **Choose one archive per time range.** The full archive and the compact archive both hold the received messages, so importing more than one of the following for the same time range creates duplicate records:
   - raw encoded files
   - compact files
