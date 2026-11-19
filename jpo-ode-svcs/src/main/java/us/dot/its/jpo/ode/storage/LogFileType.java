@@ -1,11 +1,13 @@
 package us.dot.its.jpo.ode.storage;
 
 /**
- * An enumeration representing the different types of log files that can be handled.
+ * An enumeration representing the different types of files that can be uploaded.
  * This enum defines the following types:
  * <ul>
  *   <li>{@code BSM} - Represents logs related to Basic Safety Messages.</li>
  *   <li>{@code OBU} - Represents logs related to On-Board Unit operations.</li>
+ *   <li>{@code ARCHIVE} - Represents S3 archive files written by the jpo-utils S3 archive
+ *       connectors.</li>
  *   <li>{@code UNKNOWN} - Represents an unknown or unrecognized log file type.</li>
  * </ul>
  *
@@ -15,6 +17,7 @@ package us.dot.its.jpo.ode.storage;
 public enum LogFileType {
   BSM,
   OBU,
+  ARCHIVE,
   UNKNOWN;
 
   /**
@@ -29,6 +32,8 @@ public enum LogFileType {
       return BSM;
     } else if ("obulog".equalsIgnoreCase(type)) {
       return OBU;
+    } else if ("archive".equalsIgnoreCase(type)) {
+      return ARCHIVE;
     } else {
       return UNKNOWN;
     }

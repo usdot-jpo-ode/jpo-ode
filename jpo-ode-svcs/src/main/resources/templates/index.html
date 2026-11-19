@@ -47,7 +47,16 @@
       <div class="col s6">
         <form>
           <p class="light">
-            Upload a signed or unsigned data file in binary UPER encoded format.
+            Upload a signed or unsigned OBU log file in binary UPER encoded format, or one or more
+            S3 archive files (<code>&lt;topic&gt;+&lt;partition&gt;+&lt;offset&gt;.json.gz</code>) written by the
+            jpo-utils S3 archive connectors. Archive records keep their original receive time and origin IP.
+          </p>
+          <p>
+            <label for="uploadType">File type</label>
+            <select id="uploadType" class="browser-default">
+              <option value="obulog" selected="selected">OBU log file</option>
+              <option value="archive">S3 archive file (.json.gz)</option>
+            </select>
           </p>
           <p>
             Select whether to display output for <strong>All Records</strong> or to display <strong>Sanitized Records Only</strong>.
@@ -68,7 +77,7 @@
             <div class="file-field input-field">
               <div class="btn btn-small">
                 <span>Select File</span>
-                <input type="file" id="file"></input>
+                <input type="file" id="file" multiple="multiple"></input>
               </div>
               <div class="file-path-wrapper">
                 <input class="file-path validate" type="text"></input>
