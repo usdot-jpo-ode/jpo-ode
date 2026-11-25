@@ -3,10 +3,11 @@ package us.dot.its.jpo.ode.kafka.listeners.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import us.dot.its.jpo.ode.codec.ffmlib.Asn1CodecModeConditions;
 import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.uper.StartFlagNotFoundException;
@@ -18,8 +19,7 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
  * codec
  */
 @Component
-@ConditionalOnProperty(name = "ode.asn1.codec-mode", havingValue = "external",
-    matchIfMissing = true)
+@Conditional(Asn1CodecModeConditions.External.class)
 public class RawEncodedRTCMJsonRouter {
   
   private final KafkaTemplate<String, OdeObject> kafkaTemplate;

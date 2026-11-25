@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Timer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService.PreparedDecodedMessage;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibOutputPublisher.PublicationOutcome;
@@ -35,7 +38,7 @@ import us.dot.its.jpo.ode.uper.SupportedMessageType;
 public class FfmlibRawJsonListener implements HealthIndicator {
 
   private static final int MAX_PUBLISH_ATTEMPTS = 3;
-  private static final long PUBLISH_TIMEOUT_SECONDS = 10;
+  private static final long QUARANTINE_TIMEOUT_NANOS = TimeUnit.SECONDS.toNanos(10);
   private static final long RETRY_DELAY_MILLIS = 25;
   private static final Duration PUBLISH_CONFIRMATION_BUDGET = Duration.ofSeconds(30);
 
@@ -48,12 +51,20 @@ public class FfmlibRawJsonListener implements HealthIndicator {
   private final Timer rawAgeTimer;
   private final Timer parseTimer;
   private final long publishConfirmationBudgetNanos;
+  private final long quarantineTimeoutNanos;
   private final MeterRegistry meters;
   private final int infrastructureHaltThreshold;
   private final Map<String, String> unhealthyListeners = new ConcurrentHashMap<>();
   private final Map<String, AtomicInteger> consecutiveInfrastructureFailures =
       new ConcurrentHashMap<>();
   private final Map<SupportedMessageType, Counter> infrastructureQuarantines =
+      new ConcurrentHashMap<>();
+  // Sends that were still unresolved when their record's confirmation timed out, at most one per
+  // input partition. A redelivery of that record waits for the earlier send instead of sending
+  // again, so a Kafka outage does not queue several copies of the same record.
+  private final Map<TopicPartition, PendingSend<PublicationOutcome>> pendingOutputs =
+      new ConcurrentHashMap<>();
+  private final Map<TopicPartition, PendingSend<SendResult<String, String>>> pendingQuarantines =
       new ConcurrentHashMap<>();
   private volatile boolean startupComplete;
 
@@ -107,6 +118,8 @@ public class FfmlibRawJsonListener implements HealthIndicator {
     this.commitTracker = commitTracker;
     this.meters = meters;
     this.publishConfirmationBudgetNanos = publishConfirmationBudget.toNanos();
+    this.quarantineTimeoutNanos = Math.min(QUARANTINE_TIMEOUT_NANOS,
+        publishConfirmationBudgetNanos);
     this.infrastructureHaltThreshold = Math.max(1, properties.getInfrastructureHaltThreshold());
     this.rawAgeTimer = Timer.builder("ode.ffmlib.raw.record.age")
         .description("Millisecond-quantized Kafka CreateTime to listener-entry age")
@@ -253,7 +266,16 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
     PublicationOutcome outcome;
     try {
-      outcome = publishWithRetry(prepared);
+      outcome = publishWithRetry(record, prepared);
+    } catch (RejectedOutput rejected) {
+      // Kafka rejects this decoded record itself, so every redelivery would fail the same way.
+      log.error("Kafka rejected the decoded output for {} offset {}; quarantining the raw record",
+          record.topic(), record.offset(), rejected.getCause());
+      quarantine(record, listenerId, rawTopic(type), FfmlibFailures.OUTPUT_REJECTED, 1);
+      resetInfrastructureFailures(listenerId);
+      acknowledge(listenerId, acknowledgment);
+      unhealthyListeners.remove(listenerId);
+      return;
     } catch (RuntimeException error) {
       unhealthyListeners.put(listenerId, error.getClass().getSimpleName());
       throw error;
@@ -337,12 +359,21 @@ public class FfmlibRawJsonListener implements HealthIndicator {
       commitTracker.completeSynchronousCommit();
     } catch (RuntimeException error) {
       commitTracker.cancelCommit();
+      if (FfmlibFailures.isTransientCommitFailure(error)) {
+        // Synchronous commits follow the asynchronous commit callback: a later commit covers
+        // this offset, or the record is redelivered after the rebalance (at-least-once).
+        log.warn("Offset commit for FFM listener {} did not complete ({}); a later commit or"
+            + " redelivery covers it", listenerId, error.getClass().getSimpleName());
+        return;
+      }
       recordCommitFailure(listenerId, error);
       throw error;
     }
   }
 
-  private PublicationOutcome publishWithRetry(PreparedDecodedMessage message) {
+  private PublicationOutcome publishWithRetry(ConsumerRecord<String, String> record,
+      PreparedDecodedMessage message) {
+    TopicPartition partition = new TopicPartition(record.topic(), record.partition());
     long deadline = System.nanoTime() + publishConfirmationBudgetNanos;
     for (int attempt = 1; attempt <= MAX_PUBLISH_ATTEMPTS; attempt++) {
       long remaining = deadline - System.nanoTime();
@@ -350,7 +381,12 @@ public class FfmlibRawJsonListener implements HealthIndicator {
         throw failedPublication(message, new TimeoutException(
             "FFM output was not confirmed within the 30-second overall budget"));
       }
-      var confirmation = output.publish(message);
+      CompletableFuture<PublicationOutcome> confirmation = attempt == 1
+          ? takePending(pendingOutputs, partition, record.offset())
+          : null;
+      if (confirmation == null) {
+        confirmation = output.publish(message);
+      }
       try {
         remaining = deadline - System.nanoTime();
         if (remaining <= 0) {
@@ -363,9 +399,15 @@ public class FfmlibRawJsonListener implements HealthIndicator {
         decoder.recordRawPublishFailure(message);
         throw new IllegalStateException("FFM output confirmation interrupted", error);
       } catch (TimeoutException error) {
-        // The Kafka send may still complete. Do not overlap it with another application send.
+        // The Kafka send may still complete. Do not overlap it with another application send,
+        // either now or when this record is redelivered.
+        pendingOutputs.put(partition, new PendingSend<>(record.offset(), confirmation));
         throw failedPublication(message, error);
       } catch (ExecutionException error) {
+        if (FfmlibFailures.isRecordRejection(error.getCause())) {
+          decoder.recordRawPublishFailure(message);
+          throw new RejectedOutput(error.getCause());
+        }
         if (attempt == MAX_PUBLISH_ATTEMPTS || System.nanoTime() >= deadline) {
           throw failedPublication(message, error);
         }
@@ -402,8 +444,14 @@ public class FfmlibRawJsonListener implements HealthIndicator {
         .add("source-timestamp", bytes(Long.toString(original.timestamp())))
         .add("failure-category", bytes(category))
         .add("attempt-count", bytes(Integer.toString(attempts)));
+    TopicPartition partition = new TopicPartition(original.topic(), original.partition());
+    CompletableFuture<SendResult<String, String>> confirmation = null;
     try {
-      quarantineProducer.send(deadLetter).get(PUBLISH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+      confirmation = takePending(pendingQuarantines, partition, original.offset());
+      if (confirmation == null) {
+        confirmation = quarantineProducer.send(deadLetter);
+      }
+      confirmation.get(quarantineTimeoutNanos, TimeUnit.NANOSECONDS);
     } catch (InterruptedException error) {
       Thread.currentThread().interrupt();
       unhealthyListeners.put(listenerId, error.getClass().getSimpleName());
@@ -411,6 +459,10 @@ public class FfmlibRawJsonListener implements HealthIndicator {
           + "uncommitted", dltTopic, original.topic(), original.offset(), error);
       throw new IllegalStateException("FFM quarantine publication interrupted", error);
     } catch (Exception error) {
+      if (error instanceof TimeoutException) {
+        // As with decoded output, a redelivery waits for this send instead of sending again.
+        pendingQuarantines.put(partition, new PendingSend<>(original.offset(), confirmation));
+      }
       unhealthyListeners.put(listenerId, FfmlibPublicationFailure.class.getSimpleName());
       log.error("Unable to publish FFM quarantine record to {}; leaving {} offset {} uncommitted",
           dltTopic, original.topic(), original.offset(), error);
@@ -435,5 +487,26 @@ public class FfmlibRawJsonListener implements HealthIndicator {
 
   private static byte[] bytes(String value) {
     return value.getBytes(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Removes the partition's pending send and returns it when it belongs to this offset. A pending
+   * send for another offset is stale (its record was committed elsewhere) and is dropped.
+   */
+  private static <T> CompletableFuture<T> takePending(Map<TopicPartition, PendingSend<T>> pending,
+      TopicPartition partition, long offset) {
+    PendingSend<T> send = pending.remove(partition);
+    return send != null && send.offset() == offset ? send.confirmation() : null;
+  }
+
+  /** A send that was unresolved when its record's confirmation wait ended. */
+  private record PendingSend<T>(long offset, CompletableFuture<T> confirmation) {
+  }
+
+  /** Kafka rejected the decoded record itself, so retrying it cannot succeed. */
+  private static final class RejectedOutput extends RuntimeException {
+    private RejectedOutput(Throwable cause) {
+      super(cause);
+    }
   }
 }

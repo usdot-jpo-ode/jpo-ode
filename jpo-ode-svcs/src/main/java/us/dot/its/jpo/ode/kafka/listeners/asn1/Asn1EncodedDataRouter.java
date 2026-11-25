@@ -162,20 +162,10 @@ public class Asn1EncodedDataRouter {
   }
 
   /**
-   * Processes encoder output and, when supplied, uses the already-published TIM JSON for the
-   * filtered-topic record. This avoids racing the asynchronous OdeTimJson Kafka Streams KTable
-   * update when encoding occurs in-process.
-   */
-  public void processEncodedAsn1XmlWithPublishedTim(String encoderOutputXml, String publishedTimJson)
-      throws XmlUtilsException, JsonProcessingException, Asn1EncodedDataRouterException {
-    List<CompletableFuture<SendResult<String, String>>> sendFutures = new ArrayList<>();
-    processEncodedAsn1XmlInternal(encoderOutputXml, publishedTimJson, sendFutures);
-    awaitKafkaSends(sendFutures);
-  }
-
-  /**
-   * Processes encoder output while including the request's initial TIM JSON publication in the
-   * same FFM-mode completion wait as any selected routing publications.
+   * Processes encoder output using the already-published TIM JSON for the filtered-topic record,
+   * which avoids racing the asynchronous OdeTimJson Kafka Streams KTable update when encoding
+   * occurs in-process. The request's initial TIM JSON publication is included in the same
+   * FFM-mode completion wait as the routing publications.
    */
   public void processEncodedAsn1XmlWithPublishedTim(String encoderOutputXml, String publishedTimJson,
       CompletableFuture<SendResult<String, String>> initialTimSendFuture)

@@ -133,7 +133,7 @@ class FfmlibNativeFixturesTest {
       assertTrue(json.get("payload").size() > 0, fixture.path());
 
       String rawJson = rawJsonForFixture(jsonMapper, received);
-      RawEncodedJsonService.FfmRawRecord legacyInput =
+      RawEncodedJsonService.FfmDecodeInput legacyInput =
           rawService.parseFfmRecord(rawJson, fixture.type());
       RawEncodedJsonService.FfmDecodeInput leanInput =
           rawService.parseFfmDecodeInput(rawJson, fixture.type());

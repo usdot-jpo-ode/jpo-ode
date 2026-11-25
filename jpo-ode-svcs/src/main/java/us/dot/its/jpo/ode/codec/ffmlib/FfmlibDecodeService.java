@@ -224,7 +224,7 @@ public class FfmlibDecodeService {
       // The stripped bytes start with the start flag of the detected type, so it is the type of
       // the decoded MessageFrame and selects the direct JER binding.
       return submitDecoded(metadata, uperBytes, key, type);
-    } catch (UnsupportedOperationException | InfrastructureFailure | DecodeFailure failure) {
+    } catch (InfrastructureFailure | DecodeFailure failure) {
       throw failure;
     } catch (ClassCastException e) {
       recordFailure(TYPE_UNKNOWN, SOURCE_IMPORT, "invalid_payload");
@@ -445,9 +445,6 @@ public class FfmlibDecodeService {
       }
       return new PreparedDecodedMessage(topic, key, json, metadata, type, source, startNanos,
           System.nanoTime());
-    } catch (UnsupportedOperationException failure) {
-      recordFailure(type, source, "signed_payload");
-      throw failure;
     } catch (InfrastructureFailure failure) {
       recordFailure(type, source, "infrastructure");
       throw failure;

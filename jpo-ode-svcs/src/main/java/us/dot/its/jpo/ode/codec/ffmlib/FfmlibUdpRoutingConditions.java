@@ -34,11 +34,8 @@ public final class FfmlibUdpRoutingConditions {
   }
 
   private static boolean matchesRouting(ConditionContext context, UdpRouting routing) {
-    Binder binder = Binder.get(context.getEnvironment());
-    CodecMode mode = binder.bind("ode.asn1.codec-mode", CodecMode.class)
-        .orElse(CodecMode.external);
-    UdpRouting configured = binder.bind("ode.ffmlib.udp-routing", UdpRouting.class)
-        .orElse(UdpRouting.RAW_TOPIC);
-    return mode == CodecMode.ffm && configured == routing;
+    UdpRouting configured = Binder.get(context.getEnvironment())
+        .bind("ode.ffmlib.udp-routing", UdpRouting.class).orElse(UdpRouting.RAW_TOPIC);
+    return Asn1CodecModeConditions.codecMode(context) == CodecMode.ffm && configured == routing;
   }
 }

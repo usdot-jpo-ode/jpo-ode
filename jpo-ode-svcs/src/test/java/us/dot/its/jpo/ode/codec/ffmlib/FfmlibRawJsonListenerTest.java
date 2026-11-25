@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -23,15 +24,20 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.RecordTooLargeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.SendResult;
 import us.dot.its.jpo.ode.codec.ffmlib.FfmlibDecodeService.PreparedDecodedMessage;
 import us.dot.its.jpo.ode.kafka.listeners.json.RawEncodedJsonService;
 import us.dot.its.jpo.ode.kafka.topics.JsonTopics;
@@ -526,6 +532,111 @@ class FfmlibRawJsonListenerTest {
     verify(acknowledgment, never()).acknowledge();
     assertEquals("DOWN", listener.health().getStatus().getCode());
     unresolved.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+  }
+
+  @Test
+  void redeliveryWaitsForTheEarlierUnresolvedSendInsteadOfSendingAgain() {
+    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
+        commitTracker, new SimpleMeterRegistry(), Duration.ofMillis(100));
+    listener.markStartupComplete();
+    CompletableFuture<FfmlibOutputPublisher.PublicationOutcome> unresolved =
+        new CompletableFuture<>();
+    when(output.publish(prepared)).thenReturn(unresolved);
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
+
+    unresolved.complete(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED);
+    listener.bsm(record, acknowledgment);
+
+    verify(output, times(1)).publish(prepared);
+    verify(decoder).recordRawConfirmed(prepared);
+    verify(acknowledgment).acknowledge();
+    assertEquals("UP", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  void pendingSendForAnotherOffsetIsNotReused() {
+    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
+        commitTracker, new SimpleMeterRegistry(), Duration.ofMillis(100));
+    listener.markStartupComplete();
+    when(output.publish(prepared)).thenReturn(new CompletableFuture<>(),
+        CompletableFuture.completedFuture(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED));
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
+
+    listener.bsm(new ConsumerRecord<>(RAW_TOPIC, 0, 8, "packet-key", RAW_JSON), acknowledgment);
+
+    verify(output, times(2)).publish(prepared);
+    verify(acknowledgment).acknowledge();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void redeliveredQuarantineWaitsForTheEarlierUnresolvedDeadLetterSend() throws Exception {
+    listener = new FfmlibRawJsonListener(rawService, decoder, output, quarantineProducer, topics,
+        commitTracker, new SimpleMeterRegistry(), Duration.ofMillis(100));
+    listener.markStartupComplete();
+    when(rawService.parseFfmDecodeInput(anyString(), eq(SupportedMessageType.BSM)))
+        .thenThrow(new IllegalArgumentException("bad bytes"));
+    CompletableFuture<SendResult<String, String>> unresolved =
+        new CompletableFuture<>();
+    when(quarantineProducer.send(any(ProducerRecord.class))).thenReturn(unresolved);
+    assertThrows(FfmlibPublicationFailure.class, () -> listener.bsm(record, acknowledgment));
+
+    unresolved.complete(null);
+    listener.bsm(record, acknowledgment);
+
+    verify(quarantineProducer, times(1)).send(any(ProducerRecord.class));
+    verify(acknowledgment).acknowledge();
+    assertEquals("UP", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void outputThatKafkaRejectsIsQuarantinedInsteadOfRetried() throws Exception {
+    when(output.publish(prepared)).thenReturn(CompletableFuture.failedFuture(
+        new KafkaProducerException(new ProducerRecord<>("topic.OdeBsmJson", "{}"),
+            "Failed to send", new RecordTooLargeException("decoded record is too large"))));
+    ArgumentCaptor<ProducerRecord<String, String>> deadLetter =
+        ArgumentCaptor.forClass(ProducerRecord.class);
+    when(quarantineProducer.send(deadLetter.capture()))
+        .thenReturn(CompletableFuture.completedFuture(null));
+
+    listener.bsm(record, acknowledgment);
+
+    verify(output, times(1)).publish(prepared);
+    verify(decoder).recordRawPublishFailure(prepared);
+    verify(decoder, never()).recordRawConfirmed(prepared);
+    assertEquals("dlq.OdeRawEncodedBSMJson", deadLetter.getValue().topic());
+    assertEquals(RAW_JSON, deadLetter.getValue().value());
+    assertEquals(FfmlibFailures.OUTPUT_REJECTED, new String(
+        deadLetter.getValue().headers().lastHeader("failure-category").value(),
+        StandardCharsets.UTF_8));
+    verify(acknowledgment).acknowledge();
+    assertEquals("UP", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  void transientSynchronousCommitFailureDoesNotStopTheListener() {
+    when(output.publish(prepared)).thenReturn(
+        CompletableFuture.completedFuture(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED));
+    doThrow(new CommitFailedException()).when(acknowledgment).acknowledge();
+
+    listener.bsm(record, acknowledgment);
+
+    verify(commitTracker).cancelCommit();
+    assertEquals("UP", listener.health().getStatus().getCode());
+  }
+
+  @Test
+  void nonTransientSynchronousCommitFailureStopsTheListener() {
+    when(output.publish(prepared)).thenReturn(
+        CompletableFuture.completedFuture(FfmlibOutputPublisher.PublicationOutcome.PUBLISHED));
+    IllegalStateException commitFailure = new IllegalStateException("fenced");
+    doThrow(commitFailure).when(acknowledgment).acknowledge();
+
+    assertSame(commitFailure,
+        assertThrows(IllegalStateException.class, () -> listener.bsm(record, acknowledgment)));
+
+    assertEquals("DOWN", listener.health().getStatus().getCode());
   }
 
   @Test

@@ -217,7 +217,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
     }
     try {
       ffmPublications.add(ffmDecoder.submitDecode(odeData, null));
-    } catch (IllegalArgumentException | UnsupportedOperationException e) {
+    } catch (IllegalArgumentException e) {
       // As on the external route, a record that cannot be decoded is skipped and the rest of the
       // file is still imported. Operational failures propagate and fail the file.
       log.warn("Skipping record {} of log file {} that cannot be decoded: {}",

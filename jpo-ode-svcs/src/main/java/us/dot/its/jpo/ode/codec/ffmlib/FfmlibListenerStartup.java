@@ -10,11 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.errors.RebalanceInProgressException;
-import org.apache.kafka.common.errors.RetriableException;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Conditional;
@@ -112,7 +109,7 @@ public class FfmlibListenerStartup implements ApplicationRunner {
         containerProperties.setSyncCommits(syncCommits);
         containerProperties.setCommitCallback((offsets, error) -> {
           commitTracker.completeCommit(error);
-          if (error != null && isTransientCommitFailure(error)) {
+          if (error != null && FfmlibFailures.isTransientCommitFailure(error)) {
             // Spring Kafka does not retry failed async commits. A later commit covers these
             // offsets, or the records are redelivered after the rebalance (at-least-once).
             log.warn("Offset commit for FFM listener {} did not complete ({}); a later commit or"
@@ -146,16 +143,6 @@ public class FfmlibListenerStartup implements ApplicationRunner {
       stopStarted(started);
       throw error;
     }
-  }
-
-  /**
-   * Reports whether an async commit failed only because of a group rebalance or a retriable
-   * broker condition. Such failures are routine and must not stop the listener.
-   */
-  static boolean isTransientCommitFailure(Exception error) {
-    return error instanceof RetriableException
-        || error instanceof RebalanceInProgressException
-        || error instanceof CommitFailedException;
   }
 
   private static void stopStarted(

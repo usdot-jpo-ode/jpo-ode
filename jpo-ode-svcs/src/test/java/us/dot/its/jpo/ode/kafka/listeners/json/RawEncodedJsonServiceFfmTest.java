@@ -35,24 +35,24 @@ class RawEncodedJsonServiceFfmTest {
     String legacyHex = ((OdeHexByteArray) legacy.getPayload().getData()).getBytes();
 
     assertEquals(legacyHex, CodecUtils.toHex(parsed.uperBytes()));
-    assertArrayEquals(packet, parsed.originalBytes());
     assertEquals(legacy.getMetadata().getEncodings().size(),
         parsed.metadata().getEncodings().size());
   }
 
   @Test
-  void prefersMetadataAsn1BytesForSignedPayloadDetection() throws Exception {
+  void keepsSignedMetadataAsn1AndRejectsInvalidMetadataHex() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
     RawEncodedJsonService service = new RawEncodedJsonService(mapper);
     byte[] packet = fixtureBytes();
-    byte[] signedOriginal = HexUtils.fromHexString("038100" + CodecUtils.toHex(packet));
-    String json = rawJson(mapper, packet,
-        Map.of("asn1", CodecUtils.toHex(signedOriginal)));
+    String signedOriginal = "038100" + CodecUtils.toHex(packet);
+    String json = rawJson(mapper, packet, Map.of("asn1", signedOriginal));
 
     var parsed = service.parseFfmRecord(json, SupportedMessageType.BSM);
 
-    assertArrayEquals(signedOriginal, parsed.originalBytes());
+    assertEquals(signedOriginal, parsed.metadata().getAsn1());
     assertArrayEquals(packet, parsed.uperBytes());
+    assertThrows(IllegalArgumentException.class, () -> service.parseFfmRecord(
+        rawJson(mapper, packet, Map.of("asn1", "gg")), SupportedMessageType.BSM));
   }
 
   @Test
@@ -66,7 +66,6 @@ class RawEncodedJsonServiceFfmTest {
 
     var parsed = service.parseFfmRecord(json, SupportedMessageType.BSM);
 
-    assertArrayEquals(packet, parsed.originalBytes());
     assertArrayEquals(packet, parsed.uperBytes());
   }
 

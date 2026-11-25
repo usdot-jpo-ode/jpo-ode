@@ -171,7 +171,7 @@ class TimAsdFfmRoutingTest {
     var failure = assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
         () -> router().processEncodedAsn1XmlWithPublishedTim(
             fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"),
-            "{\"metadata\":{}}"));
+            "{\"metadata\":{}}", completedSend()));
 
     assertTrue(failure.getCause().getMessage().contains("filtered topic unavailable"));
 
@@ -190,7 +190,8 @@ class TimAsdFfmRoutingTest {
     signing.setIsSdwSigningEnabled(false);
 
     router().processEncodedAsn1XmlWithPublishedTim(
-        fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"), "{\"metadata\":{}}");
+        fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"), "{\"metadata\":{}}",
+        completedSend());
 
     verify(topology).removeWhenStored("266e6742-40fb-4c9e-a6b0-72ed2dddddfe");
     verify(topology, never()).query(anyString());
@@ -225,7 +226,7 @@ class TimAsdFfmRoutingTest {
     var failure = assertThrows(Asn1EncodedDataRouter.Asn1EncodedDataRouterException.class,
         () -> router().processEncodedAsn1XmlWithPublishedTim(
             fixture("asn1-encoder-output-unsigned-tim-no-advisory-data.xml"),
-            "{\"metadata\":{}}"));
+            "{\"metadata\":{}}", completedSend()));
 
     assertTrue(failure.getCause().getMessage().contains("certificate topic unavailable"));
     verify(kafka).send(eq("topic.TimFiltered"), anyString());

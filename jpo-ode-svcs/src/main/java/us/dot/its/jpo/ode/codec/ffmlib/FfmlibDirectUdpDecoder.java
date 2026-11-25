@@ -61,7 +61,8 @@ public class FfmlibDirectUdpDecoder implements HealthIndicator {
     this.output = output;
     this.quarantineProducer = quarantineProducer;
     this.meters = meters;
-    this.infrastructureHaltThreshold = ffmlibProperties.getInfrastructureHaltThreshold();
+    this.infrastructureHaltThreshold =
+        Math.max(1, ffmlibProperties.getInfrastructureHaltThreshold());
   }
 
   /**
@@ -112,14 +113,26 @@ public class FfmlibDirectUdpDecoder implements HealthIndicator {
       category = FfmlibFailures.INFRASTRUCTURE;
       int consecutive = consecutiveInfrastructureFailures
           .computeIfAbsent(type, key -> new AtomicInteger()).incrementAndGet();
-      // A codec that still decodes a reference message is healthy: the inputs are failing.
-      if (consecutive >= infrastructureHaltThreshold && !decoder.codecDecodesReferenceMessage()) {
-        unhealthyTypes.put(type.name(), "infrastructure_failures_" + consecutive);
-      }
       infrastructureQuarantines.computeIfAbsent(type, key -> meters.counter(
           "ode.ffmlib.infrastructure.quarantined", "type", key.name())).increment();
-      log.error("FFM native decode failed operationally for a {} datagram ({} consecutive);"
-          + " quarantining it", type, consecutive, error);
+      // Check the codec once per threshold-sized run of failures, and stop checking once the type
+      // is DOWN, so a broken codec costs one check and a few log lines rather than a reference
+      // decode and two stack traces per datagram. A codec that still decodes the reference
+      // message is healthy: the inputs are failing.
+      boolean checkCodec = consecutive % infrastructureHaltThreshold == 0
+          && !unhealthyTypes.containsKey(type.name());
+      if (checkCodec && !decoder.codecDecodesReferenceMessage()) {
+        unhealthyTypes.put(type.name(), "infrastructure_failures_" + consecutive);
+        log.error("FFM native decode failed operationally for {} consecutive {} datagrams and the"
+            + " codec cannot decode its reference message; reporting {} DOWN and quarantining"
+            + " later failures without logging each one", consecutive, type, type, error);
+      } else if (consecutive == 1) {
+        log.error("FFM native decode failed operationally for a {} datagram; quarantining it"
+            + " (later consecutive failures are logged at debug)", type, error);
+      } else {
+        log.debug("FFM native decode failed operationally for a {} datagram ({} consecutive);"
+            + " quarantining it", type, consecutive, error);
+      }
     } else {
       category = FfmlibFailures.category(error, true);
       recordSuccess(type);

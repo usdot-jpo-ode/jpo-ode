@@ -283,12 +283,12 @@ public class TimDepositController {
       String j2735Tim = JsonUtils.toJson(odeTimMessageFrameData, false);
       obfuscatedJ2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
     } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | JsonProcessingException e) {
-      String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+      String errMsg = "Error preparing TIM: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
     } catch (Exception e) {
-      String errMsg = "Error preparing TIM for FFMLib encode: " + e.getMessage();
+      String errMsg = "Error preparing TIM: " + e.getMessage();
       log.error(errMsg, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));

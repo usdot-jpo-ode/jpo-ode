@@ -243,7 +243,7 @@ import org.mockito.InOrder;
 
        // verify
        String expectedResponseBody =
-           "{\"error\":\"Error preparing TIM for FFMLib encode: testException123\"}";
+           "{\"error\":\"Error preparing TIM: testException123\"}";
        Assertions.assertEquals(expectedResponseBody, actualResponse.getBody());
      } finally {
        DateTimeUtils.setClock(prevClock);

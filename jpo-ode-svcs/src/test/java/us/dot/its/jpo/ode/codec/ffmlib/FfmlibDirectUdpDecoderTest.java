@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -123,13 +124,23 @@ class FfmlibDirectUdpDecoderTest {
   }
 
   @Test
-  void unsupportedSignedPayloadKeepsItsCategory() {
-    when(decoder.prepareRaw(any(), any(), any(), any()))
-        .thenThrow(new UnsupportedOperationException("signed"));
+  void codecIsCheckedOncePerThresholdRunAndNotAgainWhileDown() {
+    when(decoder.prepareRaw(any(), any(), any(), any())).thenThrow(
+        new FfmlibDecodeService.InfrastructureFailure("native capacity", null));
+    when(decoder.codecDecodesReferenceMessage()).thenReturn(true, false);
 
-    direct.decodeAndPublish(input, SupportedMessageType.BSM, RAW_TOPIC, () -> RAW_JSON);
+    for (int datagram = 0; datagram < 4; datagram++) {
+      direct.decodeAndPublish(input, SupportedMessageType.BSM, RAW_TOPIC, () -> RAW_JSON);
+    }
+    assertEquals(Status.DOWN, direct.health().getStatus());
+    for (int datagram = 0; datagram < 4; datagram++) {
+      direct.decodeAndPublish(input, SupportedMessageType.BSM, RAW_TOPIC, () -> RAW_JSON);
+    }
 
-    assertEquals("unsupported_signed", header(lastDeadLetter(), "failure-category"));
+    verify(decoder, times(2)).codecDecodesReferenceMessage();
+    assertEquals(Status.DOWN, direct.health().getStatus());
+    assertEquals(8.0, meters.counter("ode.ffmlib.infrastructure.quarantined", "type", "BSM")
+        .count());
   }
 
   @Test

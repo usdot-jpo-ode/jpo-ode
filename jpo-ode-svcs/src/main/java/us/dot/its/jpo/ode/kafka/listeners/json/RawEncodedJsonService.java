@@ -85,11 +85,11 @@ public class RawEncodedJsonService {
    *
    * @param json raw-topic JSON value
    * @param messageType message type used to locate the UPER start flag
-   * @return metadata, stripped UPER bytes, and original bytes used for signature detection
+   * @return metadata and stripped UPER bytes
    * @throws IOException if the raw JSON or metadata is malformed
    * @throws StartFlagNotFoundException if the message start flag cannot be located
    */
-  public FfmRawRecord parseFfmRecord(String json, SupportedMessageType messageType)
+  public FfmDecodeInput parseFfmRecord(String json, SupportedMessageType messageType)
       throws IOException, StartFlagNotFoundException {
     JsonNode metadataNode = null;
     String payloadHex = null;
@@ -123,11 +123,9 @@ public class RawEncodedJsonService {
     metadata.addEncoding(new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER));
 
     byte[] packetBytes = CodecUtils.fromHex(payloadHex);
-    byte[] originalBytes = metadata.getAsn1() == null || metadata.getAsn1().isBlank()
-        ? packetBytes
-        : CodecUtils.fromHex(metadata.getAsn1());
+    validateMetadataAsn1(metadata.getAsn1());
     byte[] uperBytes = UperUtil.stripDot2Header(packetBytes, messageType.getStartFlagBytes());
-    return new FfmRawRecord(metadata, uperBytes, originalBytes);
+    return new FfmDecodeInput(metadata, uperBytes);
   }
 
   /**
@@ -148,7 +146,7 @@ public class RawEncodedJsonService {
       throws IOException, StartFlagNotFoundException {
     DecodeScan scan = scanFfmDecodeInput(json);
     if (scan.requiresLegacyParse) {
-      return toDecodeInput(parseFfmRecord(json, messageType));
+      return parseFfmRecord(json, messageType);
     }
     if (scan.payloadHex == null || scan.payloadHex.isBlank()) {
       throw new IllegalArgumentException("Raw record has no original ASN.1 payload bytes");
@@ -234,10 +232,6 @@ public class RawEncodedJsonService {
     private boolean requiresLegacyParse;
   }
 
-  private static FfmDecodeInput toDecodeInput(FfmRawRecord raw) {
-    return new FfmDecodeInput(raw.metadata(), raw.uperBytes());
-  }
-
   private static void validateMetadataAsn1(String asn1) {
     if (asn1 == null || asn1.isBlank()) {
       return;
@@ -298,12 +292,7 @@ public class RawEncodedJsonService {
     return payloadHex;
   }
 
-  /** Raw UDP input parsed for the FFMLib listener. */
-  public record FfmRawRecord(OdeMessageFrameMetadata metadata, byte[] uperBytes,
-      byte[] originalBytes) {
-  }
-
-  /** Raw UDP input required by the FFMLib decoder's normal path. */
+  /** Raw UDP input required by the FFMLib decoder. */
   public record FfmDecodeInput(OdeMessageFrameMetadata metadata, byte[] uperBytes) {
   }
 
