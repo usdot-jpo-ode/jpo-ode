@@ -3,6 +3,8 @@ package us.dot.its.jpo.ode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -26,15 +28,22 @@ import us.dot.its.jpo.ode.kafka.OdeKafkaProperties;
  * the TMC, storing them in a KTable keyed by each message's UUID.
  * This class provides a query method to retrieve and automatically remove (via
  * tombstone) a TIM message by its UUID, ensuring the KTable remains up-to-date
- * and free of stale entries.
+ * and free of stale entries. Callers that already hold the TIM JSON use
+ * {@link #removeWhenStored(String)} to remove the entry without querying it.
  * The topology is configured using provided Kafka properties and supports both
  * standard and Confluent Kafka deployments.
  */
 @Slf4j
 public class OdeTimJsonTopology {
 
+  private static final String STORE_NAME = "timjson-ktable-store";
+  private static final long REMOVAL_POLL_INTERVAL_MILLIS = 100;
+  // Allows the topology up to one minute to store a TIM before its removal is abandoned.
+  private static final int REMOVAL_MAX_POLLS = 600;
+
   private final KafkaStreams streams;
   private final KafkaTemplate<String, String> tombstonePublisher;
+  private final KTableEntryRemover remover;
 
   private String topic;
   private String ktableTopic;
@@ -71,6 +80,13 @@ public class OdeTimJsonTopology {
     this.topic = topic;
     this.ktableTopic = ktableTopic;
     this.tombstonePublisher = template;
+    ScheduledExecutorService removalScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+      Thread thread = new Thread(r, "tim-ktable-removal");
+      thread.setDaemon(true);
+      return thread;
+    });
+    this.remover = new KTableEntryRemover(uuid -> store().get(uuid), this::sendTombstone,
+        removalScheduler, REMOVAL_POLL_INTERVAL_MILLIS, REMOVAL_MAX_POLLS);
     streams = new KafkaStreams(buildTopology(), streamsProperties);
     streams.setStateListener(
         (newState, oldState) -> log.info("Transitioning from {} to {}", oldState, newState));
@@ -118,7 +134,7 @@ public class OdeTimJsonTopology {
     // for multi-instance deployments
     builder.globalTable(ktableTopic,
         Consumed.with(Serdes.String(), Serdes.String()),
-        Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as("timjson-ktable-store")
+        Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as(STORE_NAME)
             .withKeySerde(Serdes.String()).withValueSerde(Serdes.String()));
 
     return builder.build();
@@ -131,9 +147,7 @@ public class OdeTimJsonTopology {
    **/
   public String query(String uuid) {
     try {
-      ReadOnlyKeyValueStore<String, String> keyValueStore = streams
-          .store(StoreQueryParameters.fromNameAndType("timjson-ktable-store",
-          QueryableStoreTypes.keyValueStore()));
+      ReadOnlyKeyValueStore<String, String> keyValueStore = store();
       String value = keyValueStore.get(uuid);
 
       int retries = 5;
@@ -157,20 +171,38 @@ public class OdeTimJsonTopology {
         return null;
       }
 
-      // Push a tombstone (null value) for this key to the ktableTopic to remove it
-      // from the KTable
-      tombstonePublisher.send(this.ktableTopic, uuid, null).whenCompleteAsync((result, error) -> {
-        if (error != null) {
-          log.error("Failed to send TIM topology tombstone for key {}: {}", uuid, error.getMessage());
-        } else {
-          log.debug("TIM topology tombstone sent for key {}", uuid);
-        }
-      });
-
+      sendTombstone(uuid);
       return value;
     } catch (Exception e) {
       log.error("Error querying or removing UUID {} from TIM topology k-table: {}", uuid, e.getMessage(), e);
       return null;
     }
+  }
+
+  /**
+   * Removes a TIM from the KTable once the topology has stored it, without blocking the caller.
+   * Use this instead of {@link #query(String)} when the TIM JSON is already known, so that the
+   * entry is still tombstoned.
+   *
+   * @param uuid The UUID of the TIM to remove.
+   */
+  public void removeWhenStored(String uuid) {
+    remover.removeWhenStored(uuid);
+  }
+
+  private ReadOnlyKeyValueStore<String, String> store() {
+    return streams.store(StoreQueryParameters.fromNameAndType(STORE_NAME,
+        QueryableStoreTypes.keyValueStore()));
+  }
+
+  // Push a tombstone (null value) for this key to the ktableTopic to remove it from the KTable
+  private void sendTombstone(String uuid) {
+    tombstonePublisher.send(this.ktableTopic, uuid, null).whenCompleteAsync((result, error) -> {
+      if (error != null) {
+        log.error("Failed to send TIM topology tombstone for key {}: {}", uuid, error.getMessage());
+      } else {
+        log.debug("TIM topology tombstone sent for key {}", uuid);
+      }
+    });
   }
 }

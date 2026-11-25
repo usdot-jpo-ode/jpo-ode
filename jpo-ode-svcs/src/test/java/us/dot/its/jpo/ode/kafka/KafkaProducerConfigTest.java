@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,9 @@ class KafkaProducerConfigTest {
   @Qualifier("testOdeKafkaProperties")
   OdeKafkaProperties odeKafkaProperties;
 
+  @Autowired
+  MeterRegistry meterRegistry;
+
   XmlMapper xmlMapper;
   ObjectMapper objectMapper = new ObjectMapper();
 
@@ -90,7 +94,10 @@ class KafkaProducerConfigTest {
         kafkaProducerConfig.producerFactory(), objectMapper);
     // Attempting to send to a disabled topic
     for (String topic : odeKafkaProperties.getDisabledTopics()) {
-      stringKafkaTemplate.send(topic, "key", "value");
+      var skippedSend = stringKafkaTemplate.send(topic, "key", "value");
+      assertTrue(skippedSend.isDone());
+      assertNull(skippedSend.join(), "null confirms that the interceptor skipped the send");
+      assertEquals(0.0, meterRegistry.counter("kafka.produced.messages", "topic", topic).count());
 
       var records = KafkaTestUtils.getEndOffsets(consumer, topic, 0);
       // Assert that the message we attempted to send to the disabled topic was

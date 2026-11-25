@@ -34,7 +34,8 @@ ode:
     brokers: "localhost:4242"
     producer:
       type: "async"
-      acks: "0"
+      # Shared producer settings apply to every test producer; acks=0 can drop sends to new topics.
+      acks: "all"
       retries: 1
       batch-size: 1638
       linger-ms: 2
