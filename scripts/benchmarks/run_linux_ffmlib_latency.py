@@ -40,8 +40,10 @@ class Runner:
         self.rate = rate
         self.log_path = output_dir / "runner.log"
         self.log = self.log_path.open("w", encoding="utf-8")
+        # The decode-benchmark service lives in its own file so the default stack omits it.
         self.compose_base = ["docker", "compose", "--profile", "all",
-                             "--profile", "benchmark", "-f", str(ROOT / "docker-compose.yml")]
+                             "--profile", "benchmark", "-f", str(ROOT / "docker-compose.yml"),
+                             "-f", str(ROOT / "scripts/benchmarks/docker-compose.benchmark.yml")]
         self.override_path = None
         self.restore_required = False
         self.compose_limits = {}

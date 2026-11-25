@@ -13,15 +13,14 @@ the repository root.
 | `run_linux_codec_comparison.py` | Compare message types sequentially using prepared packet corpora on the local Compose stack. Supports a separate four-worker external run. |
 | `run_linux_multitype_compare.py` | Compare FFM and four-worker external ADM from the current checkout using isolated Compose projects and ten evenly interleaved message types. |
 | `generate_multitype_corpus.py` | Generate and validate the 51,000 unique beta6-encoded packets per type required for the mixed 500/s comparison. |
-| `summarize_codec_comparison.py` | Produce comparison CSV, JSON, and Jira Markdown from sequential comparison evidence. |
-| `summarize_linux_multitype_mixed.py` | Produce aggregate CSV, JSON, and Jira Markdown from the recorded mixed-message comparison. |
-| `test_decode_benchmark.py`, `test_codec_comparison.py` | Unit tests for benchmark logic and comparison helpers. |
+| `test_decode_benchmark.py`, `test_codec_comparison.py`, `test_multitype_compare.py` | Unit tests for benchmark logic and runner helpers. |
 | `Dockerfile`, `requirements.txt` | Pinned Python container and Kafka client dependency for the Compose benchmark service. |
+| `docker-compose.benchmark.yml` | Compose overlay that defines the `decode-benchmark` service under the `benchmark` profile. |
 
-UDP fixture scripts remain in `scripts/tests/udpsender_*.py`. Evidence and packet
-corpora are stored under `scripts/tests/output/` so historical result paths
-continue to work. The Compose service mounts this folder at
-`/output`, fixtures at `/tests`, and benchmark code at `/benchmarks`.
+UDP fixture scripts remain in `scripts/tests/udpsender_*.py`. Results and packet
+corpora are written under `scripts/tests/output/`, which Git ignores. The Compose
+service mounts this folder at `/output`, fixtures at `/tests`, and benchmark code
+at `/benchmarks`.
 
 ## Prerequisites
 
@@ -35,7 +34,7 @@ continue to work. The Compose service mounts this folder at
 - For the mixed comparison, build the beta6 native library and generate valid,
   distinct UPER packet corpora with `generate_multitype_corpus.py`.
 
-The host orchestration and summary scripts use the Python standard library.
+The host orchestration scripts use the Python standard library.
 To run the workload or unit tests directly on the host, install the Kafka client
 in a virtual environment:
 
@@ -55,10 +54,16 @@ Start and configure the application stack for the desired codec mode first.
 This command runs the workload only; it does not change limits or collect
 container resource samples:
 
+The `decode-benchmark` service is defined in
+`scripts/benchmarks/docker-compose.benchmark.yml`, so add that file after the repository
+Compose file. `run_linux_ffmlib_latency.py` and `run_linux_codec_comparison.py` add it
+automatically.
+
 ```bash
 mkdir -p scripts/tests/output/linux-example
-docker compose --profile all --profile benchmark build decode-benchmark
-docker compose --profile all --profile benchmark run --rm --no-deps decode-benchmark \
+BENCH="-f docker-compose.yml -f scripts/benchmarks/docker-compose.benchmark.yml"
+docker compose $BENCH --profile all --profile benchmark build decode-benchmark
+docker compose $BENCH --profile all --profile benchmark run --rm --no-deps decode-benchmark \
   --mode ffm --broker kafka:9094 \
   --fixture /tests/udpsender_bsm.py \
   --udp-host ode --udp-port 46800 \
@@ -152,8 +157,6 @@ python3 scripts/benchmarks/run_linux_multitype_compare.py \
 python3 scripts/benchmarks/run_linux_multitype_compare.py \
   --output-dir scripts/tests/output/linux-mixed-run-001 \
   --only external-adm4
-python3 scripts/benchmarks/summarize_linux_multitype_mixed.py \
-  scripts/tests/output/linux-mixed-run-001
 ```
 
 FFM runs select the UDP route with `--only`: `ffm-local` (raw-topic routing, raw
@@ -164,12 +167,8 @@ Direct routing runs no application consumer group, so the consumer-group gate is
 not applicable there, and the offset-commit gauge is not checked. The runner sets
 `KAFKA_LINGER_MS=0` and `KAFKA_COMPRESSION_TYPE=none` on the ODE service in every
 mode. Use one output directory for all modes; each mode runs in its own project.
-Summarize mixed route runs, with gates that depend on each route, using:
-
-```bash
-python3 scripts/benchmarks/summarize_ffm_routes.py \
-  scripts/tests/output/linux-mixed-run-001
-```
+Each mode writes a `latency.csv` and JSON result, including the acceptance checks,
+for every message type under `<output-dir>/<mode>/<type>/`.
 
 The runner compares the current checkout in FFM and external ADM modes by
 default; `--external-tree` can point the external side at another checkout. It
@@ -179,29 +178,6 @@ partitions, and all four ADM workers before sending traffic. ODE is exposed on
 port 18080 by default. The runner records one-second cgroup samples and removes
 only the selected isolated project and its volumes after each run. It refuses
 to overwrite evidence for a selected mode; do not rerun a failed workload.
-
-## Summaries and Jira documents
-
-Summary commands read saved evidence without sending traffic:
-
-```bash
-python3 scripts/benchmarks/summarize_codec_comparison.py \
-  scripts/tests/output/linux-sequential-example
-python3 scripts/benchmarks/summarize_linux_multitype_mixed.py \
-  scripts/tests/output/linux-20261008-beta6-500hz-verified
-```
-
-The mixed summarizer recomputes each gate from the saved per-type CSV/JSON,
-runtime preflight, and cgroup evidence. It requires the exact measured identity
-range and does not exempt any message type. It writes aggregate CSV/JSON and
-`jira-performance-report.md` alongside the original per-type evidence.
-
-The completed beta6 comparison report is at
-`scripts/tests/output/linux-20261008-beta6-500hz-verified/jira-performance-report.md`.
-FFM passed all ten per-type gates; external ADM met the p95 target only for RTCM.
-An earlier external setup attempt stopped at the pre-traffic process-readiness
-check and sent no packets; its evidence remains in the sibling
-`linux-20261008-beta6-500hz` directory.
 
 ## Reading results
 
